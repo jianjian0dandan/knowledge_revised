@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地域分布图</title>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: '微软雅黑';
+        }
+        #box {
+            width: 100%;
+            /*height: 700px;*/
+            /*margin: 50px auto;*/
+        }
+        /*工具栏大小*/
+
+        /*.BMapLib_Drawing_panel {*/
+            /*height: 20px;*/
+        /*}*/
+        /*.BMapLib_Drawing .BMapLib_box {*/
+            /*width: 20px;*/
+            /*!*background-size: 20px 20px;*!*/
+        /*}*/
+        .last_pic {
+            background: white!important;
+            text-align: center;
+            line-height: 47px;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+
+</div>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0ECXIPy41grtI3jUXqQMgILaG1vKUiLo"></script>
+<script src="../js/DrawingManager_min.js"></script>
+<!--加载鼠标绘制工具-->
+<!--<script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>-->
+<!--加载检索信息窗口-->
+<!--<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>-->
+<script>
+    $('#box').height($(window).height());
+    // 百度地图API功能
+    var map = new BMap.Map("box");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point(116.404, 39.915), 5);  // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    var index = 0;
+    var myGeo = new BMap.Geocoder();
+    var adds = [
+        '北京','上海','泰安','福州','深圳','大连','乌鲁木齐'
+    ];
+
+    // 编写自定义函数,创建标注
+    var marker;
+    function addMarker(point,label){
+        marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        marker.setLabel(label);
+        marker.addEventListener("click", function(){
+            opts.title=this.zc.innerText+'----╮(╯▽╰)╭';
+            map.openInfoWindow(new BMap.InfoWindow(this.zc.innerText, opts),point); //开启信息窗口
+        });
+        var opts = {
+            width : 100,     // 信息窗口宽度
+            height: 20,     // 信息窗口高度
+            title : '' , // 信息窗口标题
+            enableMessage:true,//设置允许信息窗发送短息
+            message:""
+        };
+
+    };
+
+    //添加框选工具
+    var overlays = [];
+    var overlaycomplete = function(e){
+        overlays.push(e.overlay);
+    };
+    var styleOptions = {
+        strokeColor:"red",    //边线颜色。
+        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+        strokeWeight: 3,       //边线的宽度，以像素为单位。
+        strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+        strokeStyle: 'solid' //边线的样式，solid或dashed。
+    };
+    //实例化鼠标绘制工具
+    var drawingManager = new BMapLib.DrawingManager(map, {
+        isOpen: false, //是否开启绘制模式
+        enableDrawingTool: true, //是否显示工具栏
+        drawingToolOptions: {
+            anchor: BMAP_ANCHOR_TOP_LEFT, //位置
+            offset: new BMap.Size(5, 5), //偏离值
+            drawingModes: [
+                BMAP_DRAWING_RECTANGLE,
+            ]
+        },
+        drawingType: BMAP_DRAWING_RECTANGLE,
+        circleOptions: styleOptions, //圆的样式
+        polylineOptions: styleOptions, //线的样式
+        polygonOptions: styleOptions, //多边形的样式
+        rectangleOptions: styleOptions //矩形的样式
+    });
+    //添加鼠标绘制工具监听事件，用于获取绘制结果
+    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+
+    //清除覆盖物
+    function clearAll() {
+        for(var i = 0; i < overlays.length; i++){
+            map.removeOverlay(overlays[i]);
+        }
+        overlays.length = 0
+    };
+    $('.BMapLib_Drawing .BMapLib_last').after(
+            '<a class="BMapLib_box last_pic"' +
+            'title="清除" onclick="clearAll()">清除</a>'
+    );
+    //右键清除覆盖物
+    map.addEventListener("rightclick", function(e) {
+        clearAll();
+    });
+
+    //框选结束后的操作
+
+
+    //    *  ┌─────────────────────┐
+    //    *  │0                  1 │
+    //    *  │                     │
+    //    *  │3                  2 │
+    //    *  └─────────────────────┘
+    //    四个角的坐标顺序
+    var geoc = new BMap.Geocoder();
+    drawingManager.addEventListener("rectanglecomplete", function(e, overlay) {
+        var sijiao_jing=[overlay.ro[0].lng,overlay.ro[1].lng,overlay.ro[2].lng,overlay.ro[3].lng];
+        var sijiao_wei=[overlay.ro[0].lat,overlay.ro[1].lat,overlay.ro[2].lat,overlay.ro[3].lat];
+        var max_jing=Math.max.apply(null, sijiao_jing);
+        var min_jing=Math.min.apply(null, sijiao_jing);
+        var max_wei=Math.max.apply(null, sijiao_wei);
+        var min_wei=Math.min.apply(null, sijiao_wei);
+        $.each(zuobiao_nums,function (index,item) {
+            if (min_wei<item.lat&&item.lat<max_wei && min_jing<item.lng&&item.lng<max_jing){
+                geoc.getLocation(item, function(rs){
+                    var addComp = rs.addressComponents;
+                    alert(addComp.city);
+                });
+            }
+        });
+
+    });
+
+///-----------------------------
+    var zuobiao_nums=[];
+    function bdGEO(){
+        var add = adds[index];
+        geocodeSearch(add);
+        index++;
+    };
+    bdGEO();
+    var dote=[];
+    var curve;
+    function geocodeSearch(add){
+        if(index < adds.length){
+            setTimeout(window.bdGEO,400);
+        }
+        myGeo.getPoint(add, function(point){
+            if (point) {
+                zuobiao_nums.push(point);
+//                document.getElementById("result").innerHTML +=  index + "、" + add + ":" + point.lng + "," + point.lat + "</br>";
+                var address = new BMap.Point(point.lng, point.lat);
+//                addMarker(address,new BMap.Label(index+":"+add,{offset:new BMap.Size(20,-10)}));
+                addMarker(address,new BMap.Label(add,{offset:new BMap.Size(20,-10)}));
+                Draw_arc(point);
+            }
+        });
+    }
+
+    // 画弧线
+    var arcline=[];
+
+    function Draw_arc(point) {
+        dote.push(new BMap.Point(point.lng, point.lat));
+        curve = new BMapLib.CurveLine(dote, {strokeColor:"blue", strokeWeight:3, strokeOpacity:0.5}); //创建弧线对象
+        map.addOverlay(curve); //添加到地图中
+        arcline.push(curve);
+    };
+    window.setInterval(arc,3000);
+    function arc() {
+        window.clearInterval();
+        for (var ls=0;ls<arcline.length;ls++){
+            map.removeOverlay(arcline[ls]);
+        }
+        arcline=[];
+        var curve2 = new BMapLib.CurveLine(dote, {strokeColor:'red', strokeWeight:3, strokeOpacity:0.5}); //创建弧线对象
+        map.addOverlay(curve2); //添加到地图中
+        arcline.push(curve2);
+    }
+
+</script>
+</body>
+</html>

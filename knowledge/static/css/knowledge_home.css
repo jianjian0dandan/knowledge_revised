@@ -1,0 +1,220 @@
+/*清除初始的样式*/
+html,body,div,img,h1,h2,h3,h4,h5,h6,input,button,span,p,b,strong,em,li,ul,ol,dl,dt,dd,
+th,textarea,select,table,form {
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    font-family: '宋体';
+}
+ul,li,ol {
+    list-style: none;
+}
+img {
+    border:none;
+}
+input,select,textarea,button {
+    outline: none;
+    border: none;
+}
+a,a:link,a:hover,a:visited,a:active {
+    text-decoration: none;
+}
+/*内容样式*/
+body {
+    width: 1300px;
+    max-width: 1300px;
+    min-width: 1300px;
+    min-height: 660px;
+    max-height: 660px;
+    background: url("../images/body.png") no-repeat;
+}
+#container {
+    width: 100%;
+    height: 800px;
+    padding: 20px 20px 50px 20px;
+}
+#container #nav {
+    width: 80%;
+    height: 120px;
+    padding-left: 140px;
+    margin: 10px auto 0;
+}
+#container #nav .nav_list li {
+    float: left;
+}
+#container #nav .nav_list li a {
+    font-family: '微软雅黑';
+    display: block;
+    width: 110px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    font-weight: 900;
+}
+#container #statistics {
+    width: 77%;
+    height: 280px;
+    margin: 0 auto;
+}
+#container #statistics .statis-1 {
+    width: 155px;
+    height: 250px;
+    display: inline-block;
+}
+#container #statistics .statis-1 .s1-top {
+    width: 100%;
+    height: 35px;
+    background: url("../images/statistic.png") no-repeat center;
+    background-size: 120px 20px;
+}
+#container #statistics .statis-1 .s1-bot {
+    margin-top: 48px;
+}
+#container #statistics .statis-1 .s1-bot .bot-nums {
+    background: url("../images/right.png") no-repeat 5%;
+    font-size: 10px;
+    color: white;
+    padding-left: 30px;
+    height: 24px;
+    line-height: 24px;
+    padding-top: 3px;
+}
+#container #statistics .statis-2,
+#container #statistics #statis-3{
+    width: 400px;
+    height: 280px;
+    float: right;
+}
+#container #statistics .statis-2 .s2-left,
+#container #statistics .statis-2 .s2-right {
+    float: left;
+}
+#container #statistics .statis-2 .s2-left #search_val {
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+    width: 100px;
+    margin: 235px 0 0 63px;
+    background-color: #465f7d;
+}
+#container #statistics .statis-2 .s2-left #search_val::-webkit-input-placeholder{
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+}
+#container #statistics .statis-2 .s2-left #refer {
+    display: inline-block;
+    position: relative;
+    top: 7px;
+    left: -5px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+#container #statistics .statis-2 .s2-right {
+    margin-left: 68px;
+    padding-top: 68px;
+}
+#container #statistics .statis-2 .s2-right .map,
+#container #statistics .statis-2 .s2-right .chart{
+    width: 50px;
+    height: 50px;
+}
+#container #statistics .statis-2 .s2-right .chart {
+    margin:65px 0 0 65px;
+}
+#container #statistics .statis-2 .s2-right dl {
+    cursor: pointer;
+}
+#container #statistics .statis-2 .s2-right dt img {
+    width: 30px;
+    height: 30px;
+}
+#container #statistics .statis-2 .s2-right dt {
+    text-align: center;
+}
+#container #statistics .statis-2 .s2-right dd {
+    font-size: 8px;
+    color: white;
+}
+#container #my_hot {
+    margin-top: 120px;
+    padding: 5px 120px 0;
+}
+#container #my_hot .hot_event,
+#container #my_hot .hot_user,
+#container #my_hot .my_focus {
+    float: left;
+    width: 265px;
+    height: 155px;
+    margin-left: 35px;
+    padding-left: 10px;
+    padding-top: 5px;
+}
+#container #my_hot .my_focus {
+    margin-left: 70px;
+    width: 290px;
+}
+#container #my_hot .hot_user {
+    margin-left: 80px;
+}
+#container #my_hot .hot_event h3{
+    background: url("../images/event.png") no-repeat 20% top;
+    background-size:90px 20px;
+}
+/*#container #my_hot .my_focus h3{*/
+    /*background: url("../images/focus.png") no-repeat 20% top;*/
+    /*background-size:90px 20px;*/
+/*}*/
+#container #my_hot .hot_user h3{
+    background: url("../images/user.png") no-repeat 20% top;
+    background-size:90px 20px;
+}
+#container #my_hot .hot_event .event_caption,
+#container #my_hot .hot_user .user_caption{
+    font-size: 8px;
+    color: white;
+    padding-left: 20px;
+    margin-top: 11px;
+}
+#container #my_hot .hot_event .event_caption .event_name,
+#container #my_hot .hot_user .user_caption .user_name{
+    display: inline-block;
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#container #my_hot .hot_event .event_more,
+#container #my_hot .my_focus .focus_more,
+#container #my_hot .hot_user .user_more{
+    float: right;
+    cursor: pointer;
+    padding: 2px;
+    margin-top: 2px;
+    color: hsl(0, 5%, 78%);
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid #9fe7f5;
+    font-size: 18px;
+    -webkit-transform-origin-x: 0;
+    -webkit-transform: scale(0.5833333333333334);
+}
+#container #my_hot .hot_event .event_more:hover,
+#container #my_hot .my_focus .focus_more:hover,
+#container #my_hot .hot_user .user_more:hover {
+    background-color: #465f7d;
+}
+#container #my_hot .my_focus .focus_details .details-1 span,
+#container #my_hot .my_focus .focus_details .details-2 span {
+    font-size: 8px;
+    color: white;
+}
+/*#container #my_hot .my_focus .focus_details tr {*/
+    /*display: block;*/
+    /*margin-top: 4px;*/
+/*}*/
