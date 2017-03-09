@@ -117,6 +117,12 @@ topics_river_index_type='text'
 subopinion_index_type='text'
 subopinion_index_name='subopinion'
 
+
+#jln info_consume
+mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
+emotions_kv = {'happy': 1, 'angry': 2, 'sad': 3, 'news': 4}
+emotions_zh_kv = {'happy': '高兴', 'angry': '愤怒', 'sad': '悲伤', 'news': '新闻'}
+
 #jln
 SENTIMENT_TYPE_COUNT = 7
 SENTIMENT_FIRST = ['0', '1', '7']
