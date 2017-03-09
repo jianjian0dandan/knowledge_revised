@@ -3,13 +3,13 @@
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
-user_portrait_host = ["219.224.134.212:9037"]
+user_portrait_host = ["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
-km_user_portrait_host = ["219.224.134.212:9037"]
+km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
-event_host = ["219.224.134.212:9037"]
+event_host = ["219.224.134.225:9037"]
 event_port = "9200"
-calculate_status_host=["219.224.134.212:9037"]
+calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
 redis_host = "219.224.134.213"
@@ -67,13 +67,12 @@ topic_list = [u'文体类_娱乐', u'科技类', u'经济类', u'教育类', u'�
 
 
 
-# Relationship: User-Event
-join = "join" # 参与讨论
-pusher = "pusher"#趋势推动
-maker = "maker"#趋势制造
+# Relationship: User,Organization-Event
+join = "join" # 参与事件
+discuss = "discuss"#参与舆论
 other_rel = "other_relationship" #其他关系
 
-user_event_relation = ['join','pusher','maker','other_relationship']
+user_event_relation = ['join','discuss','other_relationship']
 
 # Relationship: Event-Event
 contain = "contain"  #--主题关联
@@ -84,17 +83,24 @@ event_special = "special_event" # 专题
 event_relation_list = ['contain','event_other']
 
 
-# Relatioship: User、Organization--User
+# Relatioship: User--User
 friend = "friend" #交互
-relative = "relative" #亲属（人与人的关系）
-colleague = "colleague" #业务关联
+relative = "relative" #亲属
+leader = "leader" #上下级关系
+colleague = "colleague" #自述关联
+ip_relation = "ip_relation" #IP关联
 user_tag = "user_tag"#其他
 
-relation_list = ['friend','relative','colleague','user_tag']
+user_user_relation = ['friend','relative','leader','colleague','ip_relation','user_tag']
+
+# Relatioship: Organization--User,Organization
+or_friend = "friend" #交互
+or_colleague = "colleague" #业务关联
+organization_tag = "organization_tag"#其他
+
+organization_relation_list = ['friend','colleague','organization_tag']
 
 group_rel = "group"
-
-#机构和机构没有关系，
 
 #jln:for getTopicByNameStEt
 TOPIC_ES_HOST = '219.224.134.216:9204'
