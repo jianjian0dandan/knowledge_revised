@@ -9,13 +9,16 @@ sys.path.append('../../../')
 from time_utils import datetime2ts, ts2HourlyTime
 #from global_utils import getTopicByNameStEt
 #from dynamic_xapian_weibo import getXapianWeiboByTopic
-from global_config import mtype_kv, weibo_es,weibo_index_name,weibo_index_type
+from global_config import mtype_kv, es_event,weibo_index_name,weibo_index_type
 from global_config import index_event_geo_province_weibos,type_event_geo_province_weibos,\
                          index_event_geo_city_topic_count,type_event_geo_city_topic_count
 from global_config import index_event_analysis_results,type_event_analysis_results
 
 #from model import CityTopicCount, CityWeibos,ProvinceWeibos
 from utils import geo2city, IP2city,split_city
+
+from global_config import event_analysis_name,event_type,event_text,event_text_type
+from global_utils import es_event 
 
 Minute = 60
 Fifteenminutes = 15 * 60
@@ -32,31 +35,16 @@ SORT_FIELD = 'timestamp'
 
 def save_rt_results_es(topic, results, during, first_item):
 
-    #mappings_event_geo_city_topic_count()
-    #index_name = index_event_geo_city_topic_count
-    #index_type = type_event_geo_city_topic_count
+    id = topic
+    index_name = event_analysis_name #index_event_analysis_results
+    index_type = event_type
 
-    mappings_event_analysis_results(topic)
-    index_name = index_event_analysis_results
-    index_type = type_event_analysis_results
+    try:
+        es_event.update(index=index_name,doc_type=index_type,id=id,body={'doc':{'geo_results':json.dumps(sentiment_results)}})
+    except Exception,e:
+        es_event.index(index=index_name,doc_type=index_type,id=id,body={'geo_results':json.dumps(results)})
 
-    item = {}
 
-    for mtype, time_geo in results.iteritems():##{'message_type':[timestamp,{['province':('provice':cishu),()],'city':[(city:cishu)}]}
-        item['en_name'] = topic
-        item['end_ts'] = time_geo[0]
-        item['range'] = during
-        item['mtype'] = mtype
-        item['ccount'] = time_geo[1]
-        item['first_item'] = first_item
-
-        id = topic + '_' + ts
-
-        try:
-            item_exist = weibo_es.get(index=index_name,doc_type=index_type,id=id)['_source']
-            weibo_es.update(index=index_name,doc_type=index_type,id=id,body={'doc':item})
-        except Exception,e:
-            weibo_es.index(index=index_name,doc_type=index_type,id=id,body=item)
 
 '''
 def save_rt_results(topic, results, during, first_item):
@@ -98,10 +86,10 @@ def save_ws_results_es(topic, ts, during, n_limit, province,city,weibos):
     id = topic + '_' + ts
 
     try:
-        item_exist = weibo_es.get(index=index_name,doc_type=index_type,id=id)['_source']
-        weibo_es.update(index=index_name,doc_type=index_type,id=id,body={'doc':item})
+        item_exist = es_event.get(index=index_name,doc_type=index_type,id=id)['_source']
+        es_event.update(index=index_name,doc_type=index_type,id=id,body={'doc':item})
     except Exception,e:
-        weibo_es.index(index=index_name,doc_type=index_type,id=id,body=item)
+        es_event.index(index=index_name,doc_type=index_type,id=id,body=item)
 
 '''
 
@@ -131,12 +119,13 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
         over_ts = ts2HourlyTime(over_ts, during)
         interval = (over_ts - start_ts) / during
 
-        geo_cityTopic_results = {}
-        geo_cityTopic_results['geo_weibos'] = {}
-        geo_cityTopic_results['geo_cityCount'] = {}
 
-        #geo_weibos = {}
-        #geo_cityCounts = {}
+        item_exist = es_event.get(index=event_analysis_name,doc_type=event_type,id=topic)['_source']
+        try:
+            geo_result = json.loads(item_exist['geo_results'])
+        except:
+            geo_result = []
+
 
         #topics = topic.strip().split(',')
         for i in range(interval, 0, -1):
@@ -146,15 +135,12 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
             print begin_ts,end_ts,topic
             weibos = []
             first_item = {}
-            geo_cityTopic_results['geo_weibos'][end_ts] = {}
-            geo_cityTopic_results['geo_cityCount'][end_ts] = {}
             
             for k,v in mtype_kv.iteritems(): #v代表转发、评论、原创
 
-                geo_cityTopic_results['geo_weibos'][end_ts][v] = []
-                #geo_cityTopic_results['geo_cityCount'][end_ts][v] = []
+                #geo_result['geo_cityCount'][end_ts][v] = []
 
-                province_dict = {}
+                #geo_result = {}
                 city_dict = {}
                 query_body = {   #按message_type得到微博
                     'query':{
@@ -170,7 +156,7 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
                     'sort':{SORT_FIELD:{"order":"desc"}},
                     'size':n_limit
                     }
-                mtype_weibo = weibo_es.search(index=topic,doc_type=weibo_index_type,body=query_body)['hits']['hits']
+                mtype_weibo = es_event.search(index=event_text,doc_type=event_text_type,body=query_body)['hits']['hits']
                 #save_ws_results(topic, end_ts, during, n_limit, mtype_weibo)    
                 #微博直接保存下来
                 if len(mtype_weibo) == 0:
@@ -186,67 +172,29 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
                     province,city = split_city(geo)
                     #print province,city
 
-                    try:
-                        geo_cityTopic_results['geo_weibos'][end_ts][v].append([end_ts,province,city,weibo])
-                    except:
-                        geo_cityTopic_results['geo_weibos'][end_ts][v] = [[end_ts,province,city,weibo]]
-
+                    
                     if province != 'unknown':
                         try:
-                            province_dict[province][city] += 1  
+                            geo_result[province][city] += 1  
                         except:
 
-                            try:
-                                province_dict[province][city] = 1
-                              
-                            except:
-                                province_dict[province] = {city:1}
+                            geo_result[province] = {city:1}
                                
 
                         try:
-                            province_dict[province]['total'] += 1
+                            geo_result[province]['total'] += 1
                         except:
-
-                            try:
-                              
-                                province_dict[province]['total'] = 1
-                            except:
-                            
-                                province_dict[province] = {'total':1}
+                            geo_result[province] = {'total':1}
 
 
-                        #save_ws_results(topic, end_ts, during, n_limit,province,city,weibo)
-                        
-                        #save_ws_results_es(topic, end_ts, during, n_limit,province,city,weibo)
-                        
-                        # try:
-                        #     city_dict[city] += 1
-                        # except:
-                        #     city_dict[city] = 1
-                        # try:
-                        #     province_dict[province].append(city_dict)
-                        # except:
-                        #     province_dict[province] = []
-                        #     province_dict[province].append(city_dict)
-                        # try:
-                        #     province_dict[province] += 1
-                        # except:
-                        #     province_dict[province] = 1
-                # sorted_province_dict = sorted(province_dict.items(), key=lambda x: x[0], reverse=False)[:n_limit]  #就是x[0]
-                # sorted_city_dict = sorted(city_dict.items(), key=lambda x: x[0], reverse=False)[:n_limit]
-                # print sorted_province_dict
-                # print sorted_city_dict
-                #ccount = province_dict
-                # ccount['province'] = sorted_province_dict
-                # ccount['city'] = sorted_city_dict
-                #mtype_ccount[v] = [end_ts,ccount]   #{'message_type':[shijian,{['province':('provice':cishu),()],'city':[(city:cishu)}]}
-                
-                geo_cityTopic_results['geo_cityCount'][end_ts][v] = province_dict
-                #print mtype_ccount
+                                
+                #geo_result[end_ts][v] = geo_result
+                #print mtype_ccount   v:message type
                 #save_rt_results(topic, mtype_ccount, during, first_item)
-                
+
                 save_rt_results_es(topic, mtype_ccount, during, first_item)
-        return geo_cityTopic_results
+
+        return geo_result
 
 
 
