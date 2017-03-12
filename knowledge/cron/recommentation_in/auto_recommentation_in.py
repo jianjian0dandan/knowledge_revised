@@ -8,10 +8,6 @@ reload(sys)
 sys.path.append('../../')
 from global_utils import R_RECOMMENTATION, es_tag, tag_index_name, tag_index_type,\
         es_user_portrait, portrait_index_name, portrait_index_type, \
-        es_group_result, group_index_name, group_index_type, \
-        es_social_sensing, sensing_index_name, sensing_doc_type, \
-        es_retweet, retweet_index_name_pre, retweet_index_type,\
-        es_comment, comment_index_name_pre, comment_index_type,\
         es_flow_text, flow_text_index_name_pre, flow_text_index_type
 from parameter import DAY,RUN_TYPE, RUN_TEST_TIME, RECOMMEND_IN_AUTO_DATE,\
         RECOMMEND_IN_AUTO_SIZE, RECOMMEND_IN_AUTO_GROUP,\
@@ -61,6 +57,7 @@ def get_hotspot_recommentation():
     else:
         date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
         sort_type = 'timestamp'
+    date = '2016-11-27'
     flow_text_index_name = flow_text_index_name_pre + date
     user_keywords_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                 body=query_body)['aggregations']['all_interests']['buckets']
@@ -334,33 +331,33 @@ def get_extend(all_set):
 # get recommentation from admin user operation
 def get_operation_recommentation():
     results = {}
-    now_ts = time.time()
-    #run_type
-    if RUN_TYPE == 1:
-        now_date = ts2datetime(now_ts)
-    else:
-        now_date = RUN_TEST_TIME
-    admin_user_list = get_admin_user()
-    for admin_user in admin_user_list:
-        #step1: recommentation record
-        recommentation_history_result = get_recomment_history(admin_user, now_date)
-        #step2: add tag record
-        tag_history_result = get_tag_history(admin_user, now_date)
-        all_set = recommentation_history_result | tag_history_result
-        #step3: group analysis record
-        group_history_result = get_group_history(admin_user, now_date)
-        all_set = all_set | group_history_result
-        #step4: social sensing record
-        sensing_result = get_sensing_history(admin_user, now_date)
-        all_set = all_set | sensing_result
-        #step5: extend by all set
-        if len(all_set) != 0:
-            extend_result = get_extend(all_set)
-        else:
-            extend_result = []
-        results[admin_user] = json.dumps(extend_result)
+    # now_ts = time.time()
+    # #run_type
+    # if RUN_TYPE == 1:
+    #     now_date = ts2datetime(now_ts)
+    # else:
+    #     now_date = RUN_TEST_TIME
+    # admin_user_list = get_admin_user()
+    # for admin_user in admin_user_list:
+    #     #step1: recommentation record
+    #     recommentation_history_result = get_recomment_history(admin_user, now_date)
+    #     #step2: add tag record
+    #     tag_history_result = get_tag_history(admin_user, now_date)
+    #     all_set = recommentation_history_result | tag_history_result
+    #     #step3: group analysis record
+    #     group_history_result = get_group_history(admin_user, now_date)
+    #     all_set = all_set | group_history_result
+    #     #step4: social sensing record
+    #     sensing_result = get_sensing_history(admin_user, now_date)
+    #     all_set = all_set | sensing_result
+    #     #step5: extend by all set
+    #     if len(all_set) != 0:
+    #         extend_result = get_extend(all_set)
+    #     else:
+    #         extend_result = []
+    #     results[admin_user] = json.dumps(extend_result)
 
-    return results
+    # return results
 
 # save results
 def save_results(save_type, recomment_results):
@@ -377,16 +374,16 @@ def save_results(save_type, recomment_results):
         save_mark = True
     elif save_type == 'operation':
         #print 'save operation results'
-        R_RECOMMENTATION.hmset(recomment_hash_name, recomment_results)
+        R_RECOMMENTATION.hset(recomment_hash_name, recomment_results)
         save_mark = True
     return save_mark
 
 # get user auto recommentation
 def compute_auto_recommentation():
     #step1: get recommentation from hotspot information
-    hotspot_results = get_hotspot_recommentation()
-    save_type = 'hotspot'
-    save_results(save_type, hotspot_results)
+    # hotspot_results = get_hotspot_recommentation()
+    # save_type = 'hotspot'
+    # save_results(save_type, hotspot_results)
     #step2: get recommentation from admin user operation
     operation_results = get_operation_recommentation()
     save_type = 'operation'

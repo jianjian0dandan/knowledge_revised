@@ -17,7 +17,7 @@ from parameter import RECOMMEND_IN_MENTION_THRESHOLD as mention_threshold
 from cron.detect.cron_detect import get_db_num
 
 
-csvfile = open('/home/user_portrait_0320/revised_user_portrait/user_portrait/user_portrait/cron/recommentation_in/filter_uid_list.csv', 'wb')
+csvfile = open('/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/filter_uid_list.csv', 'wb')
 writer = csv.writer(csvfile)
 
 
