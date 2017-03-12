@@ -38,6 +38,42 @@ topic_queue_name='EVENT_portrait_task'
 
 flow_text_index_name_pre = 'flow_text_' # flow text: 'flow_text_2013-09-01'
 flow_text_index_type = 'text'
+portrait_index_name = 'user_portrait_1222' # user portrait
+portrait_index_type = 'user'
+# week retweet/be_retweet relation es
+retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
+retweet_index_type = 'user'
+be_retweet_index_name_pre = '1225_be_retweet_' #be_retweet: 'be_retweet_1'/'be_retweet_2'
+be_retweet_index_type = 'user'
+# week comment/be_comment relation es
+comment_index_name_pre = '1225_comment_'
+comment_index_type = 'user'
+be_comment_index_name_pre = '1225_be_comment_'
+be_comment_index_type = 'user'
+#es for bci history
+bci_history_index_name = 'bci_history'
+bci_history_index_type = 'bci'
+
+def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
+    es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
+    return es
+
+# 存储user_portrait的重要度/活跃度/影响力和敏感度，与es_flow1一致
+ES_COPY_USER_PORTRAIT = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
+COPY_USER_PORTRAIT_INFLUENCE = "copy_user_portrait_influence"
+COPY_USER_PORTRAIT_INFLUENCE_TYPE = 'bci'
+COPY_USER_PORTRAIT_IMPORTANCE = "copy_user_portrait_importance"
+COPY_USER_PORTRAIT_IMPORTANCE_TYPE = 'importance'
+COPY_USER_PORTRAIT_ACTIVENESS = "copy_user_portrait_activeness"
+COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
+COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
+COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
+
+
+# es for activeness history, influence history and pagerank
+#copy_portrait_index_name = 'user_portrait_1222'#'this_is_a_copy_user_portrait'
+copy_portrait_index_name = 'this_is_a_copy_user_portrait'
+copy_portrait_index_type = 'user'
 
 #neo4j查询事件名
 
