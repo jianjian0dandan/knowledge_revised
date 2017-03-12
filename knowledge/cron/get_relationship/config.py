@@ -15,6 +15,7 @@ from global_utils import *
 RUN_TYPE = 0 #0 mark run for test; 1 mark run for operation
 R_BEGIN_TIME = '2013-09-01'
 DAY = 24*3600
+TIME_STR = '20161127'
 
 def ts2datetime(ts):
     return time.strftime('%Y-%m-%d', time.localtime(ts))
@@ -33,11 +34,7 @@ def get_db_num(timestamp):
         db_number = 1
     return db_number
 
-##es_user_profile = Elasticsearch(user_profile_host, timeout = 600)
-##es_retweet = Elasticsearch(retweet_comment_es_host, timeout = 600)
-##es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
-##es_user_portrait = Elasticsearch(user_portrait_host, timeout = 600)
-##es_event = Elasticsearch(event_host, timeout = 600)
+es_bci = Elasticsearch(user_profile_host, timeout = 600)
 
 ##对微博文本进行预处理
 
@@ -146,40 +143,8 @@ MAX_COUNT = 500#最大的词语数量(topic pagerank)
 COUNT_RATE = 0.1#限制交互数量的比例
 inter_sta = 4#最小交互次数
 event_sta = 0.5#最小交叉词语数量
-
-#人物各指标权重
-influence_weight = 0.3
-importance_weight = 0.3
-activeness_weight = 0.1
-sensitive_weight = 0.3
-
-#事件各指标权重
-type_weight = 0.6
-weibo_weight = 0.2
-people_weight = 0.2
-
-#人物相似度各指标权重
-p1_weight = 0.1
-p2_weight = 0.3
-p3_weight = 0.2
-p4_weight = 0.2
-p5_weight = 0.2
-
-#事件相似度各指标权重
-e1_weight = 0.2
-e2_weight = 0.2
-e3_weight = 0.3
-e4_weight = 0.3
-
-#专题相似度各指标权重
-t1_weight = 0.4
-t2_weight = 0.3
-t3_weight = 0.3
-
-#群体相似度各指标权重
-q1_weight = 0.4
-q2_weight = 0.3
-q3_weight = 0.3
+MAX_I = 1.3#最大影响力值的百分比
+MIN_I = 0.7#最小影响力值的百分比
 
 #认证类型
 peo_list = [-1,0,200,220,400]
