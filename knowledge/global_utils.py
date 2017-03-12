@@ -13,6 +13,9 @@ profile_index_type = "user"
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
+es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+es_tag = Elasticsearch(user_portrait_host, timeout=600)
+
 # flow text system
 es_flow_text = Elasticsearch(flow_text_host, timeout=600)
 
@@ -53,6 +56,14 @@ be_comment_index_type = 'user'
 #es for bci history
 bci_history_index_name = 'bci_history'
 bci_history_index_type = 'bci'
+
+
+bci_day_pre = 'bci_'
+bci_day_type = 'bci'
+
+# es for tag
+tag_index_name = 'custom_attribute'
+tag_index_type = 'attribute'
 
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
@@ -300,6 +311,10 @@ update_week_redis  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_WEEK_REDIS_KEY = 'update_week'
 update_month_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_MONTH_REDIS_KEY = 'update_month'
+
+
+#recommendation_in 
+R_RECOMMENTATION  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=15)
 
 '''
 # elasticsearch initialize, one for user_profile, one for user_portrait
