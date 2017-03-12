@@ -5,16 +5,17 @@ from global_config import *
 RUN_TYPE = 0
 
 # 关系类型与后续节点primary key的关系
+
 rel_node_mapping = {join: "event_id", other_rel: "event_id", \
         group_rel: "group", contain: "event_id", event_special:"event_id", \
         friend: "uid", relative: "uid", colleague: "uid", user_tag: "uid", \
         "domain": "domain", "topic": "topic", "location": "location", "event":"event_id"}
 
 
-rel_node_type_mapping = {join: "Event", other_rel: "Event", \
-        group_rel: "Group", contain: "Event", event_special:"SpecialEvent", \
-        friend: "User", relative: "User", colleague: "User", user_tag: "Tag", \
-        "domain": "Domain", "topic": "Topic", "location": "Location", "event": "Event"}
+# rel_node_type_mapping = {join: "Event", other_rel: "Event", \
+#         group_rel: "Group", contain: "Event", event_special:"SpecialEvent", \
+#         friend: "User", relative: "User", colleague: "User", user_tag: "Tag", \
+#         "domain": "Domain", "topic": "Topic", "location": "Location", "event": "Event"}
 
 
 # 首页显示最多节点数
