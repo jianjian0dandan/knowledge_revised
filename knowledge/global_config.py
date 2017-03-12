@@ -189,3 +189,9 @@ BIN_FILE_PATH = '/home/ubuntu2/txt'
 # first part of csv file1
 
 FIRST_FILE_PART = 'MB_QL_9_7_NODE'
+
+# use to identify the db number of redis-97
+R_BEGIN_TIME = '2016-11-21'
+
+
+ES_COPY_USER_PORTAIT_HOST = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
