@@ -5,16 +5,17 @@ from global_config import *
 RUN_TYPE = 0
 
 # 关系类型与后续节点primary key的关系
+
 rel_node_mapping = {join: "event_id", other_rel: "event_id", \
         group_rel: "group", contain: "event_id", event_special:"event_id", \
         friend: "uid", relative: "uid", colleague: "uid", user_tag: "uid", \
         "domain": "domain", "topic": "topic", "location": "location", "event":"event_id"}
 
 
-rel_node_type_mapping = {join: "Event", other_rel: "Event", \
-        group_rel: "Group", contain: "Event", event_special:"SpecialEvent", \
-        friend: "User", relative: "User", colleague: "User", user_tag: "Tag", \
-        "domain": "Domain", "topic": "Topic", "location": "Location", "event": "Event"}
+# rel_node_type_mapping = {join: "Event", other_rel: "Event", \
+#         group_rel: "Group", contain: "Event", event_special:"SpecialEvent", \
+#         friend: "User", relative: "User", colleague: "User", user_tag: "Tag", \
+#         "domain": "Domain", "topic": "Topic", "location": "Location", "event": "Event"}
 
 
 # 首页显示最多节点数
@@ -44,6 +45,8 @@ sensitive_score_dict = {
             "3": 10
 }
 
+# use to text_attribute
+IP_TIME_SEGMENT = 4*3600
 #人物推荐
 #recommend in
 RECOMMEND_IN_SENSITIVE_TOP = 2000
@@ -68,3 +71,8 @@ RECOMMEND_IN_WEIBO_MAX = 1000
 SENTIMENT_SORT_EVALUATE_MAX = 999999999999
 
 RECOMMENTATION_TOPK = 10000
+##关系计算绝对路径
+r_path = '/home/ubuntu2/yuanshi/knowledge-management/new/knowledge_revised/knowledge/cron/get_relationship'
+
+##事件分类绝对路径
+c_path = '/home/ubuntu2/yuanshi/knowledge-management/new/knowledge_revised/knowledge/cron/event_classify/python'

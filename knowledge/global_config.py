@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
-user_portrait_host = ["219.224.134.216:9201"]#["219.224.134.225:9037"]
+user_portrait_host = ["219.224.134.225:9037"]#["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
 km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
@@ -22,8 +22,9 @@ redis_port = "7381"
 profile_index_name = "weibo_user"
 profile_index_type = "user"
 remote_portrait_name = "user_portrait_1222" # user portrait system
-portrait_name = "user_portrait"
+portrait_name = "user_portrait_0312"
 flow_text_name = "flow_text_2016-11-26"
+flow_text_index_name_pre = 'flow_text_'
 portrait_type = "user"
 flow_text_type = "text"
 event_name = "event_task"#"event" # 事件基本信息
@@ -142,7 +143,7 @@ REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.212'
 REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
 REDIS_CLUSTER_PORT_FLOW1 = '6669'#'6379'
 REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
-REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.212'
+REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.212'#'219.224.134.212'
 REDIS_CLUSTER_PORT_FLOW2 = '6666'
 #JLN for keyword find user
 REDIS_KEYWORD_HOST = '219.224.134.212'
@@ -211,3 +212,9 @@ SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:@219.224.134.225/knowledge_manag
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
 # db = SQLAlchemy(app)
+
+user_list = [-1,0,200,220,400]
+auth_list = [1,2,3,4,5,6,7,8]
+
+user_type ='user'
+auth_type ='auth'

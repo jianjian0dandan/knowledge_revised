@@ -5,16 +5,16 @@ import scws
 import csv
 import re
 from svmutil import *
-from utils import cut_filter,classify_list,classify_dict,ab_path
+from utils import cut_filter,classify_list,classify_dict,abs_path
 
 def get_classify(text,d_first,d_second):
 
     word_dict = dict()
-    reader = csv.reader(file(ab_path+'feature_%s_%s.csv' % (d_first,d_second), 'rb'))
+    reader = csv.reader(file(abs_path+'/svm_model/feature_%s_%s.csv' % (d_first,d_second), 'rb'))
     for w,c in reader:
         word_dict[str(w)] = c
 
-    with open('./svm_test/test.txt', 'wb') as f:
+    with open(abs_path+'/svm_test/test.txt', 'wb') as f:
         writer = csv.writer(f)
         for k,v in word_dict.iteritems():
             row = []
@@ -26,8 +26,8 @@ def get_classify(text,d_first,d_second):
             writer.writerow((row))
     f.close()
 
-    m = svm_load_model(ab_path+'train_%s_%s.model' % (d_first,d_second))
-    y, x = svm_read_problem('./svm_test/test.txt')
+    m = svm_load_model(abs_path+'/svm_model/train_%s_%s.model' % (d_first,d_second))
+    y, x = svm_read_problem(abs_path+'/svm_test/test.txt')
     p_label, p_acc, p_val  = svm_predict(y, x, m)
 
     if p_label == '1':
@@ -55,7 +55,6 @@ def cut_weibo(data):
             flag = get_classify(text,classify_list[i],classify_list[j])
             classify_dict[flag] = classify_dict[flag] + 1
 
-    print classify_dict
     nh = sorted(classify_dict.iteritems(), key=lambda d:d[1], reverse = True)
 
     sta_n = float(len(classify_dict)-1)*0.5
@@ -83,6 +82,8 @@ def test_data(name):
 
 if __name__ == '__main__':
 
-    data = test_data('aomen')
-    label = cut_weibo(data)
-    print label
+    data_list = ['jiedaibao','aomen','jinji','yilake','jierjisi']
+    for name in data_list:
+        data = test_data('aomen')
+        label = cut_weibo(data)
+        print label
