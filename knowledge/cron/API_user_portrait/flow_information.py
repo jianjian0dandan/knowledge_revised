@@ -12,7 +12,7 @@ reload(sys)
 sys.path.append('../../')
 from global_utils import R_CLUSTER_FLOW2 as r_cluster
 from global_utils import R_CLUSTER_FLOW3 as r_cluster_3
-from global_config import flow_text_index_name_pre, flow_text_type
+from global_utils import flow_text_index_name_pre, flow_text_index_type
 from global_utils import es_flow_text
 from global_utils import R_ADMIN as r_sensitive
 from parameter import DAY, MAX_VALUE, sensitive_score_dict
@@ -21,7 +21,6 @@ from time_utils import datetime2ts, ts2datetime, ts2date
 
 
 test_ts = datetime2ts(RUN_TEST_TIME)
-flow_text_index_type = flow_text_type
 
 # use to compute flow information for new user attribute compute
 # write in version: 2016-02-28
