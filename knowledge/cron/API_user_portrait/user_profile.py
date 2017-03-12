@@ -9,8 +9,8 @@ import json
 reload(sys)
 sys.path.append('../../')
 from global_utils import es_user_profile as es
-from global_config import profile_index_name as index_name
-from global_config import profile_index_type as index_type
+from global_utils import profile_index_name as index_name
+from global_utils import profile_index_type as index_type
 fields_dict = {'uname':"nick_name", 'gender':"sex", 'location':"user_location", \
                'verified':"isreal", 'verified_type': 'verified_type', \
                'photo_url':"photo_url", 'description': 'description', \

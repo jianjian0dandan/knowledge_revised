@@ -1,5 +1,9 @@
 # -*-coding:utf-8-*-
 
+from flask import Flask
+# from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
@@ -15,14 +19,13 @@ neo4j_port = "7474"
 redis_host = "219.224.134.213"
 redis_port = "7381"
 
-profile_index_name = "weibo_user"
-profile_index_type = "user"
-remote_portrait_name = "user_portrait_1222" # user portrait system
-portrait_name = "user_portrait_0312"
-flow_text_name = "flow_text_2016-11-26"
-flow_text_index_name_pre = 'flow_text_'
-portrait_type = "user"
-flow_text_type = "text"
+#remote_portrait_name = "user_portrait_1222" # user portrait system
+#portrait_name = "user_portrait_0312"
+#flow_text_name = "flow_text_2016-11-26"
+#flow_text_index_name_pre = 'flow_text_'
+#portrait_type = "user"
+#flow_text_type = "text"
+'''
 event_name = "event_task"#"event" # 事件基本信息
 event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
 event_text = "event_text"
@@ -31,10 +34,12 @@ event_type = "text"
 neo4j_name = "neo4j"
 neo4j_password = "database"
 neo4j_data_path = 'http://219.224.134.213:7474/db/data'
+'''
 
 # retweet&comment for test
 retweet_comment_es_host = ['219.224.134.216:9201']
 retweet_comment_port = "9201"
+'''
 # week retweet/be_retweet relation es
 retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
 retweet_index_type = 'user'
@@ -57,7 +62,7 @@ special_event_index_name = "special_event_index" # primary_key: event
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
-
+'''
 
 domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
         u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
@@ -197,6 +202,17 @@ R_BEGIN_TIME = '2016-11-21'
 
 ES_COPY_USER_PORTAIT_HOST = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
 ES_CLUSTER_HOST_FLOW1 = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
+
+
+#mysql
+MYSQL_HOST = '219.224.134.225' 
+MYSQL_USER = 'root'
+MYSQL_DB = 'knowledge_management'
+
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:@219.224.134.225/knowledge_management'
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
+Session = sessionmaker(bind=engine)
+# db = SQLAlchemy(app)
 
 user_list = [-1,0,200,220,400]
 auth_list = [1,2,3,4,5,6,7,8]

@@ -5,13 +5,13 @@ import json
 import time
 from elasticsearch import Elasticsearch
 from filter_rules import filter_activity, filter_ip, filter_retweet_count, filter_mention
-
 reload(sys)
 sys.path.append('../../')
 from global_utils import R_CLUSTER_FLOW2,  R_DICT, ES_DAILY_RANK, es_user_portrait, R_CLUSTER_FLOW3
+# from global_utils import ES_DAILY_RANK, es_user_portrait
 from global_utils import R_RECOMMENTATION as r
 from global_utils import portrait_index_name, portrait_index_type
-from global_config import RECOMMENTATION_TOPK as k
+from parameter import RECOMMENTATION_TOPK as k
 from time_utils import datetime2ts, ts2datetime, ts2date
 from parameter import DAY, RUN_TYPE, RUN_TEST_TIME
 from parameter import RECOMMEND_IN_SENSITIVE_TOP, RECOMMEND_IN_BLACK_USER1, RECOMMEND_IN_BLACK_USER2
@@ -112,6 +112,7 @@ def main():
     else:
         now_ts = datetime2ts(RUN_TEST_TIME)
     date = ts2datetime(now_ts - DAY)
+    print date
     # auto recommendation: step 1:4
     #step1: read from top es_daily_rank
     top_user_set, user_dict = search_from_es(date)
@@ -127,20 +128,23 @@ def main():
     hashname_influence = "recomment_" + new_date + "_influence"
     if results:
         for uid in results:
-            r.hset(hashname_influence, uid, "0")
+            print uid, hashname_influence
+            # r.hset(hashname_influence, uid, "0")  -------
     #step5: get sensitive user
     sensitive_user = list(get_sensitive_user(date))
     hashname_sensitive = "recomment_" + new_date + "_sensitive"
     if sensitive_user:
         for uid in sensitive_user:
-            r.hset(hashname_sensitive, uid, "0")
+            print uid, hashname_sensitive
+            # r.hset(hashname_sensitive, uid, "0")  --------
     results.extend(sensitive_user)
     results = set(results)
     #step6: write to recommentation csv/redis
     hashname_submit = "submit_recomment_" + new_date
     if results:
         for uid in results:
-            r.hset(hashname_submit, uid, json.dumps({"system":1, "operation":"system"}))
+            print hashname_submit, uid
+            # r.hset(hashname_submit, uid, json.dumps({"system":1, "operation":"system"}))----
     #status = save_recommentation2redis(date, results)
     #if status != True:
     #    print 'cron/recommend_in/recommend_in.py&error-3&'

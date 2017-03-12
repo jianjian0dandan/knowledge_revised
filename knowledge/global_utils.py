@@ -14,6 +14,10 @@ profile_index_type = "user"
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
 es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+be_es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+be_es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
@@ -36,11 +40,15 @@ r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 r_user_hash_name = 'user2portrait'
 
+r_user_update = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_update_hash_name = 'user2update'
+
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
 
 flow_text_index_name_pre = 'flow_text_' # flow text: 'flow_text_2013-09-01'
 flow_text_index_type = 'text'
+
 portrait_index_name = 'user_portrait_1222' # user portrait
 portrait_index_type = 'user'
 # week retweet/be_retweet relation es
@@ -65,6 +73,30 @@ bci_day_type = 'bci'
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'
 
+
+#event
+event_name = 'event_task'
+event_analysis_name = 'event_result'
+event_text = 'event_text'
+event_text_type = 'text'
+event_type = 'text'
+neo4j_name = 'neo4j'
+neo4j_password = 'database'
+neo4j_data_path = 'http://219.224.134.213:7474/db/data'
+
+#neo4j index
+node_index_name = "node_index" # primary_key: uid
+topic_index_name = "topic_index" # primary_key: topic
+domain_index_name = "domain_index" # primary_key: domain
+location_index_name = "location_index" #primary_key: location
+event_index_name = "event_index" # primary_key: event
+tag_index_name = "tag_index" # primary_key: tag
+special_event_index_name = "special_event_index" # primary_key: event
+# 港澳台，电信诈骗
+event_type_index_name = "event_type_index" # primary: type
+group_index_name = "group_index" # primary: group, rel: group
+
+
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
     return es
@@ -79,7 +111,8 @@ COPY_USER_PORTRAIT_ACTIVENESS = "copy_user_portrait_activeness"
 COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
 COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
 COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
-
+#recommendation_in
+ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 
 # es for activeness history, influence history and pagerank
 #copy_portrait_index_name = 'user_portrait_1222'#'this_is_a_copy_user_portrait'
