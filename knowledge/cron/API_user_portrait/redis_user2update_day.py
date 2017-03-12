@@ -14,19 +14,16 @@ def scan_compute_redis():
     results = r.hgetall(hash_name)
     iter_user_list = []
     mapping_dict = dict()
-    verify_mark_dict = dict()
     count = 0
     for uid in results:
         user_list = json.loads(results[uid])
         in_date = user_list[0]
         status = user_list[1]
-        verify_mark = user_list[2]
-        verify_mark_dict[uid] = verify_mark
         if status == '2': #imme
             #test
             count += 1
             iter_user_list.append(uid)
-            mapping_dict[uid] = json.dumps([in_date, '3', verify_mark]) # mark status:3 computing
+            mapping_dict[uid] = json.dumps([in_date, '3']) # mark status:3 computing
         if len(iter_user_list) % 100 == 0 and len(iter_user_list) != 0:
             r.hmset(r_user_hash_name, mapping_dict)
             #acquire bulk user weibo data
@@ -47,7 +44,7 @@ def scan_compute_redis():
                 change_mapping_dict = dict()
                 change_user_list = set(iter_user_list) - set(user_keywords_dict.keys())
                 for change_user in change_user_list:
-                    change_mapping_dict[change_user] = json.dumps([in_date, '2', verify_mark_dict[change_user]])
+                    change_mapping_dict[change_user] = json.dumps([in_date, '2'])
                 r.hmset(r_user_hash_name, change_mapping_dict)
 
             iter_user_list = []
@@ -73,7 +70,7 @@ def scan_compute_redis():
             change_mapping_dict = dict()
             change_user_list = set(iter_user_list) - set(user_keywords_dict.keys())
             for change_user in change_user_list:
-                change_mapping_dict[change_user] = json.dumps([in_date, '2', verify_mark_dict[change_user]])
+                change_mapping_dict[change_user] = json.dumps([in_date, '2'])
             r.hmset(r_user_hash_name, change_mapping_dict)
 
 
