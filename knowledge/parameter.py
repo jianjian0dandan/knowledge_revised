@@ -5,10 +5,11 @@ from global_config import *
 RUN_TYPE = 0
 
 # 关系类型与后续节点primary key的关系
-# rel_node_mapping = {join: "event_id", other_rel: "event_id",maker:"event_id",pusher:"event_id", \
-#         group_rel: "group", contain: "event_id", event_special:"event_id", \
-#         friend: "uid", relative: "uid", colleague: "uid", user_tag: "uid", \
-#         "domain": "domain", "topic": "topic", "location": "location", "event":"event_id"}
+
+rel_node_mapping = {join: "event_id", other_rel: "event_id", \
+        group_rel: "group", contain: "event_id", event_special:"event_id", \
+        friend: "uid", relative: "uid", colleague: "uid", user_tag: "uid", \
+        "domain": "domain", "topic": "topic", "location": "location", "event":"event_id"}
 
 
 # rel_node_type_mapping = {join: "Event", other_rel: "Event", \
@@ -44,3 +45,21 @@ sensitive_score_dict = {
             "3": 10
 }
 
+#人物推荐
+RECOMMEND_IN_ACTIVITY_THRESHOLD = 50
+RECOMMEND_IN_IP_THRESHOLD = 7
+RECOMMEND_IN_RETWEET_THRESHOLD = 20
+RECOMMEND_IN_MENTION_THRESHOLD = 15
+
+#auto recommendation
+RECOMMEND_IN_AUTO_DATE = 7
+RECOMMEND_IN_AUTO_SIZE = 10
+RECOMMEND_IN_AUTO_GROUP = 3
+RECOMMEND_IN_AUTO_RANDOM_SIZE = 20
+RECOMMEND_IN_OUT_SIZE = 50
+RECOMMEND_IN_ITER_COUNT = 20
+RECOMMEND_IN_MEDIA_PATH = '/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/media_user.txt'
+RECOMMEND_MAX_KEYWORDS = 100
+RECOMMEND_IN_WEIBO_MAX = 1000
+
+SENTIMENT_SORT_EVALUATE_MAX = 999999999999
