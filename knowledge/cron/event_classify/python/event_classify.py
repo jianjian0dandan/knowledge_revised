@@ -14,7 +14,7 @@ def get_classify(text,d_first,d_second):
     for w,c in reader:
         word_dict[str(w)] = c
 
-    with open('./svm_test/test.txt', 'wb') as f:
+    with open(ab_path+'svm_test/test.txt', 'wb') as f:
         writer = csv.writer(f)
         for k,v in word_dict.iteritems():
             row = []
@@ -27,7 +27,7 @@ def get_classify(text,d_first,d_second):
     f.close()
 
     m = svm_load_model(ab_path+'train_%s_%s.model' % (d_first,d_second))
-    y, x = svm_read_problem('./svm_test/test.txt')
+    y, x = svm_read_problem(ab_path+'svm_test/test.txt')
     p_label, p_acc, p_val  = svm_predict(y, x, m)
 
     if p_label == '1':
