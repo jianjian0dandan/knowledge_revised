@@ -14,7 +14,7 @@ from global_config import mtype_kv
 #from model import CityTopicCount, CityWeibos,ProvinceWeibos
 from utils import geo2city, IP2city,split_city
 
-from global_config import event_analysis_name,event_type,event_text,event_text_type
+from global_utils import event_analysis_name,event_type,event_text,event_text_type
 from global_utils import es_event 
 
 Minute = 60

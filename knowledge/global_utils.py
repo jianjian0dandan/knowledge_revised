@@ -33,10 +33,11 @@ es_event = Elasticsearch(event_host, timeout=600)
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
 
 #event
-event_name = 'event_task'
+event_task_name = 'event_task'
 event_analysis_name = 'event_result'
 event_text = 'event_text'
 event_text_type = 'text'
+event_task_type = 'text'
 event_type = 'text'
 neo4j_name = 'neo4j'
 neo4j_password = 'database'
@@ -94,6 +95,7 @@ special_event_index_name = "special_event_index" # primary_key: event
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
+
 
 
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):

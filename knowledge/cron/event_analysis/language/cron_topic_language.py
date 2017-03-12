@@ -6,12 +6,13 @@ import datetime
 
 sys.path.append('../../../')
 from time_utils import * #datetime2ts, ts2HourlyTime
-from global_config import event_analysis_name,event_type,event_text,event_text_type
+from global_utils import event_analysis_name,event_type,event_text,event_text_type
 from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type
 from global_utils import bci_day_pre,bci_day_type
 from parameter import RUN_TYPE,RUN_TEST_TIME
 
 sys.path.append('../../')
+sys.path.append('../')
 from get_relationship.get_pos import get_news_main #抽取事件的人物、机构、地点和时间
 from event_classify.python.event_classify import cut_weibo #事件类型
 from get_relationship.text_process import get_keyword,get_topic_word  #topic,keyword
