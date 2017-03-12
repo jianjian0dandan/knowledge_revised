@@ -108,12 +108,9 @@ organization_relation_list = ['friend','colleague','organization_tag']
 
 group_rel = "group"
 
-#jln:for getTopicByNameStEt
-TOPIC_ES_HOST = '219.224.134.216:9204'
-topic_es = Elasticsearch(TOPIC_ES_HOST,timeout=1000)
-topic_index_name = 'topics'
-topic_index_type ='text'
 
+
+'''
 WEIBO_ES_HOST = '219.224.134.216:9204'
 weibo_es = Elasticsearch(WEIBO_ES_HOST,timeout=1000)
 weibo_index_name = 'weibo'
@@ -122,7 +119,7 @@ topics_river_index_name='topics_river'
 topics_river_index_type='text'
 subopinion_index_type='text'
 subopinion_index_name='subopinion'
-
+'''
 
 #jln info_consume
 mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
