@@ -63,3 +63,9 @@ RECOMMEND_MAX_KEYWORDS = 100
 RECOMMEND_IN_WEIBO_MAX = 1000
 
 SENTIMENT_SORT_EVALUATE_MAX = 999999999999
+
+##关系计算绝对路径
+r_path = '/home/ubuntu2/yuanshi/knowledge-management/new/knowledge_revised/knowledge/cron/get_relationship'
+
+##事件分类绝对路径
+c_path = '/home/ubuntu2/yuanshi/knowledge-management/new/knowledge_revised/knowledge/cron/event_classify/python'
