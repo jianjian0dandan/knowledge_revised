@@ -45,6 +45,8 @@ sensitive_score_dict = {
             "3": 10
 }
 
+# use to text_attribute
+IP_TIME_SEGMENT = 4*3600
 #人物推荐
 RECOMMEND_IN_ACTIVITY_THRESHOLD = 50
 RECOMMEND_IN_IP_THRESHOLD = 7
