@@ -57,6 +57,10 @@ be_comment_index_type = 'user'
 bci_history_index_name = 'bci_history'
 bci_history_index_type = 'bci'
 
+
+bci_day_pre = 'bci_'
+bci_day_type = 'bci'
+
 # es for tag
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'

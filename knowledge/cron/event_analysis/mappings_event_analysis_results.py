@@ -80,18 +80,22 @@ def mappings_event_analysis_results():
 						"index": "no",
 						"type": "string"
 					},
-					"trend_maker":{
+					"user_results":{
 						"index": "no",
 						"type": "string"
 					},
-					"trend_pusher":{
-						"index": "no",
-						"type": "string"
-					},
-					"pagerank":{
-						"index": "no",
-						"type": "string"
-					},
+					# "trend_maker":{
+					# 	"index": "no",
+					# 	"type": "string"
+					# },
+					# "trend_pusher":{
+					# 	"index": "no",
+					# 	"type": "string"
+					# },
+					# "pagerank":{
+					# 	"index": "no",
+					# 	"type": "string"
+					# },
 					"keywords":{
 						"analyzer": "my_analyzer",
 						"type": "string"

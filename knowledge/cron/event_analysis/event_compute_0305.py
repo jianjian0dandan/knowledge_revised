@@ -102,11 +102,7 @@ def compute_topic_task():
                 weibo_es.update(index=topic_index_name,doc_type=topic_index_type,id=task_id,body={'doc':{'comput_status':-5}})
                 print 'finish time analyze'
 
-                #network
-                compute_network(en_name, start_ts, end_ts)
-                weibo_es.update(index=topic_index_name,doc_type=topic_index_type,id=task_id,body={'doc':{'comput_status':-6}})
-                print 'finish network analyze'
-
+                
                 #sentiment
                 sentimentTopic(en_name, start_ts=start_ts, over_ts=end_ts)
                 print 'finish sentiment analyze'
