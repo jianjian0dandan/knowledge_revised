@@ -7,6 +7,7 @@ import time
 import re
 import sys
 sys.path.append('../../')
+#sys.path.append('../../../')
 from parameter import c_path as abs_path
 
 SCWS_ENCODING = 'utf-8'
@@ -71,5 +72,4 @@ def cut_filter(text):
     return text
 
 classify_list = ['diplomacy','disaster','financial_work','macro_economy','chinese_party','public_security','national','military']
-classify_dict = {'diplomacy':0,'disaster':0,'financial_work':0,'macro_economy':0,'chinese_party':0,'public_security':0,'national':0,'military':0}
 

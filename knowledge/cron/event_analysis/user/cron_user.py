@@ -7,7 +7,7 @@ import datetime
 sys.path.append('../../../')
 from time_utils import * #datetime2ts, ts2HourlyTime
 from global_config import event_analysis_name,event_type,event_text,event_text_type
-from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type
+from global_utils import es_event,es_bci,portrait_index_name,portrait_index_type
 from global_utils import bci_day_pre,bci_day_type
 from parameter import RUN_TYPE,RUN_TEST_TIME
 from global_utils import es_user_profile,profile_index_name,profile_index_type
@@ -39,7 +39,7 @@ def get_users(topic,begin_ts,end_ts):
 		post = ts2datetimestr(time.time())
 		
 	print  bci_day_pre+post,bci_day_type,es_user_portrait
-	user_result = es_user_portrait.mget(index=bci_day_pre+post ,doc_type=bci_day_type,body={'ids':list(uid_list)})['docs']
+	user_result = es_bci.mget(index=bci_day_pre+post ,doc_type=bci_day_type,body={'ids':list(uid_list)})['docs']
 	
 	user_influence_dict = {}
 	for i in user_result:

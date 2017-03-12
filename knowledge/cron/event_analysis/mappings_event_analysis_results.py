@@ -36,10 +36,7 @@ def mappings_event_analysis_results():
 						"analyzer": "my_analyzer",
 						"type": "string"
 					},
-					"real_time_start":{
-						"type":"long"
-					},
-					"real_time_end":{
+					"real_time":{
 						"type":"long"
 					},
 					"category":{
@@ -47,6 +44,10 @@ def mappings_event_analysis_results():
 						"index": "not_analyzed"
 					},
 					"real_person":{
+						"analyzer": "my_analyzer",
+						"type": "string"
+					},
+					"real_auth":{
 						"analyzer": "my_analyzer",
 						"type": "string"
 					},
@@ -84,20 +85,24 @@ def mappings_event_analysis_results():
 						"index": "no",
 						"type": "string"
 					},
-					# "trend_maker":{
-					# 	"index": "no",
-					# 	"type": "string"
-					# },
-					# "trend_pusher":{
-					# 	"index": "no",
-					# 	"type": "string"
-					# },
-					# "pagerank":{
-					# 	"index": "no",
-					# 	"type": "string"
-					# },
 					"keywords":{
 						"analyzer": "my_analyzer",
+						"type": "string"
+					},
+					"hashtag":{
+						"analyzer": "my_analyzer",
+						"type": "string"
+					},
+					"keywords_list":{
+						"index": "nos",
+						"type": "string"
+					},
+					"hashtag_dict":{
+						"index": "no",
+						"type": "string"
+					},
+					"topics":{
+						"index": "not_analyzed",#"analyzer": "my_analyzer",
 						"type": "string"
 					},
 					"en_name": {

@@ -13,10 +13,10 @@ profile_index_type = "user"
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
-es_retweet = Elasticsearch(user_portrait_host, timeout=600)
-es_comment = Elasticsearch(user_portrait_host, timeout = 600)
-be_es_retweet = Elasticsearch(user_portrait_host, timeout=600)
-be_es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+es_retweet = Elasticsearch(user_profile_host, timeout=600)
+es_comment = Elasticsearch(user_profile_host, timeout = 600)
+be_es_retweet = Elasticsearch(user_profile_host, timeout=600)
+be_es_comment = Elasticsearch(user_profile_host, timeout = 600)
 
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
@@ -31,6 +31,16 @@ es_event = Elasticsearch(event_host, timeout=600)
 
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
+
+#event
+event_name = 'event_task'
+event_analysis_name = 'event_result'
+event_text = 'event_text'
+event_text_type = 'text'
+event_type = 'text'
+neo4j_name = 'neo4j'
+neo4j_password = 'database'
+neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
 
@@ -72,17 +82,6 @@ bci_day_type = 'bci'
 # es for tag
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'
-
-
-#event
-event_name = 'event_task'
-event_analysis_name = 'event_result'
-event_text = 'event_text'
-event_text_type = 'text'
-event_type = 'text'
-neo4j_name = 'neo4j'
-neo4j_password = 'database'
-neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 
 #neo4j index
 node_index_name = "node_index" # primary_key: uid

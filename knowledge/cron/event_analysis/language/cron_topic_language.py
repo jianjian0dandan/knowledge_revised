@@ -12,11 +12,12 @@ from global_utils import bci_day_pre,bci_day_type
 from parameter import RUN_TYPE,RUN_TEST_TIME
 
 sys.path.append('../../')
-#from get_relationship.get_pos import get_news_main #抽取事件的人物、机构、地点和时间
+from get_relationship.get_pos import get_news_main #抽取事件的人物、机构、地点和时间
 from event_classify.python.event_classify import cut_weibo #事件类型
 from get_relationship.text_process import get_keyword,get_topic_word  #topic,keyword
 def compute_real_info(topic,begin_ts,end_ts):
-	'''
+	info_dict = {}
+	
 	query_body = {   
 	    'query':{
 	        'bool':{
@@ -34,9 +35,13 @@ def compute_real_info(topic,begin_ts,end_ts):
 	}
 	result = es_event.search(index=event_text,doc_type=event_text_type,body=query_body)['hits']['hits']
 	#抽取事件的人物、机构、地点和时间
-	basics = get_news_main(result['_source']['text'])
-	print basics
-	'''
+	basics = get_news_main(result[0]['_source']['text'])
+
+	info_dict['real_auth'] = basics['organization']
+	info_dict['real_geo'] = basics['place']
+	info_dict['real_time'] = basics['time']
+	info_dict['real_person'] = basics['people']
+	
 	query_body = {   
 	    'query':{
 	        'bool':{
@@ -48,18 +53,30 @@ def compute_real_info(topic,begin_ts,end_ts):
 	            }]
 	        }
 	    },
-	    'size':10
+	    'size':10000
 	}
 	result = es_event.search(index=event_text,doc_type=event_text_type,fields=['text'],body=query_body)['hits']['hits']
 	text_list = []
 	for i in result:
 		text_list.append(i['fields']['text'][0])
-	print text_list
+	#print text_list
 	#事件类型
-	label = cut_weibo(text_list)
-	topics = get_topic_word(text_list,10)
-	keywords = get_keyword(''.join(text_list), 2)
+	info_dict['category'] = cut_weibo(text_list)
+	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
+	
+	keywords = get_keyword(''.join(text_list),2)
+	info_dict['keywords'] = '&'.join([i[0] for i in keywords])
+	info_dict['keywords_list'] = json.dumps(keywords)
+
 	hashtag = get_hashtag(''.join(text_list))
+	info_dict['hashtag_dict'] = json.dumps(hashtag)
+	info_dict['hashtag'] = '&'.join(list(hashtag.keys()))
+	
+
+	try:
+		es_event.update(index=event_analysis_name,doc_type=event_type,id=topic,body={'doc':info_dict})
+	except Exception,e:
+	    es_event.index(index=event_analysis_name,doc_type=event_type,id=topic,body=info_dict)
 
 
 
