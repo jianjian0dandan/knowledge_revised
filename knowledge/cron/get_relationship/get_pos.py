@@ -159,7 +159,7 @@ def get_news_main(news_text):
     else:
         re_dict = {'people':'Null','organization':'Null','time':'Null','place':'Null'}
         
-    return result
+    return re_dict
 
 if __name__ == '__main__':
 
