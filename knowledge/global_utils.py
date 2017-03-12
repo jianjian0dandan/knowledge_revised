@@ -40,6 +40,9 @@ r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 r_user_hash_name = 'user2portrait'
 
+r_user_update = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_update_hash_name = 'user2update'
+
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
 
