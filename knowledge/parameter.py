@@ -26,7 +26,7 @@ CHARACTER_TIME_GAP = 7
 WEIBO_API_INPUT_TYPE = 1 # 1 mark: need compute sentiment
 
 DAY = 24*3600
-RUN_TEST_TIME  = '2016-03-13'
+RUN_TEST_TIME  = '2016-11-21'
 Fifteen = 60 * 15
 HALF_HOUR = 1800
 FOUR_HOUR = 3600*4
@@ -44,3 +44,5 @@ sensitive_score_dict = {
             "3": 10
 }
 
+# use to text_attribute
+IP_TIME_SEGMENT = 4*3600

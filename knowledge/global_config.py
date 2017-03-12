@@ -3,7 +3,7 @@
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
-user_portrait_host = ["219.224.134.216:9201"]#["219.224.134.225:9037"]
+user_portrait_host = ["219.224.134.225:9037"]#["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
 km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
@@ -18,8 +18,9 @@ redis_port = "7381"
 profile_index_name = "weibo_user"
 profile_index_type = "user"
 remote_portrait_name = "user_portrait_1222" # user portrait system
-portrait_name = "user_portrait"
+portrait_name = "user_portrait_0312"
 flow_text_name = "flow_text_2016-11-26"
+flow_text_index_name_pre = 'flow_text_'
 portrait_type = "user"
 flow_text_type = "text"
 event_name = "event_task"#"event" # 事件基本信息
