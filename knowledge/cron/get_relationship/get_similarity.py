@@ -11,7 +11,7 @@ from config import p1_weight,p2_weight,p3_weight,p4_weight,p5_weight,\
                      e1_weight,e2_weight,e3_weight,e4_weight,\
                      t1_weight,t2_weight,t3_weight,q1_weight,q2_weight,q3_weight
 
-def search_es_by_name(dict_name,dict_value,s_uid):#根据对应的属性查询es_user_portrait
+def search_es_by_name(dict_name,dict_value,s_uid,type_list):#根据对应的属性查询es_user_portrait
 
     result_uid = []
     query_body = {
@@ -31,11 +31,13 @@ def search_es_by_name(dict_name,dict_value,s_uid):#根据对应的属性查询es
             if uid == s_uid:
                 continue
             else:
-                result_uid.append(uid)
+                data = item['_source']
+                if data['verified_type'] in type_list:
+                    result_uid.append(uid)
 
     return result_uid
 
-def search_bci(dict_name,max_influenc,min_influence,s_uid):#根据对应的属性查询es_bci
+def search_bci(dict_name,max_influenc,min_influence,s_uid,type_list):#根据对应的属性查询es_bci
 
     result_uid = []
     query_body = {
@@ -56,28 +58,38 @@ def search_bci(dict_name,max_influenc,min_influence,s_uid):#根据对应的属�
             else:
                 result_uid.append(uid)
 
-    return result_uid
+    r_list = []
+    search_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids": result_uid})["docs"]#判断哪些是人物，哪些是机构
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']
+            if data['verified_type'] in type_list:
+                r_list.append(uid)
 
-def people_similarity(s_uid):
+    return r_list
+
+def people_similarity(s_uid,node_type):
     '''
         人物相似度计算主函数
         输入数据：
-        p_first 第一个用户的属性字典
-        p_second 第二个用户的属性字典
-        示例：
-        {'domain':domain,'location':location,'topic':topic_string,'hashtag':hashtag_string,'label':label_string,\
-        'weight':weight,'event':{event1:weight,event2:weight,...},'people':{people1:weight,people2:weight,...}}
-
-        注意：
-        topic_string,hashtag_string,label_string是以"&"链接的字符串，utf-8
+        s_uid 节点id
+        node_type 节点类型，'1'表示人物节点，'0'表示机构节点
         
         输出数据：
-        similarity 两个用户的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
+        similarity_list 与该用户相似的用户
     '''
 
     if s_uid == '':
         return []
 
+    if node_type == '1':#人物节点
+        type_list = peo_list
+    else:#机构节点
+        type_list = org_list
+        
     ##从es中获取属性相近的用户
     search_result = es_user_portrait.mget(index=remote_portrait_name, doc_type=portrait_type, body={"ids": [s_uid]})["docs"]
     if len(search_result) == 0:#查询结果为空
@@ -98,17 +110,17 @@ def people_similarity(s_uid):
                 a_ip = data['activity_ip']
         
         if not domain:#查找domain相同的用户
-            domain_uid = search_es_by_name('domain',domain,s_uid)
+            domain_uid = search_es_by_name('domain',domain,s_uid,type_list)
         else:
             domain_uid = []
 
         if not location:#查找location相同的用户
-            location_uid = search_es_by_name('location',location,s_uid)
+            location_uid = search_es_by_name('location',location,s_uid,type_list)
         else:
             location_uid = []
 
         if not activity_ip:#查找activity_ip相同的用户
-            activity_ip_uid = search_es_by_name('activity_ip',a_ip,s_uid)
+            activity_ip_uid = search_es_by_name('activity_ip',a_ip,s_uid,type_list)
         else:
             activity_ip_uid = []
         
@@ -127,7 +139,7 @@ def people_similarity(s_uid):
         if not influence:#查找影响力在一定范围内的用户
             max_influence = influence*MAX_I
             min_influence = influence*MIN_I
-            influence_uid = search_bci('user_index',max_influenc,min_influence,s_uid)
+            influence_uid = search_bci('user_index',max_influenc,min_influence,s_uid,type_list)
         else:
             influence_uid = []
 
@@ -136,104 +148,20 @@ def people_similarity(s_uid):
 
     return similarity
 
-def event_similarity(p_first,p_second):
+def event_similarity(e_id):
     '''
         事件相似度计算主函数
         输入数据：
-        p_first 第一个事件的属性字典
-        p_second 第二个事件的属性字典
-        示例：
-        {'des':des_string,'label':label_string,\
-        'weight':weight,'event':{event1:weight,event2:weight,...},'people':{people1:weight,people2:weight,...}}
-
-        注意：
-        des_string,label_string是以"&"链接的字符串，utf-8
+        e_id 事件id
         
         输出数据：
-        similarity 两个事件的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
+        similarity_list 与该事件相似的事件
     '''
 
-    ##关键词、业务标签的重合度：取值[0,1]，占比0.2
-    s1 = 0
-    if p_first.has_key('des') and p_second.has_key('des'):
-        topic1 = set(p_first['des'].split('&'))
-        topic2 = set(p_second['des'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s1 = s1 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
+    ##从es中获取属性相近的事件
 
-    if p_first.has_key('label') and p_second.has_key('label'):
-        topic1 = set(p_first['label'].split('&'))
-        topic2 = set(p_second['label'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s1 = s1 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
 
-    ##事件权重之差/权重最大值：取值[0,1]，占比0.2
-    s2 = 0
-    if p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = abs(p_first['weight'] - p_second['weight'])
-        max_data = max(p_first['weight'],p_second['weight'])
-    elif p_first.has_key('weight') and not p_second.has_key('weight'):
-        weight_dis = p_first['weight']
-        max_data = p_first['weight']
-    elif not p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = p_second['weight']
-        max_data = p_second['weight']
-    else:
-        weight_dis = -1
-        max_data = -1
-        
-    if max_data >= 0:
-        s2 = 1 - float(weight_dis)/float(max_data)
-    else:
-        s2 = 0
-
-    ##共同关联的事件权重之和/关联的事件权重之和的最小值：取值[0,1]，占比0.3
-    s3 = 0
-    if p_first.has_key('event') and p_second.has_key('event'):
-        event_first = set(p_first['event'].keys())
-        event_second = set(p_second['event'].keys())
-        weight = max(sum(p_first['event'].values()),sum(p_second['event'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['event'][key]
-            s3 = float(total)/float(weight)
-        else:
-            s3 = 0
-    else:
-        s3 = 0
-        
-        
-    ##共同关联的人物权重之和/关联的人物权重之和的最小值：取值[0,1]，占比0.3
-    s4 = 0
-    if p_first.has_key('people') and p_second.has_key('people'):
-        event_first = set(p_first['people'].keys())
-        event_second = set(p_second['people'].keys())
-        weight = max(sum(p_first['people'].values()),sum(p_second['people'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['people'][key]
-            s4 = float(total)/float(weight)
-        else:
-            s4 = 0
-    else:
-        s4 = 0
-
-    
-    similarity = s1*e1_weight/float(2) + s2*e2_weight + s3*e3_weight + s4*e4_weight
+    ##从neo4j中获取有关联的事件
 
     return similarity
 
