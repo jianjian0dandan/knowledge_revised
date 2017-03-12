@@ -8,11 +8,7 @@ import csv
 import time
 from elasticsearch import Elasticsearch
 sys.path.append('../../')
-from global_config import join,pusher,maker,contain,friend,relative,colleague,\
-                         user_profile_host,profile_index_name,profile_index_type,\
-                         retweet_comment_es_host,retweet_comment_port,\
-                         retweet_index_name_pre,retweet_index_type,be_retweet_index_name_pre,be_retweet_index_type,\
-                         comment_index_name_pre,comment_index_type,be_comment_index_name_pre,be_comment_index_type
+from global_config import *
 
 #for test
 RUN_TYPE = 0 #0 mark run for test; 1 mark run for operation
@@ -39,6 +35,8 @@ def get_db_num(timestamp):
 es_user_profile = Elasticsearch(user_profile_host, timeout = 600)
 es_retweet = Elasticsearch(retweet_comment_es_host, timeout = 600)
 es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
+es_user_portrait = Elasticsearch(user_portrait_host, timeout = 600)
+es_event = Elasticsearch(event_host, timeout = 600)
 
 ##对微博文本进行预处理
 
@@ -140,13 +138,14 @@ event_type_dict = load_event_type()
 
 ##加载事件类别对应的权重结束
 
-or_list = [1,2,3,4,5,6,7,8]#新浪企业账户类型
 interaction_count = 100
 N_GRAM = 5#词共现窗口长度
 WORD_N = 30#提取关键词的数量
 TOPIC_N = 10#lda话题数量
 MAX_COUNT = 500#最大的词语数量(topic pagerank)
 COUNT_RATE = 0.1#限制交互数量的比例
+inter_sta = 4#最小交互次数
+event_sta = 0.5#最小交叉词语数量
 
 #人物各指标权重
 influence_weight = 0.3
@@ -182,5 +181,7 @@ q1_weight = 0.4
 q2_weight = 0.3
 q3_weight = 0.3
 
-
+#认证类型
+peo_list = [-1,0,200,220,400]
+org_list = [1,2,3,4,5,6,7,8]
 
