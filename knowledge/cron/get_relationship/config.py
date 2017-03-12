@@ -9,7 +9,7 @@ import time
 from elasticsearch import Elasticsearch
 sys.path.append('../../')
 from parameter import r_path as abs_path
-from global_config import *
+from global_utils import *
 
 #for test
 RUN_TYPE = 0 #0 mark run for test; 1 mark run for operation
@@ -33,11 +33,11 @@ def get_db_num(timestamp):
         db_number = 1
     return db_number
 
-es_user_profile = Elasticsearch(user_profile_host, timeout = 600)
-es_retweet = Elasticsearch(retweet_comment_es_host, timeout = 600)
-es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
-es_user_portrait = Elasticsearch(user_portrait_host, timeout = 600)
-es_event = Elasticsearch(event_host, timeout = 600)
+##es_user_profile = Elasticsearch(user_profile_host, timeout = 600)
+##es_retweet = Elasticsearch(retweet_comment_es_host, timeout = 600)
+##es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
+##es_user_portrait = Elasticsearch(user_portrait_host, timeout = 600)
+##es_event = Elasticsearch(event_host, timeout = 600)
 
 ##对微博文本进行预处理
 

@@ -162,7 +162,7 @@ def train_data(d_first,d_second):
 def train_model(d_first,d_second):
 
     y, x = svm_read_problem('./svm_model/train_%s_%s.txt' % (d_first,d_second))
-    m = svm_train(y, x, '-c 4 -h 0')
+    m = svm_train(y, x, '-c 4 -h 0 -t 0')
     svm_save_model('./svm_model/train_%s_%s.model' % (d_first,d_second),m)
     
 if __name__ == '__main__':
