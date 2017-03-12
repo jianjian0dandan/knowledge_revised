@@ -53,6 +53,9 @@ be_comment_index_type = 'user'
 bci_history_index_name = 'bci_history'
 bci_history_index_type = 'bci'
 
+bci_day_pre = 'bci_'
+bci_day_type = 'bci'
+
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
     return es
