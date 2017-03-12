@@ -5,16 +5,16 @@ import scws
 import csv
 import re
 from svmutil import *
-from utils import cut_filter,classify_list,classify_dict,ab_path
+from utils import cut_filter,classify_list,classify_dict,abs_path
 
 def get_classify(text,d_first,d_second):
 
     word_dict = dict()
-    reader = csv.reader(file(ab_path+'feature_%s_%s.csv' % (d_first,d_second), 'rb'))
+    reader = csv.reader(file(abs_path+'/svm_model/feature_%s_%s.csv' % (d_first,d_second), 'rb'))
     for w,c in reader:
         word_dict[str(w)] = c
 
-    with open(ab_path+'svm_test/test.txt', 'wb') as f:
+    with open(abs_path+'/svm_test/test.txt', 'wb') as f:
         writer = csv.writer(f)
         for k,v in word_dict.iteritems():
             row = []
@@ -26,8 +26,8 @@ def get_classify(text,d_first,d_second):
             writer.writerow((row))
     f.close()
 
-    m = svm_load_model(ab_path+'train_%s_%s.model' % (d_first,d_second))
-    y, x = svm_read_problem(ab_path+'svm_test/test.txt')
+    m = svm_load_model(abs_path+'/svm_model/train_%s_%s.model' % (d_first,d_second))
+    y, x = svm_read_problem(abs_path+'/svm_test/test.txt')
     p_label, p_acc, p_val  = svm_predict(y, x, m)
 
     if p_label == '1':
