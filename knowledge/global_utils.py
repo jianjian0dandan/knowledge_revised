@@ -31,6 +31,7 @@ r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
 # user portrait interface: push user into redis list
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_hash_name = 'user2portrait'
 
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
