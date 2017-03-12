@@ -3,28 +3,33 @@ import sys
 import json
 import time
 import random
-from sqlite_query import get_user_name
+# from sqlite_query import get_user_name
 reload(sys)
 sys.path.append('../../')
 from global_utils import R_RECOMMENTATION, es_tag, tag_index_name, tag_index_type,\
         es_user_portrait, portrait_index_name, portrait_index_type, \
-        es_flow_text, flow_text_index_name_pre, flow_text_index_type
+        es_flow_text, flow_text_index_name_pre, flow_text_index_type,\
+        es_retweet, retweet_index_name_pre, retweet_index_type,\
+        es_comment, comment_index_name_pre, comment_index_type,\
+        be_es_retweet, be_retweet_index_name_pre, be_retweet_index_type,\
+        be_es_comment, be_comment_index_name_pre, be_comment_index_type
 from parameter import DAY,RUN_TYPE, RUN_TEST_TIME, RECOMMEND_IN_AUTO_DATE,\
         RECOMMEND_IN_AUTO_SIZE, RECOMMEND_IN_AUTO_GROUP,\
         RECOMMEND_IN_AUTO_RANDOM_SIZE, RUN_TYPE, RUN_TEST_TIME,\
         RECOMMEND_IN_OUT_SIZE, RECOMMEND_IN_ITER_COUNT,\
         RECOMMEND_IN_MEDIA_PATH, RECOMMEND_MAX_KEYWORDS, RECOMMEND_IN_WEIBO_MAX,\
         SENTIMENT_SORT_EVALUATE_MAX
-from global_config import R_BEGIN_TIME
+from global_config import R_BEGIN_TIME, Session
 from time_utils import datetime2ts, ts2datetime, ts2date
+from model import PeopleAttention, EventAttention, User
 
-def get_media_user():
-    media_user_list = []
-    f = open(RECOMMEND_IN_MEDIA_PATH, 'rb')
-    for line in f:
-        line_list = line.split('\n')
-        media_user_list.append(line_list[0])
-    return media_user_list
+# def get_media_user():
+#     media_user_list = []
+#     f = open(RECOMMEND_IN_MEDIA_PATH, 'rb')
+#     for line in f:
+#         line_list = line.split('\n')
+#         media_user_list.append(line_list[0])
+#     return media_user_list
 
 
 # get recommentation from hotspot information
@@ -308,59 +313,100 @@ def get_extend(all_set):
                 retweet_comment_dict_list.append(json.loads(uid_retweet_dict))
         except:
             pass
+
     #step2: get comment
     comment_index_name = comment_index_name_pre + str(db_number)
     try:
-        comment_result = es_comment.mget(indexd=comment_index_name, doc_type=comment_index_type,\
+        comment_result = es_comment.mget(index=comment_index_name, doc_type=comment_index_type,\
                 body={'ids': silce})['docs']
     except:
         comment_result = []
-    #step2.2: get uid commnt
+    #step2.2: get uid comment
     for comment_item in comment_result:
         try:
             if comment_item['found'] == True:
                 retweet_comment_dict_list.append(json.loads(comment_item['_source']['uid_comment']))
         except:
             pass
-    #step3: union dict list
+        
+    #step3: get be_retweet
+    be_retweet_index_name = be_retweet_index_name_pre + str(db_number)
+    try:
+        be_retweet_result = be_es_retweet.mget(index=be_retweet_index_name, doc_type=be_retweet_index_type,\
+                body={'ids': silce})['docs']
+    except:
+        be_retweet_result = []
+    #step3.2: get uid be retweeted
+    for be_retweet_item in be_retweet_result:
+        try:
+            if be_retweet_item['found'] == True:
+                retweet_comment_dict_list.append(json.loads(be_retweet_item['_source']['uid_be_retweet']))
+        except:
+            pass
+    
+    #step4: get be comment
+    be_comment_index_name = be_comment_index_name_pre + str(db_number)
+    try:
+        be_comment_result = be_es_comment.mget(index=be_comment_index_name, doc_type=be_comment_index_type,\
+                body={'ids': silce})['docs']
+    except:
+        be_comment_result = []
+    #step4.2: get uid be comment
+    for be_comment_item in be_comment_result:
+        try:
+            if be_comment_item['found'] == True:
+                retweet_comment_dict_list.append(json.loads(be_comment_item['_source']['uid_be_comment']))
+        except:
+            pass
+    #step5: union dict list
     union_retweet_comment_list = union_dict(retweet_comment_dict_list)
-    #step4: filter in user portrait
+    #step6: filter in user portrait
     extend_result = filter_out(union_retweet_comment_list.keys())
+
+    return extend_result
+
+def query_attention_user():
+    session = Session()
+    people_result = session.query(PeopleAttention).all()
+    # user_result = session.query(User).all()  
+    user_dict = {}    
+    for r in people_result:
+        user_dict[r.name] = []
+    for r in people_result:
+        user_dict[r.name].append(r.peopleID)
+        # print r.name,'!!!'
+        # print r.peopleID,'!!!!'
+        # admin_list.append(r.email)
+    return user_dict
+
+def get_close_user(attention_id):
+    extend_result = get_extend(attention_id)
     return extend_result
 
 # get recommentation from admin user operation
 def get_operation_recommentation():
     results = {}
-    # now_ts = time.time()
-    # #run_type
-    # if RUN_TYPE == 1:
-    #     now_date = ts2datetime(now_ts)
-    # else:
-    #     now_date = RUN_TEST_TIME
-    # admin_user_list = get_admin_user()
-    # for admin_user in admin_user_list:
-    #     #step1: recommentation record
-    #     recommentation_history_result = get_recomment_history(admin_user, now_date)
-    #     #step2: add tag record
-    #     tag_history_result = get_tag_history(admin_user, now_date)
-    #     all_set = recommentation_history_result | tag_history_result
-    #     #step3: group analysis record
-    #     group_history_result = get_group_history(admin_user, now_date)
-    #     all_set = all_set | group_history_result
-    #     #step4: social sensing record
-    #     sensing_result = get_sensing_history(admin_user, now_date)
-    #     all_set = all_set | sensing_result
-    #     #step5: extend by all set
-    #     if len(all_set) != 0:
-    #         extend_result = get_extend(all_set)
-    #     else:
-    #         extend_result = []
-    #     results[admin_user] = json.dumps(extend_result)
-
-    # return results
+    now_ts = time.time()
+    #run_type
+    if RUN_TYPE == 1:
+        now_date = ts2datetime(now_ts)
+    else:
+        now_date = RUN_TEST_TIME
+    user_dict = query_attention_user()  #{admin:[a,b,c],...}
+    for k,v in user_dict.iteritems():
+        user = k
+        attention_ids = [i for i in set(v)]
+        attention_dict = {}
+        for attention_id in attention_ids:
+            operation_results = get_close_user([attention_id])
+            attention_dict[attention_id] = operation_results
+        save_type = 'operation'
+        print k, attention_dict
+        # save_results(save_type, user, attention_dict)
+    return results
 
 # save results
-def save_results(save_type, recomment_results):
+def save_results(save_type, user, recomment_results):
     save_mark = False
     #run_type
     if RUN_TYPE == 1:
@@ -368,14 +414,9 @@ def save_results(save_type, recomment_results):
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
     recomment_hash_name = 'recomment_' + now_date + '_auto'
-    if save_type == 'hotspot':
-        #print 'save hotspot results'
-        R_RECOMMENTATION.hset(recomment_hash_name, 'auto', json.dumps(recomment_results))
-        save_mark = True
-    elif save_type == 'operation':
-        #print 'save operation results'
-        R_RECOMMENTATION.hset(recomment_hash_name, recomment_results)
-        save_mark = True
+    #print 'save operation results'
+    R_RECOMMENTATION.hset(recomment_hash_name, user, recomment_results)
+    save_mark = True
     return save_mark
 
 # get user auto recommentation
@@ -386,10 +427,8 @@ def compute_auto_recommentation():
     # save_results(save_type, hotspot_results)
     #step2: get recommentation from admin user operation
     operation_results = get_operation_recommentation()
-    save_type = 'operation'
-    save_results(save_type, operation_results)
-
-
+    # save_type = 'operation'
+    # save_results(save_type, operation_results)
 
 
 if __name__=='__main__':
@@ -397,15 +436,14 @@ if __name__=='__main__':
     log_time_start_date = ts2datetime(log_time_start_ts)
     print 'cron/recommend_in/recommend_in_auto.py&start&' + log_time_start_date
     
-    try:
-        compute_auto_recommentation()
-    except Exception, e:
-        print e, '&error&', ts2date(time.time())
+    # try:
+    compute_auto_recommentation()
+    # except Exception, e:
+    #     print e, '&error&', ts2date(time.time())
     
     log_time_end_ts = time.time()
     log_time_end_date = ts2datetime(log_time_end_ts)
     print 'cron/recommend_in/recommend_in_auto.py&end&' + log_time_end_date
-
 
     #test
     #results = get_operation_recommentation()

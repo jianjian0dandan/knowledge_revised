@@ -14,6 +14,10 @@ profile_index_type = "user"
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
 es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+be_es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+be_es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
@@ -75,7 +79,8 @@ COPY_USER_PORTRAIT_ACTIVENESS = "copy_user_portrait_activeness"
 COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
 COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
 COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
-
+#recommendation_in
+ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 
 # es for activeness history, influence history and pagerank
 #copy_portrait_index_name = 'user_portrait_1222'#'this_is_a_copy_user_portrait'
