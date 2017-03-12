@@ -1,5 +1,9 @@
 # -*-coding:utf-8-*-
 
+from flask import Flask
+# from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
@@ -198,6 +202,17 @@ R_BEGIN_TIME = '2016-11-21'
 
 ES_COPY_USER_PORTAIT_HOST = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
 ES_CLUSTER_HOST_FLOW1 = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
+
+
+#mysql
+MYSQL_HOST = '219.224.134.225' 
+MYSQL_USER = 'root'
+MYSQL_DB = 'knowledge_management'
+
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:@219.224.134.225/knowledge_management'
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
+Session = sessionmaker(bind=engine)
+# db = SQLAlchemy(app)
 
 user_list = [-1,0,200,220,400]
 auth_list = [1,2,3,4,5,6,7,8]
