@@ -55,7 +55,6 @@ def cut_weibo(data):
             flag = get_classify(text,classify_list[i],classify_list[j])
             classify_dict[flag] = classify_dict[flag] + 1
 
-    print classify_dict
     nh = sorted(classify_dict.iteritems(), key=lambda d:d[1], reverse = True)
 
     sta_n = float(len(classify_dict)-1)*0.5
@@ -83,6 +82,8 @@ def test_data(name):
 
 if __name__ == '__main__':
 
-    data = test_data('aomen')
-    label = cut_weibo(data)
-    print label
+    data_list = ['jiedaibao','aomen','jinji','yilake','jierjisi']
+    for name in data_list:
+        data = test_data('aomen')
+        label = cut_weibo(data)
+        print label
