@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-from extensions import db, admin
+from flask_debugtoolbar import DebugToolbarExtension
+from extensions import db, security, user_datastore, admin, User, Role, roles_users
+from flask.ext.security import SQLAlchemyUserDatastore
+from flask_admin.contrib import sqla
 from knowledge.index.views import mod as indexModule
 from knowledge.theme.views import mod as themeModule
 from knowledge.group.views import mod as groupModule
@@ -15,7 +18,7 @@ import model
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config')
+    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flask-admin.db'
 
     # Create modules
     app.register_blueprint(indexModule)
@@ -26,7 +29,22 @@ def create_app():
     app.register_blueprint(adminModule)
     app.register_blueprint(brustModule)
     app.register_blueprint(mymapModule)
+
+    app.config['DEBUG'] = True
+
+    app.config['ADMINS'] = frozenset(['youremail@yourdomain.com'])
+    app.config['SECRET_KEY'] = 'SecretKeyForSessionSigning'
     
+    '''
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://%s:@%s/%s?charset=utf8' % (MYSQL_USER, MYSQL_HOST, MYSQL_DB)
+    app.config['SQLALCHEMY_ECHO'] = False
+    '''
+    app.config['DATABASE_CONNECT_OPTIONS'] = {}
+
+    app.config['THREADS_PER_PAGE'] = 8
+
+    app.config['CSRF_ENABLED'] = True
+    app.config['CSRF_SESSION_KEY'] = 'somethingimpossibletoguess'
     
     # Enable the toolbar?
     app.config['DEBUG_TB_ENABLED'] = app.debug
@@ -44,4 +62,13 @@ def create_app():
     with app.test_request_context():
         db.create_all()
 
+    # init security
+    security.init_app(app, datastore=user_datastore)
+
+    # init admin
+    admin.init_app(app)
+    admin.add_view(sqla.ModelView(User, db.session))
+    admin.add_view(sqla.ModelView(Role, db.session))
+    
     return app
+

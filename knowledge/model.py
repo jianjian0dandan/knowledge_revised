@@ -2,16 +2,7 @@
 
 from extensions import db
 
-__all__ = ['User', 'Topic', 'Group', 'PeopleAttention', 'EventAttention', 'OrgAttention', 'PeopleHistory', 'EventHistory', 'OrgHistory']
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True)#系统用户名
-    password = db.Column(db.String(20))#密码
-
-    def __init__(self, name, password):
-        self.name = name
-        self.password = password
+__all__ = ['Topic', 'Group', 'PeopleAttention', 'EventAttention', 'OrgAttention', 'PeopleHistory', 'EventHistory', 'OrgHistory']
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
