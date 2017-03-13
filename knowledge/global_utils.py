@@ -99,6 +99,12 @@ org_node = "Org"
 event_node = "Event"
 special_event_node = "SpecialEvent"
 group_node = "Group"
+#neo4j node primary_key
+people_primary = "uid"
+org_primary = "org_id"
+event_primary = "event_id"
+special_event_primary = "event"
+group_primary = "group"
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
