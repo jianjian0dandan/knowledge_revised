@@ -9,6 +9,11 @@ from datetime import date
 from datetime import datetime
 mod = Blueprint('index', __name__, url_prefix='/index')
 
+@mod.route('/login/')
+def login():
+
+    return render_template('index/login.html')
+
 @mod.route('/')
 def index():
 
