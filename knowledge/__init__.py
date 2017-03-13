@@ -12,7 +12,6 @@ from knowledge.relation.views import mod as relationModule
 from knowledge.construction.views import mod as constructionModule
 from knowledge.brust.views import mod as brustModule
 from knowledge.sysadmin.views import mod as adminModule
-from knowledge.mymap.views import mod as mymapModule
 
 import model
 
@@ -28,7 +27,6 @@ def create_app():
     app.register_blueprint(constructionModule)
     app.register_blueprint(adminModule)
     app.register_blueprint(brustModule)
-    app.register_blueprint(mymapModule)
 
     app.config['DEBUG'] = True
 
