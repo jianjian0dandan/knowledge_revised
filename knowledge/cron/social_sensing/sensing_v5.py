@@ -11,6 +11,8 @@ from elasticsearch import Elasticsearch
 from  mappings_social_sensing import mappings_sensing_task
 from text_classify.test_topic import topic_classfiy
 from duplicate import duplicate
+from extract_feature_0312 import organize_feature, trendline_list
+import pickle
 reload(sys)
 sys.path.append("../../")
 from global_utils import es_flow_text as es_text
@@ -375,7 +377,10 @@ def get_important_user(ts, origin_mid_list, time_segment):
 
 def social_sensing(task_detail):
 
-    fff = open("fff.txt", "a")
+    with open("prediction_uid.pkl", "r") as f:
+        uid_model = pickle.load(f)
+    with open("prediction_weibo.pkl", "r") as f:
+        weibo_model = pickle.load(f)
 
     # 任务名 传感器 终止时间 之前状态 创建者 时间
     task_name = task_detail[0]
@@ -467,6 +472,7 @@ def social_sensing(task_detail):
     duplicate_text_list = []
     sensitive_words_dict = dict()
     sensitive_weibo_detail = {}
+    trendline_dict = dict()
 
     # 有事件发生时开始
     if 1:
@@ -503,6 +509,9 @@ def social_sensing(task_detail):
             classify_uid_list = []
             duplicate_text_list = []
             sensitive_words_dict = dict()
+            uid_prediction_dict = dict()
+            weibo_prediction_dict = dict()
+            trendline_dict = dict()
             if search_results:
                 for item in search_results:
                     iter_uid = item['_source']['uid']
@@ -538,8 +547,17 @@ def social_sensing(task_detail):
                     #print "classify_results: ", classify_results
                     for k,v in classify_results.iteritems(): # mid:value
                         mid_value[k] = topic_value_dict[v[0]]
-                        if v[0] >= 6:
-                            fff.write(str(k)+" "+str(v[0])+"\n")
+                        feature_list = organize_feature(k, v[0])
+                        uid_prediction = uid_model.predict(feature_list)
+                        for iiii in uid_prediction:
+                            uid_prediction_value = iiii
+                        uid_prediction_dict[k] = uid_prediction_value
+                        weibo_prediction = weibo_model.predict(feature_list)
+                        for iii in weibo_prediction:
+                            weibo_prediction_value = iii
+                        weibo_prediction_dict[k] = weibo_prediction_value
+                        tmp_trendline = trendline_list(k, weibo_prediction_value)
+                        trendline_dict[k] = tmp_trendline
 
             if sensitive_words_dict:
                 sensitive_mid_list = sensitive_words_dict.keys()
@@ -547,8 +565,11 @@ def social_sensing(task_detail):
 
 
     results = dict()
+    results["trendline_dict"] = json.dumps(tmp_trendline)
     results['mid_topic_value'] = json.dumps(mid_value)
     results['duplicate_dict'] = json.dumps(duplicate_dict)
+    results["uid_prediction_dict"] = json.dumps(uid_prediction_dict)
+    results["weibo_prediction_dict"] = json.dumps(weibo_prediction_dict)
     results['sensitive_words_dict'] = json.dumps(sensitive_words_dict)
     results['sensitive_weibo_detail'] = json.dumps(sensitive_weibo_detail)
     results['origin_weibo_number'] = len(all_origin_list)

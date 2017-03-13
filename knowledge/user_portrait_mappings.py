@@ -4,6 +4,7 @@ import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
 from global_utils import es_user_portrait as es
+from global_config import portrait_name, portrait_type
 
 index_info = {
     "settings":{
@@ -88,13 +89,6 @@ index_info = {
                 "activeness": {
                     "type": "double"
                 },
-                "online_pattern":{
-                    "type": "string",
-                    "index": "not_analyzed"
-                },
-                "fansnum": {
-                    "type": "long"
-                },
                 "photo_url": {
                     "type": "string",
                     "index": "not_analyzed"
@@ -103,8 +97,9 @@ index_info = {
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "statusnum": {
-                    "type": "long"
+                "verify_type": {
+                    "type": "string",
+                    "index": "not_analyzed"
                 },
                 "gender": {
                     "type": "string",
@@ -113,17 +108,14 @@ index_info = {
                 "location": {
                     "type": "string",
                     "index": "not_analyzed"
-                },
-                "friendsnum": {
-                    "type": "long"
                 }, 
-                'group':{
+                'function_description':{
                     'type': 'string',
-                    'analyzer': 'my_analyzer'
+                    'index': 'my_analyzer'
                 },
-                'remark':{
+                'function_mark':{
                     'type': 'string',
-                    'index': 'not_analyzed'
+                    'index': 'my_analyzer'
                 },
                 'character_text':{
                     'type': 'string',
@@ -163,14 +155,20 @@ index_info = {
                 'school_dict':{
                     'type': 'string',
                     'index': 'not_analyzed'
-                }
+                },
+                'born_data':{
+                     'type': 'string',
+                     'index':'not_analyzed'
+                },
+                'real_name':{
+                     'type':'string',
+                     'index':'not_analyzed'
+                },
             }
         }
     }
 }
 
 
-#es.indices.create(index="user_portrait", body=index_info, ignore=400)
+es.indices.create(index=portrait_name, body=index_info, ignore=400)
 
-es.indices.put_mapping(index='user_portrait', doc_type='user', \
-        body={'properties':{'create_time':{'type':'long'}}}, ignore=400)

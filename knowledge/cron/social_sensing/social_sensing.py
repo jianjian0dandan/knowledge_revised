@@ -28,7 +28,6 @@ def social_sensing_task():
             print_log = "&".join([file_path, "end", now_ts])
             break  # finish all task in task_list
         task_detail = json.loads(temp)
-        print "task detail: ", task_detail
         count += 1
         social_sensing(task_detail)
 

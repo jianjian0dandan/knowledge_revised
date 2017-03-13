@@ -5,6 +5,8 @@ from py2neo import Graph
 from elasticsearch import Elasticsearch
 from global_config import *
 
+RUN_TYPE = 0
+
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
 profile_index_name = "weibo_user"
@@ -12,6 +14,9 @@ profile_index_type = "user"
 
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
+
+es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
 es_flow_text = Elasticsearch(flow_text_host, timeout=600)
@@ -23,7 +28,7 @@ es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
 es_event = Elasticsearch(event_host, timeout=600)
 
 # social sensing es
-es_prediction =  Elasticsearch(user_portrait_host, timeout=600)
+es_prediction =  Elasticsearch(social_sensing_host, timeout=600)
 
 
 # The process state is stored
@@ -39,6 +44,7 @@ R_SOCIAL_SENSING = redis.StrictRedis(host=redis_host, port=redis_port, db=1)
 
 # user portrait interface: push user into redis list
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_hash_name = 'user2portrait'
 
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
@@ -61,7 +67,15 @@ be_comment_index_type = 'user'
 bci_history_index_name = 'bci_history'
 bci_history_index_type = 'bci'
 
-def _default_es_cluster_flow1(host):
+
+bci_day_pre = 'bci_'
+bci_day_type = 'bci'
+
+# es for tag
+tag_index_name = 'custom_attribute'
+tag_index_type = 'attribute'
+
+def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
     return es
 
@@ -307,6 +321,10 @@ update_week_redis  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_WEEK_REDIS_KEY = 'update_week'
 update_month_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_MONTH_REDIS_KEY = 'update_month'
+
+
+#recommendation_in 
+R_RECOMMENTATION  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=15)
 
 '''
 # elasticsearch initialize, one for user_profile, one for user_portrait

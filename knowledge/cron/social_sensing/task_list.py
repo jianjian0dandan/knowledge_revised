@@ -46,6 +46,7 @@ def create_task_list(given_ts):
             task.append(json.loads(item['social_sensors'])) # social sensors
             #task.append(now_ts)
             task.append(given_ts)
+            print task
             r.lpush('task_name', json.dumps(task))
             count += 1
 

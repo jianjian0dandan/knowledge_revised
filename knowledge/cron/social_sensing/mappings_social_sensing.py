@@ -52,6 +52,18 @@ def mappings_sensing_task(task_name):
                         "type": "string",
                         "index": "no"
                     },
+                    "trendline_dict":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "uid_prediction_dict":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "weibo_prediction_dict":{
+                        "type": "string",
+                        "index": "no"
+                    },
                     "origin_weibo_detail":{
                         "type": "string",
                         "index": "no"
