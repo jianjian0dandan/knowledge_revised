@@ -9,8 +9,10 @@ sys.path.append('../../')
 from parameter import DAY, WEEK,MAX_VALUE
 from parameter import RUN_TYPE, RUN_TEST_TIME
 from time_utils import ts2datetime, datetime2ts
-from global_utils import es_flow_text, flow_text_index_name_pre, flow_text_index_type    
-WEEK = 7
+from global_utils import es_flow_text
+from global_utils import flow_text_index_name_pre, flow_text_index_type
+    
+
 def read_flow_text_sentiment(uid_list):
     '''
         读取用户微博（返回结果有微博情绪标签）:

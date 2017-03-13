@@ -8,16 +8,14 @@ import csv
 import time
 from elasticsearch import Elasticsearch
 sys.path.append('../../')
-from global_config import join,pusher,maker,contain,friend,relative,colleague,\
-                         user_profile_host,profile_index_name,profile_index_type,\
-                         retweet_comment_es_host,retweet_comment_port,\
-                         retweet_index_name_pre,retweet_index_type,be_retweet_index_name_pre,be_retweet_index_type,\
-                         comment_index_name_pre,comment_index_type,be_comment_index_name_pre,be_comment_index_type
+from parameter import r_path as abs_path
+from global_utils import *
 
 #for test
 RUN_TYPE = 0 #0 mark run for test; 1 mark run for operation
 R_BEGIN_TIME = '2013-09-01'
 DAY = 24*3600
+TIME_STR = '20161127'
 
 def ts2datetime(ts):
     return time.strftime('%Y-%m-%d', time.localtime(ts))
@@ -36,9 +34,7 @@ def get_db_num(timestamp):
         db_number = 1
     return db_number
 
-es_user_profile = Elasticsearch(user_profile_host, timeout = 600)
-es_retweet = Elasticsearch(retweet_comment_es_host, timeout = 600)
-es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
+es_bci = Elasticsearch(user_profile_host, timeout = 600)
 
 ##对微博文本进行预处理
 
@@ -75,8 +71,7 @@ SCWS_RULES = '/usr/local/scws/etc/rules.utf8.ini'
 CHS_DICT_PATH = '/usr/local/scws/etc/dict.utf8.xdb'
 CHT_DICT_PATH = '/usr/local/scws/etc/dict_cht.utf8.xdb'
 IGNORE_PUNCTUATION = 1
-abs_path = './'
-ABSOLUTE_DICT_PATH = os.path.abspath(os.path.join(abs_path, 'dict'))
+ABSOLUTE_DICT_PATH = os.path.abspath(os.path.join(abs_path, './dict'))
 CUSTOM_DICT_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'userdic.txt')
 EXTRA_STOPWORD_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'stopword.txt')
 EXTRA_EMOTIONWORD_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'emotionlist.txt')
@@ -140,47 +135,18 @@ event_type_dict = load_event_type()
 
 ##加载事件类别对应的权重结束
 
-or_list = [1,2,3,4,5,6,7,8]#新浪企业账户类型
 interaction_count = 100
 N_GRAM = 5#词共现窗口长度
 WORD_N = 30#提取关键词的数量
 TOPIC_N = 10#lda话题数量
 MAX_COUNT = 500#最大的词语数量(topic pagerank)
 COUNT_RATE = 0.1#限制交互数量的比例
+inter_sta = 4#最小交互次数
+event_sta = 0.5#最小交叉词语数量
+MAX_I = 1.3#最大影响力值的百分比
+MIN_I = 0.7#最小影响力值的百分比
 
-#人物各指标权重
-influence_weight = 0.3
-importance_weight = 0.3
-activeness_weight = 0.1
-sensitive_weight = 0.3
-
-#事件各指标权重
-type_weight = 0.6
-weibo_weight = 0.2
-people_weight = 0.2
-
-#人物相似度各指标权重
-p1_weight = 0.1
-p2_weight = 0.3
-p3_weight = 0.2
-p4_weight = 0.2
-p5_weight = 0.2
-
-#事件相似度各指标权重
-e1_weight = 0.2
-e2_weight = 0.2
-e3_weight = 0.3
-e4_weight = 0.3
-
-#专题相似度各指标权重
-t1_weight = 0.4
-t2_weight = 0.3
-t3_weight = 0.3
-
-#群体相似度各指标权重
-q1_weight = 0.4
-q2_weight = 0.3
-q3_weight = 0.3
-
-
+#认证类型
+peo_list = [-1,0,200,220,400]
+org_list = [1,2,3,4,5,6,7,8]
 

@@ -43,7 +43,7 @@ def get_keyword(w_text, n_gram):
 
     tr4w.analyze(text=w_text, lower=True, window=n_gram)
     word_list = dict()
-    k_dict = tr4w.get_keywords(500, word_min_len=2)
+    k_dict = tr4w.get_keywords(50, word_min_len=2)
     n = len(k_dict)
     keyword = TopkHeap(n)
     for item in k_dict:

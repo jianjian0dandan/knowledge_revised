@@ -5,39 +5,46 @@ import scws
 import csv
 import re
 from svmutil import *
-from utils import cut_filter,classify_list,classify_dict,ab_path
+from utils import cut_filter,classify_list,abs_path
 
 def get_classify(text,d_first,d_second):
 
-    word_dict = dict()
-    reader = csv.reader(file(ab_path+'feature_%s_%s.csv' % (d_first,d_second), 'rb'))
+    word_dict = []
+    reader = csv.reader(file(abs_path+'/svm_model/feature_%s_%s.csv' % (d_first,d_second), 'rb'))
     for w,c in reader:
-        word_dict[str(w)] = c
+        word_dict.append([w,c])
 
-    with open('./svm_test/test.txt', 'wb') as f:
-        writer = csv.writer(f)
-        for k,v in word_dict.iteritems():
-            row = []
-            f_row = ''
-            f_row = f_row + str(1)
-            if k in text:
-                f_row = f_row + ' ' + str(v)+':'+str(text.count(k))
-            row.append(f_row)
-            writer.writerow((row))
-    f.close()
+    prob_y = []
+    prob_x = []
+    xi = {}
+    for item in word_dict:                        
+        if item[0] in text:
+            xi[int(item[1])] = float(text.count(item[0]))
 
-    m = svm_load_model(ab_path+'train_%s_%s.model' % (d_first,d_second))
-    y, x = svm_read_problem('./svm_test/test.txt')
-    p_label, p_acc, p_val  = svm_predict(y, x, m)
+    prob_x += [xi]
+    prob_y += [float(1)]
 
+    m = svm_load_model(abs_path+'/svm_model/train_%s_%s.model' % (d_first,d_second))
+    p_label, p_acc, p_val  = svm_predict(prob_y, prob_x, m)
+    
     if p_label == '1':
         return d_first
     else:
         return d_second
-    
+
+def count_word(text,name):
+
+    word_count = 0
+    reader = csv.reader(file(abs_path+'/train_data/%s_tfidf.csv' % name, 'rb'))
+    for word,weight in reader:
+        if word in text:
+            word_count = word_count + float(text.count(word))*float(weight)
+
+    return word_count
 
 def cut_weibo(data):
 
+    classify_dict = {'diplomacy':0,'disaster':0,'financial_work':0,'macro_economy':0,'chinese_party':0,'public_security':0,'national':0,'military':0}
     text = ''
     count = 0
     for item in data:        
@@ -47,25 +54,25 @@ def cut_weibo(data):
         if count == 0:
             text = text + text_str
         else:
-            count = count + 1
             text = text + '。' + text_str
-    
-    for i in range(0,len(classify_list)):
-        for j in range(i+1,len(classify_list)):
-            flag = get_classify(text,classify_list[i],classify_list[j])
-            classify_dict[flag] = classify_dict[flag] + 1
+        count = count + 1
 
-    print classify_dict
+    for i in range(0,len(classify_list)):
+        w_count = count_word(text,classify_list[i])
+        classify_dict[classify_list[i]] = classify_dict[classify_list[i]] + w_count
+##        for j in range(i+1,len(classify_list)):
+##            flag = get_classify(text,classify_list[i],classify_list[j])
+##            classify_dict[flag] = classify_dict[flag] + 1
+
     nh = sorted(classify_dict.iteritems(), key=lambda d:d[1], reverse = True)
 
-    sta_n = float(len(classify_dict)-1)*0.5
-
-    if nh[0][1] >= sta_n:
+    sta_n = float(sum(classify_dict.values()))/float(len(classify_dict))
+    if nh[0][1] > sta_n:
         label = nh[0][0]
     else:
         label = 'other'
 
-    return label
+    return nh[0][0]
 
 def test_data(name):
 
@@ -83,6 +90,8 @@ def test_data(name):
 
 if __name__ == '__main__':
 
-    data = test_data('aomen')
-    label = cut_weibo(data)
-    print label
+    data_list = ['aomen','jiedaibao','jierjisi','jinji','social-security','yilake']
+    for name in data_list:
+        data = test_data(name)
+        label = cut_weibo(data)
+        print name,label

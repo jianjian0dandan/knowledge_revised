@@ -512,6 +512,8 @@ def social_sensing(task_detail):
             uid_prediction_dict = dict()
             weibo_prediction_dict = dict()
             trendline_dict = dict()
+            feature_prediction_list = []  # feature
+            mid_prediction_list = [] # dui ying mid
             if search_results:
                 for item in search_results:
                     iter_uid = item['_source']['uid']
@@ -548,16 +550,17 @@ def social_sensing(task_detail):
                     for k,v in classify_results.iteritems(): # mid:value
                         mid_value[k] = topic_value_dict[v[0]]
                         feature_list = organize_feature(k, v[0])
-                        uid_prediction = uid_model.predict(feature_list)
-                        for iiii in uid_prediction:
-                            uid_prediction_value = iiii
-                        uid_prediction_dict[k] = uid_prediction_value
-                        weibo_prediction = weibo_model.predict(feature_list)
-                        for iii in weibo_prediction:
-                            weibo_prediction_value = iii
-                        weibo_prediction_dict[k] = weibo_prediction_value
-                        tmp_trendline = trendline_list(k, weibo_prediction_value)
-                        trendline_dict[k] = tmp_trendline
+                        feature_prediction_list.append(feature_list) # feature list
+                        mid_prediction_list.append(k) # corresponding 
+
+                # prediction
+                weibo_prediction_result = weibo_model.predict(feature_prediction_list)
+                uid_prediction_result = uid_model.predict(feature_prediction_list)
+                for i in range(len(mid_prediction_list)):
+                    uid_prediction_dict[mid_prediction_list[i]] = uid_prediction_result[i]
+                    weibo_prediction_dict[mid_prediction_list[i]] = weibo_prediction_result[i]
+                    tmp_trendline = trendline_list(mid_prediction_list[i], weibo_prediction_result[i])
+                    trendline_dict[mid_prediction_list[i]] = tmp_trendline
 
             if sensitive_words_dict:
                 sensitive_mid_list = sensitive_words_dict.keys()

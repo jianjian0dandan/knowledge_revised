@@ -1,5 +1,9 @@
 # -*-coding:utf-8-*-
 
+from flask import Flask
+# from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
@@ -16,13 +20,13 @@ neo4j_port = "7474"
 redis_host = "219.224.134.213"
 redis_port = "7381"
 
-profile_index_name = "weibo_user"
-profile_index_type = "user"
-remote_portrait_name = "user_portrait_1222" # user portrait system
-portrait_name = "user_portrait"
-flow_text_name = "flow_text_2016-11-26"
-portrait_type = "user"
-flow_text_type = "text"
+#remote_portrait_name = "user_portrait_1222" # user portrait system
+#portrait_name = "user_portrait_0312"
+#flow_text_name = "flow_text_2016-11-26"
+#flow_text_index_name_pre = 'flow_text_'
+#portrait_type = "user"
+#flow_text_type = "text"
+'''
 event_name = "event_task"#"event" # 事件基本信息
 event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
 event_text = "event_text"
@@ -31,10 +35,12 @@ event_type = "text"
 neo4j_name = "neo4j"
 neo4j_password = "database"
 neo4j_data_path = 'http://219.224.134.213:7474/db/data'
+'''
 
 # retweet&comment for test
 retweet_comment_es_host = ['219.224.134.216:9201']
 retweet_comment_port = "9201"
+'''
 # week retweet/be_retweet relation es
 retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
 retweet_index_type = 'user'
@@ -57,7 +63,7 @@ special_event_index_name = "special_event_index" # primary_key: event
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
-
+'''
 
 domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
         u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
@@ -103,12 +109,9 @@ organization_relation_list = ['friend','colleague','organization_tag']
 
 group_rel = "group"
 
-#jln:for getTopicByNameStEt
-TOPIC_ES_HOST = '219.224.134.216:9204'
-topic_es = Elasticsearch(TOPIC_ES_HOST,timeout=1000)
-topic_index_name = 'topics'
-topic_index_type ='text'
 
+
+'''
 WEIBO_ES_HOST = '219.224.134.216:9204'
 weibo_es = Elasticsearch(WEIBO_ES_HOST,timeout=1000)
 weibo_index_name = 'weibo'
@@ -117,7 +120,7 @@ topics_river_index_name='topics_river'
 topics_river_index_type='text'
 subopinion_index_type='text'
 subopinion_index_name='subopinion'
-
+'''
 
 #jln info_consume
 mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
@@ -135,12 +138,15 @@ NEWS_LIMIT = 100
 
 
 
+# yuankun
 REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.222' # 212(3-12)
 #REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
 REDIS_CLUSTER_PORT_FLOW1 = '6381'#'6379' '6669'(3-12)
 #REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
 REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.222' # 212(3-12)
 REDIS_CLUSTER_PORT_FLOW2 = '6381' # 6666
+
+
 #JLN for keyword find user
 REDIS_KEYWORD_HOST = '219.224.134.222' #212(3-12)
 REDIS_KEYWORD_PORT = '6381'
@@ -217,3 +223,20 @@ name_list = ['art','computer','economic','education','environment','medicine',\
 TOPIC_ABS_PATH = "/home/ubuntu8/huxiaoqian/user_portrait_0324/user_portrait/user_portrait/cron/model_file/topic"
 
 ES_CLUSTER_HOST_FLOW1 = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
+
+
+#mysql
+MYSQL_HOST = '219.224.134.225' 
+MYSQL_USER = 'root'
+MYSQL_DB = 'knowledge_management'
+
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:@219.224.134.225/knowledge_management'
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
+Session = sessionmaker(bind=engine)
+# db = SQLAlchemy(app)
+
+user_list = [-1,0,200,220,400]
+auth_list = [1,2,3,4,5,6,7,8]
+
+user_type ='user'
+auth_type ='auth'

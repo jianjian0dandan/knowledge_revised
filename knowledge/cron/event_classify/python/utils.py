@@ -5,6 +5,10 @@ import os
 import scws
 import time
 import re
+import sys
+sys.path.append('../../')
+#sys.path.append('../../../')
+from parameter import c_path as abs_path
 
 SCWS_ENCODING = 'utf-8'
 SCWS_RULES = '/usr/local/scws/etc/rules.utf8.ini'
@@ -12,7 +16,7 @@ CHS_DICT_PATH = '/usr/local/scws/etc/dict.utf8.xdb'
 CHT_DICT_PATH = '/usr/local/scws/etc/dict_cht.utf8.xdb'
 IGNORE_PUNCTUATION = 1
 
-ABSOLUTE_DICT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), './dict'))
+ABSOLUTE_DICT_PATH = os.path.abspath(os.path.join(abs_path, './dict'))
 CUSTOM_DICT_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'userdic.txt')
 EXTRA_STOPWORD_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'stopword.txt')
 EXTRA_EMOTIONWORD_PATH = os.path.join(ABSOLUTE_DICT_PATH, 'emotionlist.txt')
@@ -68,6 +72,4 @@ def cut_filter(text):
     return text
 
 classify_list = ['diplomacy','disaster','financial_work','macro_economy','chinese_party','public_security','national','military']
-classify_dict = {'diplomacy':0,'disaster':0,'financial_work':0,'macro_economy':0,'chinese_party':0,'public_security':0,'national':0,'military':0}
 
-ab_path = '/home/ubuntu2/yuanshi/knowledge-management/new/knowledge_revised/knowledge/cron/event_classify/python/svm_model/'

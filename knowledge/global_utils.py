@@ -15,7 +15,11 @@ profile_index_type = "user"
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
-es_retweet = Elasticsearch(user_portrait_host, timeout=600)
+es_retweet = Elasticsearch(user_profile_host, timeout=600)
+es_comment = Elasticsearch(user_profile_host, timeout = 600)
+be_es_retweet = Elasticsearch(user_profile_host, timeout=600)
+be_es_comment = Elasticsearch(user_profile_host, timeout = 600)
+
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
@@ -34,6 +38,17 @@ es_prediction =  Elasticsearch(social_sensing_host, timeout=600)
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
 
+#event
+event_task_name = 'event_task'
+event_analysis_name = 'event_result'
+event_text = 'event_text'
+event_text_type = 'text'
+event_task_type = 'text'
+event_type = 'text'
+neo4j_name = 'neo4j'
+neo4j_password = 'database'
+neo4j_data_path = 'http://219.224.134.213:7474/db/data'
+
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
 
 r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
@@ -46,11 +61,15 @@ R_SOCIAL_SENSING = redis.StrictRedis(host=redis_host, port=redis_port, db=1)
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 r_user_hash_name = 'user2portrait'
 
+r_user_update = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_update_hash_name = 'user2update'
+
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
 
 flow_text_index_name_pre = 'flow_text_' # flow text: 'flow_text_2013-09-01'
 flow_text_index_type = 'text'
+
 portrait_index_name = 'user_portrait_1222' # user portrait
 portrait_index_type = 'user'
 # week retweet/be_retweet relation es
@@ -75,6 +94,33 @@ bci_day_type = 'bci'
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'
 
+#neo4j index
+node_index_name = "node_index" # primary_key: uid
+topic_index_name = "topic_index" # primary_key: topic
+domain_index_name = "domain_index" # primary_key: domain
+location_index_name = "location_index" #primary_key: location
+event_index_name = "event_index" # primary_key: event
+org_index_name = "org_index" # primary_key: org_id
+tag_index_name = "tag_index" # primary_key: tag
+special_event_index_name = "special_event_index" # primary_key: event
+#neo4j node_type
+people_node = "User"
+org_node = "Org"
+event_node = "Event"
+special_event_node = "SpecialEvent"
+group_node = "Group"
+#neo4j node primary_key
+people_primary = "uid"
+org_primary = "org_id"
+event_primary = "event_id"
+special_event_primary = "event"
+group_primary = "group"
+# 港澳台，电信诈骗
+event_type_index_name = "event_type_index" # primary: type
+group_index_name = "group_index" # primary: group, rel: group
+
+
+
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)
     return es
@@ -89,7 +135,8 @@ COPY_USER_PORTRAIT_ACTIVENESS = "copy_user_portrait_activeness"
 COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
 COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
 COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
-
+#recommendation_in
+ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 
 # es for activeness history, influence history and pagerank
 #copy_portrait_index_name = 'user_portrait_1222'#'this_is_a_copy_user_portrait'

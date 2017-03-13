@@ -111,11 +111,11 @@ index_info = {
                 }, 
                 'function_description':{
                     'type': 'string',
-                    'index': 'my_analyzer'
+                    'analyzer': 'my_analyzer'
                 },
                 'function_mark':{
                     'type': 'string',
-                    'index': 'my_analyzer'
+                    'analyzer': 'my_analyzer'
                 },
                 'character_text':{
                     'type': 'string',
@@ -128,6 +128,18 @@ index_info = {
                 'activity_geo_aggs':{
                     'type': 'string',
                     'analyzer': 'my_analyzer'
+                },
+                'activity_ip':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
+                },
+                'home_ip':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
+                },
+                'job_ip':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
                 },
                 'online_pattern_aggs':{
                     'type': 'string',
@@ -164,11 +176,15 @@ index_info = {
                      'type':'string',
                      'index':'not_analyzed'
                 },
+                'description':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
+                }
             }
         }
     }
 }
 
 
-es.indices.create(index=portrait_name, body=index_info, ignore=400)
+print es.indices.create(index=portrait_name, body=index_info, ignore=400)
 

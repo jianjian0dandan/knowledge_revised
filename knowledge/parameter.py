@@ -45,7 +45,13 @@ sensitive_score_dict = {
             "3": 10
 }
 
+# use to text_attribute
+IP_TIME_SEGMENT = 4*3600
 #人物推荐
+#recommend in
+RECOMMEND_IN_SENSITIVE_TOP = 2000
+RECOMMEND_IN_BLACK_USER1 = '/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/blacklist_2.csv'
+RECOMMEND_IN_BLACK_USER2 = '/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/blacklist_0808.txt'
 RECOMMEND_IN_ACTIVITY_THRESHOLD = 50
 RECOMMEND_IN_IP_THRESHOLD = 7
 RECOMMEND_IN_RETWEET_THRESHOLD = 20
@@ -63,3 +69,10 @@ RECOMMEND_MAX_KEYWORDS = 100
 RECOMMEND_IN_WEIBO_MAX = 1000
 
 SENTIMENT_SORT_EVALUATE_MAX = 999999999999
+
+RECOMMENTATION_TOPK = 10000
+##关系计算绝对路径
+r_path = '/home/ubuntu2/yuanshi/knowledge-management/knowledge_revised/knowledge/cron/get_relationship'
+
+##事件分类绝对路径
+c_path = '/home/ubuntu2/yuanshi/knowledge-management/knowledge_revised/knowledge/cron/event_classify/python'

@@ -142,6 +142,8 @@ def getTwoBeauties(al,idx1,idx2):
             if float(f1-ce) == float(0):
                 f1 = ce + 1
             dt = abs((f1 - ce) * (idxe - i) - (idxe - idx1)	* al[i] + (idxe - idx1) * ce) / math.sqrt(math.pow(f1 - ce, 2) + math.pow(idxe - idx1, 2))
+            if float(idx1-idxe) == float(0):
+                idx1 = idxe+1
             y = (f1 - ce)*(i-idxe)/(idx1-idxe)+ce
             if smax1 < dt and y>al[i]:
                 idxs1 = i
