@@ -18,6 +18,7 @@ rel_node_mapping = {join: "event_id", other_rel: "event_id", \
 #         "domain": "Domain", "topic": "Topic", "location": "Location", "event": "Event"}
 
 
+
 # 首页显示最多节点数
 index_threshold = 500
 
