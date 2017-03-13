@@ -90,8 +90,15 @@ topic_index_name = "topic_index" # primary_key: topic
 domain_index_name = "domain_index" # primary_key: domain
 location_index_name = "location_index" #primary_key: location
 event_index_name = "event_index" # primary_key: event
+org_index_name = "org_index" # primary_key: org_id
 tag_index_name = "tag_index" # primary_key: tag
 special_event_index_name = "special_event_index" # primary_key: event
+#neo4j node_type
+people_node = "User"
+org_node = "Org"
+event_node = "Event"
+special_event_node = "SpecialEvent"
+group_node = "Group"
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
