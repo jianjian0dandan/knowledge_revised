@@ -1,0 +1,22 @@
+/*清除初始的样式*/
+html,body,div,img,h1,h2,h3,h4,h5,h6,input,button,span,p,b,strong,em,li,ul,ol,dl,dt,dd,
+th,textarea,select,table,form {
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    font-family: '宋体';
+}
+ul,li,ol {
+    list-style: none;
+}
+img {
+    border:none;
+}
+button,input,select,textarea {
+    outline: none;
+    border: none;
+}
+a,a:link,a:hover,a:visited,a:active {
+    text-decoration: none;
+}
+/*内容样式*/

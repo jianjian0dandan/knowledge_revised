@@ -1,174 +1,178 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>知识图谱 - 首页</title>
-    <link rel="stylesheet" href="../css/knowledge_home.css">
-    <style>
-        .ueg {
-            font-size: 0;
-        }
-        .ueg button {
-            background-color: #4192c9;
-            color: white;
-            padding: 2px 5px;
-            border-radius: 3px;
-            margin-right: 3px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <div id="container">
-        <div id="nav">
-            <ul class="nav_list">
-                <li><a href="###">专题探索</a></li>
-                <li><a href="###">群体探索</a></li>
-                <li><a href="###" style="margin-left: 20px">突发探索</a></li>
-                <li><a href="###" style="margin-left: 245px">图谱探索</a></li>
-                <li><a href="###">图谱管理</a></li>
-                <li><a href="###">我的图谱</a></li>
-            </ul>
-        </div>
-        <div id="statistics">
-            <div class="statis-1">
-                <div class="s1-top"></div>
-                <div class="s1-bot">
-                    <p class="bot-nums"><span>人物节点数量:<b id="user">2455</b>个</span></p>
-                    <p class="bot-nums"><span>事件节点数量:<b id="event">1334</b>个</span></p>
-                    <p class="bot-nums"><span>机构节点数量:<b id="agency">4352</b>个</span></p>
-                    <p class="bot-nums"><span>专题数量:<b id="topic">1212</b>个</span></p>
-                    <p class="bot-nums"><span>群体数量:<b id="group">1234</b>个</span></p>
-                </div>
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 首页</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/knowledge_home.css">
+<style>
+    .ueg {
+        font-size: 0;
+    }
+    .ueg button {
+        background-color: #4192c9;
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-right: 3px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div id="container">
+    <div id="nav">
+        <ul class="nav_list">
+            <li><a href="###">专题探索</a></li>
+            <li><a href="###">群体探索</a></li>
+            <li><a href="###" style="margin-left: 20px">突发探索</a></li>
+            <li><a href="###" style="margin-left: 290px">图谱探索</a></li>
+            <li><a href="###">图谱管理</a></li>
+            <li><a href="###">我的图谱</a></li>
+        </ul>
+    </div>
+    <div id="statistics">
+        <div class="statis-1">
+            <div class="s1-top"></div>
+            <div class="s1-bot">
+                <p class="bot-nums"><span>人物节点数量:<b id="user">2455</b>个</span></p>
+                <p class="bot-nums"><span>事件节点数量:<b id="event">1334</b>个</span></p>
+                <p class="bot-nums"><span>机构节点数量:<b id="agency">4352</b>个</span></p>
+                <p class="bot-nums"><span>专题数量:<b id="topic">1212</b>个</span></p>
+                <p class="bot-nums"><span>群体数量:<b id="group">1234</b>个</span></p>
             </div>
+        </div>
 
-            <div class="statis-2">
-                <div class="s2-left">
-                    <input id="search_val" type="text" placeholder="搜索.....">
-                    <button id="refer"></button>
+        <div class="statis-2" style="height: 350px">
+            <div class="s2-left">
+                <input id="search_val" type="text" placeholder="搜索.....">
+                <button id="refer"></button>
+            </div>
+            <div class="s2-right">
+                <div class="map" style="margin: 8px 0 0 26px;">
+                    <dl id="map-1">
+                        <dt><img src="/static/images/earth.png"></dt>
+                        <dd>地图链接</dd>
+                    </dl>
                 </div>
-                <div class="s2-right">
-                    <div class="map">
-                        <dl id="map-1">
-                            <dt><img src="../images/earth.png"></dt>
-                            <dd>地图链接</dd>
-                        </dl>
-                    </div>
-                    <div class="chart">
-                        <dl id="chart-1">
-                            <dt><img src="../images/go_line.png" alt=""></dt>
-                            <dd>图谱链接</dd>
-                        </dl>
-                    </div>
+                <div class="chart">
+                    <dl id="chart-1">
+                        <dt><img src="/static/images/go_line.png" alt=""></dt>
+                        <dd>图谱链接</dd>
+                    </dl>
                 </div>
             </div>
-            <div id="statis-3" style="background-color: red;margin-top: 13px;"></div>
         </div>
-        <div id="my_hot">
-            <div class="hot_event">
-                <h3>
-                    <p style="width: 10px;height: 20px;background-color: #df504c"></p>
-                </h3>
-                <div class="event_details" style="margin-top: 12px">
-                    <p class="event_caption">
-                        <span class="event_name">选举李建国为大会秘书长，大会设秘书处</span>
-                        <a href="###" style="display:inline-block;text-decoration: underline;color:#9d9d9d">加入关注</a>
-                    </p>
-                    <p class="event_caption">
-                        讨论人数：<b class="discuss_nums">124212</b>
-                    </p>
-                    <p class="event_caption">
-                        发生时间：<b class="timefrom">2015-09-11</b>----<b class="timeto">2016-11-11</b>
-                    </p>
-                    <p class="event_caption">
-                        地点：<b class="event_place">北京</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                        时间类型：<b class="time_type">政治</b>
-                    </p>
-                    <button class="event_more">+加载更多</button>
-                </div>
+        <div id="statis-3" style="margin:30px 90px 0 0;"></div>
+    </div>
+    <div id="my_hot">
+        <div class="hot_event" style="margin-left: 80px">
+            <h3>
+                <p style="width: 10px;height: 20px;background-color: #df504c;display: inline-block;"></p>
+                <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">热点事件</span>
+            </h3>
+            <div class="event_details" style="padding-top: 12px">
+                <p class="event_caption">
+                    <span class="event_name">选举李建国为大会秘书长，大会设秘书处</span>
+                    <a href="###" style="float:right;text-decoration: underline;color:#9d9d9d">加入关注</a>
+                </p>
+                <p class="event_caption">
+                    讨论人数：<b class="discuss_nums">124212</b>
+                </p>
+                <p class="event_caption">
+                    发生时间：<b class="timefrom">2015-09-11</b>----<b class="timeto">2016-11-11</b>
+                </p>
+                <p class="event_caption">
+                    地点：<b class="event_place">北京</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                    时间类型：<b class="time_type">政治</b>
+                </p>
+                <button class="event_more" style="margin-top: 6px">+加载更多</button>
             </div>
-            <div class="my_focus">
-                <h3>
-                    <p style="width: 10px;height: 20px;background-color: #62c14d;display: inline-block;"></p>
-                    <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">我的关注</span>
-                    <div class="btn-group btn-group-xs ueg" role="group" style="float: right;margin-right: 20px">
-                        <button type="button" class="btn btn-default">人物</button>
-                        <button type="button" class="btn btn-default">事件</button>
-                        <button type="button" class="btn btn-default">机构</button>
-                    </div>
-                </h3>
-                <div class="focus_details">
-                    <div class="details-1" style="text-align: center;margin-top: 5px">
-                        <span>人物</span>
-                        <span>|</span>
-                        <span>业务标签</span>
-                        <span>|</span>
-                        <span>关注时间</span>
-                        <span>|</span>
-                        <span>查看详情</span>
-                        <span>|</span>
-                        <span>编辑</span>
-                    </div>
-                    <div class="details-2" style="text-align: center;margin-top: 7px">
-                        <span>马云</span>
-                        <span>标签1、标签2</span>
-                        <span>2016-11-11</span>
-                        <span>查看详情</span>
-                        <span>取消关注</span>
-                    </div>
-                    <div class="details-2" style="text-align: center;margin-top: 7px">
-                        <span>马云</span>
-                        <span>标签1、标签2</span>
-                        <span>2016-11-11</span>
-                        <span>查看详情</span>
-                        <span>取消关注</span>
-                    </div>
-                    <div class="details-2" style="text-align: center;margin-top: 7px">
-                        <span>马云</span>
-                        <span>标签1、标签2</span>
-                        <span>2016-11-11</span>
-                        <span>查看详情</span>
-                        <span>取消关注</span>
-                    </div>
-                    <button class="focus_more">+加载更多</button>
-                </div>
+        </div>
+
+        <div class="hot_user" style="padding-top: 5px">
+            <h3>
+                <p style="width: 10px;height: 20px;background-color: #df504c;display: inline-block;"></p>
+                <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">热点人物</span>
+            </h3>
+            <div class="user_details" style="margin-top: 12px">
+                <p class="user_caption">
+                    <span class="user_name">选举李建国为大会秘书长，大会设秘书处</span>
+                    <a href="###" style="float:right;text-decoration: underline;color:#9d9d9d">加入关注</a>
+                </p>
+                <p class="user_caption">
+                    讨论人数：<b class="discuss_nums">124212</b>
+                </p>
+                <p class="user_caption">
+                    发生时间：<b class="timefrom">2015-09-11</b>----<b class="timeto">2016-11-11</b>
+                </p>
+                <p class="user_caption">
+                    地点：<b class="event_place">北京</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                    时间类型：<b class="time_type">政治</b>
+                </p>
+                <button class="user_more" style="margin-top: 6px">+加载更多</button>
             </div>
-            <div class="hot_user">
-                <h3>
-                    <p style="width: 10px;height: 20px;background-color: #f9e244"></p>
-                </h3>
-                <div class="user_details" style="margin-top: 12px">
-                    <p class="user_caption">
-                        <span class="user_name">选举李建国为大会秘书长，大会设秘书处</span>
-                        <a href="###" style="display:inline-block;text-decoration: underline;color:#9d9d9d">加入关注</a>
-                    </p>
-                    <p class="user_caption">
-                        讨论人数：<b class="discuss_nums">124212</b>
-                    </p>
-                    <p class="user_caption">
-                        发生时间：<b class="timefrom">2015-09-11</b>----<b class="timeto">2016-11-11</b>
-                    </p>
-                    <p class="user_caption">
-                        地点：<b class="event_place">北京</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                        时间类型：<b class="time_type">政治</b>
-                    </p>
-                    <button class="user_more">+加载更多</button>
+        </div>
+
+        <div class="my_focus">
+            <h3>
+                <p style="width: 10px;height: 20px;background-color: #62c14d;display: inline-block;"></p>
+                <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">我的关注</span>
+                <div class="btn-group btn-group-xs ueg" role="group" style="float: right;margin-right: 20px">
+                    <button type="button" class="btn btn-default">人物</button>
+                    <button type="button" class="btn btn-default">事件</button>
+                    <button type="button" class="btn btn-default">机构</button>
                 </div>
+            </h3>
+            <div class="focus_details">
+                <div class="details-1" style="text-align: center;margin-top: 17px">
+                    <span>人物</span>
+                    <span>|</span>
+                    <span>业务标签</span>
+                    <span>|</span>
+                    <span>关注时间</span>
+                    <span>|</span>
+                    <span>查看详情</span>
+                    <span>|</span>
+                    <span>编辑</span>
+                </div>
+                <div class="details-2">
+                    <span>马云</span>
+                    <span>标签1、标签2</span>
+                    <span>2016-11-11</span>
+                    <span>查看详情</span>
+                    <span>取消关注</span>
+                </div>
+                <div class="details-2">
+                    <span>马云</span>
+                    <span>标签1、标签2</span>
+                    <span>2016-11-11</span>
+                    <span>查看详情</span>
+                    <span>取消关注</span>
+                </div>
+                <div class="details-2">
+                    <span>马云</span>
+                    <span>标签1、标签2</span>
+                    <span>2016-11-11</span>
+                    <span>查看详情</span>
+                    <span>取消关注</span>
+                </div>
+                <button class="focus_more">+加载更多</button>
             </div>
         </div>
     </div>
-<script src="../js/jquery-3.1.1.min.js"></script>
-    <script>
-        $('.ueg button').on('click',function () {
-            $(this).css({backgroundColor:'#202a30'});
-            $(this).siblings('button').css({backgroundColor:'#4192c9'});
-        });
-        $('.map').on('click',function () {
-            window.open('baidu_map.html');
-        });
-        $('.chart').on('click',function () {
-            window.open('knowledgeGraph.html');
-        });
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block my_js %}
+<script src="/static/js/knowledgeHome-1.js"></script>
+<script>
+    $('.ueg button').on('click',function () {
+        $(this).css({backgroundColor:'#202a30',color:'white'});
+        $(this).siblings('button').css({backgroundColor:'#4192c9',color:'white'});
+    });
+    $('.map').on('click',function () {
+        window.open('/index/map/');
+    });
+    $('.chart').on('click',function () {
+        window.open('/index/graph/');
+    });
+</script>
+{% endblock %}
