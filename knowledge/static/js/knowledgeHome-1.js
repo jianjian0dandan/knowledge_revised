@@ -19,7 +19,9 @@ function randomData() {
 
 option = {
     tooltip: {
-        trigger: 'item'
+        trigger: 'item',
+        formatter:function (v) {
+        }
     },
     visualMap: {
         min: 0,
@@ -46,7 +48,7 @@ option = {
             roam: true,
             label: {
                 normal: {
-                    show: true,
+                    show: false,
                     areaColor: '#142d41',
                     borderColor: '#477bc4'
                 },
@@ -67,86 +69,6 @@ option = {
         }
     ]
 };
-
-// option = {
-//     tooltip : {
-//         trigger: 'item'
-//     },
-//     geo: {
-//         map: 'china',
-//         label: {
-//             emphasis: {
-//                 show: true,
-//             }
-//         },
-//         roam: true,
-//         itemStyle: {
-//             normal: {
-//                 areaColor: '#142d41',
-//                 borderColor: '#477bc4'
-//             },
-//             emphasis: {
-//                 areaColor: '#67b4d0'
-//             }
-//         }
-//     },
-//     series : [
-//         {
-//             type: 'scatter',
-//             coordinateSystem: 'geo',
-//             data: convertData(data),
-//             symbolSize: function (val) {
-//                 return val[2] / 10;
-//             },
-//             label: {
-//                 normal: {
-//                     formatter: '{b}',
-//                     position: 'right',
-//                     show: false
-//                 },
-//                 emphasis: {
-//                     show: true
-//                 }
-//             },
-//             itemStyle: {
-//                 normal: {
-//                     color: '#fff'
-//                 }
-//             }
-//         },
-//         {
-//             name: 'Top 5',
-//             type: 'effectScatter',
-//             coordinateSystem: 'geo',
-//             data: convertData(data.sort(function (a, b) {
-//                 return b.value - a.value;
-//             }).slice(0, 6)),
-//             symbolSize: function (val) {
-//                 return val[2] / 10;
-//             },
-//             showEffectOn: 'render',
-//             rippleEffect: {
-//                 brushType: 'stroke'
-//             },
-//             hoverAnimation: true,
-//             label: {
-//                 normal: {
-//                     formatter: '{b}',
-//                     position: 'right',
-//                     show: true
-//                 }
-//             },
-//             itemStyle: {
-//                 normal: {
-//                     color: '#fff',
-//                     shadowBlur: 10,
-//                     shadowColor: '#333'
-//                 }
-//             },
-//             zlevel: 1
-//         }
-//     ]
-// };
 
 // 使用刚指定的配置项和数据显示图表。
 myChart.setOption(option);
