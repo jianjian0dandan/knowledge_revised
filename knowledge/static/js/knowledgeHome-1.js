@@ -20,8 +20,6 @@ function randomData() {
 option = {
     tooltip: {
         trigger: 'item',
-        formatter:function (v) {
-        }
     },
     visualMap: {
         min: 0,

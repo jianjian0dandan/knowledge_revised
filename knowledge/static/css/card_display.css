@@ -1,0 +1,40 @@
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 1408px;
+    background: url("/static/images/cards.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+#all_cards {
+    width: 100%;
+}
+#all_cards .cards_content {
+    display: inline-block;
+    width: 1174px;
+}
+#all_cards .left,#all_cards .right {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    background: #bcbdbf;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 0px;
+}
+#all_cards .left:hover,#all_cards .right:hover {
+    background: #1dd2af;
+}
+#all_cards .cards_content #card_set {
+    width: 100%;
+    padding: 30px 100px;
+}
+#all_cards .cards_content #card_set #gov_card_details {
+    width: 300px;
+    height: 172px;
+    background: url("/static/images/government_card.jpg") no-repeat;
+}
+
