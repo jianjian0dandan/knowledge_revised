@@ -45,3 +45,9 @@ def get_event():#事件属性页面
 def get_organization():#机构属性页面
 
     return render_template('index/organization.html')
+
+@mod.route('/cards/')
+@login_required
+def get_card():#卡片罗列页面
+
+    return render_template('index/card_display.html')
