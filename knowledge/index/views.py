@@ -12,19 +12,36 @@ mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/')
 @login_required
-def index():
+def index():#首页
     
     return render_template('index/knowledge_home.html')
 
 @mod.route('/graph/')
 @login_required
-def get_graph():
+def get_graph():#图谱页面
 
     return render_template('index/knowledgeGraph.html')
 
 @mod.route('/map/')
 @login_required
-def get_map():
+def get_map():#地图页面
 
     return render_template('index/baidu_map.html')
 
+@mod.route('/person/')
+@login_required
+def get_person():#人物属性页面
+
+    return render_template('index/person.html')
+
+@mod.route('/event/')
+@login_required
+def get_event():#事件属性页面
+
+    return render_template('index/event.html')
+
+@mod.route('/organization/')
+@login_required
+def get_organization():#机构属性页面
+
+    return render_template('index/organization.html')
