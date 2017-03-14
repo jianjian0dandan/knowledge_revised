@@ -2,16 +2,7 @@
 
 from extensions import db
 
-__all__ = ['User', 'Topic', 'Group', 'PeopleAttention', 'EventAttention', 'PeopleHistory', 'EventHistory']
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True)#系统用户名
-    password = db.Column(db.String(20))#密码
-
-    def __init__(self, name, password):
-        self.name = name
-        self.password = password
+__all__ = ['Topic', 'Group', 'PeopleAttention', 'EventAttention', 'OrgAttention', 'PeopleHistory', 'EventHistory', 'OrgHistory']
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,6 +64,19 @@ class EventAttention(db.Model):
         self.label = label
         self.attentionTime = attentionTime
 
+class OrgAttention(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))#系统用户名
+    orgID = db.Column(db.String(20))#机构id
+    label = db.Column(db.String(20))#事件的业务标签
+    attentionTime = db.Column(db.Date)#关注时间
+
+    def __init__(self, name, orgID, label, attentionTime):
+        self.name = name
+        self.orgID = orgID
+        self.label = label
+        self.attentionTime = attentionTime
+
 class PeopleHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))#系统用户名
@@ -99,3 +103,15 @@ class EventHistory(db.Model):
         self.modifyRecord = modifyRecord
         self.modifyTime = modifyTime
 
+class OrgHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))#系统用户名
+    orgID = db.Column(db.String(20))#事件id
+    modifyRecord = db.Column(db.Text)#修改记录
+    modifyTime = db.Column(db.Date)#修改时间
+
+    def __init__(self, name, orgID, modifyRecord, modifyTime):
+        self.name = name
+        self.orgID = orgID
+        self.modifyRecord = modifyRecord
+        self.modifyTime = modifyTime
