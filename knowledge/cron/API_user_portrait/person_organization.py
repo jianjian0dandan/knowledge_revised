@@ -264,8 +264,10 @@ def person_organization(uid,relation_list):#计算人物-人物，人物-机构�
         relation_list 关系列表
 
         输出数据:
-        relation_dict:关系字典
-        flag:节点类型标识，'1'表示人物，'0'表示机构,'-1'表示未知
+        字符串提示语：
+        'Node Not Find'  节点建立失败
+        'Relation Not Build'  关系建立失败
+        'Success'  节点和关系建立成功
     '''
 
     profile = get_profile_by_uid([uid])
