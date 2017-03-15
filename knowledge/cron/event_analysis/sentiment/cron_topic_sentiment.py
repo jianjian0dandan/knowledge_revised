@@ -13,7 +13,7 @@ from global_config import SENTIMENT_TYPE_COUNT,\
 
 from time_utils import datetime2ts, ts2HourlyTime
 #jln
-from global_config import event_analysis_name,event_type,event_text,event_text_type
+from global_utils import event_analysis_name,event_type,event_text,event_text_type
 from global_utils import es_event 
 #jln
 #from global_utils import  getTopicByNameStEt,getWeiboByNameStEt

@@ -1,0 +1,44 @@
+/*清除初始的样式*/
+html,body,div,img,h1,h2,h3,h4,h5,h6,input,button,span,p,b,strong,em,li,ul,ol,dl,dt,dd,
+th,textarea,select,table,form {
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    font-family: '宋体';
+}
+ul,li,ol {
+    list-style: none;
+}
+img {
+    border:none;
+}
+button,input,select,textarea {
+    outline: none;
+    border: none;
+}
+a,a:link,a:hover,a:visited,a:active {
+    text-decoration: none;
+}
+/*内容样式*/
+#nav {
+    width: 100%;
+    height: 135px;
+    padding:20px 0 0 100px;
+    margin: 10px auto 0;
+    background: url("/static/images/nav.png") no-repeat;
+    background-size: 100% 100%;
+}
+#nav .nav_list li {
+    float: left;
+}
+#nav .nav_list li a {
+    font-family: '微软雅黑';
+    display: block;
+    width: 140px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    font-weight: 900;
+}

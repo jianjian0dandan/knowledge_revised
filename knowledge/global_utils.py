@@ -5,6 +5,10 @@ from py2neo import Graph
 from elasticsearch import Elasticsearch
 from global_config import *
 
+RUN_TYPE = 0
+diffusion_time = 5
+diffusion_time_interval = 3600*3
+
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
 profile_index_name = "weibo_user"
@@ -21,6 +25,17 @@ es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
 be_es_retweet = Elasticsearch(retweet_comment_es_host, timeout=600)
 be_es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
 ES_CLUSTER_FLOW1 = Elasticsearch(bci_es_host, timeout = 600)
+# es_social_sensing
+es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
+
+es_retweet = Elasticsearch(user_profile_host, timeout=600)
+es_comment = Elasticsearch(user_profile_host, timeout = 600)
+be_es_retweet = Elasticsearch(user_profile_host, timeout=600)
+be_es_comment = Elasticsearch(user_profile_host, timeout = 600)
+
+#use to save bci
+ES_CLUSTER_FLOW1 = Elasticsearch(user_profile_host, timeout=600)
+es_bci = ES_CLUSTER_FLOW1
 
 
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
@@ -36,16 +51,38 @@ es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
 # km event 
 es_event = Elasticsearch(event_host, timeout=600)
 
+# social sensing es
+es_prediction =  Elasticsearch(social_sensing_host, timeout=600)
+
+
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
+
+#event
+event_task_name = 'event_task'
+event_analysis_name = 'event_result'
+event_text = 'event_text'
+event_text_type = 'text'
+event_task_type = 'text'
+event_type = 'text'
+neo4j_name = 'neo4j'
+neo4j_password = 'database'
+neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
 
 r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
+# r_social_sensing
+
+R_SOCIAL_SENSING = redis.StrictRedis(host=redis_host, port=redis_port, db=1)
+
 # user portrait interface: push user into redis list
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 r_user_hash_name = 'user2portrait'
+
+r_user_update = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
+r_user_update_hash_name = 'user2update'
 
 #jln  event redis
 topic_queue_name='EVENT_portrait_task'
@@ -78,6 +115,39 @@ bci_day_type = 'bci'
 # es for tag
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'
+
+#neo4j index
+node_index_name = "node_index" # primary_key: uid
+topic_index_name = "topic_index" # primary_key: topic
+domain_index_name = "domain_index" # primary_key: domain
+location_index_name = "location_index" #primary_key: location
+event_index_name = "event_index" # primary_key: event
+org_index_name = "org_index" # primary_key: org_id
+tag_index_name = "tag_index" # primary_key: tag
+special_event_index_name = "special_event_index" # primary_key: event
+#neo4j node_type
+people_node = "User"
+org_node = "Org"
+event_node = "Event"
+special_event_node = "SpecialEvent"
+group_node = "Group"
+#neo4j node primary_key
+people_primary = "uid"
+org_primary = "org_id"
+event_primary = "event_id"
+special_event_primary = "event"
+group_primary = "group"
+# 港澳台，电信诈骗
+event_type_index_name = "event_type_index" # primary: type
+group_index_name = "group_index" # primary: group, rel: group
+
+#mysql for user
+mysql_host="219.224.134.225"
+mysql_port=3306
+mysql_user='root'
+mysql_passwd=''
+mysql_db='knowledge_management'
+mysql_charset='utf8'
 
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)

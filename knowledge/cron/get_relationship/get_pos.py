@@ -150,7 +150,7 @@ def get_news_main(news_text):
         result = 'Null'
 
     re_dict = {}
-    name_list = ['people','organization','time','place']
+    name_list = ['people','organization','place','time']
     if result != 'Null':
         for i in range(0,len(result)):
             key = name_list[i]

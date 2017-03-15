@@ -7,238 +7,425 @@ import csv
 import sys
 import json
 import heapq
-from config import p1_weight,p2_weight,p3_weight,p4_weight,p5_weight,\
-                     e1_weight,e2_weight,e3_weight,e4_weight,\
-                     t1_weight,t2_weight,t3_weight,q1_weight,q2_weight,q3_weight
+from config import *
+sys.path.append('../manage_neo4j/')
+from neo4j_relation import *
 
-def people_similarity(p_first,p_second):
+def search_es_by_name(dict_name,dict_value,s_uid,type_list):#根据对应的属性查询es_user_portrait
+
+    result_uid = []
+    query_body = {
+        "query":{
+            "bool":{
+                "should":[{"term":{dict_name:dict_value}}],
+                "minimum_should_match": 1
+            }
+        },
+        "size":2000
+    }
+    search_results = es_user_portrait.search(index=remote_portrait_name, doc_type=portrait_type, body=query_body)['hits']['hits']
+    n = len(search_results)
+    if n > 0:
+        for item in search_results:
+            uid = item['_id'].encode('utf-8')
+            if uid == s_uid:
+                continue
+            else:
+                data = item['_source']
+                if data['verified_type'] in type_list:
+                    result_uid.append(uid)
+
+    return result_uid
+
+def search_bci(dict_name,max_influenc,min_influence,s_uid,type_list):#根据对应的属性查询es_bci
+
+    result_uid = []
+    query_body = {
+        "query":{
+            "bool":{
+                "must":[{"range":{dict_name:{"from":max_influenc,"to":min_influence}}}],
+            }
+        },
+        "size":2000
+    }
+    search_results = es_bci.search(index=bci_day_pre+TIME_STR, doc_type=bci_day_type, body=query_body)['hits']['hits']
+    n = len(search_results)
+    if n > 0:
+        for item in search_results:
+            uid = item['_id'].encode('utf-8')
+            if uid == s_uid:
+                continue
+            else:
+                result_uid.append(uid)
+
+    r_list = []
+    search_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids": result_uid})["docs"]#判断哪些是人物，哪些是机构
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']
+            if data['verified_type'] in type_list:
+                r_list.append(uid)
+
+    return r_list
+
+def get_interaction_by_uid(uidlist):#根据uid查询用户的交互情况
+
+    s_uid = uidlist[-1]
+    ts = get_db_num(time.time())    
+    ori_list = set()
+    other_dict = dict()
+    search_result = es_retweet.mget(index=retweet_index_name_pre+str(ts), doc_type=retweet_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_retweet']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    search_result = es_retweet.mget(index=be_retweet_index_name_pre+str(ts), doc_type=be_retweet_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_be_retweet']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+  
+    search_result = es_comment.mget(index=comment_index_name_pre+str(ts), doc_type=comment_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_comment']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    search_result = es_comment.mget(index=be_comment_index_name_pre+str(ts), doc_type=be_comment_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_be_comment']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    result = []
+    for k,v in other_dict.iteritems():
+        union_set = set(v)&set(ori_list)
+        if float(len(union_set))/float(len(ori_list)) >= person_sta:
+            result.append(k)
+    
+    return result
+
+def scan_event_node(uidlist):#从事件中获取共同参与的用户
+
+    s_uid = uidlist[-1]
+    event_result = dict()
+    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    while True:
+        try:
+            scan_re = s_re.next()['_source']
+            data = eval(scan_re['user_results']).keys()
+            union_set = set(data)&set(uidlist)
+            if len(union_set) > 0:
+                for u in union_set:
+                    if event_result.has_key(u):
+                        event_result[u].append(scan_re['en_name'])
+                    else:
+                        event_result[u] = [scan_re['en_name']]
+            else:
+                pass
+        except StopIteration:
+            print 'ALL done'
+            break
+
+    try:
+        s_event = event_result[s_uid]
+    except KeyError:
+        return []
+
+    result = []
+    for k,v in event_result.iteritems():
+        if k != s_uid:
+            if float(len(set(v)&set(s_event)))/eve_sta:
+                result.append(k)
+
+    return result
+    
+
+def people_similarity(node_dict):
     '''
         人物相似度计算主函数
         输入数据：
-        p_first 第一个用户的属性字典
-        p_second 第二个用户的属性字典
-        示例：
-        {'domain':domain,'location':location,'topic':topic_string,'hashtag':hashtag_string,'label':label_string,\
-        'weight':weight,'event':{event1:weight,event2:weight,...},'people':{people1:weight,people2:weight,...}}
-
-        注意：
-        topic_string,hashtag_string,label_string是以"&"链接的字符串，utf-8
+        node_dict 节点属性字典（一个节点），没有该属性对应的值写空（''）
+        示例:{'uid':uid,'domain':domain,'location':location,'activity_ip':activity_ip,'verified_type':type}
         
         输出数据：
-        similarity 两个用户的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
+        similarity_list 与该用户相似的用户
     '''
 
-    ##身份、注册地是否相同：取值{0,0.5,1}，占比0.1
-    s1 = 0
-    if p_first.has_key('domain') and p_second.has_key('domain'):
-        if p_first['domain'] == p_second['domain']:
-            s1 = s1 + 0.5
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
+    if len(node_dict) < 5:
+        return []
 
-    if p_first.has_key('location') and p_second.has_key('location'):
-        if p_first['location'] == p_second['location']:
-            s1 = s1 + 0.5
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
+    try:
+        s_uid = node_dict['uid']
+        if not s_uid:
+            return []
+    except KeyError:
+        return []
 
-    ##话题、hashtag、业务标签的重合度：取值[0,1]，占比0.3
-    s2 = 0
-    if p_first.has_key('topic') and p_second.has_key('topic'):
-        topic1 = set(p_first['topic'].split('&'))
-        topic2 = set(p_second['topic'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s2 = s2 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s2 = s2 + 0
-    else:
-        s2 = s2 + 0
-
-    if p_first.has_key('hashtag') and p_second.has_key('hashtag'):
-        topic1 = set(p_first['hashtag'].split('&'))
-        topic2 = set(p_second['hashtag'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s2 = s2 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s2 = s2 + 0
-    else:
-        s2 = s2 + 0
-
-    if p_first.has_key('label') and p_second.has_key('label'):
-        topic1 = set(p_first['label'].split('&'))
-        topic2 = set(p_second['label'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s2 = s2 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s2 = s2 + 0
-    else:
-        s2 = s2 + 0
-
-    ##人物权重之差/权重最大值：取值[0,1]，占比0.2
-    s3 = 0
-    if p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = abs(p_first['weight'] - p_second['weight'])
-        max_data = max(p_first['weight'],p_second['weight'])
-    elif p_first.has_key('weight') and not p_second.has_key('weight'):
-        weight_dis = p_first['weight']
-        max_data = p_first['weight']
-    elif not p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = p_second['weight']
-        max_data = p_second['weight']
-    else:
-        weight_dis = -1
-        max_data = -1
-        
-    if max_data >= 0:
-        s3 = 1 - float(weight_dis)/float(max_data)
-    else:
-        s3 = 0
-
-    ##共同关联的事件权重之和/关联的事件权重之和的最小值：取值[0,1]，占比0.2
-    s4 = 0
-    if p_first.has_key('event') and p_second.has_key('event'):
-        event_first = set(p_first['event'].keys())
-        event_second = set(p_second['event'].keys())
-        weight = max(sum(p_first['event'].values()),sum(p_second['event'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['event'][key]
-            s4 = float(total)/float(weight)
-        else:
-            s4 = 0
-    else:
-        s4 = 0
-        
-        
-    ##共同关联的人物权重之和/关联的人物权重之和的最小值：取值[0,1]，占比0.2
-    s5 = 0
-    if p_first.has_key('people') and p_second.has_key('people'):
-        event_first = set(p_first['people'].keys())
-        event_second = set(p_second['people'].keys())
-        weight = max(sum(p_first['people'].values()),sum(p_second['people'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['people'][key]
-            s5 = float(total)/float(weight)
-        else:
-            s5 = 0
-    else:
-        s5 = 0
-
+    try:
+        node_type = node_dict['verified_type']        
+    except KeyError:
+        return []
     
-    similarity = s1*p1_weight + s2*p2_weight/float(3) + s3*p3_weight + s4*p4_weight + s5*p5_weight
+    if node_type in org_list:#人物节点
+        type_list = org_list
+    else:#机构节点
+        type_list = peo_list
+
+    try:
+        domain = node_dict['domain']
+        if not domain:#查找domain相同的用户
+            domain_uid = search_es_by_name('domain',domain,s_uid,type_list)
+        else:
+            domain_uid = []
+    except KeyError:
+        domain_uid = []
+        
+    try:
+        location = node_dict['location']
+        if not location:#查找location相同的用户
+            location_uid = search_es_by_name('location',location,s_uid,type_list)
+        else:
+            location_uid = []
+    except KeyError:
+        location_uid = []
+
+    try:
+        activity_ip = node_dict['activity_ip']
+        if not activity_ip:#查找activity_ip相同的用户
+            activity_ip_uid = search_es_by_name('activity_ip',activity_ip,s_uid,type_list)
+        else:
+            activity_ip_uid = []
+    except KeyError:
+        activity_ip_uid = []
+        
+    search_result = es_bci.mget(index=bci_day_pre+TIME_STR, doc_type=bci_day_type, body={"ids": [s_uid]})["docs"]
+    if len(search_result) == 0:
+        influence_uid = []
+    else:
+        for item in search_result:
+            uid = item['_id']
+            if not item['found']:
+                influence = ''
+            else:
+                data = item['_source']
+                influence = data['user_index']
+
+        if not influence:#查找影响力在一定范围内的用户
+            max_influence = influence*MAX_I
+            min_influence = influence*MIN_I
+            influence_uid = search_bci('user_index',max_influenc,min_influence,s_uid,type_list)
+        else:
+            influence_uid = []
+
+    total_uid = ((set(domain_uid)|set(location_uid))|set(activity_ip_uid))|set(influence_uid)#求uid的并集
+
+    i_list = get_interaction_by_uid(list(total_uid))
+    e_list = scan_event_node(list(total_uid))
+
+    whole_result = domain_uid
+    whole_result.extend(location_uid)
+    whole_result.extend(activity_ip_uid)
+    whole_result.extend(influence_uid)
+    whole_result.extend(i_list)
+    whole_result.extend(e_list)
+
+    result_dict = dict()
+    similarity = []
+    for u in whole_result:
+        try:
+            result_dict[u] = result_dict[u] + 1
+        except KeyError:
+            result_dict[u] = 1
+
+    for k,v in result_dict.iteritems():
+        if v >= com_sta:
+            similarity.appeend(k)
 
     return similarity
 
-def event_similarity(p_first,p_second):
+def search_event_es(dict_name,dict_value,s_uid):#根据对应的属性查询es_event
+
+    result_uid = []
+    if dict_name == 'keywords':
+        words = keywords.split('&')
+        w_list = []
+        for w in words:
+            w_list.append({"term":{"keywords":w}})
+        n = int(len(words)*0.5)
+
+        query_body = {
+            "query":{
+                "bool":{
+                    "should":w_list,
+                    "minimum_should_match": n
+                }
+            },
+            "size":2000
+        }
+    else:
+        query_body = {
+            "query":{
+                "bool":{
+                    "should":[{"term":{dict_name:dict_value}}],
+                    "minimum_should_match": 1
+                }
+            },
+            "size":2000
+        }
+    search_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, body=query_body)['hits']['hits']
+    n = len(search_results)
+    if n > 0:
+        for item in search_results:
+            uid = item['_id'].encode('utf-8')
+            if uid == s_uid:
+                continue
+            else:
+                result_uid.append(uid)
+
+    return result_uid
+
+def search_event_people(uid_result,s_uid):#根据对应的人物查找相似事件
+
+    result = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    while True:
+        try:
+            scan_re = s_re.next()['_source']
+            id_str = scan_re["en_name"]+'-'+scan_re["submit_ts"]
+            if id_str == s_uid:
+                continue
+            data = eval(scan_re['user_results']).keys()
+            union_set = set(data)&set(uid_result.keys())
+            if len(union_set) > 0:
+                result.append(id_str)
+            else:
+                pass
+        except StopIteration:
+            print 'ALL done'
+            break
+
+    return result
+
+def event_similarity(node_dict):
     '''
         事件相似度计算主函数
         输入数据：
-        p_first 第一个事件的属性字典
-        p_second 第二个事件的属性字典
-        示例：
-        {'des':des_string,'label':label_string,\
-        'weight':weight,'event':{event1:weight,event2:weight,...},'people':{people1:weight,people2:weight,...}}
-
-        注意：
-        des_string,label_string是以"&"链接的字符串，utf-8
+        e_dict 节点属性字典（一个节点），没有该属性对应的值写空（''）
+        示例:{'event_id':uid,'type':type,'location':location,'keyword':keyword,'user_results':user_results}
+        keyword是以"&"连接的字符串
+        user_results是一个字典（按照事件es里面的格式）
         
         输出数据：
-        similarity 两个事件的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
+        similarity_list 与该事件相似的事件
     '''
 
-    ##关键词、业务标签的重合度：取值[0,1]，占比0.2
-    s1 = 0
-    if p_first.has_key('des') and p_second.has_key('des'):
-        topic1 = set(p_first['des'].split('&'))
-        topic2 = set(p_second['des'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s1 = s1 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
+    if len(node_dict) < 5:
+        return []
 
-    if p_first.has_key('label') and p_second.has_key('label'):
-        topic1 = set(p_first['label'].split('&'))
-        topic2 = set(p_second['label'].split('&'))
-        max_data = max(len(topic1),len(topic2))
-        if max_data > 0:
-            s1 = s1 + float(len(topic1 & topic2))/float(max_data)
-        else:
-            s1 = s1 + 0
-    else:
-        s1 = s1 + 0
+    try:
+        s_uid = node_dict['event_id']
+        if not s_uid:
+            return []
+    except KeyError:
+        return []
 
-    ##事件权重之差/权重最大值：取值[0,1]，占比0.2
-    s2 = 0
-    if p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = abs(p_first['weight'] - p_second['weight'])
-        max_data = max(p_first['weight'],p_second['weight'])
-    elif p_first.has_key('weight') and not p_second.has_key('weight'):
-        weight_dis = p_first['weight']
-        max_data = p_first['weight']
-    elif not p_first.has_key('weight') and p_second.has_key('weight'):
-        weight_dis = p_second['weight']
-        max_data = p_second['weight']
-    else:
-        weight_dis = -1
-        max_data = -1
+    try:
+        e_type = node_dict['type']
+        if not e_type:#查找type相同的用户
+            type_uid = search_event_es('category',e_type,s_uid)
+        else:
+            type_uid = []
+    except KeyError:
+        type_uid = []
         
-    if max_data >= 0:
-        s2 = 1 - float(weight_dis)/float(max_data)
-    else:
-        s2 = 0
-
-    ##共同关联的事件权重之和/关联的事件权重之和的最小值：取值[0,1]，占比0.3
-    s3 = 0
-    if p_first.has_key('event') and p_second.has_key('event'):
-        event_first = set(p_first['event'].keys())
-        event_second = set(p_second['event'].keys())
-        weight = max(sum(p_first['event'].values()),sum(p_second['event'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['event'][key]
-            s3 = float(total)/float(weight)
+    try:
+        location = node_dict['location']
+        if not location:#查找location相同的用户
+            location_uid = search_event_es('real_geo',location,s_uid)
         else:
-            s3 = 0
-    else:
-        s3 = 0
-        
-        
-    ##共同关联的人物权重之和/关联的人物权重之和的最小值：取值[0,1]，占比0.3
-    s4 = 0
-    if p_first.has_key('people') and p_second.has_key('people'):
-        event_first = set(p_first['people'].keys())
-        event_second = set(p_second['people'].keys())
-        weight = max(sum(p_first['people'].values()),sum(p_second['people'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['people'][key]
-            s4 = float(total)/float(weight)
-        else:
-            s4 = 0
-    else:
-        s4 = 0
+            location_uid = []
+    except KeyError:
+        location_uid = []
 
-    
-    similarity = s1*e1_weight/float(2) + s2*e2_weight + s3*e3_weight + s4*e4_weight
+    try:
+        keyword = node_dict['keyword']
+        if not keyword:#查找keyword相同的用户
+            keyword_uid = search_event_es('keywords',keywords,s_uid)
+        else:
+            keyword_uid = []
+    except KeyError:
+        keyword_uid = []
+
+    try:
+        user_results = node_dict['user_results']
+        if not user_results:#查找user_results相同的用户
+            user_results_uid = search_event_people(user_results,s_uid)
+        else:
+            user_results_uid = []
+    except KeyError:
+        user_results_uid = []
+
+    whole_result = type_uid
+    whole_result.extend(location_uid)
+    whole_result.extend(keyword_uid)
+    whole_result.extend(user_results_uid)
+
+    result_dict = dict()
+    similarity = []
+    for u in whole_result:
+        try:
+            result_dict[u] = result_dict[u] + 1
+        except KeyError:
+            result_dict[u] = 1
+
+    for k,v in result_dict.iteritems():
+        if v >= com_sta_eve:
+            similarity.appeend(k)
 
     return similarity
 
