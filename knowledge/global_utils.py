@@ -124,7 +124,13 @@ group_primary = "group"
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
 
-
+#mysql for user
+mysql_host="219.224.134.225"
+mysql_port=3306
+mysql_user='root'
+mysql_passwd=''
+mysql_db='knowledge_management'
+mysql_charset='utf8'
 
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)

@@ -1,0 +1,62 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 卡片详情页</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/card_display.css">
+<style>
+    .radio-inline {
+        font-weight: 900;
+    }
+</style>
+{% endblock %}
+
+
+{% block main %}
+<div id="all_cards">
+    <div class="left"> < </div>
+    <div class="cards_content">
+        <div class="choose" style="padding: 5px 0 5px 100px;">
+            <label class="radio-inline">
+                <input type="radio" name="options" id="important" value=""> 重要度
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="options" id="activity" value=""> 活跃度
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="options" id="sensitivity" value=""> 敏感度
+            </label>
+        </div>
+        <div id="card_set">
+            <div id="gov_card_details" style="padding:30px 0 0 30px">
+                <div class="details-1">
+                    <div class="details-1-left" style="width:60%;color: white;display: inline-block;text-align: center;">
+                        <h3 title="中华人民共和国" style="width: 110px;margin:0 auto;white-space: nowrap;overflow: hidden;text-overflow:ellipsis;">中华人民共和国</h3>
+                        <p style="margin-top:12px;font-size: 8px">发生时间：<b class="time">2016-9-12</b></p>
+                    </div>
+                    <div class="details-1-right" style="float: right;margin-top: -10px;margin-right: 20px;border: 2px solid #44b3e6">
+                        <img src="/static/images/unknown.png">
+                    </div>
+                    <div class="details-1-bottom" style="text-align: center;color: white;font-size: 8px;margin-top: 10px">
+                        <img src="/static/images/gov_wei.png">&nbsp;<span class="position">山东</span>
+                        <img src="/static/images/gov_people.png">&nbsp;<span class="join">1723923</span>
+                        <img src="/static/images/gov_circle.png" class="heart">
+                    </div>
+                </div>
+                <div class="details-2" style="margin: 31px 0 0 25px">
+                    <span style="font-weight: 800;font-size: 10px">业务标签：</span>
+                    <span class="tag" style="display:inline-block;padding: 2px 5px;background-color:#3a89ad;border-radius: 6px;font-size: 6px;">大学生</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right"> > </div>
+</div>
+
+{% endblock %}
+
+{% block my_js %}
+<script src="/static/js/card_display-1.js"></script>
+<script>
+//    $('body').height($(window).height());
+
+</script>
+{% endblock %}

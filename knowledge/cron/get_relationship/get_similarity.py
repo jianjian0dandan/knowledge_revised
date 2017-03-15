@@ -7,9 +7,9 @@ import csv
 import sys
 import json
 import heapq
-from config import p1_weight,p2_weight,p3_weight,p4_weight,p5_weight,\
-                     e1_weight,e2_weight,e3_weight,e4_weight,\
-                     t1_weight,t2_weight,t3_weight,q1_weight,q2_weight,q3_weight
+from config import *
+sys.path.append('../manage_neo4j/')
+from neo4j_relation import *
 
 def search_es_by_name(dict_name,dict_value,s_uid,type_list):#根据对应的属性查询es_user_portrait
 
@@ -71,58 +71,177 @@ def search_bci(dict_name,max_influenc,min_influence,s_uid,type_list):#根据对�
 
     return r_list
 
-def people_similarity(s_uid,node_type):
+def get_interaction_by_uid(uidlist):#根据uid查询用户的交互情况
+
+    s_uid = uidlist[-1]
+    ts = get_db_num(time.time())    
+    ori_list = set()
+    other_dict = dict()
+    search_result = es_retweet.mget(index=retweet_index_name_pre+str(ts), doc_type=retweet_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_retweet']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    search_result = es_retweet.mget(index=be_retweet_index_name_pre+str(ts), doc_type=be_retweet_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_be_retweet']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+  
+    search_result = es_comment.mget(index=comment_index_name_pre+str(ts), doc_type=comment_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_comment']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    search_result = es_comment.mget(index=be_comment_index_name_pre+str(ts), doc_type=be_comment_index_type, body={"ids": uidlist})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']['uid_be_comment']
+            data = eval(data)
+            if uid == s_uid:
+                ori_list = ori_list|set(data.keys())
+            else:
+                if other_dict.has_key(uid):
+                    other_dict[uid].extend(data.keys())
+                else:
+                    other_dict[uid] = data.keys()
+
+    result = []
+    for k,v in other_dict.iteritems():
+        union_set = set(v)&set(ori_list)
+        if float(len(union_set))/float(len(ori_list)) >= person_sta:
+            result.append(k)
+    
+    return result
+
+def scan_event_node(uidlist):#从事件中获取共同参与的用户
+
+    s_uid = uidlist[-1]
+    event_result = dict()
+    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    while True:
+        try:
+            scan_re = s_re.next()['_source']
+            data = eval(scan_re['user_results']).keys()
+            union_set = set(data)&set(uidlist)
+            if len(union_set) > 0:
+                for u in union_set:
+                    if event_result.has_key(u):
+                        event_result[u].append(scan_re['en_name'])
+                    else:
+                        event_result[u] = [scan_re['en_name']]
+            else:
+                pass
+        except StopIteration:
+            print 'ALL done'
+            break
+
+    try:
+        s_event = event_result[s_uid]
+    except KeyError:
+        return []
+
+    result = []
+    for k,v in event_result.iteritems():
+        if k != s_uid:
+            if float(len(set(v)&set(s_event)))/eve_sta:
+                result.append(k)
+
+    return result
+    
+
+def people_similarity(node_dict):
     '''
         人物相似度计算主函数
         输入数据：
-        s_uid 节点id
-        node_type 节点类型，'1'表示人物节点，'0'表示机构节点
+        node_dict 节点属性字典（一个节点），没有该属性对应的值写空（''）
+        示例:{'uid':uid,'domain':domain,'location':location,'activity_ip':activity_ip,'verified_type':type}
         
         输出数据：
         similarity_list 与该用户相似的用户
     '''
 
-    if s_uid == '':
+    if len(node_dict) < 5:
         return []
 
-    if node_type == '1':#人物节点
-        type_list = peo_list
-    else:#机构节点
+    try:
+        s_uid = node_dict['uid']
+        if not s_uid:
+            return []
+    except KeyError:
+        return []
+
+    try:
+        node_type = node_dict['verified_type']        
+    except KeyError:
+        return []
+    
+    if node_type in org_list:#人物节点
         type_list = org_list
-        
-    ##从es中获取属性相近的用户
-    search_result = es_user_portrait.mget(index=remote_portrait_name, doc_type=portrait_type, body={"ids": [s_uid]})["docs"]
-    if len(search_result) == 0:#查询结果为空
-        domain_uid = []
-        location_uid = []
-        a_ip_uid = []
-    else:
-        for item in search_result:
-            uid = item['_id']
-            if not item['found']:#未找到对应的属性
-                domain = ''
-                location = ''
-                a_ip = ''
-            else:
-                data = item['_source']
-                domain = data['domain']
-                location = data['location']
-                a_ip = data['activity_ip']
-        
+    else:#机构节点
+        type_list = peo_list
+
+    try:
+        domain = node_dict['domain']
         if not domain:#查找domain相同的用户
             domain_uid = search_es_by_name('domain',domain,s_uid,type_list)
         else:
             domain_uid = []
-
+    except KeyError:
+        domain_uid = []
+        
+    try:
+        location = node_dict['location']
         if not location:#查找location相同的用户
             location_uid = search_es_by_name('location',location,s_uid,type_list)
         else:
             location_uid = []
+    except KeyError:
+        location_uid = []
 
+    try:
+        activity_ip = node_dict['activity_ip']
         if not activity_ip:#查找activity_ip相同的用户
-            activity_ip_uid = search_es_by_name('activity_ip',a_ip,s_uid,type_list)
+            activity_ip_uid = search_es_by_name('activity_ip',activity_ip,s_uid,type_list)
         else:
             activity_ip_uid = []
+    except KeyError:
+        activity_ip_uid = []
         
     search_result = es_bci.mget(index=bci_day_pre+TIME_STR, doc_type=bci_day_type, body={"ids": [s_uid]})["docs"]
     if len(search_result) == 0:
@@ -143,25 +262,170 @@ def people_similarity(s_uid,node_type):
         else:
             influence_uid = []
 
-    ##从neo4j中获取有关联的用户
-    
+    total_uid = ((set(domain_uid)|set(location_uid))|set(activity_ip_uid))|set(influence_uid)#求uid的并集
+
+    i_list = get_interaction_by_uid(list(total_uid))
+    e_list = scan_event_node(list(total_uid))
+
+    whole_result = domain_uid
+    whole_result.extend(location_uid)
+    whole_result.extend(activity_ip_uid)
+    whole_result.extend(influence_uid)
+    whole_result.extend(i_list)
+    whole_result.extend(e_list)
+
+    result_dict = dict()
+    similarity = []
+    for u in whole_result:
+        try:
+            result_dict[u] = result_dict[u] + 1
+        except KeyError:
+            result_dict[u] = 1
+
+    for k,v in result_dict.iteritems():
+        if v >= com_sta:
+            similarity.appeend(k)
 
     return similarity
 
-def event_similarity(e_id):
+def search_event_es(dict_name,dict_value,s_uid):#根据对应的属性查询es_event
+
+    result_uid = []
+    if dict_name == 'keywords':
+        words = keywords.split('&')
+        w_list = []
+        for w in words:
+            w_list.append({"term":{"keywords":w}})
+        n = int(len(words)*0.5)
+
+        query_body = {
+            "query":{
+                "bool":{
+                    "should":w_list,
+                    "minimum_should_match": n
+                }
+            },
+            "size":2000
+        }
+    else:
+        query_body = {
+            "query":{
+                "bool":{
+                    "should":[{"term":{dict_name:dict_value}}],
+                    "minimum_should_match": 1
+                }
+            },
+            "size":2000
+        }
+    search_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, body=query_body)['hits']['hits']
+    n = len(search_results)
+    if n > 0:
+        for item in search_results:
+            uid = item['_id'].encode('utf-8')
+            if uid == s_uid:
+                continue
+            else:
+                result_uid.append(uid)
+
+    return result_uid
+
+def search_event_people(uid_result,s_uid):#根据对应的人物查找相似事件
+
+    result = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    while True:
+        try:
+            scan_re = s_re.next()['_source']
+            id_str = scan_re["en_name"]+'-'+scan_re["submit_ts"]
+            if id_str == s_uid:
+                continue
+            data = eval(scan_re['user_results']).keys()
+            union_set = set(data)&set(uid_result.keys())
+            if len(union_set) > 0:
+                result.append(id_str)
+            else:
+                pass
+        except StopIteration:
+            print 'ALL done'
+            break
+
+    return result
+
+def event_similarity(node_dict):
     '''
         事件相似度计算主函数
         输入数据：
-        e_id 事件id
+        e_dict 节点属性字典（一个节点），没有该属性对应的值写空（''）
+        示例:{'event_id':uid,'type':type,'location':location,'keyword':keyword,'user_results':user_results}
+        keyword是以"&"连接的字符串
+        user_results是一个字典（按照事件es里面的格式）
         
         输出数据：
         similarity_list 与该事件相似的事件
     '''
 
-    ##从es中获取属性相近的事件
+    if len(node_dict) < 5:
+        return []
 
+    try:
+        s_uid = node_dict['event_id']
+        if not s_uid:
+            return []
+    except KeyError:
+        return []
 
-    ##从neo4j中获取有关联的事件
+    try:
+        e_type = node_dict['type']
+        if not e_type:#查找type相同的用户
+            type_uid = search_event_es('category',e_type,s_uid)
+        else:
+            type_uid = []
+    except KeyError:
+        type_uid = []
+        
+    try:
+        location = node_dict['location']
+        if not location:#查找location相同的用户
+            location_uid = search_event_es('real_geo',location,s_uid)
+        else:
+            location_uid = []
+    except KeyError:
+        location_uid = []
+
+    try:
+        keyword = node_dict['keyword']
+        if not keyword:#查找keyword相同的用户
+            keyword_uid = search_event_es('keywords',keywords,s_uid)
+        else:
+            keyword_uid = []
+    except KeyError:
+        keyword_uid = []
+
+    try:
+        user_results = node_dict['user_results']
+        if not user_results:#查找user_results相同的用户
+            user_results_uid = search_event_people(user_results,s_uid)
+        else:
+            user_results_uid = []
+    except KeyError:
+        user_results_uid = []
+
+    whole_result = type_uid
+    whole_result.extend(location_uid)
+    whole_result.extend(keyword_uid)
+    whole_result.extend(user_results_uid)
+
+    result_dict = dict()
+    similarity = []
+    for u in whole_result:
+        try:
+            result_dict[u] = result_dict[u] + 1
+        except KeyError:
+            result_dict[u] = 1
+
+    for k,v in result_dict.iteritems():
+        if v >= com_sta_eve:
+            similarity.appeend(k)
 
     return similarity
 

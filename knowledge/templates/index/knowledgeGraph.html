@@ -1,52 +1,42 @@
-<!DOCTYPE html>
-<meta charset="UTF-8">
-<title>图谱关系图</title>
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 图谱关系图</title>{% endblock %}
+{% block my_css %}
 <style>
-
     .link {
         fill: none;
         stroke: #666;
         stroke-width: 1.5px;
     }
-
     #licensing {
         fill: green;
     }
-
     .link.licensing {
         stroke: green;
     }
-
     .link.resolved {
         stroke-dasharray: 0,2 1;
     }
-
     circle {
         fill: #ccc;
         stroke: #333;
         stroke-width: 1.5px;
     }
-
     text {
-        font: 12px Microsoft YaHei;
+        font: 12px '微软雅黑';
         pointer-events: none;
         text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
     }
-
     .linetext {
-        font-size: 12px Microsoft YaHei;
+        font-size: 12px;
     }
-
 </style>
-<body>
-<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+{% endblock %}
+{% block main %}
+<div id="graph" style="width:100%;"></div>
+{% endblock %}
 
-<script src="../js/d3.min.js"></script>
-
-<!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+{% block my_js %}
 <script>
-
-    // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
     var links = [
         {source: "IFIND", target: "同花顺", type: "resolved", rela:"主营产品"},
         {source: "同花顺", target: "IFIND", type: "resolved", rela:"主营产品"},
@@ -85,7 +75,7 @@
             .on("tick", tick)//指时间间隔，隔一段时间刷新一次画面
             .start();//开始转换
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#graph").append("svg")
             .attr("width", width)
             .attr("height", height);
 
@@ -107,16 +97,16 @@
                     .attr("d", "M0,-5L10,0L0,5")//箭头的路径
                     .attr('fill','#000000');//箭头颜色
 
-//    将连接线设置为曲线
-//     var path = svg.append("g").selectAll("path")
-//     .data(force.links())
-//     .enter().append("path")
-//     .attr("class", function(d) { return "link " + d.type; })
-//     .style("stroke",function(d){
-//     //console.log(d);
-//     return "#A254A2";//连接线的颜色
-//     })
-//     .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
+    //    将连接线设置为曲线
+    //     var path = svg.append("g").selectAll("path")
+    //     .data(force.links())
+    //     .enter().append("path")
+    //     .attr("class", function(d) { return "link " + d.type; })
+    //     .style("stroke",function(d){
+    //     //console.log(d);
+    //     return "#A254A2";//连接线的颜色
+    //     })
+    //     .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 
     //设置连接线
     var edges_line = svg.selectAll(".edgepath")
@@ -354,6 +344,6 @@
         return "translate(" + (d.x) + "," + d.y + ")";
     }
 
-
-
 </script>
+{% endblock %}
+
