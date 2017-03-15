@@ -15,7 +15,7 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 
 test_time = datetime2ts(RUN_TEST_TIME)
-from draw_redis import *
+# from draw_redis import *
 
 # from knowledge.global_utils import event_name_search
 
