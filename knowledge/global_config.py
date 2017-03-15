@@ -50,6 +50,10 @@ comment_index_type = 'user'
 be_comment_index_name_pre = '1225_be_comment_'
 be_comment_index_type = 'user'
 
+#bci_
+bci_es_host = ['219.224.134.216:9201']
+
+
 # neo4j 索引(index)
 node_index_name = "node_index" # primary_key: uid
 topic_index_name = "topic_index" # primary_key: topic
@@ -143,13 +147,13 @@ REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.212'
 REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
 REDIS_CLUSTER_PORT_FLOW1 = '6669'#'6379'
 REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
-REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.212'#'219.224.134.212'
+REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.213'#'219.224.134.212'
 REDIS_CLUSTER_PORT_FLOW2 = '6666'
 #JLN for keyword find user
 REDIS_KEYWORD_HOST = '219.224.134.212'
 REDIS_KEYWORD_PORT = '6381'
 #flow2用了
-REDIS_HOST = '219.224.134.212'#'219.224.134.212'
+REDIS_HOST = '219.224.134.213' #'219.224.134.212'
 REDIS_PORT = '6670'#'6381'
 #uname to uid 
 UNAME2UID_HOST = '219.224.134.211'

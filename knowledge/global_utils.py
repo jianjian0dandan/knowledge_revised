@@ -13,15 +13,22 @@ profile_index_type = "user"
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 
-es_retweet = Elasticsearch(user_portrait_host, timeout=600)
-es_comment = Elasticsearch(user_portrait_host, timeout = 600)
-be_es_retweet = Elasticsearch(user_portrait_host, timeout=600)
-be_es_comment = Elasticsearch(user_portrait_host, timeout = 600)
+#recommendation task
+es_recommendation_result = Elasticsearch(user_portrait_host, timeout=600)
+
+es_retweet = Elasticsearch(retweet_comment_es_host, timeout=600)
+es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
+be_es_retweet = Elasticsearch(retweet_comment_es_host, timeout=600)
+be_es_comment = Elasticsearch(retweet_comment_es_host, timeout = 600)
+ES_CLUSTER_FLOW1 = Elasticsearch(bci_es_host, timeout = 600)
+
 
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
 es_flow_text = Elasticsearch(flow_text_host, timeout=600)
+
+
 
 # km user portrait
 es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
@@ -45,7 +52,7 @@ topic_queue_name='EVENT_portrait_task'
 
 flow_text_index_name_pre = 'flow_text_' # flow text: 'flow_text_2013-09-01'
 flow_text_index_type = 'text'
-portrait_index_name = 'user_portrait_1222' # user portrait
+portrait_index_name = 'user_portrait_0312' # user portrait
 portrait_index_type = 'user'
 # week retweet/be_retweet relation es
 retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
@@ -61,6 +68,9 @@ be_comment_index_type = 'user'
 bci_history_index_name = 'bci_history'
 bci_history_index_type = 'bci'
 
+#recommendation_user
+recommendation_index_name = 'recommendation_in_user'
+recommendation_index_type = 'user'
 
 bci_day_pre = 'bci_'
 bci_day_type = 'bci'
@@ -83,6 +93,7 @@ COPY_USER_PORTRAIT_ACTIVENESS = "copy_user_portrait_activeness"
 COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
 COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
 COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
+
 #recommendation_in
 ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 
@@ -317,9 +328,10 @@ UPDATE_WEEK_REDIS_KEY = 'update_week'
 update_month_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_MONTH_REDIS_KEY = 'update_month'
 
-
 #recommendation_in 
-R_RECOMMENTATION  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=15)
+R_RECOMMENTATION  = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=1)
+r_recommendation_in_now = 'recommendation_in_now'
+r_recommendation_in_after = 'recommendation_in_after'
 
 '''
 # elasticsearch initialize, one for user_profile, one for user_portrait
