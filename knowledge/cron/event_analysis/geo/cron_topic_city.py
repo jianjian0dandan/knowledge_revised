@@ -154,7 +154,7 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
                     'sort':{SORT_FIELD:{"order":"desc"}},
                     'size':n_limit
                     }
-                mtype_weibo = es_event.search(index=event_text,doc_type=event_text_type,body=query_body)['hits']['hits']
+                mtype_weibo = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
                 #save_ws_results(topic, end_ts, during, n_limit, mtype_weibo)    
                 #微博直接保存下来
                 # print '160',es_event,event_text,event_text_type,query_body,len(mtype_weibo)
