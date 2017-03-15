@@ -103,6 +103,9 @@ ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 copy_portrait_index_name = 'this_is_a_copy_user_portrait'
 copy_portrait_index_type = 'user'
 
+#neo4j
+graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
+
 #neo4j查询事件名
 
 # event2id

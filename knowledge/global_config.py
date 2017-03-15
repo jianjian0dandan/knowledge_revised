@@ -24,8 +24,21 @@ topic_index_name = "topic_index" # primary_key: topic
 domain_index_name = "domain_index" # primary_key: domain
 location_index_name = "location_index" #primary_key: location
 event_index_name = "event_index" # primary_key: event
+org_index_name = "org_index" # primary_key: org_id
 tag_index_name = "tag_index" # primary_key: tag
 special_event_index_name = "special_event_index" # primary_key: event
+#neo4j node_type
+people_node = "User"
+org_node = "Org"
+event_node = "Event"
+special_event_node = "SpecialEvent"
+group_node = "Group"
+#neo4j node primary_key
+people_primary = "uid"
+org_primary = "org_id"
+event_primary = "event_id"
+special_event_primary = "event"
+group_primary = "group"
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
@@ -216,25 +229,6 @@ be_comment_index_type = 'user'
 bci_es_host = ['219.224.134.216:9201']
 
 
-domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
-        u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
-topic_list = [u'文体类_娱乐', u'科技类', u'经济类', u'教育类', u'民生类_环保', \
-        u'民生类_健康', u'军事类', u'政治类_外交', u'文体类_体育', u'民生类_交通', \
-        u'其他类', u'政治类_反腐', u'民生类_就业', u'政治类_暴恐', u'民生类_住房', \
-        u'民生类_法律', u'政治类_地区和平', u'政治类_宗教', u'民生类_社会保障']
-
-# Relatioship: User--User
-friend = "friend" #交互
-relative = "relative" #亲属
-leader = "leader" #上下级关系
-colleague = "colleague" #自述关联
-ip_relation = "ip_relation" #IP关联
-user_tag = "user_tag"#其他
-
-user_user_relation = ['friend','relative','leader','colleague','ip_relation','user_tag']
-
-
-
 #jln info_consume
 mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
 emotions_kv = {'happy': 1, 'angry': 2, 'sad': 3, 'news': 4}
@@ -264,6 +258,8 @@ REDIS_KEYWORD_PORT = '6381'
 index_sensing = "manage_sensing_task"
 type_sensing = "task"
 id_sensing = "social_sensing_task"
+social_sensing_index_name = 'social_sensing_text'
+social_sensing_index_type = 'text'
 
 topic_value_dict = {"art": 1, "computer":2, "economic":7, "education":7.5, "environment":8.7, "medicine":7.8,"military":7.4, "politics":10, "sports":4, "traffic":6.9, "life":1.8, "anti-corruption":9.5, "employment":6, "fear-of-violence":9.3, "house":6.4, "law":8.6, "peace":5.5, "religion":7.6, "social-security":8.6}
 zh_data = ['文体类_娱乐','科技类','经济类','教育类','民生类_环保','民生类_健康',\

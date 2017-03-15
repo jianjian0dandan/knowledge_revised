@@ -8,13 +8,43 @@ import os
 import time
 from datetime import date
 from datetime import datetime
+from get_result import *
+from knowledge.global_utils import graph
 mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/')
 @login_required
 def index():#首页
+
+    user_name = g.user.email
+
+    peo_infors = get_people(user_name)
+
+    peo_string = 'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
+    peo_count = graph.run(peo_string)
+
+    org_string = 'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
+    org_count = graph.run(org_string)
+
+    event_string = 'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
+    event_count = graph.run(event_string)
+
+    special_event_string = 'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
+    special_event_count = graph.run(special_event_string)
+
+    group_string = 'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
+    group_count = graph.run(group_string)
+
+    neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count}
     
-    return render_template('index/knowledge_home.html')
+    weibo_list = get_hot_weibo()
+
+    people_list = get_hot_people()
+
+    map_count = get_map_count()
+    
+    return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
+                           people_list = people_list, map_count = map_count)
 
 @mod.route('/graph/')
 @login_required
@@ -51,3 +81,23 @@ def get_organization():#机构属性页面
 def get_card():#卡片罗列页面
 
     return render_template('index/card_display.html')
+
+@mod.route('/show_attention/', methods=['GET','POST'])
+def show_attention():
+
+    user_name = request.args.get('user_name', '')
+    s_type = request.args.get('s_type', '')
+
+    if not user_name or not s_type:
+        return json.dumps('Wrong')
+    
+    if s_type == 'people':
+        infors = get_people(user_name)
+    elif s_type == 'event':
+        infors = get_event(user_name)
+    else:
+        infors = get_org(user_name)
+
+    return json.dumps(infors)
+
+
