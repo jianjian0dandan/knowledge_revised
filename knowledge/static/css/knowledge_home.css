@@ -2,10 +2,10 @@
 body {
     width: 100%;
     /*width: 1349px;*/
-    /*max-width: 1349px;*/
+    max-width: 1349px;
     min-width: 1349px;
     min-height: 1005px;
-    /*max-height: 1005px;*/
+    max-height: 1005px;
     background: url("/static/images/body.png") no-repeat;
 }
 #container {

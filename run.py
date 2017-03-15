@@ -19,29 +19,29 @@ app = create_app()
 # Create user role data to test with
 @app.route('/create_user_role_test')
 def create_user_roles():
-
-    ##try:
-    db.create_all()
-    role_1 = user_datastore.create_role(name='event_analysis', description=u'专题探索模块权限')
-    role_2 = user_datastore.create_role(name='group_analysis', description=u'群体探索模块权限')
-    role_3 = user_datastore.create_role(name='graph_analysis', description=u'图谱探索模块权限')
-    role_4 = user_datastore.create_role(name='graph_manage', description=u'图谱管理模块权限')
-    role_5 = user_datastore.create_role(name='mygroup', description=u'我的图谱模块权限')
-    role_6 = user_datastore.create_role(name='sysadmin', description=u'系统管理模块权限')
     
-    user_1 = user_datastore.create_user(email='admin@qq.com', password="Bh123456")
-    user_datastore.add_role_to_user(user_1, role_1)
-    user_datastore.add_role_to_user(user_1, role_2)
-    user_datastore.add_role_to_user(user_1, role_3)
-    user_datastore.add_role_to_user(user_1, role_4)
-    user_datastore.add_role_to_user(user_1, role_5)
-    user_datastore.add_role_to_user(user_1, role_6)
+    try:
+        db.create_all()
+        role_1 = user_datastore.create_role(name='event_analysis', description=u'专题探索模块权限')
+        role_2 = user_datastore.create_role(name='group_analysis', description=u'群体探索模块权限')
+        role_3 = user_datastore.create_role(name='graph_analysis', description=u'图谱探索模块权限')
+        role_4 = user_datastore.create_role(name='graph_manage', description=u'图谱管理模块权限')
+        role_5 = user_datastore.create_role(name='mygroup', description=u'我的图谱模块权限')
+        role_6 = user_datastore.create_role(name='sysadmin', description=u'系统管理模块权限')
+    
+        user_1 = user_datastore.create_user(email='admin@qq.com', password="Bh123456")
+        user_datastore.add_role_to_user(user_1, role_1)
+        user_datastore.add_role_to_user(user_1, role_2)
+        user_datastore.add_role_to_user(user_1, role_3)
+        user_datastore.add_role_to_user(user_1, role_4)
+        user_datastore.add_role_to_user(user_1, role_5)
+        user_datastore.add_role_to_user(user_1, role_6)
 
-    db.session.commit()
-    return "success"
-    # except:
-    #     db.session.rollback()
-    #     return "failure"
+        db.session.commit()
+        return "success"
+    except:
+        db.session.rollback()
+        return "failure"
 
 @app.before_request
 def before_request():
@@ -54,7 +54,8 @@ def after_request(response):
 @app.route('/')
 @login_required
 def homepage():
-    return render_template('index/knowledge_home.html')
+    
+    return redirect("/index/")
 
 # logout
 @app.route('/logout/')

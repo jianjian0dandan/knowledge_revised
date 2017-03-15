@@ -5,6 +5,10 @@ from py2neo import Graph
 from elasticsearch import Elasticsearch
 from global_config import *
 
+RUN_TYPE = 0
+diffusion_time = 5
+diffusion_time_interval = 3600*3
+
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
 profile_index_name = "weibo_user"
@@ -12,6 +16,9 @@ profile_index_type = "user"
 
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
+
+# es_social_sensing
+es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
 
 es_retweet = Elasticsearch(user_profile_host, timeout=600)
 es_comment = Elasticsearch(user_profile_host, timeout = 600)
@@ -28,6 +35,10 @@ es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
 
 # km event 
 es_event = Elasticsearch(event_host, timeout=600)
+
+# social sensing es
+es_prediction =  Elasticsearch(social_sensing_host, timeout=600)
+
 
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
@@ -46,6 +57,10 @@ neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
 
 r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
+
+# r_social_sensing
+
+R_SOCIAL_SENSING = redis.StrictRedis(host=redis_host, port=redis_port, db=1)
 
 # user portrait interface: push user into redis list
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)

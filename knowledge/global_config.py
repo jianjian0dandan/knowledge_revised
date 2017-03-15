@@ -7,7 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
-user_portrait_host = ["219.224.134.225:9037"]#["219.224.134.225:9037"]
+user_portrait_host = ["219.224.134.216:9201"]#["219.224.134.225:9037"]
+social_sensing_host = ["219.224.134.225:9037"]
+social_sensing_text = ["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
 km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
@@ -16,8 +18,8 @@ event_port = "9200"
 calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
-# redis_host = "219.224.134.211"
-# redis_port = "7775"
+redis_host = "219.224.134.213"
+redis_port = "7381"
 
 #remote_portrait_name = "user_portrait_1222" # user portrait system
 #portrait_name = "user_portrait_0312"
@@ -137,18 +139,21 @@ NEWS_LIMIT = 100
 
 
 
-REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.211'
+# yuankun
+REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.222' # 212(3-12)
 #REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
-REDIS_CLUSTER_PORT_FLOW1 = '7771'#'6379'
+REDIS_CLUSTER_PORT_FLOW1 = '6381'#'6379' '6669'(3-12)
 #REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
-REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.213'#'219.224.134.212'
-REDIS_CLUSTER_PORT_FLOW2 = '6666'
+REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.222' # 212(3-12)
+REDIS_CLUSTER_PORT_FLOW2 = '6381' # 6666
+
+
 #JLN for keyword find user
-REDIS_KEYWORD_HOST = '219.224.134.212'
+REDIS_KEYWORD_HOST = '219.224.134.222' #212(3-12)
 REDIS_KEYWORD_PORT = '6381'
 #flow2用了
-REDIS_HOST = '219.224.134.213'#'219.224.134.212'
-REDIS_PORT = '6666'#'6381'
+REDIS_HOST = '219.224.134.222'#'219.224.134.212'(3-12)
+REDIS_PORT = '6381'#'6381' --6670(3-12)
 #uname to uid 
 UNAME2UID_HOST = '219.224.134.211'
 UNAME2UID_PORT = '7381'
@@ -198,6 +203,26 @@ R_BEGIN_TIME = '2016-11-21'
 
 
 ES_COPY_USER_PORTAIT_HOST = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
+
+
+# social sensing
+index_sensing = "manage_sensing_task"
+type_sensing = "task"
+id_sensing = "social_sensing_task"
+
+topic_value_dict = {"art": 1, "computer":2, "economic":7, "education":7.5, "environment":8.7, "medicine":7.8,"military":7.4, "politics":10, "sports":4, "traffic":6.9, "life":1.8, "anti-corruption":9.5, "employment":6, "fear-of-violence":9.3, "house":6.4, "law":8.6, "peace":5.5, "religion":7.6, "social-security":8.6}
+zh_data = ['文体类_娱乐','科技类','经济类','教育类','民生类_环保','民生类_健康',\
+                '军事类','政治类_外交','文体类_体育','民生类_交通','其他类',\
+                        '政治类_反腐','民生类_就业','政治类_暴恐','民生类_住房','民生类_法律',\
+                                '政治类_地区和平','政治类_宗教','民生类_社会保障']
+
+name_list = ['art','computer','economic','education','environment','medicine',\
+                'military','politics','sports','traffic','life',\
+                        'anti-corruption','employment','fear-of-violence','house',\
+                                'law','peace','religion','social-security']
+
+TOPIC_ABS_PATH = "/home/ubuntu8/huxiaoqian/user_portrait_0324/user_portrait/user_portrait/cron/model_file/topic"
+
 ES_CLUSTER_HOST_FLOW1 = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
 
 

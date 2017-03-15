@@ -37,6 +37,12 @@ def ts2HourlyTime(ts, interval):
 def ts2datetime_full(ts):
     return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(ts))
 
+def ts2datehour(ts):
+    return time.strftime('%Y-%m-%d %H:%M', time.localtime(ts))
+
+def datehour2ts(date):
+    return int(time.mktime(time.strptime(date, '%Y-%m-%d %H:%M')))
+
 
 if __name__=='__main__':
     timestamp = datetime2ts('2013-09-08')
