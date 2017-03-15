@@ -383,7 +383,7 @@ def get_close_user(attention_id):
     extend_result = get_extend(attention_id)
     return extend_result
 
-# get recommentation from admin user operation
+# get recommentation from admin user operation,先查找用户关注的用户，再查找与之相关的用户
 def get_operation_recommentation():
     results = {}
     now_ts = time.time()
@@ -392,7 +392,8 @@ def get_operation_recommentation():
         now_date = ts2datetime(now_ts)
     else:
         now_date = RUN_TEST_TIME
-    user_dict = query_attention_user()  #{admin:[a,b,c],...}
+    user_dict = {'admin':['5825134863', '3036528532']}
+    # user_dict = query_attention_user()  #{admin:[a,b,c],...}
     for k,v in user_dict.iteritems():
         user = k
         attention_ids = [i for i in set(v)]
@@ -401,8 +402,7 @@ def get_operation_recommentation():
             operation_results = get_close_user([attention_id])
             attention_dict[attention_id] = operation_results
         save_type = 'operation'
-        print k, attention_dict
-        # save_results(save_type, user, attention_dict)
+        save_results(save_type, user, attention_dict)
     return results
 
 # save results
@@ -412,10 +412,10 @@ def save_results(save_type, user, recomment_results):
     if RUN_TYPE == 1:
         now_date = ts2datetime(time.time())
     else:
-        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
+        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
     recomment_hash_name = 'recomment_' + now_date + '_auto'
     #print 'save operation results'
-    R_RECOMMENTATION.hset(recomment_hash_name, user, recomment_results)
+    R_RECOMMENTATION.hset(recomment_hash_name, user, json.dumps(recomment_results))
     save_mark = True
     return save_mark
 
@@ -436,10 +436,10 @@ if __name__=='__main__':
     log_time_start_date = ts2datetime(log_time_start_ts)
     print 'cron/recommend_in/recommend_in_auto.py&start&' + log_time_start_date
     
-    # try:
-    compute_auto_recommentation()
-    # except Exception, e:
-    #     print e, '&error&', ts2date(time.time())
+    try:
+        compute_auto_recommentation()
+    except Exception, e:
+        print e, '&error&', ts2date(time.time())
     
     log_time_end_ts = time.time()
     log_time_end_date = ts2datetime(log_time_end_ts)

@@ -76,3 +76,10 @@ r_path = '/home/ubuntu2/yuanshi/knowledge-management/knowledge_revised/knowledge
 
 ##事件分类绝对路径
 c_path = '/home/ubuntu2/yuanshi/knowledge-management/knowledge_revised/knowledge/cron/event_classify/python'
+
+#cron/API_user_portrait/topic
+TOPIC_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/topic'
+
+DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
+
+

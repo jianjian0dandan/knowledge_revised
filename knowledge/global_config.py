@@ -7,9 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from elasticsearch import Elasticsearch
 
 user_profile_host = ["219.224.134.216:9201"]
-user_portrait_host = ["219.224.134.216:9201"]#["219.224.134.225:9037"]
-social_sensing_host = ["219.224.134.225:9037"]
-social_sensing_text = ["219.224.134.225:9037"]
+user_portrait_host = ["219.224.134.225:9037"]#["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
 km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
@@ -18,40 +16,7 @@ event_port = "9200"
 calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
-redis_host = "219.224.134.213"
-redis_port = "7381"
 
-#remote_portrait_name = "user_portrait_1222" # user portrait system
-#portrait_name = "user_portrait_0312"
-#flow_text_name = "flow_text_2016-11-26"
-#flow_text_index_name_pre = 'flow_text_'
-#portrait_type = "user"
-#flow_text_type = "text"
-'''
-event_name = "event_task"#"event" # 事件基本信息
-event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
-event_text = "event_text"
-event_text_type ="text"
-event_type = "text"
-neo4j_name = "neo4j"
-neo4j_password = "database"
-neo4j_data_path = 'http://219.224.134.213:7474/db/data'
-'''
-
-# retweet&comment for test
-retweet_comment_es_host = ['219.224.134.216:9201']
-retweet_comment_port = "9201"
-'''
-# week retweet/be_retweet relation es
-retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
-retweet_index_type = 'user'
-be_retweet_index_name_pre = '1225_be_retweet_' #be_retweet: 'be_retweet_1'/'be_retweet_2'
-be_retweet_index_type = 'user'
-# week comment/be_comment relation es
-comment_index_name_pre = '1225_comment_'
-comment_index_type = 'user'
-be_comment_index_name_pre = '1225_be_comment_'
-be_comment_index_type = 'user'
 
 # neo4j 索引(index)
 node_index_name = "node_index" # primary_key: uid
@@ -64,7 +29,7 @@ special_event_index_name = "special_event_index" # primary_key: event
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
-'''
+
 
 domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
         u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
@@ -112,7 +77,7 @@ group_rel = "group"
 
 
 
-'''
+
 WEIBO_ES_HOST = '219.224.134.216:9204'
 weibo_es = Elasticsearch(WEIBO_ES_HOST,timeout=1000)
 weibo_index_name = 'weibo'
@@ -121,7 +86,7 @@ topics_river_index_name='topics_river'
 topics_river_index_type='text'
 subopinion_index_type='text'
 subopinion_index_name='subopinion'
-'''
+
 
 #jln info_consume
 mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
@@ -139,21 +104,11 @@ NEWS_LIMIT = 100
 
 
 
-# yuankun
-REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.222' # 212(3-12)
-#REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
-REDIS_CLUSTER_PORT_FLOW1 = '6381'#'6379' '6669'(3-12)
-#REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
-REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.222' # 212(3-12)
-REDIS_CLUSTER_PORT_FLOW2 = '6381' # 6666
-
-
-#JLN for keyword find user
-REDIS_KEYWORD_HOST = '219.224.134.222' #212(3-12)
-REDIS_KEYWORD_PORT = '6381'
+REDIS_CLUSTER_HOST_FLOW2 = '219.224.134.213'#'219.224.134.212'
+REDIS_CLUSTER_PORT_FLOW2 = '6666'
 #flow2用了
-REDIS_HOST = '219.224.134.222'#'219.224.134.212'(3-12)
-REDIS_PORT = '6381'#'6381' --6670(3-12)
+REDIS_HOST = '219.224.134.213'#'219.224.134.212'
+REDIS_PORT = '6666'#'6381'
 #uname to uid 
 UNAME2UID_HOST = '219.224.134.211'
 UNAME2UID_PORT = '7381'
@@ -203,26 +158,6 @@ R_BEGIN_TIME = '2016-11-21'
 
 
 ES_COPY_USER_PORTAIT_HOST = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
-
-
-# social sensing
-index_sensing = "manage_sensing_task"
-type_sensing = "task"
-id_sensing = "social_sensing_task"
-
-topic_value_dict = {"art": 1, "computer":2, "economic":7, "education":7.5, "environment":8.7, "medicine":7.8,"military":7.4, "politics":10, "sports":4, "traffic":6.9, "life":1.8, "anti-corruption":9.5, "employment":6, "fear-of-violence":9.3, "house":6.4, "law":8.6, "peace":5.5, "religion":7.6, "social-security":8.6}
-zh_data = ['文体类_娱乐','科技类','经济类','教育类','民生类_环保','民生类_健康',\
-                '军事类','政治类_外交','文体类_体育','民生类_交通','其他类',\
-                        '政治类_反腐','民生类_就业','政治类_暴恐','民生类_住房','民生类_法律',\
-                                '政治类_地区和平','政治类_宗教','民生类_社会保障']
-
-name_list = ['art','computer','economic','education','environment','medicine',\
-                'military','politics','sports','traffic','life',\
-                        'anti-corruption','employment','fear-of-violence','house',\
-                                'law','peace','religion','social-security']
-
-TOPIC_ABS_PATH = "/home/ubuntu8/huxiaoqian/user_portrait_0324/user_portrait/user_portrait/cron/model_file/topic"
-
 ES_CLUSTER_HOST_FLOW1 = ["219.224.134.216:9201", "219.224.134.217:9201","219.224.134.218:9201"]
 
 
@@ -241,3 +176,107 @@ auth_list = [1,2,3,4,5,6,7,8]
 
 user_type ='user'
 auth_type ='auth'
+
+social_sensing_host = ["219.224.134.225:9037"]
+social_sensing_text = ["219.224.134.225:9037"]
+redis_host = "219.224.134.213"
+redis_port = "7381"
+
+portrait_name = "user_portrait_0312"
+flow_text_index_name_pre = 'flow_text_'
+portrait_type = "user"
+flow_text_type = "text"
+
+event_name = "event_task"#"event" # 事件基本信息
+event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
+event_text = "event_text"
+event_text_type ="text"
+event_type = "text"
+neo4j_name = "neo4j"
+neo4j_password = "database"
+neo4j_data_path = 'http://219.224.134.213:7474/db/data'
+
+
+# retweet&comment for test
+retweet_comment_es_host = ['219.224.134.216:9201']
+retweet_comment_port = "9201"
+
+# week retweet/be_retweet relation es
+retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
+retweet_index_type = 'user'
+be_retweet_index_name_pre = '1225_be_retweet_' #be_retweet: 'be_retweet_1'/'be_retweet_2'
+be_retweet_index_type = 'user'
+# week comment/be_comment relation es
+comment_index_name_pre = '1225_comment_'
+comment_index_type = 'user'
+be_comment_index_name_pre = '1225_be_comment_'
+be_comment_index_type = 'user'
+
+#bci_
+bci_es_host = ['219.224.134.216:9201']
+
+
+domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
+        u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
+topic_list = [u'文体类_娱乐', u'科技类', u'经济类', u'教育类', u'民生类_环保', \
+        u'民生类_健康', u'军事类', u'政治类_外交', u'文体类_体育', u'民生类_交通', \
+        u'其他类', u'政治类_反腐', u'民生类_就业', u'政治类_暴恐', u'民生类_住房', \
+        u'民生类_法律', u'政治类_地区和平', u'政治类_宗教', u'民生类_社会保障']
+
+# Relatioship: User--User
+friend = "friend" #交互
+relative = "relative" #亲属
+leader = "leader" #上下级关系
+colleague = "colleague" #自述关联
+ip_relation = "ip_relation" #IP关联
+user_tag = "user_tag"#其他
+
+user_user_relation = ['friend','relative','leader','colleague','ip_relation','user_tag']
+
+
+
+#jln info_consume
+mtype_kv = {'origin':1, 'comment': 2, 'forward':3}
+emotions_kv = {'happy': 1, 'angry': 2, 'sad': 3, 'news': 4}
+emotions_zh_kv = {'happy': '高兴', 'angry': '愤怒', 'sad': '悲伤', 'news': '新闻'}
+
+#jln
+SENTIMENT_TYPE_COUNT = 7
+SENTIMENT_FIRST = ['0', '1', '7']
+SENTIMENT_SECOND = ['2', '3', '4', '5', '6']
+MAX_REPOST_SEARCH_SIZE = '100'
+MAX_FREQUENT_WORDS = 100
+MAX_LANGUAGE_WEIBO = 200
+NEWS_LIMIT = 100
+
+
+REDIS_CLUSTER_HOST_FLOW1 = '219.224.134.213'
+REDIS_CLUSTER_HOST_FLOW1_LIST = ["219.224.134.211", "219.224.134.212", "219.224.134.213"]
+REDIS_CLUSTER_PORT_FLOW1 = '6670'#'6379'
+REDIS_CLUSTER_PORT_FLOW1_LIST = ["6379", "6380"]
+
+#JLN for keyword find user
+REDIS_KEYWORD_HOST = '219.224.134.222' #212(3-12)
+REDIS_KEYWORD_PORT = '6381'
+#flow2用了
+
+# social sensing
+index_sensing = "manage_sensing_task"
+type_sensing = "task"
+id_sensing = "social_sensing_task"
+
+topic_value_dict = {"art": 1, "computer":2, "economic":7, "education":7.5, "environment":8.7, "medicine":7.8,"military":7.4, "politics":10, "sports":4, "traffic":6.9, "life":1.8, "anti-corruption":9.5, "employment":6, "fear-of-violence":9.3, "house":6.4, "law":8.6, "peace":5.5, "religion":7.6, "social-security":8.6}
+zh_data = ['文体类_娱乐','科技类','经济类','教育类','民生类_环保','民生类_健康',\
+                '军事类','政治类_外交','文体类_体育','民生类_交通','其他类',\
+                        '政治类_反腐','民生类_就业','政治类_暴恐','民生类_住房','民生类_法律',\
+                                '政治类_地区和平','政治类_宗教','民生类_社会保障']
+
+name_list = ['art','computer','economic','education','environment','medicine',\
+                'military','politics','sports','traffic','life',\
+                        'anti-corruption','employment','fear-of-violence','house',\
+                                'law','peace','religion','social-security']
+
+TOPIC_ABS_PATH = "/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/topic"
+
+DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
+
