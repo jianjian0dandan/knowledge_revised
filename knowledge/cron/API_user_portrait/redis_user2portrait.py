@@ -2,15 +2,20 @@
 import sys
 import time
 import json
-from wei_api import read_flow_text, read_flow_text_sentiment
+from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user, r_user_hash_name
+from global_utils import r_user as r
+from global_utils import r_user_hash_name
+from time_utils import ts2date
+from parameter import WEIBO_API_INPUT_TYPE
 
 def scan_compute_redis():
     hash_name = r_user_hash_name
-    results = r.hgetall(hash_name)
+    #results = r.hgetall(hash_name)
+    #test
+    results = {'2117306420':json.dumps(['2017-09-01', '1', '0']), '5779325975':json.dumps(['2017-09-01', '1', '0'])}
     iter_user_list = []
     mapping_dict = dict()
     verify_mark_dict = dict()
@@ -61,7 +66,6 @@ def scan_compute_redis():
         else:
             user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
         #compute text attribute
-        print 'user_weibo_dict:', len(user_weibo_dict)
         compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts)
         if compute_status==True:
             change_status_computed(mapping_dict)
@@ -84,7 +88,7 @@ def change_status_computed(mapping_dict):
         user_list = json.loads(mapping_dict[uid])
         user_list[1] = '4'
         new_mapping_dict[uid] = json.dumps(user_list)
-    r.hmset(hash_name, new_mapping_dict)
+    #r.hmset(hash_name, new_mapping_dict)
 
 #use to deal compute fail situation
 def change_status_compute_fail(mapping_dict):
@@ -95,7 +99,7 @@ def change_status_compute_fail(mapping_dict):
         user_list = json.loads(mapping_dict[uid])
         user_list[1] = '1'
         new_mapping_dict[uid] = json.dumps(user_list)
-    r.hmset(hashname, new_mapping_dict)	
+    #r.hmset(hashname, new_mapping_dict)	
 
 
 if __name__=='__main__':

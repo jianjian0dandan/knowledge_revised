@@ -22,6 +22,26 @@ from time_utils import datetime2ts, ts2datetime, ts2date
 
 test_ts = datetime2ts(RUN_TEST_TIME)
 
+def ip2city(ip):
+    school = ''
+    try:
+        city = IP.find(str(ip))
+        if city:
+            city = city.encode('utf-8')
+        else:
+            return None, None
+        city_list = city.split('\t')
+        if len(city_list)==4:
+            city = '\t'.join(city_list[:3])
+            if '学' in city_list[-1]:
+                school = city_list[-1]
+    except Exception, e:
+        return None, None
+    return city, school
+
+
+
+
 # use to compute flow information for new user attribute compute
 # write in version: 2016-02-28
 # input: uid_list, keywords_dict
@@ -42,13 +62,14 @@ def get_flow_information_v2(uid_list, all_user_keywords_dict):
         #compute hashtag and geo
         hashtag_results = r_cluster_3.hmget('hashtag_'+str(ts), uid_list)
         ip_results = r_cluster.hmget('new_ip_'+str(ts), uid_list)
+        #print 'ip_results:', ip_results
         #compute sensitive_words
         sensitive_results = r_cluster_3.hmget('sensitive_'+str(ts), uid_list)
         count = 0 
         for uid in uid_list:
             #init iter_results[uid]
             if uid not in iter_results:
-                iter_results[uid] = {'hashtag':{}, 'geo':{},'geo_track':[],'keywords':{}, 'sensitive':{}, 'school':{}, 'week_ip':{}, 'ip':{}}
+                iter_results[uid] = {'hashtag':{}, 'geo':{},'geo_track':[],'keywords':{}, 'sensitive':{}, 'school':{}, 'week_ip':{0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}}, 'ip':{}}
             if uid not in today_sensitive_results:
                 today_sensitive_results[uid] = {}
             #compute hashtag
@@ -109,17 +130,17 @@ def get_flow_information_v2(uid_list, all_user_keywords_dict):
                 except:
                 	iter_results[uid]['ip'] = {ip: ip_count}
                 for ip_time_item in ip_time_list:
-                	ip_timesegment = (int(ip_timestamp) - ts) / IP_TIME_SEGMENT
-                	try:
-                		iter_results[uid]['week_ip'][ip_timesegment][ip] += 1
-                	except:
-                		iter_results[uid]['week_ip'][ip_timesegment] = {ip: 1}
+                    ip_timesegment = (int(ip_time_item) - ts) / IP_TIME_SEGMENT
+                    try:
+                        iter_results[uid]['week_ip'][ip_timesegment][ip] += 1
+                    except:
+                        iter_results[uid]['week_ip'][ip_timesegment][ip] = 1
                 #end deal ip
             iter_results[uid]['geo_track'].append(uid_day_geo[uid])
-            count += 1
-               
+            count += 1   
     #get keywords top
     for uid in uid_list:
+        #print 'test iter_results_ip:', iter_results[uid]['week_ip']
         results[uid] = {}
         #hashtag
         hashtag_dict = iter_results[uid]['hashtag']
@@ -168,27 +189,50 @@ def get_flow_information_v2(uid_list, all_user_keywords_dict):
         #activity_ip
         all_ip_dict = iter_results[uid]['ip']
         sort_all_ip = sorted(all_ip_dict.items(), key=lambda x:x[1], reverse=True)
-        activity_ip = sort_all_ip[0]
-        results[uid]['activity_ip'] = activity_ip
+        try:
+            activity_ip = sort_all_ip[0][0]
+        except:
+            activity_ip = ''
+        results[uid]['activity_ip'] = str(activity_ip)
         #job_ip & home_ip
         week_time_ip_dict = iter_results[uid]['week_ip']
         for i in range(0, 6):
-        	try:
-        	    segment_dict = week_time_ip_dict[i]
+            try:
+                segment_dict = week_time_ip_dict[i]
             except:
-            	week_time_ip_dict[i] = {}
+                week_time_ip_dict[i] = {}
         home_ip, job_ip = get_ip_description(week_time_ip_dict)
-        results[uid]['home_ip'] = home_ip
-        results[uid]['job_ip'] = job_ip
+        results[uid]['home_ip'] = str(home_ip)
+        results[uid]['job_ip'] = str(job_ip)
         
     return results
 
+def union_dict(*objs):
+    _keys = set(sum([obj.keys() for obj in objs], []))
+    _total = {}
+    for _key in _keys:
+        _total[_key] = sum([int(obj.get(_key, 0)) for obj in objs])
+    return _total
+
+
 def get_ip_description(week_results):
-	sort_week_result = sorted(week_results.items(), key=lambda x:x[0])
-	job_segment_dict = union_dict(sort_week_result[2][1], sort_week_result[3][1])
-	home_segment_dict = union_dict(sort_week_result[0][1], sort_week_result[5][1])
-    sort_job_list = sorted(job_segment_dict.items(), key=lambda x:x[1], reverse=True)[0]
-    sort_home_list = sorted(home_segment_dict.items(), key=lambda x:x[1], reverse=True)[0]
-    job_ip = sort_job_list[0]
-    home_ip = sort_home_list[0]
+    sort_week_result = sorted(week_results.items(), key=lambda x:x[0])
+    job_segment_dict = union_dict(sort_week_result[2][1], sort_week_result[3][1])
+    home_segment_dict = union_dict(sort_week_result[0][1], sort_week_result[5][1])
+    try:
+        sort_job_list = sorted(job_segment_dict.items(), key=lambda x:x[1], reverse=True)[0]
+    except:
+        sort_job_list = []
+    try:    
+        sort_home_list = sorted(home_segment_dict.items(), key=lambda x:x[1], reverse=True)[0]
+    except:
+        sort_home_list = []
+    try:
+        job_ip = sort_job_list[0][0]
+    except:
+        job_ip = ''
+    try:    
+        home_ip = sort_home_list[0][0]
+    except:
+        home_ip = ''
     return home_ip, job_ip 
