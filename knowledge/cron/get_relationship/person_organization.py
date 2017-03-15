@@ -206,6 +206,8 @@ def get_ip_r(uid):#IP关联关系
     user_dict = dict()
     people_list = []
     search_result = es_user_portrait.mget(index=remote_portrait_name, doc_type=portrait_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return []
     for item in search_result:
         uid = item['_id']
         if not item['found']:

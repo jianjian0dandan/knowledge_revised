@@ -1,62 +1,22 @@
-/*清除初始的样式*/
-html,body,div,img,h1,h2,h3,h4,h5,h6,input,button,span,p,b,strong,em,li,ul,ol,dl,dt,dd,
-th,textarea,select,table,form {
-    margin: 0;
-    padding: 0;
-    -webkit-user-select: none;
-    font-family: '宋体';
-}
-ul,li,ol {
-    list-style: none;
-}
-img {
-    border:none;
-}
-input,select,textarea,button {
-    outline: none;
-    border: none;
-}
-a,a:link,a:hover,a:visited,a:active {
-    text-decoration: none;
-}
 /*内容样式*/
 body {
-    width: 1300px;
-    max-width: 1300px;
-    min-width: 1300px;
-    min-height: 660px;
-    max-height: 660px;
-    background: url("../images/body.png") no-repeat;
+    width: 100%;
+    /*width: 1349px;*/
+    /*max-width: 1349px;*/
+    min-width: 1349px;
+    min-height: 1005px;
+    /*max-height: 1005px;*/
+    background: url("/static/images/body.png") no-repeat;
 }
 #container {
     width: 100%;
     height: 800px;
     padding: 20px 20px 50px 20px;
 }
-#container #nav {
-    width: 80%;
-    height: 120px;
-    padding-left: 140px;
-    margin: 10px auto 0;
-}
-#container #nav .nav_list li {
-    float: left;
-}
-#container #nav .nav_list li a {
-    font-family: '微软雅黑';
-    display: block;
-    width: 110px;
-    height: 60px;
-    line-height: 60px;
-    text-align: center;
-    font-size: 16px;
-    color: white;
-    font-weight: 900;
-}
 #container #statistics {
-    width: 77%;
-    height: 280px;
-    margin: 0 auto;
+    width: 90%;
+    height: 368px;
+    margin: 20px auto 0;
 }
 #container #statistics .statis-1 {
     width: 155px;
@@ -66,20 +26,21 @@ body {
 #container #statistics .statis-1 .s1-top {
     width: 100%;
     height: 35px;
-    background: url("../images/statistic.png") no-repeat center;
+    background: url("/static/images/statistic.png") no-repeat center;
     background-size: 120px 20px;
 }
 #container #statistics .statis-1 .s1-bot {
-    margin-top: 48px;
+    margin-top: 68px;
 }
 #container #statistics .statis-1 .s1-bot .bot-nums {
-    background: url("../images/right.png") no-repeat 5%;
+    background: url("/static/images/right.png") no-repeat 5%;
     font-size: 10px;
     color: white;
     padding-left: 30px;
     height: 24px;
     line-height: 24px;
     padding-top: 3px;
+    margin-bottom: 8px;
 }
 #container #statistics .statis-2,
 #container #statistics #statis-3{
@@ -95,8 +56,8 @@ body {
     color: white;
     font-size: 12px;
     font-weight: 900;
-    width: 100px;
-    margin: 235px 0 0 63px;
+    width: 130px;
+    margin: 279px 0 0 0;
     background-color: #465f7d;
 }
 #container #statistics .statis-2 .s2-left #search_val::-webkit-input-placeholder{
@@ -125,7 +86,7 @@ body {
     height: 50px;
 }
 #container #statistics .statis-2 .s2-right .chart {
-    margin:65px 0 0 65px;
+    margin:87px 0 0 106px;
 }
 #container #statistics .statis-2 .s2-right dl {
     cursor: pointer;
@@ -140,51 +101,41 @@ body {
 #container #statistics .statis-2 .s2-right dd {
     font-size: 8px;
     color: white;
+    margin-top: 10px;
 }
 #container #my_hot {
     margin-top: 120px;
-    padding: 5px 120px 0;
-}
-#container #my_hot .hot_event,
-#container #my_hot .hot_user,
-#container #my_hot .my_focus {
-    float: left;
-    width: 265px;
-    height: 155px;
-    margin-left: 35px;
-    padding-left: 10px;
     padding-top: 5px;
 }
+#container #my_hot .hot_event,
+#container #my_hot .hot_user {
+    display: inline-block;
+    width: 300px;
+}
 #container #my_hot .my_focus {
-    margin-left: 70px;
-    width: 290px;
+    display: inline-block;
+    float: right;
+    position: relative;
+    width: 360px;
+    left: -110px;;
 }
 #container #my_hot .hot_user {
-    margin-left: 80px;
-}
-#container #my_hot .hot_event h3{
-    background: url("../images/event.png") no-repeat 20% top;
-    background-size:90px 20px;
-}
-/*#container #my_hot .my_focus h3{*/
-    /*background: url("../images/focus.png") no-repeat 20% top;*/
-    /*background-size:90px 20px;*/
-/*}*/
-#container #my_hot .hot_user h3{
-    background: url("../images/user.png") no-repeat 20% top;
-    background-size:90px 20px;
+    float: right;
+    margin-right: 52px;
 }
 #container #my_hot .hot_event .event_caption,
 #container #my_hot .hot_user .user_caption{
     font-size: 8px;
     color: white;
     padding-left: 20px;
-    margin-top: 11px;
+    margin-top: 6px;
+    height: 22px;
+    line-height: 22px;
 }
 #container #my_hot .hot_event .event_caption .event_name,
 #container #my_hot .hot_user .user_caption .user_name{
     display: inline-block;
-    width: 150px;
+    width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -209,12 +160,12 @@ body {
 #container #my_hot .hot_user .user_more:hover {
     background-color: #465f7d;
 }
+#container #my_hot .my_focus .focus_details .details-2 {
+    text-align: center;
+    margin-top: 11px;
+}
 #container #my_hot .my_focus .focus_details .details-1 span,
 #container #my_hot .my_focus .focus_details .details-2 span {
     font-size: 8px;
     color: white;
 }
-/*#container #my_hot .my_focus .focus_details tr {*/
-    /*display: block;*/
-    /*margin-top: 4px;*/
-/*}*/
