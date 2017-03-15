@@ -10,13 +10,14 @@ from global_utils import event_analysis_name,event_type,event_text,event_text_ty
 from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type
 from global_utils import bci_day_pre,bci_day_type
 from parameter import RUN_TYPE,RUN_TEST_TIME
+from global_utils import org_node,people_node,event_node,people_primary,org_primary,event_primary,node_index_name,event_index_name,org_index_name
 
 sys.path.append('../../')
 sys.path.append('../')
 from get_relationship.get_pos import get_news_main #抽取事件的人物、机构、地点和时间
 from event_classify.python.event_classify import cut_weibo #事件类型
 from get_relationship.text_process import get_keyword,get_topic_word  #topic,keyword
-def compute_real_info(topic,begin_ts,end_ts):
+def compute_real_info(topic,begin_ts,end_ts,relation):
 	info_dict = {}
 	
 	query_body = {   
@@ -42,7 +43,22 @@ def compute_real_info(topic,begin_ts,end_ts):
 	info_dict['real_geo'] = basics['place']
 	info_dict['real_time'] = basics['time']
 	info_dict['real_person'] = basics['people']
-	
+	#存关系
+	if('join' in relation.split('&')):
+		rel_list = []
+		if info_dict['real_auth'] !='None':
+		    resu = create_person(org_node,org_primary,info_dict['real_auth'],org_index_name)
+		    if resu != 'Node Wrong':
+		    	rel_list.append([[2,en_name],'join',[0,info_dict['real_auth']]])
+		if info_dict['real_person'] !='None':
+		    create_person(people_node,people_primary,info_dict['real_person'],node_index_name)
+		    if resu != 'Node Wrong':
+			    rel_list.append([[2,en_name],'join',[1,info_dict['real_person']]])
+		try:
+			nodes_rels(rel_list)
+		except:
+			pass
+
 	query_body = {   
 	    'query':{
 	        'bool':{
@@ -78,7 +94,7 @@ def compute_real_info(topic,begin_ts,end_ts):
 		es_event.update(index=event_analysis_name,doc_type=event_type,id=topic,body={'doc':info_dict})
 	except Exception,e:
 	    es_event.index(index=event_analysis_name,doc_type=event_type,id=topic,body=info_dict)
-
+	get_users(topic,begin_ts,end_ts,relation)
 
 
 def get_hashtag(text):
@@ -95,7 +111,7 @@ def get_hashtag(text):
 	            hashtag_dict[hashtag] = 1
 	return hashtag_dict
 
-def get_users(topic,begin_ts,end_ts):
+def get_users(topic,begin_ts,end_ts,relation):
 	uid_list = set()
 	query_body = {   
 	    'query':{
@@ -136,6 +152,17 @@ def get_users(topic,begin_ts,end_ts):
 
 	user = sorted(user_influence_dict.iteritems(),key=lambda x:x[1],reverse=True)[:100]
 	#print user
+	if('discuss' in relation.split('&')):
+		rel_list = []
+		for i in user:
+		    resu = create_person(people_node,people_primary,i,node_index_name)
+		    if resu != 'Node Wrong':
+		    	rel_list.append([[2,en_name],'discuss',[1,i]])
+		try:
+			nodes_rels(rel_list)
+		except:
+			pass
+
 
 	try:
 		es_event.update(index=event_analysis_name,doc_type=event_type,id=topic,body={'doc':{'user_results':json.dumps(user)}})

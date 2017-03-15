@@ -58,6 +58,13 @@ def get_mappings(index_name):
                         },
                         "immediate_compute":{
                             "type":"long"
+                        },
+                        "relation_compute":{
+                            'type': 'string',
+                            'analyzer': 'my_analyzer'
+                        },
+                        "mid":{
+                            'type': 'long'
                         }
                         }
                     }
