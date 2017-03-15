@@ -49,6 +49,14 @@ def get_db_num(timestamp):
         db_number = 1
     return db_number
 
+
+def ts2datehour(ts):
+    return time.strftime('%Y-%m-%d %H:%M', time.localtime(ts))
+
+def datehour2ts(date):
+    return int(time.mktime(time.strptime(date, '%Y-%m-%d %H:%M')))
+
+
 if __name__=='__main__':
     timestamp = datetime2ts('2013-09-08')
     #result = ts2date(1377993600)

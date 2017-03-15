@@ -19,10 +19,11 @@ def nodes_rels(list):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node_index_name)
     event_index = Index.get_index(Node, event_index_name)
+    org_index = Index.get_index(Node, org_index_name)
     tx = graph.begin()
-    if not (node_index and event_index):
-        print "node or group does not exist"
-        return "0"
+    if not (node_index and event_index and org_index):
+        return 'Relation Wrong'
+    
     for item in list:
         node1_key = get_type_key(item[0][0])
         node2_key = get_type_key(item[2][0])
@@ -170,26 +171,23 @@ def nodes_rels(list):
             tx.commit()
             tx = graph.begin()
     tx.commit()
-    return 'success'
+    return 'Relation Success'
 
 # 对数据进行存放
 def create_person(node_type, node_key, node_id, node_name_index):
     Index = ManualIndexManager(graph)
     node_name = Index.get_or_create_index(Node, node_name_index)
-    print node_name
     if node_name:
         exist = node_name.get(node_key, node_id)
-        print exist
         if exist:
-            person_node = exist[0]
-            graph.push(person_node)
-            return 'Exist'
+            return 'Node Exist'#节点已存在
         else:
             person_node = Node(node_type, uid=node_id)
             graph.create(person_node)
             node_name.add(node_key, node_id, person_node)
-            print "create node success"
-            return True
+            return 'Node Success'#创建节点成功
+    else:
+        return 'Node Wrong'#创建节点失败
 
 # 返回需要的查询结果
 def select_rels_all(c_string):
