@@ -104,7 +104,7 @@ def compute_topic_task():
                 if('contain' in relation.split('&')):
                     #计算关系
                     related_event_ids = event_input(keywords,en_name)
-                                        rel_list = []
+                    rel_list = []
                     for i in related_event_ids:
                         create_person(event_node,event_primary,i,event_index_name)
                         rel_list.append([[2,en_name],'contain',[2,i]])
@@ -198,19 +198,20 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords):
             source['en_name'] = en_name
             action = {"index":{"_id":_id}}
             bulk_action.extend([action, source])
-        count += 1
-        if count % 1000 == 0:
-            es_event.bulk(bulk_action, index=event_text, doc_type=event_text_type, timeout=100)
-            bulk_action = []
-            print count
+            count += 1
+            if count % 1000 == 0:
+                es_event.bulk(bulk_action, index=en_name, doc_type=event_text_type, timeout=100)
+                bulk_action = []
+                print count
                 if count % 10000 == 0:
-                te = time.time()
-                print "index 10000 per %s second" %(te - tb)
-                tb = te
-    except StopIteration:
-            print "all done"
+                    te = time.time()
+                    print "index 10000 per %s second" %(te - tb)
+                    tb = te
+        except StopIteration:
+                print "all done"
+                break
     if bulk_action:
-        es_event.bulk(bulk_action, index=event_text, doc_type=event_text_type, timeout=100)
+        es_event.bulk(bulk_action, index=en_name, doc_type=event_text_type, timeout=100)
 
     return 1
 
@@ -247,6 +248,7 @@ def get_day_zero(start_ts,end_ts):
     end = datetime.date(*end_time)
 
     return [str(end + datetime.timedelta(days=-i)) for i in range(int(during)+1)]
+
 
 def save_es(en_name,result):
     bulk_action = []
@@ -289,3 +291,4 @@ if __name__ == '__main__':
     #weibo_count = es_event.count(index='aoyunhui')
     #print weibo_count
     counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
+    # es_event.index(index='event_task',doc_type='mei-guo-da-xuan',id='test',body={'name':'test_task','start_ts':'1480089600','end_ts':'1480176000','submit_ts':'1480089600','comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'military','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1})
