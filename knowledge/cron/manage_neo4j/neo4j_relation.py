@@ -19,6 +19,7 @@ def nodes_rels(list):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node_index_name)
     event_index = Index.get_index(Node, event_index_name)
+    org_index = Index.get_index(Node, org_index_name)
     tx = graph.begin()
     if not (node_index and event_index):
         print "node or group does not exist"

@@ -54,7 +54,8 @@ def after_request(response):
 @app.route('/')
 @login_required
 def homepage():
-    return render_template('index/knowledge_home.html')
+    
+    return redirect("/index/")
 
 # logout
 @app.route('/logout/')
