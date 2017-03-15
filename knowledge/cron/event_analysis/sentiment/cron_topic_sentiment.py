@@ -221,7 +221,7 @@ def compute_sentiment_count(topic,begin_ts,end_ts,during):
             }
         }
     }
-    weibo_sentiment_count = es_event.search(index=event_text,doc_type=event_text_type,body=query_body)\
+    weibo_sentiment_count = es_event.search(index=topic,doc_type=event_text_type,body=query_body)\
                                 ['aggregations']['all_interests']['buckets']
     #print 'wwwwwwwwwwwwwwwwwwwwww'
     #print weibo_sentiment_count
