@@ -12,6 +12,7 @@ profile_index_type = "user"
 
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
+es_bci = Elasticsearch(user_profile_host, timeout=600)
 
 #recommendation task
 es_recommendation_result = Elasticsearch(user_portrait_host, timeout=600)

@@ -12,6 +12,7 @@ from flow_information import get_flow_information_v2
 from user_profile import get_profile_information
 from evaluate_index import get_importance, get_activity_time, get_activeness, get_influence
 from config import topic_en2ch_dict, domain_en2ch_dict
+from person_organization import person_organization
 from topic.test_topic import topic_classfiy
 from domain.test_domain_v2 import domain_classfiy
 sys.path.append('../../')
@@ -68,15 +69,12 @@ def domain_en2ch(domain_en_label):
 
 
 def save_user_results(bulk_action):
-    print 'save utils bulk action len:', len(bulk_action)
-    #print 'bulk action:', bulk_action
-    print 'save bulk action:', bulk_action
-    print es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type, timeout=60)
+    es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type, timeout=60)
     return True  
 
 #use to compute new user attribute by redis_user2portrait.py
 #version: write in 2016-02-28
-def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts):
+def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_list):
     status = False
     print 'start cron_text_attribute'
     uid_list = user_keywords_dict.keys()
@@ -158,7 +156,10 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
         bulk_action.extend([action, results])
         
     status = save_user_results(bulk_action)
-    
+    print 'save es_user_portrait:', status 
+    #compute relation
+    #save_status = person_organization(uid_list,relation_list)
+    #print 'save neo4j:', save_status
     return status
 
 

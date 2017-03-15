@@ -56,13 +56,14 @@ def get_flow_information_v2(uid_list, all_user_keywords_dict):
         now_date_ts = datetime2ts(ts2datetime(now_ts))
     else:
         now_date_ts = test_ts
+    print 'run_type:', RUN_TYPE
     for i in range(WEEK,0,-1):
         ts = now_date_ts - DAY*i
         uid_day_geo = {}
         #compute hashtag and geo
         hashtag_results = r_cluster_3.hmget('hashtag_'+str(ts), uid_list)
         ip_results = r_cluster.hmget('new_ip_'+str(ts), uid_list)
-        #print 'ip_results:', ip_results
+        print 'ip_results:', ip_results
         #compute sensitive_words
         sensitive_results = r_cluster_3.hmget('sensitive_'+str(ts), uid_list)
         count = 0 
@@ -227,12 +228,14 @@ def get_ip_description(week_results):
         sort_home_list = sorted(home_segment_dict.items(), key=lambda x:x[1], reverse=True)[0]
     except:
         sort_home_list = []
+    print 'sort_home_list:', sort_home_list
+    print 'sort_job_list:', sort_job_list
     try:
-        job_ip = sort_job_list[0][0]
+        job_ip = sort_job_list[0]
     except:
         job_ip = ''
     try:    
-        home_ip = sort_home_list[0][0]
+        home_ip = sort_home_list[0]
     except:
         home_ip = ''
     return home_ip, job_ip 
