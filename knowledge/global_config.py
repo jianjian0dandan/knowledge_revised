@@ -16,8 +16,8 @@ event_port = "9200"
 calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
-# redis_host = "219.224.134.211"
-# redis_port = "7775"
+redis_host = "219.224.134.211"
+redis_port = "7775"
 
 #remote_portrait_name = "user_portrait_1222" # user portrait system
 #portrait_name = "user_portrait_0312"

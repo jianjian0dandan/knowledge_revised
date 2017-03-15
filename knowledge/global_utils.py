@@ -18,6 +18,11 @@ es_comment = Elasticsearch(user_profile_host, timeout = 600)
 be_es_retweet = Elasticsearch(user_profile_host, timeout=600)
 be_es_comment = Elasticsearch(user_profile_host, timeout = 600)
 
+#use to save bci
+ES_CLUSTER_FLOW1 = Elasticsearch(user_profile_host, timeout=600)
+es_bci = ES_CLUSTER_FLOW1
+
+
 es_tag = Elasticsearch(user_portrait_host, timeout=600)
 
 # flow text system
@@ -60,7 +65,7 @@ topic_queue_name='EVENT_portrait_task'
 flow_text_index_name_pre = 'flow_text_' # flow text: 'flow_text_2013-09-01'
 flow_text_index_type = 'text'
 
-portrait_index_name = 'user_portrait_1222' # user portrait
+portrait_index_name = 'user_portrait_0312' # user portrait
 portrait_index_type = 'user'
 # week retweet/be_retweet relation es
 retweet_index_name_pre = '1225_retweet_' # retweet: 'retweet_1' or 'retweet_2'
