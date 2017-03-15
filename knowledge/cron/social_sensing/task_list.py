@@ -46,7 +46,6 @@ def create_task_list(given_ts):
             task.append(json.loads(item['social_sensors'])) # social sensors
             #task.append(now_ts)
             task.append(given_ts)
-            print task
             r.lpush('task_name', json.dumps(task))
             count += 1
 
@@ -61,6 +60,6 @@ if __name__ == "__main__":
     while 1:
         create_task_list(ts)
         social_sensing_task()
-        ts += 3600
+        ts += 2*3600
         if ts> te:
             break

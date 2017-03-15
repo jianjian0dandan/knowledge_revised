@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 user_profile_host = ["219.224.134.216:9201"]
 user_portrait_host = ["219.224.134.216:9201"]#["219.224.134.225:9037"]
 social_sensing_host = ["219.224.134.225:9037"]
+social_sensing_text = ["219.224.134.225:9037"]
 flow_text_host = ["219.224.134.216:9201"]
 km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"

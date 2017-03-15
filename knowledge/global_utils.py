@@ -6,6 +6,8 @@ from elasticsearch import Elasticsearch
 from global_config import *
 
 RUN_TYPE = 0
+diffusion_time = 5
+diffusion_time_interval = 3600*3
 
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
@@ -14,6 +16,9 @@ profile_index_type = "user"
 
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
+
+# es_social_sensing
+es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
 
 es_retweet = Elasticsearch(user_profile_host, timeout=600)
 es_comment = Elasticsearch(user_profile_host, timeout = 600)

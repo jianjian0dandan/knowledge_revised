@@ -14,48 +14,46 @@ topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environmen
                      'employment':13,'fear-of-violence':14, 'house':15,'law':16,'peace':17,\
                      'religion':18,'social-security':19,'null':20}
 
-
-mid_list = []
-mid_dict = dict()
-with open("fff.txt", "r") as f:
-    for line in f:
-        line = line.strip()
-        tmp_list = line.split(" ")
-        if tmp_list[1] in set(["life",'sports','computer','art','traffic']):
-            continue
-        mid_list.append(tmp_list[0])
-        mid_dict[tmp_list[0]] = tmp_list[1]
-
-
-"""
-lenth = len(mid_list)
-
-len_1000 = lenth/1000
-print lenth
-true_list = []
+def function_1():
+    mid_list = []
+    mid_dict = dict()
+    with open("fff.txt", "r") as f:
+        for line in f:
+            line = line.strip()
+            tmp_list = line.split(" ")
+            if tmp_list[1] in set(["life",'sports','computer','art','traffic']):
+                continue
+            mid_list.append(tmp_list[0])
+            mid_dict[tmp_list[0]] = tmp_list[1]
 
 
-f = open("mid_list.txt", "w")
+    lenth = len(mid_list)
 
-for i in range(len_1000):
-    tmp_mid_list = mid_list[i*1000:(i+1)*1000]
-    if tmp_mid_list:
-        es_results = es.mget(index="flow_text_2016-11-17", doc_type="text", body={"ids":tmp_mid_list})["docs"]
-        for item in es_results:
-            if item["found"]:
-                true_list.append(item["_id"])
-                f.write(str(item["_id"])+'\n')
-f.close()
-print len(true_list)
+    len_1000 = lenth/1000
+    print lenth
+    true_list = []
 
-#f_feature = open("feature.txt", "w")
-#f_value = open("value.txt", "w")
-"""
 
-count = 0
-true_list = ["4042592418856733"]
-for mid in true_list:
-    result = es.get(index="flow_text_2016-11-17", doc_type="text", id=mid)["_source"]
+    f = open("mid_list.txt", "w")
+
+    for i in range(len_1000):
+        tmp_mid_list = mid_list[i*1000:(i+1)*1000]
+        if tmp_mid_list:
+            es_results = es.mget(index="flow_text_2016-11-18", doc_type="text", body={"ids":tmp_mid_list})["docs"]
+            for item in es_results:
+                if item["found"]:
+                    true_list.append(item["_id"])
+                    f.write(str(item["_id"])+'\n')
+    f.close()
+    print len(true_list)
+
+
+
+def extract_feature(mid):
+    f_feature = open("feature_13.txt", "a")
+    f_value = open("value_13.txt", "a")
+    count = 0
+    result = es.get(index="flow_text_2016-11-20", doc_type="text", id=mid)["_source"]
     ts = result["timestamp"]
     index_list = []
     for i in range(7):
@@ -140,12 +138,12 @@ for mid in true_list:
     }
     uid_count = es.search(index=index_list, doc_type="text", body=query_body_uid)['aggregations']["uid_count"]["value"]
     feature_list.append(uid_count)
-    feature_list.append(topic_field_dict[mid_dict[mid]])
-    #f_feature.write(json.dumps(feature_list)+"\n")
-    #f_value.write(json.dumps([count, total_uid_count])+"\n")
+    #feature_list.append(topic_field_dict[mid_dict[mid]])
+    f_feature.write(json.dumps(feature_list)+"\n")
+    f_value.write(json.dumps([count, total_uid_count])+"\n")
     print feature_list, [count, total_uid_count]
 
-#f_feature.close()
-#f_value.close()
+    f_feature.close()
+    f_value.close()
 
 

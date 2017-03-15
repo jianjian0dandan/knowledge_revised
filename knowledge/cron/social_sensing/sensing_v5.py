@@ -568,7 +568,7 @@ def social_sensing(task_detail):
 
 
     results = dict()
-    results["trendline_dict"] = json.dumps(tmp_trendline)
+    results["trendline_dict"] = json.dumps(trendline_dict)
     results['mid_topic_value'] = json.dumps(mid_value)
     results['duplicate_dict'] = json.dumps(duplicate_dict)
     results["uid_prediction_dict"] = json.dumps(uid_prediction_dict)

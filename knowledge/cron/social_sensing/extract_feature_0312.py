@@ -1,6 +1,7 @@
 # -*-coding:utf-8-*-
 
 import time
+import math
 import sys
 from create_trendline_task import get_trend
 from trendline_prediction.weibo_series_prediction import *
@@ -12,7 +13,7 @@ from time_utils import ts2datetime, datetime2ts, ts2datehour, datehour2ts
 
 from elasticsearch import Elasticsearch
 from global_utils import es_flow_text as es
-from global_utils import RUN_TYPE
+from global_utils import RUN_TYPE, diffusion_time, diffusion_time_interval
 
 
 topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environment':5, 'medicine':6,\
@@ -23,20 +24,25 @@ topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environmen
 
 
 def organize_feature(mid, topic):
-    ts = time.time()
+    if RUN_TYPE:
+        ts = time.time()
+    else:
+        ts = datetime2ts("2016-11-17")
     index_list = []
     for i in range(7):
         index_list.append("flow_text_"+ts2datetime(ts-i*24*3600))
 
     result = dict()
     for iter_index in index_list:
+        if not es.indices.exists(index=iter_index):
+            continue
         try:
             result = es.get(index=iter_index, doc_type="text", id=mid)["_source"]
             break
         except:
             pass
     if not result:
-        return [0, 0, 0, 0, 0, 0,0, topic_field_dict[topic]]
+        return [0, 0, 0, 0, 0, 0,0]
 
     ts = result["timestamp"]
 
@@ -64,7 +70,7 @@ def organize_feature(mid, topic):
 
 
     feature_list = []
-    feature_list.append(result["user_fansnum"])
+    feature_list.append(math.log(result["user_fansnum"]+1))
     query_body_ts = {
         "query":{
             "bool":{
@@ -119,7 +125,7 @@ def organize_feature(mid, topic):
     }
     uid_count = es.search(index=index_list, doc_type="text", body=query_body_uid)['aggregations']["uid_count"]["value"]
     feature_list.append(uid_count)
-    feature_list.append(topic_field_dict[topic])
+    #feature_list.append(topic_field_dict[topic])
 
 
     return feature_list
@@ -131,11 +137,14 @@ def trendline_list(mid, total_value):
     else:
         ts = datetime2ts("2016-11-19")
     index_list = []
-    for i in range(7):
+    nn = 24*3600/diffusion_time_interval ###
+    for i in range(diffusion_time):
         index_list.append("flow_text_"+ts2datetime(ts-i*24*3600))
 
     result = dict()
     for iter_index in index_list:
+        if not es.indices.exists(index=iter_index):
+            continue
         try:
             result = es.get(index=iter_index, doc_type="text", id=mid)["_source"]
             break
@@ -155,8 +164,8 @@ def trendline_list(mid, total_value):
     timestamp = result["timestamp"]
     start_ts = timestamp
     timestamp = datehour2ts(ts2datehour(timestamp))
-    for i in range(7*24):
-        total_time_list.append(timestamp+i*3600)
+    for i in range(diffusion_time*nn):
+        total_time_list.append(timestamp+i*diffusion_time_interval)
 
     # diffusion more than 5 days, return time list as far
     if 1:
@@ -169,7 +178,7 @@ def trendline_list(mid, total_value):
                             {"range":{
                                 "timestamp":{
                                     "gte": timestamp,
-                                    "lt": timestamp + 3600
+                                    "lt": timestamp + diffusion_time_interval
                                 }
                             }}
                         ]
@@ -180,7 +189,7 @@ def trendline_list(mid, total_value):
             count = es.count(index=index_name, doc_type="text", body=query_body)["count"]
             current_list.append(count)
             exist_time_list.append(timestamp)
-            timestamp += 3600
+            timestamp += diffusion_time_interval
             if timestamp >= ts:
                 break
 
@@ -191,7 +200,7 @@ def trendline_list(mid, total_value):
     index_exist = len(current_list)
     value = current_list
 
-    expected_value = total_value*0.8/(0.2*24*7)
+    expected_value = total_value*0.8/(0.2*nn*diffusion_time)
     if expected_value <= max_value:
         top_value = (max_value +total_value)/2
     else:
@@ -203,14 +212,12 @@ def trendline_list(mid, total_value):
     peak = spd(value,h,k)
     flag = judge(peak,value)
     if len(flag) == 2:
-        print("Two peaks:")
         paras = getTwoBeauties(value,flag[0],flag[1])
-        paras[-1] = 7*24
+        paras[-1] = diffusion_time*nn
         series = bassTwoPeaks(paras)
     else:
-        print("Single peak:")
         paras = getSingleBeauty(value)
-        paras[-1] = 7*24
+        paras[-1] = diffusion_time*nn
         series = bassOnePeak(paras)
 
     # 预测峰值位置
@@ -221,7 +228,7 @@ def trendline_list(mid, total_value):
     if predict_climax > index_exist:
         predict_climax_left = predict_climax - len(current_list)
         rise_trend, fall_trend = get_trend(left_list, predict_climax_left, value[-1], top_value)
-        true_climax = time_list[0] + (time_list[1]-time_list[0])*predict_climax
+        true_climax = exist_time_list[0] + (exist_time_list[1]-exist_time_list[0])*predict_climax
     else:
         top_value = value[-1]
         rise_trend, fall_trend = get_trend(left_list, 0, value[-1], 1)
