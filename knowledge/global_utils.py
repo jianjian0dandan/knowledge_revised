@@ -29,7 +29,8 @@ es_tag = Elasticsearch(user_portrait_host, timeout=600)
 # flow text system
 es_flow_text = Elasticsearch(flow_text_host, timeout=600)
 
-
+# social sensing
+es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
 
 # km user portrait
 es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
