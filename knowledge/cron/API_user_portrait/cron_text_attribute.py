@@ -74,7 +74,7 @@ def save_user_results(bulk_action):
 
 #use to compute new user attribute by redis_user2portrait.py
 #version: write in 2016-02-28
-def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_list):
+def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark):
     status = False
     print 'start cron_text_attribute'
     uid_list = user_keywords_dict.keys()
@@ -158,7 +158,12 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
     status = save_user_results(bulk_action)
     print 'save es_user_portrait:', status 
     #compute relation
-    #save_status = person_organization(uid_list,relation_list)
+    if task_mark == 'user':
+        save_status = person_organization(uid_list,relation_mark_dict)
+        if status and save_status:
+            status = True
+        else:
+            status = False
     #print 'save neo4j:', save_status
     return status
 
