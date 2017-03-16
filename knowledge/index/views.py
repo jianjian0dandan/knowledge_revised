@@ -18,22 +18,33 @@ def index():#首页
 
     user_name = g.user.email
 
-    peo_infors = get_people(user_name)
+    peo_infors = get_people(user_name,2)
 
     peo_string = 'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
-    peo_count = graph.run(peo_string)
+    peo_object = graph.run(peo_string)
+
+    for item in peo_object:
+        peo_count = item['count(start_node)']
 
     org_string = 'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
-    org_count = graph.run(org_string)
+    org_object = graph.run(org_string)
+    for item in org_object:
+        org_count = item['count(start_node)']
 
     event_string = 'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
-    event_count = graph.run(event_string)
+    event_object = graph.run(event_string)
+    for item in event_object:
+        event_count = item['count(start_node)']
 
     special_event_string = 'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
-    special_event_count = graph.run(special_event_string)
+    special_event_object = graph.run(special_event_string)
+    for item in special_event_object:
+        special_event_count = item['count(start_node)']
 
     group_string = 'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
-    group_count = graph.run(group_string)
+    group_object = graph.run(group_string)
+    for item in group_object:
+        group_count = item['count(start_node)']
 
     neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count}
     
@@ -42,7 +53,7 @@ def index():#首页
     people_list = get_hot_people()
 
     map_count = get_map_count()
-    
+
     return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
                            people_list = people_list, map_count = map_count)
 
@@ -92,11 +103,11 @@ def show_attention():
         return json.dumps('Wrong')
     
     if s_type == 'people':
-        infors = get_people(user_name)
+        infors = get_people(user_name,2)
     elif s_type == 'event':
-        infors = get_event(user_name)
+        infors = get_event(user_name,2)
     else:
-        infors = get_org(user_name)
+        infors = get_org(user_name,2)
 
     return json.dumps(infors)
 
