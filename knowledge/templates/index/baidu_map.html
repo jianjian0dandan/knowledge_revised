@@ -1,11 +1,39 @@
-<!--{% extends "public_nav.html" %}-->
 {% block title %}<title>知识图谱 - 地域分布图</title>{% endblock %}
 {% block css %}
 <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
 <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
 <style>
+    body {
+        margin: 0 !important;
+        font-family: '新宋体';
+        position: relative;
+    }
     #box {
         width: 100%;
+    }
+    #legend {
+        position: absolute;
+        top:35%;
+        right: 1%;
+        width: 85px;
+        min-width: 85px;
+        padding: 20px;
+        /*background-color: white;*/
+        color: black;
+        font-size: 14px;
+    }
+    #legend p {
+        display: inline-block;
+        margin: 6px 0;
+        cursor: pointer;
+    }
+    #legend p span {
+        font-weight: 900;
+        display: inline-block;
+    }
+    #legend p .dot {
+        width: 10px;
+        height: 10px;
     }
     /*工具栏大小*/
 
@@ -21,10 +49,26 @@
         text-align: center;
         line-height: 47px;
     }
+
 </style>
 {% endblock %}
+
 {% block main %}
 <div id="box"></div>
+<div id="legend">
+    <p class="gov">
+        <span class="dot" style="background-color: #ed2d2d"></span>
+        <span class="name">组织机构</span>
+    </p>
+    <p class="user">
+        <span class="dot" style="background-color: #2b81ff"></span>
+        <span class="name">人物</span>
+    </p>
+    <p class="event">
+        <span class="dot" style="background-color: #c86df0"></span>
+        <span class="name">事件</span>
+    </p>
+</div>
 {% endblock %}
 
 {% block my_js %}
@@ -33,7 +77,13 @@
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0ECXIPy41grtI3jUXqQMgILaG1vKUiLo"></script>
 <script src="/static/js/DrawingManager_min.js"></script>
 <script>
+    $('#legend p').on('click',function () {
+        var colour=$(this).find('.dot').css('backgroundColor');
+        $(this).find('.name').css({color:colour});
+        $(this).siblings('p').find('.name').css({color:''});
+    });
     $('#box').height($(window).height());
+
     // 百度地图API功能
     var map = new BMap.Map("box");    // 创建Map实例
     map.centerAndZoom(new BMap.Point(116.404, 39.915), 5);  // 初始化地图,设置中心点坐标和地图级别
@@ -43,18 +93,19 @@
     var index = 0;
     var myGeo = new BMap.Geocoder();
     var adds = [
-        '北京','上海','泰安','福州','深圳','大连','乌鲁木齐'
+        '北京','上海','泰安','福州','深圳','大连','乌鲁木齐','西藏'
     ];
 
     // 编写自定义函数,创建标注
     var marker;
     function addMarker(point,label){
-        marker = new BMap.Marker(point);
+        var myIcon = new BMap.Icon("/static/images/map_event.png", new BMap.Size(19,50));
+        marker = new BMap.Marker(point,{icon:myIcon});
         map.addOverlay(marker);
         marker.setLabel(label);
         marker.addEventListener("click", function(){
-            opts.title=this.zc.innerText+'----╮(╯▽╰)╭';
-            map.openInfoWindow(new BMap.InfoWindow(this.zc.innerText, opts),point); //开启信息窗口
+            opts.title=this.xc.innerText+'----╮(╯▽╰)╭';
+            map.openInfoWindow(new BMap.InfoWindow(this.xc.innerText, opts),point); //开启信息窗口
         });
         var opts = {
             width : 100,     // 信息窗口宽度
@@ -126,8 +177,8 @@
     //    四个角的坐标顺序
     var geoc = new BMap.Geocoder();
     drawingManager.addEventListener("rectanglecomplete", function(e, overlay) {
-        var sijiao_jing=[overlay.ro[0].lng,overlay.ro[1].lng,overlay.ro[2].lng,overlay.ro[3].lng];
-        var sijiao_wei=[overlay.ro[0].lat,overlay.ro[1].lat,overlay.ro[2].lat,overlay.ro[3].lat];
+        var sijiao_jing=[overlay.io[0].lng,overlay.io[1].lng,overlay.io[2].lng,overlay.io[3].lng];
+        var sijiao_wei=[overlay.io[0].lat,overlay.io[1].lat,overlay.io[2].lat,overlay.io[3].lat];
         var max_jing=Math.max.apply(null, sijiao_jing);
         var min_jing=Math.min.apply(null, sijiao_jing);
         var max_wei=Math.max.apply(null, sijiao_wei);
@@ -136,7 +187,7 @@
             if (min_wei<item.lat&&item.lat<max_wei && min_jing<item.lng&&item.lng<max_jing){
                 geoc.getLocation(item, function(rs){
                     var addComp = rs.addressComponents;
-                    alert(addComp.city);
+                    console.log(addComp.city);
                 });
             }
         });
@@ -189,6 +240,5 @@
         map.addOverlay(curve2); //添加到地图中
         arcline.push(curve2);
     }
-
 </script>
 {% endblock %}

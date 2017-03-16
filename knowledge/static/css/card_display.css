@@ -3,8 +3,6 @@ body {
     width: 100%;
     min-width: 1349px;
     min-height: 1408px;
-    max-width: 1349px;
-    max-height: 1408px;
     background: url("/static/images/cards.jpg") no-repeat;
     background-size: 100% 100%;
 }
@@ -241,4 +239,12 @@ body {
 }
 /*------卡片样式 ---完----*/
 
+
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1408px;
+    }
+}
 
