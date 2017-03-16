@@ -61,13 +61,28 @@ def index():#首页
 @login_required
 def get_graph():#图谱页面
 
-    return render_template('index/knowledgeGraph.html')
+    p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m LIMIT 100' % (event_index_name,event_primary)
+
+    r_relation = dict()
+    p_result = graph.run(p_string)
+    uid_list = []
+    for item in p_result:
+        uid_list.append(item[0])
+        r_relation[item[0]] = [item[1].type(),dict(item[2]).values()[0]]
+
+    result = eventid_name(uid_list)
+    relation = []
+    for k,v in r_relation.iteritems():
+        relation.append([result[k],v[1],v[0]])
+
+    return render_template('index/knowledgeGraph.html', relation = relation)
 
 @mod.route('/map/')
 @login_required
 def get_map():#地图页面
 
-    return render_template('index/baidu_map.html')
+    event_result,people_result,org_relation = get_geo()
+    return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation)
 
 @mod.route('/person/')
 @login_required
