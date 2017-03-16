@@ -9,6 +9,7 @@ reload(sys)
 sys.path.append('../../')
 from global_utils import R_CLUSTER_FLOW2,  R_DICT, ES_DAILY_RANK, es_user_portrait, R_CLUSTER_FLOW3
 # from global_utils import ES_DAILY_RANK, es_user_portrait
+from global_config import portrait_name, portrait_type
 from global_utils import R_RECOMMENTATION as r
 from global_utils import portrait_index_name, portrait_index_type
 from parameter import RECOMMENTATION_TOPK as k
@@ -41,6 +42,7 @@ def filter_in(top_user_set):
         in_results = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':list(top_user_set)})
     except Exception as e:
         print 'cron/recommend_in/recommend_in.py&error-2&'
+
     filter_list = [item['_id'] for item in in_results['docs'] if item['found'] is True]
     results = set(top_user_set) - set(filter_list)
     return results
@@ -128,23 +130,23 @@ def main():
     hashname_influence = "recomment_" + new_date + "_influence"
     if results:
         for uid in results:
-            print uid, hashname_influence
-            # r.hset(hashname_influence, uid, "0")  -------
+            r.hset(hashname_influence, uid, "0")
     #step5: get sensitive user
+    print date,'date'
     sensitive_user = list(get_sensitive_user(date))
     hashname_sensitive = "recomment_" + new_date + "_sensitive"
     if sensitive_user:
         for uid in sensitive_user:
             print uid, hashname_sensitive
-            # r.hset(hashname_sensitive, uid, "0")  --------
+            r.hset(hashname_sensitive, uid, "0")
+
     results.extend(sensitive_user)
     results = set(results)
-    #step6: write to recommentation csv/redis
+    # step6: write to recommentation csv/redis ++for super admin
     hashname_submit = "submit_recomment_" + new_date
     if results:
         for uid in results:
-            print hashname_submit, uid
-            # r.hset(hashname_submit, uid, json.dumps({"system":1, "operation":"system"}))----
+            r.hset(hashname_submit, uid, json.dumps({"system":1, "operation":"system"}))
     #status = save_recommentation2redis(date, results)
     #if status != True:
     #    print 'cron/recommend_in/recommend_in.py&error-3&'
@@ -163,10 +165,10 @@ if __name__=='__main__':
     log_time_start_ts = time.time()
     log_time_start_date = ts2datetime(log_time_start_ts)
     print 'cron/recommend_in/recommend_in.py&start&' + log_time_start_date
-    try:
-        main()
-    except Exception, e:
-        print e, '&error&', ts2date(time.time())
+    # try:
+    main()
+    # except Exception, e:
+    #     print e, '&error&', ts2date(time.time())
 
     log_time_ts = time.time()
     log_time_date = ts2datetime(log_time_ts)
