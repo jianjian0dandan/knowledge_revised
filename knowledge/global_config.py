@@ -88,8 +88,12 @@ organization_relation_list = ['friend','colleague','organization_tag']
 
 group_rel = "group"
 
+# For User Portrait Computing
+ALL_PERSON_RELATION_LIST = ['friend','colleague','ip_relation']
+ALL_VERIFIED_RELATION_LIST = ['friend','colleague']
 
-
+# For Event Computing
+ALL_EVENT_RELATION_LIST = ['join','discuss','contain']
 
 WEIBO_ES_HOST = '219.224.134.216:9204'
 weibo_es = Elasticsearch(WEIBO_ES_HOST,timeout=1000)

@@ -265,11 +265,11 @@ def get_ip_r(uidlist,s_uid):#IP关联关系
 
     return people_list
 
-def person_organization(uid_list,relation_list):#计算人物-人物，人物-机构之间的关系
+def person_organization(uid_list,relation_dict):#计算人物-人物，人物-机构之间的关系
     '''
         输入数据：
         uid 人物或机构
-        relation_list 关系列表
+        relation_dict 关系字典
 
         输出数据:
         字符串提示语：
@@ -281,13 +281,23 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
     if len(uid_list) == 0:
         return 'Empty Uid List'#数据为空
 
-    if len(relation_list) == 0:
-        relation_list = [colleague,friend,ip_relation]
+    if len(relation_dict) == 0:
+        r_flag = 1
+    else:
+        r_flag = 0
 
     count = 1
     for uid in uid_list:
         profile = get_profile_by_uid([uid])
 
+        if r_flag == 1:#关系字典没有数据
+            relation_list = [colleague,friend,ip_relation]
+        else:
+            try:
+                relation_list = relation_dict[uid]
+            except KeyError:
+                relation_list = [colleague,friend,ip_relation]
+        
         if len(profile[uid]['description']):
             p1,o1 = get_colleague_r(profile[uid]['description'],uid)#自述关联关系
         else:
@@ -319,12 +329,12 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
                     try:
                         person_list = v['person']
                     except KeyError:
-                        pass
+                        person_list = []
 
                     try:
                         org_list = v['organization']
                     except KeyError:
-                        pass
+                        org_list = []
 
                     for p in person_list:
                         r = create_person(people_node, people_primary, p, node_index_name)
@@ -350,12 +360,12 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
                     try:
                         person_list = v['person']
                     except KeyError:
-                        pass
+                        person_list = []
 
                     try:
                         org_list = v['organization']
                     except KeyError:
-                        pass
+                        org_list = []
 
                     for p in person_list:
                         r = create_person(people_node, people_primary, p, node_index_name)
@@ -384,10 +394,10 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-##    result = person_organization(['2117306420','5779325975'],['friend','colleague','ip_relation'])
-##    print result
-    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
-    result = nodes_rels(relation_list)
+    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague']})
+    print result
+##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
+##    result = nodes_rels(relation_list)
 ##    print result
 ##    p_list = get_colleague_r(["消失","命运"])
 ##    print p_list
