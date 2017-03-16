@@ -1,11 +1,10 @@
 /*内容样式*/
 body {
     width: 100%;
-    /*width: 1349px;*/
-    max-width: 1349px;
+    /*max-width: 1349px;*/
     min-width: 1349px;
     min-height: 1005px;
-    max-height: 1005px;
+    /*max-height: 1005px;*/
     background: url("/static/images/body.png") no-repeat;
 }
 #container {
@@ -129,13 +128,20 @@ body {
     color: white;
     padding-left: 20px;
     margin-top: 6px;
-    height: 22px;
+    /*height: 22px;*/
     line-height: 22px;
 }
 #container #my_hot .hot_event .event_caption .event_name,
 #container #my_hot .hot_user .user_caption .user_name{
     display: inline-block;
-    width: 200px;
+    width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+#container #my_hot .hot_event .event_caption .event_text {
+    width: 240px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -160,12 +166,32 @@ body {
 #container #my_hot .hot_user .user_more:hover {
     background-color: #465f7d;
 }
+#container #my_hot .hot_user .user_details .details-2,
 #container #my_hot .my_focus .focus_details .details-2 {
     text-align: center;
-    margin-top: 11px;
+    margin-top: 8px;
 }
+#container #my_hot .hot_user .user_details .details-1 span,
+#container #my_hot .hot_user .user_details .details-2 span,
 #container #my_hot .my_focus .focus_details .details-1 span,
 #container #my_hot .my_focus .focus_details .details-2 span {
     font-size: 8px;
     color: white;
+    display: inline-block;
+    width: 65px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+#container #my_hot .my_focus .focus_details .details-1 span,
+#container #my_hot .my_focus .focus_details .details-2 span {
+    width: 80px;
+}
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1005px;
+    }
+}
+

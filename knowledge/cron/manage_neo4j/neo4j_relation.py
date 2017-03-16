@@ -37,12 +37,12 @@ def nodes_rels(list):
             if node2_key == 'uid':
                 node1 = node_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 node1 = node1[0]
                 node2 = node_index.get(node2_key, node2_uid)
                 if (node2 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 node2 = node2[0]
                 print 'Person-Person'
@@ -50,13 +50,13 @@ def nodes_rels(list):
             elif node2_key == 'event':
                 node1 = node_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = event_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -64,13 +64,13 @@ def nodes_rels(list):
             else:
                 node1 = node_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = org_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -80,13 +80,13 @@ def nodes_rels(list):
             if node2_key == 'uid':
                 node1 = event_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = node_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -94,13 +94,13 @@ def nodes_rels(list):
             elif node2_key == 'event':
                 node1 = event_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = event_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -108,13 +108,13 @@ def nodes_rels(list):
             else:
                 node1 = event_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = org_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -123,13 +123,13 @@ def nodes_rels(list):
             if node2_key == 'uid':
                 node1 = org_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = node_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -137,13 +137,13 @@ def nodes_rels(list):
             elif node2_key == 'event':
                 node1 = org_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = event_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
@@ -151,18 +151,18 @@ def nodes_rels(list):
             else:
                 node1 = org_index.get(node1_key, node1_uid)
                 if (node1 == []):
-                    result =result + ",%d" % node1_uid
+                    result =result + ",%s" % node1_uid
                     flag=1
                 else:
                     node1 = node1[0]
                 node2 = org_index.get(node2_key, node2_uid)
                 if (node1 == []):
-                    result = result +",%d" % node2_uid
+                    result = result +",%s" % node2_uid
                     flag=1
                 else:
                     node2 = node2[0]
                 print 'Org-Org'
-            
+        print result
         if flag == 0:
             rel = Relationship(node1, rel, node2)
             tx.create(rel)
@@ -175,6 +175,7 @@ def nodes_rels(list):
 
 # 对数据进行存放
 def create_person(node_type, node_key, node_id, node_name_index):
+    
     Index = ManualIndexManager(graph)
     node_name = Index.get_or_create_index(Node, node_name_index)
     if node_name:
@@ -182,7 +183,18 @@ def create_person(node_type, node_key, node_id, node_name_index):
         if exist:
             return 'Node Exist'#节点已存在
         else:
-            person_node = Node(node_type, uid=node_id)
+            if node_key == "uid":
+                person_node = Node(node_type, uid=node_id)
+            elif node_key == "org_id":
+                person_node = Node(node_type, org_id=node_id)
+            elif node_key == "event_id":
+                person_node = Node(node_type, event_id=node_id)
+            elif node_key == "event":
+                person_node = Node(node_type, event=node_id)
+            elif node_key == "group":
+                person_node = Node(node_type, group=node_id)
+            else:
+                return 'Node Type Wrong'#节点类型错误
             graph.create(person_node)
             node_name.add(node_key, node_id, person_node)
             return 'Node Success'#创建节点成功

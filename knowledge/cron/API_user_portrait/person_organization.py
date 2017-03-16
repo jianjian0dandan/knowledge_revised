@@ -162,10 +162,10 @@ def get_interaction_by_uid(uidlist):#根据uid查询用户的交互情况
     for k,v in profile_result.iteritems():
         if v['verified_type'] == 'Null':
             continue
-        if v['verified_type'] in peo_list:
-            people_list.append(k)
-        else:
+        if v['verified_type'] in org_list:
             organization_list.append(k)
+        else:
+            people_list.append(k)
     
     return people_list,organization_list
 
@@ -204,10 +204,10 @@ def get_colleague_r(des,s_uid):#提取业务关联关系（人物与人物、人
             if uid == s_uid:
                 continue
             data = item['_source']
-            if data['verified_type'] in peo_list:
-                people_list.append(uid)
-            else:
+            if data['verified_type'] in org_list:
                 organization_list.append(uid)
+            else:
+                people_list.append(uid)
 
     return people_list,organization_list
 
@@ -256,7 +256,7 @@ def get_ip_r(uidlist,s_uid):#IP关联关系
                     if uid == s_uid:
                         continue
                     data = item['_source']
-                    if data['verified_type'] in peo_list:
+                    if data['verified_type'] not in org_list:
                         people_list.append(uid)
                     else:
                         continue
@@ -265,11 +265,11 @@ def get_ip_r(uidlist,s_uid):#IP关联关系
 
     return people_list
 
-def person_organization(uid_list,relation_list):#计算人物-人物，人物-机构之间的关系
+def person_organization(uid_list,relation_dict):#计算人物-人物，人物-机构之间的关系
     '''
         输入数据：
         uid 人物或机构
-        relation_list 关系列表
+        relation_dict 关系字典
 
         输出数据:
         字符串提示语：
@@ -281,13 +281,23 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
     if len(uid_list) == 0:
         return 'Empty Uid List'#数据为空
 
-    if len(relation_list) == 0:
-        relation_list = [colleague,friend,ip_relation]
+    if len(relation_dict) == 0:
+        r_flag = 1
+    else:
+        r_flag = 0
 
     count = 1
     for uid in uid_list:
         profile = get_profile_by_uid([uid])
 
+        if r_flag == 1:#关系字典没有数据
+            relation_list = [colleague,friend,ip_relation]
+        else:
+            try:
+                relation_list = relation_dict[uid]
+            except KeyError:
+                relation_list = [colleague,friend,ip_relation]
+        
         if len(profile[uid]['description']):
             p1,o1 = get_colleague_r(profile[uid]['description'],uid)#自述关联关系
         else:
@@ -307,10 +317,10 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
             else:
                 relation_dict = {or_colleague:{'person':p1,'organization':o1},or_friend:{'person':p2,'organization':o2}}
                 flag = '0'
-
+                
         if flag == '0':#节点类型为机构
             r = create_person(org_node, org_primary, uid, org_index_name)
-            if r == 'Node Wrong':
+            if r == 'Node Wrong' or r == 'Node Type Wrong':
                 continue
         
             input_list = []
@@ -319,29 +329,29 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
                     try:
                         person_list = v['person']
                     except KeyError:
-                        pass
+                        person_list = []
 
                     try:
                         org_list = v['organization']
                     except KeyError:
-                        pass
+                        org_list = []
 
                     for p in person_list:
-                        r = create_person(people_node, people_primary, p, node_name_index)
-                        if r == 'Wrong':
+                        r = create_person(people_node, people_primary, p, node_index_name)
+                        if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
                         input_list.append([[0,uid],k,[1,p]])
 
                     for o in org_list:
                         r = create_person(org_node, org_primary, o, org_index_name)
-                        if r == 'Wrong':
+                        if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
                         input_list.append([[0,uid],k,[0,p]])
                 else:
                     continue
         else:
             r = create_person(people_node, people_primary, uid, node_index_name)
-            if r == 'Node Wrong':
+            if r == 'Node Wrong' or r == 'Node Type Wrong':
                 continue
         
             input_list = []
@@ -350,22 +360,22 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
                     try:
                         person_list = v['person']
                     except KeyError:
-                        pass
+                        person_list = []
 
                     try:
                         org_list = v['organization']
                     except KeyError:
-                        pass
+                        org_list = []
 
                     for p in person_list:
-                        r = create_person(people_node, people_primary, p, node_name_index)
-                        if r == 'Wrong':
+                        r = create_person(people_node, people_primary, p, node_index_name)
+                        if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
                         input_list.append([[0,uid],k,[1,p]])
 
                     for o in org_list:
                         r = create_person(org_node, org_primary, o, org_index_name)
-                        if r == 'Wrong':
+                        if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
                         input_list.append([[0,uid],k,[0,p]])
                 else:
@@ -384,8 +394,10 @@ def person_organization(uid_list,relation_list):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-    result = person_organization(['2117306420','5779325975'],['friend','colleague','ip_relation'])
+    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague']})
     print result
-
+##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
+##    result = nodes_rels(relation_list)
+##    print result
 ##    p_list = get_colleague_r(["消失","命运"])
 ##    print p_list

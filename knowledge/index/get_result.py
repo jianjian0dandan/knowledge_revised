@@ -15,6 +15,8 @@ from knowledge.global_utils import *
 from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
+org_list = [1,2,3,4,5,6,7,8]
+
 def uid_name(uid_list,result):
 
     search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
@@ -300,7 +302,7 @@ def get_hot_people():#获取热门人物
 
 def get_map_count():#获取地图统计
 
-    location = dict()
+    location_result = dict()
     no_location_count = 0
     s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_index_name, doc_type=portrait_index_type)
     while True:
@@ -322,9 +324,56 @@ def get_map_count():#获取地图统计
             print 'ALL done'
             break
 
-    return location
+    return location_result
     
 
+def get_geo():#获取事件地址
+
+    event_result = dict()
+    no_location_count = 0
+    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    while True:
+        try:
+            scan_re = s_re.next()['_source']
+            try:
+                location = eval(scan_re['geo_results'])
+                name = scan_re['name'].encode('utf-8')
+                event_result[name] = location
+            except:
+                no_location_count += 1
+        except StopIteration:
+            print 'ALL done'
+            break
+
+    people_result = dict()
+    org_result = dict()
+    s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_index_name, doc_type=portrait_index_type)
+    count = 0
+    while True:
+        count = count + 1
+        if count > 100:
+            break
+        try:
+            scan_re = s_re.next()['_source']
+            try:
+                location = scan_re['location'].encode('utf-8')
+                name = scan_re['uname'].encode('utf-8')
+                if not location:
+                    no_location_count += 1
+                if len(location.split(' '))>1:
+                    location = location.split(' ')[0]
+                if scan_re['verified_type'] in org_list:
+                    org_result[name] = location
+                else:
+                    people_result[name] = location
+            except:
+                no_location_count += 1
+        except StopIteration:
+            print 'ALL done'
+            break
+    
+    return event_result,people_result,org_relation
+    
 
     
 
