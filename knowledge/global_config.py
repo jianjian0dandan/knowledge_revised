@@ -27,6 +27,7 @@ event_index_name = "event_index" # primary_key: event
 org_index_name = "org_index" # primary_key: org_id
 tag_index_name = "tag_index" # primary_key: tag
 special_event_index_name = "special_event_index" # primary_key: event
+group_index_name = "group" # primary_key: group
 #neo4j node_type
 people_node = "User"
 org_node = "Org"
