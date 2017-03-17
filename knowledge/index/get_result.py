@@ -383,7 +383,310 @@ def get_geo():#获取事件地址
             break
     
     return event_result,people_result,org_result
+
+def get_type_key(item):
+    if item == 1:#人物
+        return people_primary
+    elif item == 2:#事件
+        return event_primary
+    elif item == 0:#机构
+        return org_primary
+    elif item == 3:#专题
+        return special_event_primary
+    elif item == 4:#群体
+        return group_primary
+    else:
+        return 'Not Found'
+
+def get_detail_person(uid_list):
+
+    if len(uid_list) == 0:
+        return {}
+    result = {}
+    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = {}
+            continue
+        else:
+            data = item['_source']
+            if not data['uname']:
+                name = ''
+            else:
+                name = data['uname'].encode('utf-8')
+            domain = data['domain'].encode('utf-8')
+            if not data['location']:
+                location = ''
+            else:
+                location = data['location'].encode('utf-8')           
+            if not data['verified_type']:
+                verified = ''
+            else:
+                verified = ver_data[data['verified_type']]
+            importance = data['importance']
+            influence = data['influence']
+            activeness = data['activeness']
+
+            #还差粉丝数、业务标签
+            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified}
+
+    return result
+
+def get_detail_org(uid_list):
+
+    if len(uid_list) == 0:
+        return {}
+    result = {}
+    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = {}
+            continue
+        else:
+            data = item['_source']
+            if not data['uname']:
+                name = ''
+            else:
+                name = data['uname'].encode('utf-8')
+
+            if not data['location']:
+                location = ''
+            else:
+                location = data['location'].encode('utf-8')           
+            if not data['verified_type']:
+                verified = ''
+            else:
+                verified = ver_data[data['verified_type']]
+
+            #还差粉丝数、业务标签
+            result[uid] = {'name':name,'location':location,'verified':verified}
+
+    return result
+
+def get_detail_event(uid_list):
+
+    if len(uid_list) == 0:
+        return {}
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = {}
+            continue
+        else:
+            data = item['_source']
+            if not data['name']:
+                name = ''
+            else:
+                name = data['name'].encode('utf-8')
+            if data['real_geo'] != 'NULL':
+                geo = data['real_geo'].encode('utf-8')
+            else:
+                geo = ''
+            category = data['category']
+            if data['real_time'] != 'NULL':
+                time_ts = data['real_time'].encode('utf-8')
+            else:
+                time_ts = ''
+
+            #还差业务标签
+            result[uid] = {'name':name,'geo':geo,'category':category,'time_ts':time_ts}
+
+    return result
+
+def get_relation_node(user_id,node_type,card_type):#获取关联节点
+
+    node_key = get_type_key(node_type)
+    card_key = get_type_key(card_type)
+    if node_key == 'Not Found' or card_key == 'Not Found':#未找到匹配类型
+        return [],-1
+    if node_key == people_primary:
+        if card_key == people_primary:#uid-uid
+            start_index_name = node_index_name
+            end_index_name = node_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 1
+        elif card_key == event_primary:#uid-event
+            start_index_name = node_index_name
+            end_index_name = event_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_event(uid_list)#获取事件详细信息
+            flag = 2
+        else:#uid-org
+            start_index_name = node_index_name
+            end_index_name = org_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_org(uid_list)#获取用户详细信息
+            flag = 0
+
+    elif node_key == event_primary:
+        if card_key == people_primary:#event-uid
+            start_index_name = event_index_name
+            end_index_name = node_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 1
+        elif card_key == event_primary:#event-event
+            start_index_name = event_index_name
+            end_index_name = event_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_event(uid_list)#获取用户详细信息
+            flag = 2
+        else:#event-org
+            start_index_name = event_index_name
+            end_index_name = org_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_org(uid_list)#获取用户详细信息
+            flag = 0
+
+    elif node_key == org_primary:
+        if card_key == people_primary:#org-uid
+            start_index_name = org_index_name
+            end_index_name = node_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 1
+        elif card_key == event_primary:#org-event
+            start_index_name = org_index_name
+            end_index_name = event_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_event(uid_list)#获取用户详细信息
+            flag = 2
+        else:#org-org
+            start_index_name = org_index_name
+            end_index_name = org_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_org(uid_list)#获取用户详细信息
+            flag = 0
+
+    elif node_key == special_event_primary:
+        if card_key == people_primary:#special_event-uid
+            start_index_name = node_index_name
+            end_index_name = node_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 1
+        elif card_key == event_primary:#special_event-event
+            start_index_name = node_index_name
+            end_index_name = event_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 2
+        else:#special_event-org
+            start_index_name = node_index_name
+            end_index_name = org_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_org(uid_list)#获取用户详细信息
+            flag = 0
+
+    else:
+        if card_key == people_primary:#group-uid
+            start_index_name = group_index_name
+            end_index_name = node_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 1
+        elif card_key == event_primary:#group-event
+            start_index_name = group_index_name
+            end_index_name = event_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_person(uid_list)#获取用户详细信息
+            flag = 2
+        else:#group-org
+            start_index_name = group_index_name
+            end_index_name = org_index_name
+            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            p_result = graph.run(c_string)
+            uid_list = []
+            for item in p_result:
+                uid_list.append(item[0])
+            result = get_detail_org(uid_list)#获取用户详细信息
+            flag = 0
+
+    return result,flag
     
 
-    
 
+
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        

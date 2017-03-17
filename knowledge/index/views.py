@@ -54,7 +54,6 @@ def index():#首页
 
     map_count = get_map_count()
 
-    print len(people_list)
     return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
                            people_list = people_list, map_count = map_count)
 
@@ -111,7 +110,13 @@ def get_organization():#机构属性页面
 @login_required
 def get_card():#卡片罗列页面
 
-    return render_template('index/card_display.html')
+    user_id = request.args.get('user_id', '')
+    node_type = request.args.get('node_type', '')
+    card_type = request.args.get('card_type', '')
+
+    result,flag = get_relation_node(user_id,node_type,card_type)#获取关联节点
+
+    return render_template('index/card_display.html', result = result, flag = flag)
 
 @mod.route('/show_attention/', methods=['GET','POST'])
 def show_attention():

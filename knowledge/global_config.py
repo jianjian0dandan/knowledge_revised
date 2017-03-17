@@ -277,6 +277,10 @@ name_list = ['art','computer','economic','education','environment','medicine',\
                         'anti-corruption','employment','fear-of-violence','house',\
                                 'law','peace','religion','social-security']
 
+#verified index
+ver_data = {-1:'普通用户',0:'名人',1:'政府',2:'企业',3:'媒体',4:'校园',5:'网站',\
+            6:'应用',7:'团体机构',8:'待审企业',200:'初级达人',220:'中高级达人',400:'已故V用户'}
+
 TOPIC_ABS_PATH = "/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/topic"
 
 DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
