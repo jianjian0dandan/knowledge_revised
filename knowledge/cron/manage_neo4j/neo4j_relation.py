@@ -162,7 +162,7 @@ def nodes_rels(list):
                 else:
                     node2 = node2[0]
                 print 'Org-Org'
-        print result
+
         if flag == 0:
             rel = Relationship(node1, rel, node2)
             tx.create(rel)
