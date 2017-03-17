@@ -394,10 +394,10 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague']})
-    print result
-##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
-##    result = nodes_rels(relation_list)
+##    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague']})
+##    print result
+    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
+    result = nodes_rels(relation_list)
 ##    print result
 ##    p_list = get_colleague_r(["消失","命运"])
 ##    print p_list

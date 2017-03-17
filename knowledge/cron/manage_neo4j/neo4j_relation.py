@@ -47,7 +47,7 @@ def nodes_rels(list):
                 node2 = node2[0]
                 print 'Person-Person'
 
-            elif node2_key == 'event':
+            elif node2_key == 'event_id':
                 node1 = node_index.get(node1_key, node1_uid)
                 if (node1 == []):
                     result =result + ",%s" % node1_uid
@@ -76,7 +76,7 @@ def nodes_rels(list):
                     node2 = node2[0]
                 print 'Person-Org'
 
-        elif node1_key == 'event':
+        elif node1_key == 'event_id':
             if node2_key == 'uid':
                 node1 = event_index.get(node1_key, node1_uid)
                 if (node1 == []):
@@ -91,7 +91,7 @@ def nodes_rels(list):
                 else:
                     node2 = node2[0]
                 print 'Event-Person'
-            elif node2_key == 'event':
+            elif node2_key == 'event_id':
                 node1 = event_index.get(node1_key, node1_uid)
                 if (node1 == []):
                     result =result + ",%s" % node1_uid
@@ -134,7 +134,7 @@ def nodes_rels(list):
                 else:
                     node2 = node2[0]
                 print 'Org-Person'
-            elif node2_key == 'event':
+            elif node2_key == 'event_id':
                 node1 = org_index.get(node1_key, node1_uid)
                 if (node1 == []):
                     result =result + ",%s" % node1_uid
@@ -162,7 +162,7 @@ def nodes_rels(list):
                 else:
                     node2 = node2[0]
                 print 'Org-Org'
-        print result
+
         if flag == 0:
             rel = Relationship(node1, rel, node2)
             tx.create(rel)

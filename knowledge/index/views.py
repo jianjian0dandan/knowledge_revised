@@ -70,10 +70,13 @@ def get_graph():#图谱页面
         uid_list.append(item[0])
         r_relation[item[0]] = [item[1].type(),dict(item[2]).values()[0]]
 
-    result = eventid_name(uid_list)
-    relation = []
-    for k,v in r_relation.iteritems():
-        relation.append([result[k],v[1],v[0]])
+    if len(uid_list) > 0:
+        result = eventid_name(uid_list)
+        relation = []
+        for k,v in r_relation.iteritems():
+            relation.append([result[k],v[1],v[0]])
+    else:
+        relation = []
 
     return render_template('index/knowledgeGraph.html', relation = relation)
 
@@ -82,6 +85,7 @@ def get_graph():#图谱页面
 def get_map():#地图页面
 
     event_result,people_result,org_relation = get_geo()
+
     return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation)
 
 @mod.route('/person/')
@@ -106,7 +110,13 @@ def get_organization():#机构属性页面
 @login_required
 def get_card():#卡片罗列页面
 
-    return render_template('index/card_display.html')
+    user_id = request.args.get('user_id', '')
+    node_type = request.args.get('node_type', '')
+    card_type = request.args.get('card_type', '')
+
+    result,flag = get_relation_node(user_id,node_type,card_type)#获取关联节点
+
+    return render_template('index/card_display.html', result = result, flag = flag)
 
 @mod.route('/show_attention/', methods=['GET','POST'])
 def show_attention():
