@@ -54,7 +54,7 @@ def index():#首页
 
     map_count = get_map_count()
 
-    print people_list
+    print len(people_list)
     return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
                            people_list = people_list, map_count = map_count)
 

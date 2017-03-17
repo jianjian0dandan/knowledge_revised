@@ -4,6 +4,7 @@ import json
 import csv
 import os
 import time
+import math
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
@@ -12,6 +13,7 @@ from knowledge.model import *
 from knowledge.extensions import db
 from knowledge.global_config import *
 from knowledge.global_utils import *
+from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
@@ -202,9 +204,7 @@ def recommentation_in(input_ts, recomment_type):
     results = []
     hash_name = 'recomment_'+str(date) + "_" + recomment_type
     identify_in_hashname = "identify_in_" + str(date)
-    print hash_name
     results = r.hgetall(hash_name)
-    print results
     if not results:
         return []
     recommend_list = set(r.hkeys(hash_name))
@@ -314,6 +314,7 @@ def get_map_count():#获取地图统计
                 location = scan_re['location']
                 if not location:
                     no_location_count += 1
+                    continue
                 if len(location.split(' '))>1:
                     location = location.split(' ')[0]
                 try:
