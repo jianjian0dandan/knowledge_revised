@@ -56,7 +56,7 @@ def uid_name_list(uid_list):
 
     return uname
 
-def eventid_name(uid_list):
+def eventid_name(uidlist):
 
     search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
@@ -202,7 +202,9 @@ def recommentation_in(input_ts, recomment_type):
     results = []
     hash_name = 'recomment_'+str(date) + "_" + recomment_type
     identify_in_hashname = "identify_in_" + str(date)
+    print hash_name
     results = r.hgetall(hash_name)
+    print results
     if not results:
         return []
     recommend_list = set(r.hkeys(hash_name))
@@ -332,7 +334,11 @@ def get_geo():#获取事件地址
     event_result = dict()
     no_location_count = 0
     s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
+    count = 0
     while True:
+        count = count + 1
+        if count > 20:
+            break
         try:
             scan_re = s_re.next()['_source']
             try:
@@ -360,6 +366,9 @@ def get_geo():#获取事件地址
                 name = scan_re['uname'].encode('utf-8')
                 if not location:
                     no_location_count += 1
+                    continue
+                if not name:
+                    name = scan_re['uid']
                 if len(location.split(' '))>1:
                     location = location.split(' ')[0]
                 if scan_re['verified_type'] in org_list:
@@ -372,7 +381,7 @@ def get_geo():#获取事件地址
             print 'ALL done'
             break
     
-    return event_result,people_result,org_relation
+    return event_result,people_result,org_result
     
 
     
