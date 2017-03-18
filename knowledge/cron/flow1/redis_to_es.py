@@ -105,7 +105,7 @@ def compute(user_set, bulk_action):
         user_item = {}
         user_item['user_index'] = user_index
         user_item['user'] = user
-        user_item['user_fansnum'] = user_fansnum
+        user_item['user_fansnum'] = int(user_fansnum)
         user_item["user_friendsnum"] = user_friendsnum
         user_item['origin_weibo_number'] = len(origin_weibo_set)
         user_item['comment_weibo_number'] = len(comment_weibo_set)
