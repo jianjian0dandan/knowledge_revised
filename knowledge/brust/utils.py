@@ -3,7 +3,8 @@ import sys
 import time
 import json
 from knowledge.global_utils import es_prediction, sensing_compute_interval, es_user_profile,\
-        profile_index_name,profile_index_type, RUN_TYPE
+        profile_index_name,profile_index_type
+from knowledge.parameter import DAY, WEEK, RUN_TYPE
 
 
 def get_time_series(ts):
