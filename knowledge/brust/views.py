@@ -20,7 +20,7 @@ def brust_analysis():
 
 
 
-# show all weibo
+# show all weibo trendline
 @mod.route('/show_weibo/')
 def ajax_show_weibo():
     ts = request.args.get("ts", "")
