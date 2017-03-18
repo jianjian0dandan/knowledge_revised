@@ -10,7 +10,8 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from knowledge.global_utils import R_RECOMMENTATION as r
+from knowledge.global_utils import es_event, R_RECOMMENTATION as r
+from knowledge.global_config import event_name, event_name_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
@@ -80,7 +81,7 @@ def ajax_admin_identify_in():
     return json.dumps(results)
 
 
-#上传文件方式入库
+#上传文件方式人物入库
 @mod.route('/submit_identify_in/', methods=['GET', 'POST'])
 def ajax_submit_identify_in():
     results = 0 # mark fail
@@ -129,14 +130,17 @@ def ajax_show_user_task_status():
 #     status = submit_task(input_data)
 #     return json.dumps(status)
 
-#事件提交任务
-@mod.route('/submit_event/')
-def add_relation():
+#事件提交任务,推荐方式或手写
+@mod.route('/submit_event/', methods=['GET', 'POST'])
+def ajax_submit_event():
     input_data = dict()
     input_data = request.get_json()
-    input_data = {'task_id':'event_id', 'submit_date':'date', 'task_name':'event_name', 'relation_list': 'relation_string',\
-               'cal_style':'cal_style', 'keywords':'keywords', 'start_from':'start_from', 'start_end':'start_end',
-               'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
+    # input_data = { 'submit_ts':'date', 'name':u'名&字', 'relation_list': 'join&discuss',\
+    #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
+    #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
+    input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
+               'immediate_compute':'1', 'keywords':u'北京&房价&政策',
+               'event_type':u'经济', 'recommend_style':'submit', 'comput_status':0, 'submit_user':'admin','event_ts':1489649713}
     # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
     # submit_user = request.args.get('submit_user', 'admin')
     # recommend_style = request.args.get('recommend_style', 'recommend')
@@ -148,28 +152,47 @@ def add_relation():
     # start_from = request.args.get('start_from', '') 
     # start_end = request.args.get('start_end', '') 
     # mid = request.args.get('mid', '') 
-    if not input_data.has_key('task_name'):
+    if not input_data.has_key('name'):
         # event_name = key_words
-        input_data['task_name'] = input_data['keywords']
+        input_data['name'] = input_data['keywords']
 
     if input_data.has_key('mid'):
         # event_id = mid
-        input_data['task_id'] = input_data['mid']
+        input_data['en_name'] = input_data['mid']
         del input_data['mid']
     else:
-        event_name = input_data['task_name']
-        event_name_string = ''.join(event_name.split('&'))
-        event_id = p.get_pinyin(event_name_string)+'-'+str(int(time.time()))
-        input_data['task_id'] = event_id
+        e_name = input_data['name']
+        e_name_string = ''.join(e_name.split('&'))
+        event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
+        input_data['en_name'] = event_id
 
-    if not input_data.has_key('start_from'):
-        start_from = int(time.time()) - 2*DAY
-    if not input_data.has_key('start_end'):
-        start_end = int(time.time()) + 5*DAY
-    return json.dumps(input_data)
-    # es_recommendation_result.index(index=recommendation_index_name, doc_type=recommendation_index_type, id=task_id, body=input_data)
+    if not input_data.has_key('start_ts'):
+        start_ts = input_data['event_ts'] - 2*DAY
+        input_data['start_ts'] = start_ts
+    if not input_data.has_key('end_ts'):
+        end_ts = input_data['event_ts'] + 5*DAY
+        input_data['end_ts'] = end_ts
+    input_data['submit_ts'] = int(time.time())
+    del input_data['event_ts']
 
+    # return json.dumps(input_data)
+    try:
+        result = es_event.get(index=event_name, doc_type=event_name_type, id=input_data['en_name'])['_source']
+        return 'already in'
+    except:
+        es_event.index(index=event_name, doc_type=event_name_type, id=input_data['en_name'], body=input_data)
+    return json.dumps(True)
 
+#上传文件方式事件入库
+@mod.route('/submit_event_file/', methods=['GET', 'POST'])
+def ajax_submit_identify_file():
+    results = 0 # mark fail
+    input_data = request.get_json()
+    #input_data={'date': 2016-03-13, 'upload_data':[], 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'file', 'type':'uid', 'operation_type': 'show'/'submit'} 
+    #upload_data stucture same to detect/views/mult_person
+    print 'input_data:', input_data
+    results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
+    return json.dumps(results)
 
 @mod.route('/relation/')
 def add_relation():
