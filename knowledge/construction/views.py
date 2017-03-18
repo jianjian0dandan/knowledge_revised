@@ -10,7 +10,8 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import recommentation_in, recommentation_in_auto, submit_task
+from knowledge.global_utils import R_RECOMMENTATION as r
+from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 
@@ -56,29 +57,49 @@ def ajax_show_auto_in():
         results = []
     return json.dumps(results)
 
-
-# 超级管理员确认入库
+# 推荐方式确认入库
 @mod.route('/admin_identify_in/')
 def ajax_admin_identify_in():
     results = 0
-    date = request.args.get('date', '') # date = '2013-09-07'
-    uid_string = request.args.get('uid_list', '')
+    date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
+    uid_string = request.args.get('uid_list', '2298607941,5993847641')
     uid_list = uid_string.split(',')
-    uu_rel = request.args.get('uu_rel', '')  #a,b,c,d
-    uu_rel_list = uu_rel.split(',')
-    ue_rel = request.args.get('ue_rel', '')
-    ue_rel_list = ue_rel.split(',')
-    uo_rel = request.args.get('uo_rel', '')
-    uo_rel_list = uo_rel.split(',')
-    rel_list = [uu_rel_list, ue_rel_list, uo_rel_list,]
+    relation_string = request.args.get('user_rel', 'friend') # split by ,
     status = request.args.get('status', '2') # 1 compute right now; 2 appointment
-    recommend_style = request.args.get('recommend_style', '')
+    recommend_style = request.args.get('recommend_style', '')  #influence sensitive auto write
     submit_user  = request.args.get('submit_user', 'admin')
-    ts = time.time()
-    task_id = str(submit_user) + str(ts)
-    status = submit_task(input_data)
-
+    data = []
+    if date and uid_list:
+        for uid in uid_list:
+            data.append([date, uid, status, relation_string, recommend_style, submit_user])
+        results = identify_in(data,uid_list)
+    else:
+        results = None
     return json.dumps(results)
+
+
+#上传文件方式入库
+@mod.route('/submit_identify_in/', methods=['GET', 'POST'])
+def ajax_submit_identify_in():
+    results = 0 # mark fail
+    input_data = request.get_json()
+    #input_data={'date': 2016-03-13, 'upload_data':[], 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'file', 'type':'uid', 'operation_type': 'show'/'submit'} 
+    #upload_data stucture same to detect/views/mult_person
+    print 'input_data:', input_data
+    results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
+    return json.dumps(results)
+
+
+#显示计算状态
+@mod.route('/show_user_task_status/', methods=['GET', 'POST'])
+def ajax_show_user_task_status():
+    compute_name = 'compute'
+    result = r.hgetall(compute_name)
+    result_dict = {}
+    for k,v in result.iteritems():
+        detail = json.loads(v)
+        result_dict[k] = detail
+    return json.dumps(result_dict)
 
 # submit group analysis task and save to redis as lists
 # submit group task: task name should be unique
@@ -106,17 +127,6 @@ def ajax_submit_task():
     status = submit_task(input_data)
     return json.dumps(status)
 
-
-# 手动输入
-@mod.route('/submit_identify_in/', methods=['GET', 'POST'])
-def ajax_submit_identify_in():
-    results = 0 # mark fail
-    input_data = request.get_json()
-    #input_data={'date': 2016-03-13, 'upload_data':[], user':submit_user, 'operation_type': 'show'/'submit'} type=uid/uname/url 
-    #upload_data stucture same to detect/views/mult_person
-    print 'input_data:', input_data
-    results = submit_identify_in(input_data)
-    return json.dumps(results)
 
 @mod.route('/relation/')
 def add_relation():

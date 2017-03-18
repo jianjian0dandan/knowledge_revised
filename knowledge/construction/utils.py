@@ -18,18 +18,39 @@ from knowledge.global_utils import R_RECOMMENTATION as r
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2
 from knowledge.global_utils import es_user_portrait as es
-from knowledge.global_utils import es_user_portrait
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 # from knowledge.global_utils import es_bci_history, bci_history_index_name, bci_history_index_type, ES_SENSITIVE_INDEX, DOCTYPE_SENSITIVE_INDEX
 # from knowledge.filter_uid import all_delete_uid
 from knowledge.time_utils import ts2datetime, datetime2ts
-from knowledge.global_utils import portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 
 WEEK = 7
 
+def identify_in(data, uid_list):
+    in_status = 1
+    compute_status = 0
+    compute_hash_name = 'compute'
+    compute_uid = r.hkeys(compute_hash_name)
+    for item in data:
+        date = item[0] # identify the date form '2013-09-01' with web
+        uid = item[1]
+        status = item[2]
+        relation_string = item[3]
+        recommend_style = item[4]
+        submit_user = item[5]
+        value_string = []
+        identify_in_hashname = "identify_in_" + str(date)
+        r.hset(identify_in_hashname, uid, in_status)
+        if status == '1':
+            in_date = date
+            compute_status = '1'
+        elif status == '2':
+            in_date = date
+            compute_status = '2'
+        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user,0]))
+    return True
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
 def submit_task(input_data):
@@ -64,10 +85,14 @@ def submit_identify_in_uid(input_data):
     date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
+    compute_status = input_data['compute_status'] 
+    relation_string = input_data['relation_string'] 
+    recommend_style = input_data['recommend_style']
     hashname_submit = 'submit_recomment_' + date
     hashname_influence = 'recomment_' + date + '_influence'
     hashname_sensitive = 'recomment_' + date + '_sensitive'
-    submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
+    compute_hash_name = 'compute'
+    # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
     line_list = upload_data.split('\n')
@@ -86,7 +111,7 @@ def submit_identify_in_uid(input_data):
     new_uid_list = []
     have_in_uid_list = []
     try:
-        exist_portrait_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, _source=False)['docs']
+        exist_portrait_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids':uid_list}, _source=False)['docs']
     except:
         exist_portrait_result = []
     if exist_portrait_result:
@@ -118,8 +143,9 @@ def submit_identify_in_uid(input_data):
         else:
             tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
+            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user, 0 ]))
             r.hset(hashname_submit, in_item, json.dumps(tmp))
-            r.hset(submit_user_recomment, in_item, '0')
+            # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
     return True, invalid_uid_list, have_in_uid_list, final_submit_user_list
 
@@ -386,7 +412,7 @@ def recommentation_in_auto(date, submit_user):
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
     recomment_hash_name = 'recomment_' + now_date + '_auto'
-    print recomment_hash_name,'============'
+    # print recomment_hash_name,'============'
     recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
     recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
     recomment_submit_hash_name = 'recomment_' + submit_user + '_' + now_date
@@ -399,15 +425,28 @@ def recommentation_in_auto(date, submit_user):
     #     auto_user_list = []
     #step2: get admin user result
     admin_result = r.hget(recomment_hash_name, submit_user)
+    admin_user_list = []
     if admin_result:
-        admin_user_dict = json.loads(admin_result)
+        admin_result_dict = json.loads(admin_result)
     else:
-        admin_user_dict = {}
-    final_results = []
-    for k,v in admin_user_dict.iteritems():
-        results = get_user_detail(now_date, v, 'show_in')
-        for i in results:
-            ii = i
-            ii.append(k)
-            final_results.append(ii)
-    return final_results
+        return None
+    final_result = []
+    #step3: get union user and filter compute/influence/sensitive
+    for k,v in admin_result_dict.iteritems():
+        admin_user_list = v
+        union_user_auto_set = set(admin_user_list)
+        influence_user = set(r.hkeys(recomment_influence_hash_name))
+        sensitive_user = set(r.hkeys(recomment_sensitive_hash_name))
+        compute_user = set(r.hkeys(recomment_compute_hash_name))
+        been_submit_user = set(r.hkeys(recomment_submit_hash_name))
+        filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user | been_submit_user)
+        auto_user_list = list(filter_union_user)
+        #step4: get user detail
+        if auto_user_list == []:
+            return auto_user_list
+        results = get_user_detail(now_date, auto_user_list, 'show_in', 'auto')
+        for detail in results:  #add root
+            re_detail = detail
+            re_detail.append(k)
+            final_result.append(re_detail)
+    return final_result
