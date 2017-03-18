@@ -14,8 +14,10 @@ from knowledge.global_utils import R_RECOMMENTATION as r
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
+from xpinyin import Pinyin
 
 test_time = datetime2ts(RUN_TEST_TIME)
+p = Pinyin()
 # from draw_redis import *
 
 # from knowledge.global_utils import event_name_search
@@ -101,31 +103,72 @@ def ajax_show_user_task_status():
         result_dict[k] = detail
     return json.dumps(result_dict)
 
-# submit group analysis task and save to redis as lists
-# submit group task: task name should be unique
-# input_data is dict ---two types
-# one type: {'u_type':'user/organization', 'submit_date':x, 'uid_list':[], 'relation_list':[], 'cal_style':0/1, 'recommend_style':'', 'task_name':x, 'submit_user':submit_user}
-# two type: {'u_type':'user/organization', 'submit_date':x, 'uid_file':filename, 'relation_list':[], 'cal_style':0/1, 'recommend_style':'file','task_name':x, 'submit_user':submit_user}
-@mod.route('/submit_task/',methods=['GET', 'POST'])
-def ajax_submit_task():
+# # submit group analysis task and save to redis as lists
+# # submit group task: task name should be unique
+# # input_data is dict ---two types
+# # one type: {'u_type':'user/organization', 'submit_date':x, 'uid_list':[], 'relation_list':[], 'cal_style':0/1, 'recommend_style':'', 'task_name':x, 'submit_user':submit_user}
+# # two type: {'u_type':'user/organization', 'submit_date':x, 'uid_file':filename, 'relation_list':[], 'cal_style':0/1, 'recommend_style':'file','task_name':x, 'submit_user':submit_user}
+# @mod.route('/submit_task/',methods=['GET', 'POST'])
+# def ajax_submit_task():
+#     input_data = dict()
+#     input_data = request.get_json()
+#     input_data = {'u_type':'user/organization', 'submit_date':'x', 'uid_list':json.dumps(['3036528532','5825134863']), 'relation_list':json.dumps(['friend']), 'cal_style':0, 'recommend_style':'', 'submit_user':'submit_user'}
+#     try:
+#         submit_user = input_data['submit_user']
+#     except:
+#         return 'no submit_user information'
+#     try:
+#     	task_name = input_data['task_name']
+#     except:
+#     	task_name = submit_user + '_' + str(int(time.time()))
+#         input_data['task_name'] = task_name
+#     task_id = submit_user + '_' + str(int(time.time()))
+#     input_data['task_id'] = task_id
+#     now_ts = int(time.time())
+#     input_data['submit_date'] = now_ts
+#     status = submit_task(input_data)
+#     return json.dumps(status)
+
+#事件提交任务
+@mod.route('/submit_event/')
+def add_relation():
     input_data = dict()
     input_data = request.get_json()
-    input_data = {'u_type':'user/organization', 'submit_date':'x', 'uid_list':json.dumps(['3036528532','5825134863']), 'relation_list':json.dumps(['friend']), 'cal_style':0, 'recommend_style':'', 'submit_user':'submit_user'}
-    try:
-        submit_user = input_data['submit_user']
-    except:
-        return 'no submit_user information'
-    try:
-    	task_name = input_data['task_name']
-    except:
-    	task_name = submit_user + '_' + str(int(time.time()))
-        input_data['task_name'] = task_name
-    task_id = submit_user + '_' + str(int(time.time()))
-    input_data['task_id'] = task_id
-    now_ts = int(time.time())
-    input_data['submit_date'] = now_ts
-    status = submit_task(input_data)
-    return json.dumps(status)
+    input_data = {'task_id':'event_id', 'submit_date':'date', 'task_name':'event_name', 'relation_list': 'relation_string',\
+               'cal_style':'cal_style', 'keywords':'keywords', 'start_from':'start_from', 'start_end':'start_end',
+               'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
+    # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
+    # submit_user = request.args.get('submit_user', 'admin')
+    # recommend_style = request.args.get('recommend_style', 'recommend')
+    # relation_string = request.args.get('relation_string', 'join') # split by ,
+    # cal_style = request.args.get('cal_style', '2') # 1 compute right now; 2 appointment
+    # key_words = request.args.get('key_words', '') # a&b&c
+    # event_name = request.args.get('event_name', '') 
+    # event_type = request.args.get('event_type', '') 
+    # start_from = request.args.get('start_from', '') 
+    # start_end = request.args.get('start_end', '') 
+    # mid = request.args.get('mid', '') 
+    if not input_data.has_key('task_name'):
+        # event_name = key_words
+        input_data['task_name'] = input_data['keywords']
+
+    if input_data.has_key('mid'):
+        # event_id = mid
+        input_data['task_id'] = input_data['mid']
+        del input_data['mid']
+    else:
+        event_name = input_data['task_name']
+        event_name_string = ''.join(event_name.split('&'))
+        event_id = p.get_pinyin(event_name_string)+'-'+str(int(time.time()))
+        input_data['task_id'] = event_id
+
+    if not input_data.has_key('start_from'):
+        start_from = int(time.time()) - 2*DAY
+    if not input_data.has_key('start_end'):
+        start_end = int(time.time()) + 5*DAY
+    return json.dumps(input_data)
+    # es_recommendation_result.index(index=recommendation_index_name, doc_type=recommendation_index_type, id=task_id, body=input_data)
+
 
 
 @mod.route('/relation/')
