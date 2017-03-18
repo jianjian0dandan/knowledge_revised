@@ -1,6 +1,5 @@
-{% extends "public_nav.html" %}
 {% block title %}<title>知识图谱 - 图谱关系图</title>{% endblock %}
-{% block my_css %}
+{% block css %}
 <style>
     .link {
         fill: none;
@@ -36,6 +35,8 @@
 {% endblock %}
 
 {% block my_js %}
+<script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/d3.min.js"></script>
 <script>
     var links = [
         {source: "IFIND", target: "同花顺", type: "resolved", rela:"主营产品"},

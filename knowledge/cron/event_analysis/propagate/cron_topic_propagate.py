@@ -104,7 +104,7 @@ def compute_mtype_count(topic, begin_ts, end_ts,during):
 		}
 	}
 
-	weibo_mtype_count = es_event.search(index=event_text, doc_type=event_text_type,body=query_body)\
+	weibo_mtype_count = es_event.search(index=topic, doc_type=event_text_type,body=query_body)\
 						['aggregations']['all_interests']['buckets']
 	print es_event,event_text,event_text_type
 	print 'weibo_mtype_count:::::::::::::::::',weibo_mtype_count

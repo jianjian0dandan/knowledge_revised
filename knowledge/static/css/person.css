@@ -1,0 +1,22 @@
+/*内容样式*/
+body {
+    width: 100%;
+    /*max-width: 1349px;*/
+    min-width: 1349px;
+    min-height: 2964px;
+    /*max-height: 1005px;*/
+    background: url("/static/images/person_body.png") no-repeat;
+}
+
+
+
+
+
+
+/*屏幕大小判断*/
+@media screen and (min-width: 1366px){
+    body {
+        width: 1349px;
+        height: 2964px;
+    }
+}

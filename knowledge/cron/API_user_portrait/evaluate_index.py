@@ -132,7 +132,7 @@ def get_importance(domain, topic, user_fansnum, fansnum_max):
     topic_list = topic.split('&')
     for topic in topic_list:
         topic_result += topic_weight_dict[topic]
-    print 'user_fansnum:', user_fansnum, type(user_fansnum)
+    #print 'user_fansnum:', user_fansnum, type(user_fansnum)
     if not isinstance(user_fansnum, int):
         user_fansnum = 0
     result = (importance_weight_dict['fansnum']*math.log(float(user_fansnum)/ fansnum_max*9+1, 10) + \

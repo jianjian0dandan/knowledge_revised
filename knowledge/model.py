@@ -2,7 +2,8 @@
 
 from extensions import db
 
-__all__ = ['Topic', 'Group', 'PeopleAttention', 'EventAttention', 'OrgAttention', 'PeopleHistory', 'EventHistory', 'OrgHistory']
+__all__ = ['Topic', 'Group', 'PeopleAttention', 'EventAttention', 'OrgAttention', 'PeopleHistory', 'EventHistory', 'OrgHistory',\
+           'TopicHistory', 'GroupHistory']
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -12,14 +13,18 @@ class Topic(db.Model):
     eventCount = db.Column(db.Integer)#事件数量
     createTime = db.Column(db.Date)#创建时间
     modifyTime = db.Column(db.Date)#最近修改时间
+    label = db.Column(db.Text)#业务标签
+    k_label = db.Column(db.Text)#自动标签
 
-    def __init__(self, name, topicName, event, eventCount, createTime, modifyTime):
+    def __init__(self, name, topicName, event, eventCount, createTime, modifyTime, label, k_label):
         self.name = name
         self.topicName = topicName
         self.event = event
         self.eventCount = eventCount
         self.createTime = createTime
         self.modifyTime = modifyTime
+        self.label = label
+        self.k_label = k_label
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,14 +34,18 @@ class Group(db.Model):
     peopleCount = db.Column(db.Integer)#人物数量
     createTime = db.Column(db.Date)#创建时间
     modifyTime = db.Column(db.Date)#最近修改时间
+    label = db.Column(db.Text)#业务标签
+    k_label = db.Column(db.Text)#自动标签
 
-    def __init__(self, name, groupName, people, peopleCount, createTime, modifyTime):
+    def __init__(self, name, groupName, people, peopleCount, createTime, modifyTime, label, k_label):
         self.name = name
         self.groupName = groupName
         self.people = people
         self.peopleCount = peopleCount
         self.createTime = createTime
         self.modifyTime = modifyTime
+        self.label = label
+        self.k_label = k_label
 
 class PeopleAttention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,5 +122,31 @@ class OrgHistory(db.Model):
     def __init__(self, name, orgID, modifyRecord, modifyTime):
         self.name = name
         self.orgID = orgID
+        self.modifyRecord = modifyRecord
+        self.modifyTime = modifyTime
+
+class TopicHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))#系统用户名
+    topicName = db.Column(db.String(20))#专题名称
+    modifyRecord = db.Column(db.Text)#修改记录
+    modifyTime = db.Column(db.Date)#修改时间
+
+    def __init__(self, name, topicName, modifyRecord, modifyTime):
+        self.name = name
+        self.topicName = topicName
+        self.modifyRecord = modifyRecord
+        self.modifyTime = modifyTime
+
+class GroupHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))#系统用户名
+    groupName = db.Column(db.String(20))#群体名称
+    modifyRecord = db.Column(db.Text)#修改记录
+    modifyTime = db.Column(db.Date)#修改时间
+
+    def __init__(self, name, groupName, modifyRecord, modifyTime):
+        self.name = name
+        self.groupName = orgID
         self.modifyRecord = modifyRecord
         self.modifyTime = modifyTime

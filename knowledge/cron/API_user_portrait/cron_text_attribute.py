@@ -8,9 +8,11 @@ import csv
 import sys
 import json
 import time
-from flow_infomation import get_flow_information_v2
+from flow_information import get_flow_information_v2
 from user_profile import get_profile_information
 from evaluate_index import get_importance, get_activity_time, get_activeness, get_influence
+from config import topic_en2ch_dict, domain_en2ch_dict
+from person_organization import person_organization
 from topic.test_topic import topic_classfiy
 from domain.test_domain_v2 import domain_classfiy
 sys.path.append('../../')
@@ -21,45 +23,58 @@ from time_utils import ts2datetime
 
 #get funsnum_max from bci_date
 def get_fansnum_max(uid_list):
-	#fansnum_max
-	query_body = {
+    #fansnum_max
+    query_body = {
         'query':{
             'match_all':{}
             },
         'size': 1,
-        'sort': [{'fansnum': {'order': 'desc'}}]
-        }
+        'sort': [{'user_fansnum': {'order': 'desc'}}]}
     ts = time.time()
     if RUN_TYPE == 1:
         now_date = ts2datetime(ts - 24*3600)
     else:
         now_date = RUN_TEST_TIME  
     bci_index_name = bci_day_pre +''.join(now_date.split('-'))
+    #print 'bci_index_name:', bci_index_name
     try:
         fansnum_max_results = es_bci.search(index=bci_index_name, doc_type=bci_day_type, body=query_body)['hits']['hits']
     except Exception, e:
         raise e
-    fansnum_max = fansnum_max_results[0]['_source']['fansnum']
+    fansnum_max = int(fansnum_max_results[0]['_source']['user_fansnum'])
     #user_fansnum_dict
     search_result = es_bci.mget(index=bci_index_name, doc_type=bci_day_type, body={'ids':uid_list},_source=True)['docs']
     user_fansnum_dict = dict()
-    for search_item in search_result:
-    	try:
-            user_fansnum_dict[search_item] = search_result['user_fansnum']
-	    except:
-	    	user_fansnum_dict[search_item] = 0
-	return fansnum_max, user_fansnum_dict
+    for item in search_result:
+        uid = item['_id']
+        try:
+            user_fansnum_dict[uid] = item['_source']['user_fansnum']
+        except:
+            user_fansnum_dict[uid] = 0
+    return fansnum_max, user_fansnum_dict
+
+def topic_en2ch(topic_label):
+    insert_topic_label_list = []
+    for en_label in topic_label:
+        ch_label = topic_en2ch_dict[en_label]
+        insert_topic_label_list.append(ch_label.encode('utf-8'))
+    insert_topic_label_string = '&'.join(insert_topic_label_list)
+    return insert_topic_label_string
+
+def domain_en2ch(domain_en_label):
+    insert_domain_label = ''
+    ch_label = domain_en2ch_dict[domain_en_label]
+    ch_label = ch_label.encode('utf-8')
+    return ch_label
 
 
 def save_user_results(bulk_action):
-    print 'save utils bulk action len:', len(bulk_action)
-    #print 'bulk action:', bulk_action
     es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type, timeout=60)
     return True  
 
 #use to compute new user attribute by redis_user2portrait.py
 #version: write in 2016-02-28
-def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts):
+def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark):
     status = False
     print 'start cron_text_attribute'
     uid_list = user_keywords_dict.keys()
@@ -85,6 +100,7 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
     
     #get user fansnum max
     fansnum_max, user_fansnum_dict = get_fansnum_max(uid_list)
+    print 'fansnum len:', len(user_fansnum_dict) 
     #get user activeness by bulk_action
     print 'get activeness results'
     activeness_results = get_activity_time(uid_list)
@@ -140,5 +156,17 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
         bulk_action.extend([action, results])
         
     status = save_user_results(bulk_action)
-    
+    print 'save es_user_portrait:', status 
+    #compute relation
+    if task_mark == 'user':
+        save_status = person_organization(uid_list,relation_mark_dict)
+        if status and save_status:
+            status = True
+        else:
+            status = False
+    #print 'save neo4j:', save_status
     return status
+
+
+if __name__=='__main__':
+    get_fansnum_max(['2117306420', '5779325975'])

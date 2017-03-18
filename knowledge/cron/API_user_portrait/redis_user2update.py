@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+use to update by add task from user
+'''
 import sys
 import time
 import json
@@ -6,14 +9,54 @@ from wei_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user_update as r_user
-from global_utils import r_user_update_hash_name as r_user_hash_name
+from global_utils import r_user_update as r
+from global_utils import r_user_update_hash_name
+from global_config import ALL_PERSON_RELATION_LIST, ALL_VERIFIED_RELATION_LIST
 
+
+def scan_compute_redis_v2():
+    task_type = 'user'
+    bulk_action = []
+    count = 0
+    iter_user_list = []
+    verified_type_dict = dict()
+    relation_mark_dict = dict()
+    while True:
+        r_user_item = r.rpop(r_user_update_hash_name)
+        if r_user_item:
+            uid = r_user_item[0]
+            relation_mark = r_user_item[1]
+            iter_user_list.append(uid)
+            relation_mark_dict[uid] = relation_mark
+            count += 1
+        else:
+            break
+
+        if count % 100==0 and count != 0:
+            if WEIBO_API_INPUT_TYPE == 0:
+                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
+            else:
+                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type)
+
+            iter_user_list = []
+            relation_mark_dict = dict()
+
+    if iter_user_list != []:
+        if WEIBO_API_INPUT_TYPE == 0:
+                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
+            else:
+                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type)
+
+
+'''
 def scan_compute_redis():
     hash_name = r_user_hash_name
     results = r.hgetall(hash_name)
     iter_user_list = []
     mapping_dict = dict()
+    verify_mark_dict = dict()
     count = 0
     for uid in results:
         user_list = json.loads(results[uid])
@@ -94,14 +137,14 @@ def change_status_compute_fail(mapping_dict):
         user_list[1] = '1'
         new_mapping_dict[uid] = json.dumps(user_list)
     r.hmset(hashname, new_mapping_dict)	
-
+'''
 
 if __name__=='__main__':
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/redis_user2update.py&start&' + str(log_time_ts)
     
     try:
-        scan_compute_redis()
+        scan_compute_redis_v2()
     except Exception, e:
         print e, '&error&', ts2date(time.time())
 
