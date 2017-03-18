@@ -11,9 +11,14 @@ import math
 import json
 import redis
 import math
+from xpinyin import Pinyin
+from py2neo.ext.batman import ManualIndexManager
+from py2neo.ext.batman import ManualIndexWriteBatch
+from py2neo.ogm import GraphObject, Property
+from py2neo import Node, Relationship
 from elasticsearch import Elasticsearch
 # from update_activeness_record import update_record_index
-from knowledge.global_utils import R_RECOMMENTATION as r
+from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2
@@ -24,8 +29,10 @@ from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 # from knowledge.global_utils import es_bci_history, bci_history_index_name, bci_history_index_type, ES_SENSITIVE_INDEX, DOCTYPE_SENSITIVE_INDEX
 # from knowledge.filter_uid import all_delete_uid
 from knowledge.time_utils import ts2datetime, datetime2ts
+from knowledge.global_config import event_name, event_name_type, event_analysis_name, event_text_type
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 
+p = Pinyin()
 WEEK = 7
 
 def identify_in(data, uid_list):
@@ -450,3 +457,175 @@ def recommentation_in_auto(date, submit_user):
             re_detail.append(k)
             final_result.append(re_detail)
     return final_result
+
+def submit_event(input_data):
+    if not input_data.has_key('name'):
+        input_data['name'] = input_data['keywords']
+
+    if input_data.has_key('mid'):
+        # event_id = mid
+        input_data['en_name'] = input_data['mid']
+        del input_data['mid']
+    else:
+        e_name = input_data['name']
+        e_name_string = ''.join(e_name.split('&'))
+        event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
+        input_data['en_name'] = event_id
+
+    if not input_data.has_key('start_ts'):
+        start_ts = input_data['event_ts'] - 2*DAY
+        input_data['start_ts'] = start_ts
+    if not input_data.has_key('end_ts'):
+        end_ts = input_data['event_ts'] + 5*DAY
+        input_data['end_ts'] = end_ts
+    input_data['submit_ts'] = int(time.time())
+    del input_data['event_ts']
+    try:
+        result = es_event.get(index=event_name, doc_type=event_name_type, id=input_data['en_name'])['_source']
+        return 'already in'
+    except:
+        es_event.index(index=event_name, doc_type=event_name_type, id=input_data['en_name'], body=input_data)
+    return True
+
+def submit_event_file(input_data):
+    submit_ts = input_data['submit_ts']
+    relation_compute = input_data['relation_compute']
+    immediate_compute = input_data['immediate_compute']
+    submit_user = input_data['submit_user']
+    recommend_style = input_data['recommend_style']
+    comput_status = input_data['comput_status']
+    file_data = input_data['upload_data']
+    result_flag = False
+    valid_event = 0
+    total_event = len(file_data)
+    for event in file_data:
+        if not event.has_key('event_ts'):
+            event['event_ts'] = int(time.time())
+        event['submit_ts'] = submit_ts
+        event['relation_compute'] = relation_compute
+        event['immediate_compute'] = immediate_compute
+        event['submit_user'] = submit_user
+        event['recommend_style'] = recommend_style
+        event['comput_status'] = comput_status
+        result = submit_event(event)
+        if result == True:
+            valid_event += 1
+    if valid_event == total_event:
+        result_flag = True
+    return result_flag, valid_event
+
+def relation_add(input_data):
+    result_detail = [False]
+    rel_num = 0
+    for i in input_data:
+        rel_num += 1
+        node_key1 = i[0]
+        node1_id = i[1]
+        node1_index_name = i[2]
+        rel = i[3]
+        node_key2 = i[4]
+        node2_id = i[5]
+        node2_index_name = i[6]
+        result = create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name)
+        # return result
+        if result == 'have relation':
+            result_detail.append(rel_num)
+            return result_detail
+    result_detail[0] = True
+    return result_detail
+
+
+
+def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+    Index = ManualIndexManager(graph)
+    node_index = Index.get_index(Node, node1_index_name)
+    group_index = Index.get_index(Node, node2_index_name)
+    print node_index
+    print group_index
+    tx = graph.begin()
+    node1 = node_index.get(node_key1, node1_id)[0]
+    node2 = group_index.get(node_key2, node2_id)[0]
+    if not (node1 and node2):
+        print "node does not exist"
+        return 'does not exist'
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
+    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    # return c_string
+    result = graph.run(c_string)
+    print result
+    rel_list = []
+    for item in result:
+        rel_list.append(item)
+    print rel_list
+    if not rel_list:
+        rel = Relationship(node1, rel, node2)
+        graph.create(rel)
+        print "create success"
+    else:
+        print "The current two nodes already have a relationship"
+        return 'have relation'
+    return True
+
+def search_event(item, field):
+    query_body = {
+        "query":{
+            'bool':{
+                'should':[
+                    {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
+                    # {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
+                ]
+            }
+
+        },
+        'size':10
+    }
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    try:
+        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+                body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
+    except:
+        return 'does not exist'
+    for i in name_results:
+        field_list = []
+        for key in field:
+            key1 = i['fields'][key][0]
+            field_list.append(key1)
+
+        event_id_list.append(field_list)
+    return event_id_list
+
+def search_user(item,field):
+    query_body = {
+        "query":{
+            'bool':{
+                'should':[
+                    {"wildcard":{'uid':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'uname':'*'+str(item.encode('utf-8'))+'*'}}
+                ]
+            }
+
+        },
+        'size':10
+    }
+    only_uid = []
+    user_uid_list = []
+    u_nodes_list = {}
+
+    try:
+        name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
+                body=query_body, fields= field)['hits']['hits']
+    except:
+        return 'does not exist'
+
+    for i in name_results:
+        field_list = []
+        for key in field:
+            key1 = i['fields'][key][0]
+            field_list.append(key1)
+        user_uid_list.append(field_list)
+    return user_uid_list

@@ -8,7 +8,7 @@ import time
 from datetime import date
 from datetime import datetime
 
-from utils import show_weibo_detail, show_weibo_list, get_weibo_bursting
+from utils import get_time_series, show_weibo_list, get_weibo_bursting
 
 
 mod = Blueprint('brust', __name__, url_prefix='/brust')
@@ -24,7 +24,8 @@ def brust_analysis():
 @mod.route('/show_weibo/')
 def ajax_show_weibo():
     ts = request.args.get("ts", "")
-    results = show_weibo_detail()
+    resutlt = get_time_series()
+    # results = show_weibo_detail()
 
     return json.dumps(results)
 
@@ -32,7 +33,7 @@ def ajax_show_weibo():
 # show ts weibo
 @mod.route("/show_weibo_list/")
 def ajax_show_weibo_list():
-    ts = request.args.get("ts", "")
+    ts = request.args.get("ts", "1479571200")
     message_type = request.args.get("type", "1") # 1: origin, 3:retweet
     sort_item = request.args.get("sort", "retweeted") # 排序, retweeted, comment, timestamp, sensitive
 
