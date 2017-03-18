@@ -40,6 +40,45 @@ flow_text_index_type = "text"
 profile_index_name = "weibo_user"
 profile_index_type = "user"
 
+
+def get_weibo(item):
+    keys = ["text","sensitive_words_string","sensitive", "uid", "user_fansnum", "mid", "keywords_string", "geo", "ip", "timestamp", "message_type"]
+    results = dict()
+    for key in keys:
+        results[key] = item[key]
+    return results
+
+
+"""
+def get_weibo(mid_list, ts):
+    llen = len(mid_list)
+    l_1000 = llen/1000
+    index_list = []
+    for i in range(3):
+        index_list.append("flow_text_"+ts2datetime(ts-i*24*3600))
+    results = dict()
+
+    keys = ["text","sensitive_words_string","sensitive", "uid", "user_fansnum", "mid", "keywords_string", "geo", "ip", "timestamp", "message_type"]
+    for i in range(l_1000+1):
+        if mid_list[i*1000: (i+1)*1000]:
+            query_body = {
+                "query":{
+                    "terms":{"mid":mid_list[i*1000: (i+1)*1000]}
+                },
+                "size":10000
+            }
+
+            es_results = es_text.search(index=index_list, doc_type="text", body=query_body)["hits"]["hits"]
+            for item in es_results:
+                item = item["_source"]
+                tmp = dict()
+                for key in keys:
+                    tmp[key] = item[key]
+                results[item["mid"]] = tmp
+
+    return results
+"""
+
 # 获得前12个小时内 各个时间段内社会传感器发布微博的原创微博/转发微博/评论微博，计算均值和方差
 
 def get_forward_numerical_info(task_name, ts):
@@ -107,6 +146,8 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
         "size": 10000
     }
 
+    mid_dict = dict()
+
     datetime_1 = ts2datetime(ts)
     datetime_2 = ts2datetime(ts-24*3600)
     index_name_1 = flow_text_index_name_pre + datetime_1
@@ -129,8 +170,8 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
                 origin_mid_list.add(item["_id"])
             else:
                 origin_mid_list.add(item['_source']['root_mid'])
-
-    return list(origin_mid_list)
+                mid_dict[item['_source']['root_mid']] = item["_id"] # 源头微博和当前转发微博的mid
+    return list(origin_mid_list), mid_dict
 
 
 # 给定原创微博list，搜索之前time_segment时间段内的微博总数，即转发和评论总数
@@ -236,6 +277,8 @@ def query_hot_weibo(ts, origin_mid_list, time_segment):
         index_list.append(index_name_1)
     if exist_es_2:
         index_list.append(index_name_2)
+
+    index_list.append(flow_text_index_name_pre+ts2datetime(ts-2*24*3600))
     if index_list:
         results = es_text.search(index=index_list, doc_type=flow_text_index_type,body=query_all_body)['aggregations']['all_mid']['buckets']
         if results:
@@ -374,6 +417,22 @@ def get_important_user(ts, origin_mid_list, time_segment):
     return results
 
 
+def filter_mid(mid_list):
+    llen = len(mid_list)
+    l_1000 = llen/1000
+
+    result = []
+
+    for i in range(l_1000+1):
+        tmp = mid_list[i*1000:(i+1)*1000]
+        if tmp:
+            es_results = es_prediction.mget(index="social_sensing_text", doc_type="text", body={"ids":tmp}, _source=False)["docs"]
+            for item in es_results:
+                if not item["found"]:
+                    result.append(item["_id"])
+
+    return result
+
 
 def social_sensing(task_detail):
 
@@ -388,15 +447,30 @@ def social_sensing(task_detail):
     ts = int(task_detail[2])
 
     print ts2date(ts)
+    index_list = []
+    important_words = []
+    datetime_1 = ts2datetime(ts)
+    index_name_1 = flow_text_index_name_pre + datetime_1
+    exist_es = es_text.indices.exists(index=index_name_1)
+    if exist_es:
+        index_list.append(index_name_1)
+    datetime_2 = ts2datetime(ts-DAY)
+    index_name_2 = flow_text_index_name_pre + datetime_2
+    exist_es = es_text.indices.exists(index=index_name_2)
+    if exist_es:
+        index_list.append(index_name_2)
+    if es_text.indices.exists(index=flow_text_index_name_pre+ts2datetime(ts-2*DAY)):
+        index_list.append(flow_text_index_name_pre+ts2datetime(ts2datetime(ts-2*DAY)))
+
     # PART 1
     
     #forward_result = get_forward_numerical_info(task_name, ts, create_by)
     # 之前时间阶段内的原创微博list/retweeted
-    forward_origin_weibo_list = query_mid_list(ts-time_interval, social_sensors, forward_time_range)
-    forward_retweeted_weibo_list = query_mid_list(ts-time_interval, social_sensors, forward_time_range, 3)
+    forward_origin_weibo_list, forward_1 = query_mid_list(ts-time_interval, social_sensors, forward_time_range)
+    forward_retweeted_weibo_list, forward_3 = query_mid_list(ts-time_interval, social_sensors, forward_time_range, 3)
     # 当前阶段内原创微博list
-    current_mid_list = query_mid_list(ts, social_sensors, time_interval)
-    current_retweeted_mid_list = query_mid_list(ts, social_sensors, time_interval, 3)
+    current_mid_list, current_1 = query_mid_list(ts, social_sensors, time_interval)
+    current_retweeted_mid_list, current_3 = query_mid_list(ts, social_sensors, time_interval, 3)
     all_mid_list = []
     all_mid_list.extend(current_mid_list)
     all_mid_list.extend(current_retweeted_mid_list)
@@ -410,54 +484,52 @@ def social_sensing(task_detail):
     all_retweeted_list.extend(current_retweeted_mid_list)
     all_retweeted_list.extend(forward_retweeted_weibo_list)#被转发微博的mid/root-mid
     all_retweeted_list = list(set(all_retweeted_list))
+
+
+    all_mid_list = filter_mid(all_mid_list)
+    all_origin_list = filter_mid(all_origin_list)
+    all_retweeted_list = filter_mid(all_retweeted_list)
+
     print "all mid list: ", len(all_mid_list)
-    #print "all_origin_list", all_origin_list
-    #print "all_retweeted_list", all_retweeted_list
+    print "all_origin_list", len(all_origin_list)
+    print "all_retweeted_list", len(all_retweeted_list)
+
 
     # 查询微博在当前时间内的转发和评论数, 聚合按照message_type
-    statistics_count = query_related_weibo(ts, all_mid_list, time_interval)
+    #statistics_count = query_related_weibo(ts, all_mid_list, time_interval)
     if all_origin_list:
-        origin_weibo_detail = query_hot_weibo(ts, all_origin_list, time_interval) # 原创微博详情
+        #origin_weibo_detail = query_hot_weibo(ts, all_origin_list, time_interval) # 原创微博详情
+        origin_weibo_detail = dict()
+        for mid in all_origin_list:
+            retweet_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":3}}]}}})["count"]
+            comment_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
+            tmp = dict()
+            tmp["retweeted"] = retweet_count
+            tmp["comment"] = comment_count
+            origin_weibo_detail[mid] = tmp
     else:
         origin_weibo_detail = {}
+    print "len(origin_weibo_detail): ", len(origin_weibo_detail)
     if all_retweeted_list:
-        retweeted_weibo_detail = query_hot_weibo(ts, all_retweeted_list, time_interval) # 转发微博详情
+        retweeted_weibo_detail = dict()
+        for mid in all_retweeted_list:
+            retweet_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":3}}]}}})["count"]
+            comment_count = es_text.count(index=index_list, doc_type="text", body={"query":{"bool":{"must":[{"term":{"root_mid": mid}}, {"term":{"message_type":2}}]}}})["count"]
+            tmp = dict()
+            tmp["retweeted"] = retweet_count
+            tmp["comment"] = comment_count
+            retweeted_weibo_detail[mid] = tmp
+        #retweeted_weibo_detail = query_hot_weibo(ts, all_retweeted_list, time_interval) # 转发微博详情
     else:
         retweeted_weibo_detail = {}
-    current_total_count = statistics_count['total_count']
+    print "len(retweeted_weibo_detail): ", len(retweeted_weibo_detail)
+    #current_total_count = statistics_count['total_count']
 
     # 当前阶段内所有微博总数
-    current_retweeted_count = statistics_count['retweeted']
-    current_comment_count = statistics_count['comment']
+    #current_retweeted_count = statistics_count['retweeted']
+    #current_comment_count = statistics_count['comment']
 
-
-    """
-    # 聚合当前时间内重要的人
-    important_uid_list = []
-    datetime = ts2datetime(ts-time_interval)
-    index_name = flow_text_index_name_pre + datetime
-    exist_es = es_text.indices.exists(index_name)
-    if exist_es:
-        search_results = get_important_user(ts, all_mid_list, time_interval)
-        important_uid_list = search_results
-    # 根据获得uid_list，从人物库中匹配重要人物
-    if important_uid_list:
-        important_results = es_user_portrait.mget(index=portrait_index_name,doc_type=portrait_index_type, body={"ids": important_uid_list})['docs']
-    else:
-        important_results = []
-    filter_important_list = [] # uid_list
-    if important_results:
-        for item in important_results:
-            if item['found']:
-                #if item['_source']['importance'] > IMPORTANT_USER_THRESHOULD:
-                filter_important_list.append(item['_id'])
-
-    print "filter_important_list", filter_important_list
-    print "important_results", important_uid_list
-    """
-
-    #判断感知
-
+    #all_mid_list = list(set(all_origin_list[:100]) | set(all_retweeted_list[:100]))
 
 
     # 感知到的事, all_mid_list
@@ -473,21 +545,12 @@ def social_sensing(task_detail):
     sensitive_words_dict = dict()
     sensitive_weibo_detail = {}
     trendline_dict = dict()
+    all_text_dict = dict()
 
     # 有事件发生时开始
     if 1:
-        index_list = []
-        important_words = []
-        datetime_1 = ts2datetime(ts)
-        index_name_1 = flow_text_index_name_pre + datetime_1
-        exist_es = es_text.indices.exists(index=index_name_1)
-        if exist_es:
-            index_list.append(index_name_1)
-        datetime_2 = ts2datetime(ts-DAY)
-        index_name_2 = flow_text_index_name_pre + datetime_2
-        exist_es = es_text.indices.exists(index=index_name_2)
-        if exist_es:
-            index_list.append(index_name_2)
+        print "index_list:", index_list
+
         if index_list and all_mid_list:
             query_body = {
                 "query":{
@@ -500,6 +563,7 @@ def social_sensing(task_detail):
                 "size": 5000
             }
             search_results = es_text.search(index=index_list, doc_type="text", body=query_body)['hits']['hits']
+            print "search mid len: ", len(search_results)
             tmp_sensitive_warning = ""
             text_dict = dict() # 文本信息
             mid_value = dict() # 文本赋值
@@ -520,6 +584,8 @@ def social_sensing(task_detail):
                     iter_mid = item['_source']['mid']
                     iter_text = item['_source']['text'].encode('utf-8', 'ignore')
                     iter_sensitive = item['_source'].get('sensitive', 0)
+                    tmp_text = get_weibo(item['_source'])
+                    all_text_dict[iter_mid] = tmp_text
 
                     duplicate_text_list.append({"_id":iter_mid, "title": "", "content":iter_text.decode("utf-8",'ignore')})
 
@@ -536,6 +602,7 @@ def social_sensing(task_detail):
                     classify_uid_list.append(iter_uid)
 
                 # 去重
+                print "start duplicate"
                 if duplicate_text_list:
                     dup_results = duplicate(duplicate_text_list)
                     for item in dup_results:
@@ -543,6 +610,7 @@ def social_sensing(task_detail):
                             duplicate_dict[item['_id']] = item['same_from']
 
                 # 分类
+                print "start classify"
                 mid_value = dict()
                 if classify_text_dict:
                     classify_results = topic_classfiy(classify_uid_list, classify_text_dict)
@@ -554,37 +622,58 @@ def social_sensing(task_detail):
                         mid_prediction_list.append(k) # corresponding 
 
                 # prediction
+                print "start prediction"
                 weibo_prediction_result = weibo_model.predict(feature_prediction_list)
                 uid_prediction_result = uid_model.predict(feature_prediction_list)
                 for i in range(len(mid_prediction_list)):
+                    if  i % 100 == 0:
+                        print i
                     uid_prediction_dict[mid_prediction_list[i]] = uid_prediction_result[i]
                     weibo_prediction_dict[mid_prediction_list[i]] = weibo_prediction_result[i]
                     tmp_trendline = trendline_list(mid_prediction_list[i], weibo_prediction_result[i])
                     trendline_dict[mid_prediction_list[i]] = tmp_trendline
 
-            if sensitive_words_dict:
-                sensitive_mid_list = sensitive_words_dict.keys()
-                sensitivie_weibo_detail = query_hot_weibo(ts, sensitive_mid_list, time_interval)
+    # organize data
+
+    mid_list = all_text_dict.keys()
+    print "final mid:", len(mid_list)
+    print "intersection: ", len(set(mid_list)&set(all_mid_list))
+    bulk_action = []
+    count = 0
+    for mid in mid_list:
+        iter_dict = dict()
+        if origin_weibo_detail.has_key(mid):
+            iter_dict.update(origin_weibo_detail[mid])
+            iter_dict["type"] = 1
+        elif retweeted_weibo_detail.has_key(mid):
+            iter_dict.update(retweeted_weibo_detail[mid])
+            iter_dict["type"] = 3
+        else:
+            iter_dict["retweeted"] = 0
+            iter_dict["comment"] = 0
+            print "mid in all_mid_list: ", mid in set(all_mid_list)
+
+        iter_dict["trendline"] = json.dumps(trendline_dict[mid])
+        if duplicate_dict.has_key(mid):
+            iter_dict["duplicate"] = duplicate_dict[mid]
+        else:
+            iter_dict["duplicate"] = ""
+
+        iter_dict["uid_prediction"] = uid_prediction_dict[mid]
+        iter_dict["weibo_prediction"] = weibo_prediction_dict[mid]
+        iter_dict["mid_topic_value"] = mid_value[mid]
+        iter_dict["detect_ts"] = ts
+        iter_dict.update(all_text_dict[mid])
+        count += 1
+        bulk_action.extend([{"index":{"_id": mid}}, iter_dict])
+        if count % 500 == 0:
+            es_prediction.bulk(bulk_action, index="social_sensing_text", doc_type="text", timeout=600)
+            bulk_action = []
 
 
-    results = dict()
-    results["trendline_dict"] = json.dumps(trendline_dict)
-    results['mid_topic_value'] = json.dumps(mid_value)
-    results['duplicate_dict'] = json.dumps(duplicate_dict)
-    results["uid_prediction_dict"] = json.dumps(uid_prediction_dict)
-    results["weibo_prediction_dict"] = json.dumps(weibo_prediction_dict)
-    results['sensitive_words_dict'] = json.dumps(sensitive_words_dict)
-    results['sensitive_weibo_detail'] = json.dumps(sensitive_weibo_detail)
-    results['origin_weibo_number'] = len(all_origin_list)
-    results['retweeted_weibo_number'] = len(all_retweeted_list)
-    results['origin_weibo_detail'] = json.dumps(origin_weibo_detail)
-    results['retweeted_weibo_detail'] = json.dumps(retweeted_weibo_detail)
-    results['retweeted_weibo_count'] = current_retweeted_count
-    results['comment_weibo_count'] = current_comment_count
-    results['weibo_total_number'] = current_total_count
-    results['timestamp'] = ts
-    # es存储当前时段的信息
-    es_prediction.index(index=index_sensing_task, doc_type=type_sensing_task, id=ts, body=results)
+    if bulk_action:
+        es_prediction.bulk(bulk_action, index="social_sensing_text", doc_type="text", timeout=600)
+
 
     return "1"
 

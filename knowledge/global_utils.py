@@ -14,6 +14,9 @@ profile_index_type = "user"
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 es_bci = Elasticsearch(user_profile_host, timeout=600)
 
+# es_social_sensing
+es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
+sensing_compute_interval = 2*3600
 #recommendation task
 es_recommendation_result = Elasticsearch(user_portrait_host, timeout=600)
 

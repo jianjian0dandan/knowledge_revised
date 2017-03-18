@@ -179,8 +179,88 @@ def manage_sensing_task():
 
     es.indices.create(index="manage_sensing_task", body=index_info, ignore=400)
 
+def mappings_social_sensing_text():
+    index_info = {
+        "settings":{
+            "number_of_replicas": 0
+        },
+        "mappings":{
+            "text":{
+                "properties":{
+                    "trendline":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "duplicate":{
+                        "type": "float",
+                        "index": "no"
+                    },
+                    "uid_prediction":{
+                        "type": "float",
+                        "index": "no"
+                    },
+                    "weibo_prediction":{
+                        "type": "float",
+                        "index": "no"
+                    },
+                    "mid_topic_value":{
+                        "type": "float",
+                    },
+                    "detect_ts":{
+                        "type": "long",
+                    },
+                    "text":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "sensitive_words_string":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "sensitive":{
+                        "type": "float",
+                    },
+                    "uid":{
+                        "type": "string",
+                    },
+                    "user_fansnum":{
+                        "type": "long"
+                    },
+                    "mid":{
+                        "type": "string"
+                    },
+                    "keyswords_string":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "geo":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "ip":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "timestamp":{
+                        "type": "long"
+                    },
+                    "message_type":{
+                        "type": "long"
+                    },
+                    "type":{
+                        "type": "long"
+                    }
+                }
+            }
+        }
+    }
+
+    es.indices.create(index="social_sensing_text",body=index_info, ignore=400)
+
+
 if __name__ == "__main__":
-    manage_sensing_task()
+    #manage_sensing_task()
     #mappings_sensing_task("social_sensing")
+    mappings_social_sensing_text()
 
 
