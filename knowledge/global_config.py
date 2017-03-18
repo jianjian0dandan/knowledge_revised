@@ -206,6 +206,7 @@ portrait_type = "user"
 flow_text_type = "text"
 
 event_name = "event_task"#"event" # 事件基本信息
+event_name_type = 'event'
 event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
 event_text = "event_text"
 event_text_type ="text"
