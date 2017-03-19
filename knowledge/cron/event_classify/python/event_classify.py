@@ -7,10 +7,10 @@ import re
 from svmutil import *
 from utils import cut_filter,classify_list,abs_path
 
-def get_classify(text,d_first,d_second):
+def get_classify(text,d_first):
 
     word_dict = []
-    reader = csv.reader(file(abs_path+'/svm_model/feature_%s_%s.csv' % (d_first,d_second), 'rb'))
+    reader = csv.reader(file(abs_path+'/svm_model/feature_%s.csv' % d_first, 'rb'))
     for w,c in reader:
         word_dict.append([w,c])
 
@@ -24,23 +24,13 @@ def get_classify(text,d_first,d_second):
     prob_x += [xi]
     prob_y += [float(1)]
 
-    m = svm_load_model(abs_path+'/svm_model/train_%s_%s.model' % (d_first,d_second))
+    m = svm_load_model(abs_path+'/svm_model/train_%s.model' % d_first)
     p_label, p_acc, p_val  = svm_predict(prob_y, prob_x, m)
     
-    if p_label == '1':
+    if str(int(p_label[0])) == '1':
         return d_first
     else:
-        return d_second
-
-def count_word(text,name):
-
-    word_count = 0
-    reader = csv.reader(file(abs_path+'/train_data/%s_tfidf.csv' % name, 'rb'))
-    for word,weight in reader:
-        if word in text:
-            word_count = word_count + float(text.count(word))*float(weight)
-
-    return word_count
+        return 'other'
 
 def cut_weibo(data):
 
@@ -58,21 +48,25 @@ def cut_weibo(data):
         count = count + 1
 
     for i in range(0,len(classify_list)):
-        w_count = count_word(text,classify_list[i])
-        classify_dict[classify_list[i]] = classify_dict[classify_list[i]] + w_count
-##        for j in range(i+1,len(classify_list)):
-##            flag = get_classify(text,classify_list[i],classify_list[j])
-##            classify_dict[flag] = classify_dict[flag] + 1
+        flag = get_classify(text,classify_list[i])
+        if flag == 'other':
+            continue
+        else:
+            classify_dict[flag] = classify_dict[flag] + 1
 
-    nh = sorted(classify_dict.iteritems(), key=lambda d:d[1], reverse = True)
+    result = 'other'
+    flag = 0
+    for k,v in classify_dict.iteritems():
+        if v > 0:
+            flag = flag + 1
+            result = k
 
-    sta_n = float(sum(classify_dict.values()))/float(len(classify_dict))
-    if nh[0][1] > sta_n:
-        label = nh[0][0]
-    else:
+    if flag > 1:
         label = 'other'
+    else:
+        label = result
 
-    return nh[0][0]
+    return label
 
 def test_data(name):
 
@@ -93,5 +87,6 @@ if __name__ == '__main__':
     data_list = ['aomen','jiedaibao','jierjisi','jinji','social-security','yilake']
     for name in data_list:
         data = test_data(name)
+        #label = cut_weibo_new(data)
         label = cut_weibo(data)
         print name,label
