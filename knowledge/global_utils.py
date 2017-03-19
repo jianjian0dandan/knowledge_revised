@@ -14,8 +14,13 @@ profile_index_type = "user"
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
 es_bci = Elasticsearch(bci_es_host, timeout=600)
 
+#related_docs
+es_related_docs = Elasticsearch(user_portrait_host, timeout=600)
+
 # es_social_sensing
 es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
+es_prediction = es_social_sensing_text 
+
 sensing_compute_interval = 2*3600
 #recommendation task
 es_recommendation_result = Elasticsearch(user_portrait_host, timeout=600)
@@ -87,6 +92,12 @@ bci_day_type = 'bci'
 # es for tag
 tag_index_name = 'custom_attribute'
 tag_index_type = 'attribute'
+
+#es for related docs
+user_docs_name = 'user_docs'
+user_docs_type = 'docs'
+event_docs_name = 'event_docs'
+event_docs_type = 'docs'
 
 def _default_es_cluster_flow1(host=ES_CLUSTER_HOST_FLOW1):
     es = Elasticsearch(host, timeout=60, retry_on_timeout=True, max_retries=6)

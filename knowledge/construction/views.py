@@ -12,12 +12,14 @@ from datetime import date
 from datetime import datetime
 from knowledge.global_utils import es_event, R_RECOMMENTATION as r
 from knowledge.global_utils import es_user_portrait as es, portrait_index_name, portrait_index_type
-from knowledge.global_config import event_name, event_name_type
+from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
+from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
+from knowledge.model import PeopleHistory
 
 test_time = datetime2ts(RUN_TEST_TIME)
 # from draw_redis import *
@@ -172,7 +174,7 @@ def ajax_submit_identify_file():
 #事件任务状态
 @mod.route('/show_event_task/')
 def ajax_show_event_task():
-    results = es_event.search(index=event_name, doc_type=event_name_type, body={"query":{"match_all":{}}})['hits']['hits']
+    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}}})['hits']['hits']
     result_list = []
     for i in results:
         result_list.append(i['_source'])
@@ -230,34 +232,53 @@ def ajax_node_edit_show():
     result = show_node_detail(node_type, item)
     return json.dumps(result)
 
-#特定节点编辑，先查找，展示
+#特定节点编辑，提交
 @mod.route('/node_edit/')
 def ajax_node_edit_():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
     editor = request.args.get('submit_user', '')  #admin
     if node_type == 'User':
-        field = [['topic_string', 'domain', 'function_mark', 'function_description'],'related_docs']
+        edit_num = 0
+        field = [['topic_string', 'domain', 'function_mark', 'function_description'],['related_docs']]
         for i in field[0]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
+                edit_num += 1
                 i_value = '&'.join(i_value.split(','))
                 es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
         for i in field[1]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
+                edit_num += 1
                 i_value = '&'.join(i_value.split(','))
-                es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
+                es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
+        if edit_num >0:
+            user_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=time.time())
+
+
+
     elif node_type == 'Event':
+        edit_num = 0
         field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
-              'start_ts', 'end_ts','description'], 'related_docs']
+              'start_ts', 'end_ts','description'], ['related_docs']]
         for i in field[0]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
+                edit_num += 1
                 i_value = '&'.join(i_value.split(','))
                 es_event.update(index=event_analysis_name,doc_type=event_type,id=item,body={'doc':{i:i_value}})
-    # result = edit_node()
-    return '1'
+        for i in field[1]:
+            i_value = request.args.get(i, '') #User , Org
+            if i_value:
+                edit_num += 1
+                i_value = '&'.join(i_value.split(','))
+                es_related_docs.update(index=event_docs_type,doc_type=event_docs_name, id=item,body={'doc':{i:i_value}})
+    if edit_num>0:
+
+        return json.dumps(True)
+    else:
+        return '0'
 
 
 @mod.route('/relation/')

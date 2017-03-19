@@ -214,7 +214,7 @@ event_text_type ="text"
 event_task_type ="event"
 event_type = "text"
 neo4j_name = "neo4j"
-neo4j_password = "database"
+neo4j_password = "Bh123456"
 neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 
 

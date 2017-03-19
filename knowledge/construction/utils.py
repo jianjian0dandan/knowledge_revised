@@ -29,7 +29,7 @@ from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 # from knowledge.global_utils import es_bci_history, bci_history_index_name, bci_history_index_type, ES_SENSITIVE_INDEX, DOCTYPE_SENSITIVE_INDEX
 # from knowledge.filter_uid import all_delete_uid
 from knowledge.time_utils import ts2datetime, datetime2ts
-from knowledge.global_config import event_name, event_name_type, event_analysis_name, event_text_type
+from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 
@@ -482,10 +482,10 @@ def submit_event(input_data):
     input_data['submit_ts'] = int(time.time())
     del input_data['event_ts']
     try:
-        result = es_event.get(index=event_name, doc_type=event_name_type, id=input_data['en_name'])['_source']
+        result = es_event.get(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])['_source']
         return 'already in'
     except:
-        es_event.index(index=event_name, doc_type=event_name_type, id=input_data['en_name'], body=input_data)
+        es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
     return True
 
 def submit_event_file(input_data):
