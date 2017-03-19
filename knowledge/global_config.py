@@ -83,17 +83,17 @@ user_tag = "user_tag"#其他
 user_user_relation = ['friend','relative','leader','colleague','ip_relation','user_tag']
 
 # Relatioship: Organization--User,Organization
-or_friend = "friend" #交互
-or_colleague = "colleague" #业务关联
+or_friend = "or_friend" #交互
+or_colleague = "or_colleague" #业务关联
 organization_tag = "organization_tag"#其他
 
-organization_relation_list = ['friend','colleague','organization_tag']
+organization_relation_list = ['or_friend','or_colleague','organization_tag']
 
 group_rel = "group"
 
 # For User Portrait Computing
 ALL_PERSON_RELATION_LIST = ['friend','colleague','ip_relation']
-ALL_VERIFIED_RELATION_LIST = ['friend','colleague']
+ALL_VERIFIED_RELATION_LIST = ['or_friend','or_colleague']
 
 # For Event Computing
 ALL_EVENT_RELATION_LIST = ['join','discuss','contain']
