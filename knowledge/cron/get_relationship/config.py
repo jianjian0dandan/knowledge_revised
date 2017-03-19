@@ -157,3 +157,7 @@ com_sta = 3
 
 #事件相似度
 com_sta_eve = 2
+
+#专题+群体相似度
+topic_rate = 0.5
+group_rate = 0.5
