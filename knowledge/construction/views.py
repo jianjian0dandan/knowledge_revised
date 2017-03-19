@@ -10,7 +10,10 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import recommentation_in, recommentation_in_auto, submit_task
+from knowledge.global_utils import es_event, R_RECOMMENTATION as r
+from knowledge.global_config import event_name, event_name_type
+from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
+                  relation_add, search_user, search_event
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 
@@ -56,67 +59,162 @@ def ajax_show_auto_in():
         results = []
     return json.dumps(results)
 
-
-# 超级管理员确认入库
+# 推荐方式确认入库
 @mod.route('/admin_identify_in/')
 def ajax_admin_identify_in():
     results = 0
-    date = request.args.get('date', '') # date = '2013-09-07'
-    uid_string = request.args.get('uid_list', '')
+    date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
+    uid_string = request.args.get('uid_list', '2298607941,5993847641')
     uid_list = uid_string.split(',')
-    uu_rel = request.args.get('uu_rel', '')  #a,b,c,d
-    uu_rel_list = uu_rel.split(',')
-    ue_rel = request.args.get('ue_rel', '')
-    ue_rel_list = ue_rel.split(',')
-    uo_rel = request.args.get('uo_rel', '')
-    uo_rel_list = uo_rel.split(',')
-    rel_list = [uu_rel_list, ue_rel_list, uo_rel_list,]
+    relation_string = request.args.get('user_rel', 'friend') # split by ,
     status = request.args.get('status', '2') # 1 compute right now; 2 appointment
-    recommend_style = request.args.get('recommend_style', '')
+    recommend_style = request.args.get('recommend_style', '')  #influence sensitive auto write
     submit_user  = request.args.get('submit_user', 'admin')
-    ts = time.time()
-    task_id = str(submit_user) + str(ts)
-    status = submit_task(input_data)
-
+    data = []
+    if date and uid_list:
+        for uid in uid_list:
+            data.append([date, uid, status, relation_string, recommend_style, submit_user])
+        results = identify_in(data,uid_list)
+    else:
+        results = None
     return json.dumps(results)
 
-# submit group analysis task and save to redis as lists
-# submit group task: task name should be unique
-# input_data is dict ---two types
-# one type: {'u_type':'user/organization', 'submit_date':x, 'uid_list':[], 'relation_list':[], 'cal_style':0/1, 'recommend_style':'', 'task_name':x, 'submit_user':submit_user}
-# two type: {'u_type':'user/organization', 'submit_date':x, 'uid_file':filename, 'relation_list':[], 'cal_style':0/1, 'recommend_style':'file','task_name':x, 'submit_user':submit_user}
-@mod.route('/submit_task/',methods=['GET', 'POST'])
-def ajax_submit_task():
-    input_data = dict()
-    input_data = request.get_json()
-    input_data = {'u_type':'user/organization', 'submit_date':'x', 'uid_list':json.dumps(['3036528532','5825134863']), 'relation_list':json.dumps(['friend']), 'cal_style':0, 'recommend_style':'', 'submit_user':'submit_user'}
-    try:
-        submit_user = input_data['submit_user']
-    except:
-        return 'no submit_user information'
-    try:
-    	task_name = input_data['task_name']
-    except:
-    	task_name = submit_user + '_' + str(int(time.time()))
-        input_data['task_name'] = task_name
-    task_id = submit_user + '_' + str(int(time.time()))
-    input_data['task_id'] = task_id
-    now_ts = int(time.time())
-    input_data['submit_date'] = now_ts
-    status = submit_task(input_data)
-    return json.dumps(status)
 
-
-# 手动输入
+#上传文件方式人物入库
 @mod.route('/submit_identify_in/', methods=['GET', 'POST'])
 def ajax_submit_identify_in():
     results = 0 # mark fail
     input_data = request.get_json()
-    #input_data={'date': 2016-03-13, 'upload_data':[], user':submit_user, 'operation_type': 'show'/'submit'} type=uid/uname/url 
+    #input_data={'date': 2016-03-13, 'upload_data':[], 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'file', 'type':'uid', 'operation_type': 'show'/'submit'} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
-    results = submit_identify_in(input_data)
+    results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
     return json.dumps(results)
+
+
+#显示计算状态
+@mod.route('/show_user_task_status/', methods=['GET', 'POST'])
+def ajax_show_user_task_status():
+    compute_name = 'compute'
+    result = r.hgetall(compute_name)
+    result_dict = {}
+    for k,v in result.iteritems():
+        detail = json.loads(v)
+        result_dict[k] = detail
+    return json.dumps(result_dict)
+
+# # submit group analysis task and save to redis as lists
+# # submit group task: task name should be unique
+# # input_data is dict ---two types
+# # one type: {'u_type':'user/organization', 'submit_date':x, 'uid_list':[], 'relation_list':[], 'cal_style':0/1, 'recommend_style':'', 'task_name':x, 'submit_user':submit_user}
+# # two type: {'u_type':'user/organization', 'submit_date':x, 'uid_file':filename, 'relation_list':[], 'cal_style':0/1, 'recommend_style':'file','task_name':x, 'submit_user':submit_user}
+# @mod.route('/submit_task/',methods=['GET', 'POST'])
+# def ajax_submit_task():
+#     input_data = dict()
+#     input_data = request.get_json()
+#     input_data = {'u_type':'user/organization', 'submit_date':'x', 'uid_list':json.dumps(['3036528532','5825134863']), 'relation_list':json.dumps(['friend']), 'cal_style':0, 'recommend_style':'', 'submit_user':'submit_user'}
+#     try:
+#         submit_user = input_data['submit_user']
+#     except:
+#         return 'no submit_user information'
+#     try:
+#     	task_name = input_data['task_name']
+#     except:
+#     	task_name = submit_user + '_' + str(int(time.time()))
+#         input_data['task_name'] = task_name
+#     task_id = submit_user + '_' + str(int(time.time()))
+#     input_data['task_id'] = task_id
+#     now_ts = int(time.time())
+#     input_data['submit_date'] = now_ts
+#     status = submit_task(input_data)
+#     return json.dumps(status)
+
+#事件提交任务,推荐方式或手写
+@mod.route('/submit_event/', methods=['GET', 'POST'])
+def ajax_submit_event():
+    input_data = dict()
+    input_data = request.get_json()
+    # input_data = { 'submit_ts':'date', 'name':u'名&字', 'relation_list': 'join&discuss',\
+    #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
+    #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
+    input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
+               'immediate_compute':'1', 'keywords':u'北京&房价&政策',
+               'event_type':u'经济', 'recommend_style':'submit', 'comput_status':0, 'submit_user':'admin','event_ts':1480176000}
+    # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
+    # submit_user = request.args.get('submit_user', 'admin')
+    # recommend_style = request.args.get('recommend_style', 'recommend')
+    # relation_string = request.args.get('relation_string', 'join') # split by ,
+    # cal_style = request.args.get('cal_style', '2') # 1 compute right now; 2 appointment
+    # key_words = request.args.get('key_words', '') # a&b&c
+    # event_name = request.args.get('event_name', '') 
+    # event_type = request.args.get('event_type', '') 
+    # start_from = request.args.get('start_from', '') 
+    # start_end = request.args.get('start_end', '') 
+    # mid = request.args.get('mid', '') 
+    result = submit_event(input_data)
+    return json.dumps(result)
+
+#上传文件方式事件入库
+@mod.route('/submit_event_file/', methods=['GET', 'POST'])
+def ajax_submit_identify_file():
+    results = 0 # mark fail
+    input_data = request.get_json()#文件至少有keywords。
+    input_data1 = { 'keywords':u'1两会&方案', 'event_type':u'经济', 'event_ts':1480175030}
+    input_data2 = { 'keywords':u'1北京&房价&政策', 'event_type':u'经济'}
+    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'comput_status':0} 
+    #upload_data stucture same to detect/views/mult_person
+    print 'input_data:', input_data
+    results = submit_event_file(input_data)  
+    return json.dumps(results)  #True submit_num
+
+#事件任务状态
+@mod.route('/show_event_task/')
+def ajax_show_event_task():
+    results = es_event.search(index=event_name, doc_type=event_name_type, body={"query":{"match_all":{}}})['hits']['hits']
+    result_list = []
+    for i in results:
+        result_list.append(i['_source'])
+    return json.dumps(result_list)  #True submit_num
+
+#关系添加，先搜点，事件的点需要改成事件名称
+@mod.route('/search_node/')
+def ajax_search_node():
+    node_type = request.args.get('node_type', 'Event') #User , Org
+    item = request.args.get('item', '1')
+    if node_type == 'User' or node_type == 'Org':
+    	field = ['uid', 'uname']
+        result = search_user(item, field)
+    if node_type == 'Event':
+    	field = ['en_name', 'keywords']
+        result = search_event(item, field)
+    return json.dumps(result)
+
+#添加关系
+@mod.route('/relation_add/', methods=['GET', 'POST'])
+def ajax_relation_add():
+    input_data = dict()
+    input_data = request.get_json()
+    input_data = [['uid', '1581366400', 'node_index', 'join', 'event', \
+                 'min-jin-dang-yi-yuan-cheng-yao-qing-da-lai-dui-kang-da-lu-1482126431', 'event_index']]
+    result = relation_add(input_data)
+    return json.dumps(result)  #[true] or[False, i(wrong num)]
+
+#节点编辑,查找展示表格
+@mod.route('/node_edit/')
+def ajax_node_edit():
+    node_type = request.args.get('node_type', 'User') #User , Org
+    item = request.args.get('item', '1')
+    if node_type == 'User' or node_type == 'Org':
+    	field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
+        node_result = search_user(item, field)
+    if node_type == 'Event':
+    	field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
+    	# field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
+    	 # 'weibo_counts', 'keywords', 'work_tag','compute_status']
+        node_result = search_event(item, field)
+    return json.dumps(node_result)
+
+
 
 @mod.route('/relation/')
 def add_relation():
@@ -263,25 +361,29 @@ def upload_file():
 # 对进来的数据进行模糊查询
 @mod.route('/fuzzy_query/')
 def fuzzy_query():
-    node_type = request.args.get('node_type', '')
-    uid = request.args.get('uid', '')
+    node_type = request.args.get('node_type', '2')
+    uid = request.args.get('uid', '1')
     if node_type == '' or uid == '':
         print "incoming there null"
-        return '0'
-    if node_type == '1':  # user query
-        c_string = "start n = node:%s('uid:*%s*') match (n) return n.uid order by n.id limit 50" % (node_index_name, uid)
+        return '00'
+    if node_type == 'User':  # user query
+        c_string = "start n = node:%s('uid:*%s*') match (n) return n.uid order by n.id limit 10" % (node_index_name, uid)
         print c_string
+        a = time.time()
         result = select_rels_all(c_string)
-        result = select_people_es(result)
+        print time.time()- a
+        # result = select_people_es(result)
         return json.dumps(result)
     elif node_type == '2':  # event query
-        c_string = "start n = node:%s('event:*%s*') match (n) return n order by n.id limit 50" % (event_index_name, uid)
+        c_string = "start n = node:%s('event:*%s*') match (n) return n order by n.id limit 10" % (event_index_name, uid)
+        a = time.time()
         result = select_rels_all(c_string)
-        result = select_event_es(result)
+        print time.time()- a
+        # result = select_event_es(result)
         return json.dumps(result)
     else:
         print "node_type is error"
-        return '0'
+        return '01'
 
 
 # 对节点进行更新

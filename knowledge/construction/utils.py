@@ -11,25 +11,53 @@ import math
 import json
 import redis
 import math
+from xpinyin import Pinyin
+from py2neo.ext.batman import ManualIndexManager
+from py2neo.ext.batman import ManualIndexWriteBatch
+from py2neo.ogm import GraphObject, Property
+from py2neo import Node, Relationship
 from elasticsearch import Elasticsearch
 # from update_activeness_record import update_record_index
-from knowledge.global_utils import R_RECOMMENTATION as r
+from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2
 from knowledge.global_utils import es_user_portrait as es
-from knowledge.global_utils import es_user_portrait
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 # from knowledge.global_utils import es_bci_history, bci_history_index_name, bci_history_index_type, ES_SENSITIVE_INDEX, DOCTYPE_SENSITIVE_INDEX
 # from knowledge.filter_uid import all_delete_uid
 from knowledge.time_utils import ts2datetime, datetime2ts
-from knowledge.global_utils import portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
+from knowledge.global_config import event_name, event_name_type, event_analysis_name, event_text_type
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 
+p = Pinyin()
 WEEK = 7
 
+def identify_in(data, uid_list):
+    in_status = 1
+    compute_status = 0
+    compute_hash_name = 'compute'
+    compute_uid = r.hkeys(compute_hash_name)
+    for item in data:
+        date = item[0] # identify the date form '2013-09-01' with web
+        uid = item[1]
+        status = item[2]
+        relation_string = item[3]
+        recommend_style = item[4]
+        submit_user = item[5]
+        value_string = []
+        identify_in_hashname = "identify_in_" + str(date)
+        r.hset(identify_in_hashname, uid, in_status)
+        if status == '1':
+            in_date = date
+            compute_status = '1'
+        elif status == '2':
+            in_date = date
+            compute_status = '2'
+        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user,0]))
+    return True
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
 def submit_task(input_data):
@@ -64,10 +92,14 @@ def submit_identify_in_uid(input_data):
     date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
+    compute_status = input_data['compute_status'] 
+    relation_string = input_data['relation_string'] 
+    recommend_style = input_data['recommend_style']
     hashname_submit = 'submit_recomment_' + date
     hashname_influence = 'recomment_' + date + '_influence'
     hashname_sensitive = 'recomment_' + date + '_sensitive'
-    submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
+    compute_hash_name = 'compute'
+    # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
     line_list = upload_data.split('\n')
@@ -86,7 +118,7 @@ def submit_identify_in_uid(input_data):
     new_uid_list = []
     have_in_uid_list = []
     try:
-        exist_portrait_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, _source=False)['docs']
+        exist_portrait_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids':uid_list}, _source=False)['docs']
     except:
         exist_portrait_result = []
     if exist_portrait_result:
@@ -118,8 +150,9 @@ def submit_identify_in_uid(input_data):
         else:
             tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
+            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user, 0 ]))
             r.hset(hashname_submit, in_item, json.dumps(tmp))
-            r.hset(submit_user_recomment, in_item, '0')
+            # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
     return True, invalid_uid_list, have_in_uid_list, final_submit_user_list
 
@@ -386,7 +419,7 @@ def recommentation_in_auto(date, submit_user):
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
     recomment_hash_name = 'recomment_' + now_date + '_auto'
-    print recomment_hash_name,'============'
+    # print recomment_hash_name,'============'
     recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
     recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
     recomment_submit_hash_name = 'recomment_' + submit_user + '_' + now_date
@@ -399,15 +432,200 @@ def recommentation_in_auto(date, submit_user):
     #     auto_user_list = []
     #step2: get admin user result
     admin_result = r.hget(recomment_hash_name, submit_user)
+    admin_user_list = []
     if admin_result:
-        admin_user_dict = json.loads(admin_result)
+        admin_result_dict = json.loads(admin_result)
     else:
-        admin_user_dict = {}
-    final_results = []
-    for k,v in admin_user_dict.iteritems():
-        results = get_user_detail(now_date, v, 'show_in')
-        for i in results:
-            ii = i
-            ii.append(k)
-            final_results.append(ii)
-    return final_results
+        return None
+    final_result = []
+    #step3: get union user and filter compute/influence/sensitive
+    for k,v in admin_result_dict.iteritems():
+        admin_user_list = v
+        union_user_auto_set = set(admin_user_list)
+        influence_user = set(r.hkeys(recomment_influence_hash_name))
+        sensitive_user = set(r.hkeys(recomment_sensitive_hash_name))
+        compute_user = set(r.hkeys(recomment_compute_hash_name))
+        been_submit_user = set(r.hkeys(recomment_submit_hash_name))
+        filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user | been_submit_user)
+        auto_user_list = list(filter_union_user)
+        #step4: get user detail
+        if auto_user_list == []:
+            return auto_user_list
+        results = get_user_detail(now_date, auto_user_list, 'show_in', 'auto')
+        for detail in results:  #add root
+            re_detail = detail
+            re_detail.append(k)
+            final_result.append(re_detail)
+    return final_result
+
+def submit_event(input_data):
+    if not input_data.has_key('name'):
+        input_data['name'] = input_data['keywords']
+
+    if input_data.has_key('mid'):
+        # event_id = mid
+        input_data['en_name'] = input_data['mid']
+        del input_data['mid']
+    else:
+        e_name = input_data['name']
+        e_name_string = ''.join(e_name.split('&'))
+        event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
+        input_data['en_name'] = event_id
+
+    if not input_data.has_key('start_ts'):
+        start_ts = input_data['event_ts'] - 2*DAY
+        input_data['start_ts'] = start_ts
+    if not input_data.has_key('end_ts'):
+        end_ts = input_data['event_ts'] + 5*DAY
+        input_data['end_ts'] = end_ts
+    input_data['submit_ts'] = int(time.time())
+    del input_data['event_ts']
+    try:
+        result = es_event.get(index=event_name, doc_type=event_name_type, id=input_data['en_name'])['_source']
+        return 'already in'
+    except:
+        es_event.index(index=event_name, doc_type=event_name_type, id=input_data['en_name'], body=input_data)
+    return True
+
+def submit_event_file(input_data):
+    submit_ts = input_data['submit_ts']
+    relation_compute = input_data['relation_compute']
+    immediate_compute = input_data['immediate_compute']
+    submit_user = input_data['submit_user']
+    recommend_style = input_data['recommend_style']
+    comput_status = input_data['comput_status']
+    file_data = input_data['upload_data']
+    result_flag = False
+    valid_event = 0
+    total_event = len(file_data)
+    for event in file_data:
+        if not event.has_key('event_ts'):
+            event['event_ts'] = int(time.time())
+        event['submit_ts'] = submit_ts
+        event['relation_compute'] = relation_compute
+        event['immediate_compute'] = immediate_compute
+        event['submit_user'] = submit_user
+        event['recommend_style'] = recommend_style
+        event['comput_status'] = comput_status
+        result = submit_event(event)
+        if result == True:
+            valid_event += 1
+    if valid_event == total_event:
+        result_flag = True
+    return result_flag, valid_event
+
+def relation_add(input_data):
+    result_detail = [False]
+    rel_num = 0
+    for i in input_data:
+        rel_num += 1
+        node_key1 = i[0]
+        node1_id = i[1]
+        node1_index_name = i[2]
+        rel = i[3]
+        node_key2 = i[4]
+        node2_id = i[5]
+        node2_index_name = i[6]
+        result = create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name)
+        # return result
+        if result == 'have relation':
+            result_detail.append(rel_num)
+            return result_detail
+    result_detail[0] = True
+    return result_detail
+
+
+
+def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+    Index = ManualIndexManager(graph)
+    node_index = Index.get_index(Node, node1_index_name)
+    group_index = Index.get_index(Node, node2_index_name)
+    print node_index
+    print group_index
+    tx = graph.begin()
+    node1 = node_index.get(node_key1, node1_id)[0]
+    node2 = group_index.get(node_key2, node2_id)[0]
+    if not (node1 and node2):
+        print "node does not exist"
+        return 'does not exist'
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
+    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    # return c_string
+    result = graph.run(c_string)
+    print result
+    rel_list = []
+    for item in result:
+        rel_list.append(item)
+    print rel_list
+    if not rel_list:
+        rel = Relationship(node1, rel, node2)
+        graph.create(rel)
+        print "create success"
+    else:
+        print "The current two nodes already have a relationship"
+        return 'have relation'
+    return True
+
+def search_event(item, field):
+    query_body = {
+        "query":{
+            'bool':{
+                'should':[
+                    {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
+                    # {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
+                ]
+            }
+
+        },
+        'size':10
+    }
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    try:
+        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+                body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
+    except:
+        return 'does not exist'
+    for i in name_results:
+        field_list = []
+        for key in field:
+            key1 = i['fields'][key][0]
+            field_list.append(key1)
+
+        event_id_list.append(field_list)
+    return event_id_list
+
+def search_user(item,field):
+    query_body = {
+        "query":{
+            'bool':{
+                'should':[
+                    {"wildcard":{'uid':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'uname':'*'+str(item.encode('utf-8'))+'*'}}
+                ]
+            }
+
+        },
+        'size':10
+    }
+    only_uid = []
+    user_uid_list = []
+    u_nodes_list = {}
+
+    try:
+        name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
+                body=query_body, fields= field)['hits']['hits']
+    except:
+        return 'does not exist'
+
+    for i in name_results:
+        field_list = []
+        for key in field:
+            key1 = i['fields'][key][0]
+            field_list.append(key1)
+        user_uid_list.append(field_list)
+    return user_uid_list
