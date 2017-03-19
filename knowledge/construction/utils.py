@@ -30,6 +30,7 @@ from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 # from knowledge.filter_uid import all_delete_uid
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_name, event_name_type, event_analysis_name, event_text_type
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 
 p = Pinyin()
@@ -593,7 +594,47 @@ def search_event(item, field):
     for i in name_results:
         field_list = []
         for key in field:
-            key1 = i['fields'][key][0]
+            try:
+                key1 = i['fields'][key][0]
+            except:
+                key1 = ''
+            field_list.append(key1)
+
+        event_id_list.append(field_list)
+    return event_id_list
+
+def search_event_time_limit(item, field, start_ts, end_ts):
+    query_body = {
+        "query":{
+            "bool":{
+                "must":[
+                    {"range":{
+                        "submit_ts":{
+                            "gte": start_ts,
+                            "lte": end_ts
+                        }
+                    }}
+                ]
+            }
+        }
+    }
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    try:
+        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+                body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
+    except:
+        return 'does not exist'
+    for i in name_results:
+        field_list = []
+        for key in field:
+            try:
+                key1 = i['fields'][key][0]
+            except:
+                key1 = ''
             field_list.append(key1)
 
         event_id_list.append(field_list)
@@ -625,7 +666,90 @@ def search_user(item,field):
     for i in name_results:
         field_list = []
         for key in field:
-            key1 = i['fields'][key][0]
+            try:
+                key1 = i['fields'][key][0]
+            except:
+                key1 = ''
             field_list.append(key1)
         user_uid_list.append(field_list)
     return user_uid_list
+
+def search_user_time_limit(item, field, start_ts, end_ts):
+    query_body = {
+        "query":{
+            # "uid":uid_list #-------------------!!!!!
+            "bool":{
+                "must":[
+                    {"range":{
+                        "create_time":{
+                            "gte": former_ts,
+                            "lte": current_ts
+                        }
+                    }}
+                ]
+            }
+        }
+    }
+    only_uid = []
+    user_uid_list = []
+    u_nodes_list = {}
+
+    try:
+        name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
+                body=query_body, fields= field)['hits']['hits']
+    except:
+        return 'does not exist'
+
+    for i in name_results:
+        field_list = []
+        for key in field:
+            try:
+                key1 = i['fields'][key][0]
+            except:
+                key1 = ''
+            field_list.append(key1)
+        user_uid_list.append(field_list)
+    return user_uid_list
+
+def search_node_time_limit(node_type, item, start_ts, end_ts):
+    if node_type == 'User' or node_type == 'Org':
+        field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
+        # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
+        node_result = search_user_time_limit(item, field, start_ts, end_ts)
+    if node_type == 'Event':
+        field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
+        # field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
+         # 'weibo_counts', 'keywords', 'work_tag','compute_status']
+        node_result = search_event_time_limit(item, field, start_ts, end_ts)
+    return node_result
+
+def show_node_detail(node_type, item):
+    if node_type == 'User' or node_type == 'Org':
+        field = ['uid', 'topic_string', 'domain_v3', 'function_mark', 'function_description']
+        # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
+        index_n = node_index_name
+        index_key = people_primary
+        node_key = group_node
+        node_result = search_user(item, field)
+
+    if node_type == 'Event':
+        field = ['en_name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
+              'start_ts', 'end_ts','description', 'related_docs']
+        node_result = search_event(item, field)
+        index_n = event_index_name
+        index_key = 'event'
+        node_key = special_event_node
+
+    s_string = 'START s3 = node:%s(%s="%s") MATCH (s0:%s)-[r]-(s3) return s0' \
+               %(index_n, index_key, item, node_key)
+    event_result = graph.run(s_string)
+    events = []
+    for special_event in event_result:
+        events.append(special_event[0][index_key])
+    result = node_result[0]
+    result.append(events)
+    return result
+
+def edit_node():
+    pass
+

@@ -11,11 +11,13 @@ import time
 from datetime import date
 from datetime import datetime
 from knowledge.global_utils import es_event, R_RECOMMENTATION as r
+from knowledge.global_utils import es_user_portrait as es, portrait_index_name, portrait_index_type
 from knowledge.global_config import event_name, event_name_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
-                  relation_add, search_user, search_event
+                  relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
+from knowledge.global_config import event_analysis_name, event_type
 
 test_time = datetime2ts(RUN_TEST_TIME)
 # from draw_redis import *
@@ -31,7 +33,7 @@ def add_node():
 
 @mod.route('/show_in/')
 def ajax_recommentation_in():
-	#按影响力推荐，按敏感度推荐
+    #按影响力推荐，按敏感度推荐
     date = request.args.get('date', '2016-11-27') # '2013-09-01'
     recomment_type = request.args.get('type', 'influence')  #influence  sensitive
     submit_user = request.args.get('submit_user', 'admin') # 提交人
@@ -51,7 +53,7 @@ def ajax_recommentation_in():
 # show auto recommentation
 @mod.route('/show_auto_in/')
 def ajax_show_auto_in():
-	#按关注用户推荐
+    #按关注用户推荐
     date = request.args.get('date', '') # 2013-09-01
     submit_user = request.args.get('submit_user', 'admin')
     results = recommentation_in_auto(date, submit_user)
@@ -118,9 +120,9 @@ def ajax_show_user_task_status():
 #     except:
 #         return 'no submit_user information'
 #     try:
-#     	task_name = input_data['task_name']
+#       task_name = input_data['task_name']
 #     except:
-#     	task_name = submit_user + '_' + str(int(time.time()))
+#       task_name = submit_user + '_' + str(int(time.time()))
 #         input_data['task_name'] = task_name
 #     task_id = submit_user + '_' + str(int(time.time()))
 #     input_data['task_id'] = task_id
@@ -164,8 +166,8 @@ def ajax_submit_identify_file():
     input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'comput_status':0} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
-    results = submit_event_file(input_data)  
-    return json.dumps(results)  #True submit_num
+    results = submit_event_file(input_data)
+    return json.dumps(results)  # True, submit_num
 
 #事件任务状态
 @mod.route('/show_event_task/')
@@ -182,10 +184,10 @@ def ajax_search_node():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
-    	field = ['uid', 'uname']
+        field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-    	field = ['en_name', 'keywords']
+        field = ['en_name', 'keywords']  #改成name
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -200,20 +202,62 @@ def ajax_relation_add():
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 
 #节点编辑,查找展示表格
-@mod.route('/node_edit/')
+@mod.route('/node_edit_search/')
 def ajax_node_edit():
-    node_type = request.args.get('node_type', 'User') #User , Org
+    node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
-    if node_type == 'User' or node_type == 'Org':
-    	field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
-        node_result = search_user(item, field)
-    if node_type == 'Event':
-    	field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-    	# field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-    	 # 'weibo_counts', 'keywords', 'work_tag','compute_status']
-        node_result = search_event(item, field)
+    start_ts = request.args.get('start_ts', '')  # 1482126030
+    end_ts = request.args.get('end_ts', '')  # 1482126490
+    if start_ts and end_ts:
+        node_result = search_node_time_limit(node_type, item, start_ts, end_ts)
+    else:
+        if node_type == 'User' or node_type == 'Org':
+            field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'function_mark']
+            node_result = search_user(item, field)
+        if node_type == 'Event':
+            # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
+            field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
+             'weibo_counts', 'keywords', 'work_tag','compute_status']
+            node_result = search_event(item, field)
     return json.dumps(node_result)
 
+#特定节点编辑，先查找，展示
+@mod.route('/node_edit_show/')
+def ajax_node_edit_show():
+    node_type = request.args.get('node_type', 'User') #User , Org
+    item = request.args.get('item', '')  #id
+    # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
+    result = show_node_detail(node_type, item)
+    return json.dumps(result)
+
+#特定节点编辑，先查找，展示
+@mod.route('/node_edit/')
+def ajax_node_edit_():
+    node_type = request.args.get('node_type', 'Event') #User , Org
+    item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
+    editor = request.args.get('submit_user', '')  #admin
+    if node_type == 'User':
+        field = [['topic_string', 'domain', 'function_mark', 'function_description'],'related_docs']
+        for i in field[0]:
+            i_value = request.args.get(i, '') #User , Org
+            if i_value:
+                i_value = '&'.join(i_value.split(','))
+                es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
+        for i in field[1]:
+            i_value = request.args.get(i, '') #User , Org
+            if i_value:
+                i_value = '&'.join(i_value.split(','))
+                es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
+    elif node_type == 'Event':
+        field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
+              'start_ts', 'end_ts','description'], 'related_docs']
+        for i in field[0]:
+            i_value = request.args.get(i, '') #User , Org
+            if i_value:
+                i_value = '&'.join(i_value.split(','))
+                es_event.update(index=event_analysis_name,doc_type=event_type,id=item,body={'doc':{i:i_value}})
+    # result = edit_node()
+    return '1'
 
 
 @mod.route('/relation/')
