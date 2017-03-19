@@ -82,7 +82,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	# print text_list
 	#事件类型
 	info_dict['category'] = cut_weibo(text_list)
-	# info_dict['topics'] = json.dumps(get_topic_word([i.encode('utf-8') for i in text_list],10))
+	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
 	
 	keywords = get_keyword(''.join(text_list),2)
 	info_dict['keywords'] = '&'.join([i[0] for i in keywords])

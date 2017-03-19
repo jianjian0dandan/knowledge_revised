@@ -37,98 +37,112 @@ def get_task():
     result = es_event.search(index=event_task_name,doc_type=event_task_type,body=query_body)
     return result['hits']['hits']
 
+
+def immediate_compute(task_id):
+    try:
+        task = es_event.get(index=event_task_name,doc_type=event_task_type,id=task_id)
+        compute_task(task)
+    except:
+        return None
+
+
 def compute_topic_task():
     print time.time()
     tasks = get_task()
     if not tasks:
         return None
     for task in tasks:
-        print task
-        # task=['雾霾','type','1480003100','1480176000','1483500427743']
-        task_id = task['_id']
-        task = task['_source']
-        topic = task['name']#task[0]#['name']
-        #en_name = task['en_name']
-        start_ts = 1480003200#task['start_ts']
-        end_ts = 1480176000#task['end_ts']
-        if end_ts > time.time():
-            end_ts = time.time()
-        submit_ts = task['submit_ts']#int(task[4])
-        #可选的计算关系realtion  用&连接的字符串
-        relation = task['relation_compute']#task[5]  
-
-        keywords = task['keywords'].split('&')    #关键词或者mid
-        #comput_status = task['status']
-        # mid = task['mid']
-        # task_id = 'event-'+str(start_ts)+'-'+str(end_ts)+'-'+str(submit_ts)
-        en_name = task_id
-        t1=time.time()
-        re_mid = re.compile('^\d{16}$')
-        try:
-            mid = re.match(re_mid,task_id).group()
-        except:
-            mid = ''
-        exist_flag = exist(task_id)
-        #keywords=keywords.split('&')
-        # get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
-        print exist_flag
-        if exist_flag:
-            #start compute
-            #try:
-
-            resu = create_person(event_node,event_primary,en_name,event_index_name)
-            if resu == 'Node Wrong':
-                continue
-            # weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
-            # # count_fre(en_name, start_ts=start_ts, over_ts=end_ts,news_limit=NEWS_LIMIT,weibo_limit=MAX_LANGUAGE_WEIBO)
-
-            # # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'comput_status':0,'en_name':task_id,'relation_compute':relation})
-            # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'comput_status':-1,'weibo_counts':weibo_counts,'uid_counts':uid_counts})
-            # print 'finish change status'
-            # #geo
-            
-            # cityTopic(en_name, start_ts, end_ts)
-            # es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-2}})
-            # print 'finish geo analyze'
-            #language
-            compute_real_info(en_name, start_ts, end_ts,relation=relation)
-            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-3}})
-            print 'finish language analyze'
-            #time
-            propagateCronTopic(en_name, start_ts, end_ts)
-            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-4}})
-            print 'finish time analyze'
-
-            
-            #sentiment
-            sentimentTopic(en_name, start_ts=start_ts, over_ts=end_ts)
-            print 'finish sentiment analyze'
-            #finish compute
-
-            print es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':1,'finish_ts':int(time.time())}})
-            print 'finish change status done'
-            
-            if('contain' in relation.split('&')):
-                #计算关系
-                related_event_ids = event_input(keywords,en_name)
-                rel_list = []
-                for i in related_event_ids:
-                    create_person(event_node,event_primary,i,event_index_name)
-                    rel_list.append([[2,en_name],'contain',[2,i]])
-                nodes_rels(rel_list)
-
-            es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'comput_status':1})
+        compute_task(task)
 
 
-        break
-        t2=time.time()-t1
-        print task_id,t2
-                # except:
-                #   raise
-                #   break
-                #get_attr(en_name, start_ts, end_ts)
-            # else:
-            #     pass
+
+def compute_task(task):
+    print task
+    # task=['雾霾','type','1480003100','1480176000','1483500427743']
+    task_id = task['_id']
+    task = task['_source']
+    topic = task['name']#task[0]#['name']
+    #en_name = task['en_name']
+    start_ts = 1480003200#task['start_ts']
+    end_ts = 1480176000#task['end_ts']
+    if end_ts > time.time():
+        end_ts = time.time()
+    submit_ts = task['submit_ts']#int(task[4])
+    #可选的计算关系realtion  用&连接的字符串
+    relation = task['relation_compute']#task[5]  
+
+    keywords = task['keywords'].split('&')    #关键词或者mid
+    #comput_status = task['status']
+    # mid = task['mid']
+    # task_id = 'event-'+str(start_ts)+'-'+str(end_ts)+'-'+str(submit_ts)
+    en_name = task_id
+    t1=time.time()
+    re_mid = re.compile('^\d{16}$')
+    try:
+        mid = re.match(re_mid,task_id).group()
+    except:
+        mid = ''
+    exist_flag = exist(task_id)
+    #keywords=keywords.split('&')
+    # get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
+    print exist_flag
+    if exist_flag:
+        #start compute
+        #try:
+
+        resu = create_person(event_node,event_primary,en_name,event_index_name)
+        if resu == 'Node Wrong':
+            continue
+        # weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
+        # # count_fre(en_name, start_ts=start_ts, over_ts=end_ts,news_limit=NEWS_LIMIT,weibo_limit=MAX_LANGUAGE_WEIBO)
+
+        # # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'comput_status':0,'en_name':task_id,'relation_compute':relation})
+        # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'comput_status':-1,'weibo_counts':weibo_counts,'uid_counts':uid_counts})
+        # print 'finish change status'
+        # #geo
+        
+        # cityTopic(en_name, start_ts, end_ts)
+        # es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-2}})
+        # print 'finish geo analyze'
+        #language
+        compute_real_info(en_name, start_ts, end_ts,relation=relation)
+        es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-3}})
+        print 'finish language analyze'
+        #time
+        propagateCronTopic(en_name, start_ts, end_ts)
+        es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-4}})
+        print 'finish time analyze'
+
+        
+        #sentiment
+        sentimentTopic(en_name, start_ts=start_ts, over_ts=end_ts)
+        print 'finish sentiment analyze'
+        #finish compute
+
+        print es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':1,'finish_ts':int(time.time())}})
+        print 'finish change status done'
+        
+        if('contain' in relation.split('&')):
+            #计算关系
+            related_event_ids = event_input(keywords,en_name)
+            rel_list = []
+            for i in related_event_ids:
+                create_person(event_node,event_primary,i,event_index_name)
+                rel_list.append([[2,en_name],'contain',[2,i]])
+            nodes_rels(rel_list)
+
+        es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'doc':{'comput_status':1}})
+
+
+    break
+    t2=time.time()-t1
+    print task_id,t2
+            # except:
+            #   raise
+            #   break
+            #get_attr(en_name, start_ts, end_ts)
+        # else:
+        #     pass
 
 def exist(task_id):
     #print task_id
@@ -300,4 +314,5 @@ if __name__ == '__main__':
     #print weibo_count
     # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
     # es_event.index(index='event_task',doc_type='text',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
-    compute_topic_task()
+    # compute_topic_task()
+    immediate_compute('bei-jing-fang-jia-zheng-ce-1489649723')

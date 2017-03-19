@@ -13,6 +13,8 @@ km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
 event_host = ["219.224.134.225:9037"]
 event_port = "9200"
+group_host = ["219.224.134.225:9037"]
+special_event_host = ["219.224.134.225:9037"]
 calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
@@ -205,10 +207,7 @@ flow_text_index_name_pre = 'flow_text_'
 portrait_type = "user"
 flow_text_type = "text"
 
-
 event_task_name = "event_task"#"event" # 事件基本信息
-event_name = "event_task"#"event" # 事件基本信息
-event_name_type = 'event'
 event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
 event_text = "event_text"
 event_text_type ="text"
