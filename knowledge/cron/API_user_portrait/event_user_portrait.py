@@ -2,12 +2,15 @@
 import sys
 import time
 import json
-from wei_api import read_flow_text, read_flow_text_sentiment
+from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
+reload(sys)
+sys.path.append('../../')
+from parameter import WEIBO_API_INPUT_TYPE
 
 
 def event_user_portrait(event_uid_list):
-    task_type = 'event'
+    task_mark = 'event'
     iter_user_list = []
     no_in_user_list = []
     relation_mark_dict = dict()

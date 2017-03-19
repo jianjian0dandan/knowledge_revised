@@ -7,7 +7,7 @@ import datetime
 sys.path.append('../../../')
 from time_utils import * #datetime2ts, ts2HourlyTime
 from global_utils import event_analysis_name,event_type,event_text,event_text_type
-from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type
+from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type,es_user_profile,profile_index_name,profile_index_type
 from global_utils import bci_day_pre,bci_day_type,es_bci
 from parameter import RUN_TYPE,RUN_TEST_TIME
 from global_utils import org_node,people_node,event_node,people_primary,org_primary,event_primary,node_index_name,event_index_name,org_index_name
@@ -18,28 +18,31 @@ from get_relationship.get_pos import get_news_main #抽取事件的人物、机�
 from event_classify.python.event_classify import cut_weibo #事件类型
 from get_relationship.text_process import get_keyword,get_topic_word  #topic,keyword
 from manage_neo4j.neo4j_relation import nodes_rels,create_person
-from global_config import user_type,auth_type,peo_list,org_list
+from global_config import user_type,auth_type,peo_list,org_list,event_task_name,event_task_type
+from API_user_portrait.event_user_portrait import event_user_portrait
 
 def compute_real_info(topic,begin_ts,end_ts,relation):
 	info_dict = {}
 	
 	query_body = {   
 		'query':{
-		'bool':{
-		'must':[
-		{'term':{'en_name':topic}},
-		{'wildcard':{'text':'【*】*'}},
-		{'range':{
-		'timestamp':{'gte': begin_ts, 'lt':end_ts} 
-		}
-		}]
-		}
-		},
-		'size':1,
-		'sort':{'retweeted':{'order':'desc'}}
+			'bool':{
+				'must':[
+					{'term':{'en_name':topic}},
+					{'term':{'message_type':1}}
+					{'wildcard':{'text':'【*】*'}},
+						{'range':{
+						'timestamp':{'gte': begin_ts, 'lt':end_ts} 
+						}
+					}]
+					}
+				},
+			'size':1,
+			'sort':{'retweeted':{'order':'desc'}}
 	}
 	result = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
 	#抽取事件的人物、机构、地点和时间
+	print result[0]['_source']['text']
 	basics = get_news_main(result[0]['_source']['text'])
 	print basics
 	info_dict['real_auth'] = basics['organization']
@@ -49,12 +52,12 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	#存关系
 	if('join' in relation.split('&')):
 		rel_list = []
-		if info_dict['real_auth'] !='None':
+		if info_dict['real_auth'] !='NULL':
 			resu = create_person(org_node,org_primary,info_dict['real_auth'],org_index_name)
 			if resu != 'Node Wrong':
 				rel_list.append([[2,topic],'join',[0,info_dict['real_auth']]])
-		if info_dict['real_person'] !='None':
-			create_person(people_node,people_primary,info_dict['real_person'],node_index_name)
+		if info_dict['real_person'] !='NULL':
+			resu = create_person(people_node,people_primary,info_dict['real_person'],node_index_name)
 			if resu != 'Node Wrong':
 				rel_list.append([[2,topic],'join',[1,info_dict['real_person']]])
 		try:
@@ -65,13 +68,13 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	query_body = {   
 		'query':{
 		'bool':{
-		'must':[
-		{'term':{'en_name':topic}},
-		{'range':{
-		'timestamp':{'gte': begin_ts, 'lt':end_ts} 
-		}
-		}]
-		}
+			'must':[
+				{'term':{'en_name':topic}},
+				{'range':{
+					'timestamp':{'gte': begin_ts, 'lt':end_ts} 
+				}
+				}]
+			}
 		},
 		'size':10000
 	}
@@ -80,8 +83,13 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	for i in result:
 		text_list.append(i['fields']['text'][0])
 	# print text_list
+
 	#事件类型
-	info_dict['category'] = cut_weibo(text_list)
+	try:
+		event = es_event.get(index=event_task_name,doc_type=event_task_type,id=topic)['_source']
+		info_dict['event_type'] = event['event_type']
+	except:
+		info_dict['event_type'] = cut_weibo(text_list)
 	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
 	
 	keywords = get_keyword(''.join(text_list),2)
@@ -120,7 +128,7 @@ def get_users(topic,begin_ts,end_ts,relation):
 	'query':{
 	'bool':{
 	'must':[
-	{'term':{'en_name':topic}},
+		{'term':{'en_name':topic}},
 		# {'wildcard':{'text':'【*】*'}},
 		{'range':{
 		'timestamp':{'gte': begin_ts, 'lt':end_ts} 
@@ -155,13 +163,19 @@ def get_users(topic,begin_ts,end_ts,relation):
 
 	user = sorted(user_influence_dict.iteritems(),key=lambda x:x[1],reverse=True)[:100]
 	#print user
+	not_in_user_list = event_user_portrait([i[0] for i in user])
 	user_dict = {}
 	p_list = []
 	a_list = []
 	for i in user:
+		# if i[0] not in not_in_user_list:
+		# print es_user_profile.get(index=profile_index_name,doc_type=profile_index_type,id=i[0])
+
 		try:
 			result = es_user_profile.get(index=profile_index_name,doc_type=profile_index_type,id=i[0])
+			print result
 			u_type = result['_source']['verified_type']
+			print u_type
 			if u_type in org_list:
 				u_type = auth_type
 				a_list.append(i[0])
@@ -173,7 +187,7 @@ def get_users(topic,begin_ts,end_ts,relation):
 		except:
 			user_dict[i[0]] = {'user_type':user_type,'influ':i[1]}
 			p_list.append(i[0])
-
+	print len(a_list),len(p_list)
 	if('discuss' in relation.split('&')):
 		rel_list = []
 		for i in p_list:
@@ -197,9 +211,9 @@ def get_users(topic,begin_ts,end_ts,relation):
 
 
 if __name__ == '__main__':
-	topic = 'zui_gao_fa_di_zhi_yan_se_ge_ming'
-	start_date = 1484323200#'2017-01-14'
-	end_date = 1484582400#'2017-01-17'
+	topic = 'bei-jing-fang-jia-zheng-ce-1480176000'
+	start_date = 1480003200#'2017-01-14'
+	end_date = 1480608000#'2017-01-17'
 
 	#get_users(topic,start_date,end_date)
-	compute_real_info(topic,start_date,end_date,'join')
+	compute_real_info(topic,start_date,end_date,'join&discuss')
