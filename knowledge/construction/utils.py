@@ -711,16 +711,16 @@ def search_user_time_limit(item, field, start_ts, end_ts):
         user_uid_list.append(field_list)
     return user_uid_list
 
-def search_node_time_limit(node_type, item, start_ts, end_ts):
+def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
-        node_result = search_user_time_limit(item, field, start_ts, end_ts)
+        node_result = search_user_time_limit(item, field, start_ts, end_ts, editor)
     if node_type == 'Event':
         # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
         field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
          'weibo_counts', 'keywords', 'work_tag','compute_status']
-        node_result = search_event_time_limit(item, field, start_ts, end_ts)
+        node_result = search_event_time_limit(item, field, start_ts, end_ts, editor)
     return node_result
 
 def show_node_detail(node_type, item):
@@ -752,4 +752,18 @@ def show_node_detail(node_type, item):
 
 def edit_node():
     pass
+
+def deal_user_tag(item ,submit_user):
+    result = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']
+    print result
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            pass
+
+
+
 

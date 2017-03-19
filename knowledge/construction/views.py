@@ -13,13 +13,15 @@ from datetime import datetime
 from knowledge.global_utils import es_event, R_RECOMMENTATION as r
 from knowledge.global_utils import es_user_portrait as es, portrait_index_name, portrait_index_type
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
-from knowledge.global_config import event_task_name, event_task_type, Session
+from knowledge.global_config import event_task_name, event_task_type 
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
-                  relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node
-from knowledge.time_utils import ts2datetime, datetime2ts
+                  relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
+                  deal_user_tag
+from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
 from knowledge.model import PeopleHistory, EventHistory
+from knowledge.extensions import db
 
 test_time = datetime2ts(RUN_TEST_TIME)
 # from draw_redis import *
@@ -208,19 +210,20 @@ def ajax_relation_add():
 def ajax_node_edit():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
+    editor = request.args.get('submit_user', 'admin')  #admin
     start_ts = request.args.get('start_ts', '')  # 1482126030
     end_ts = request.args.get('end_ts', '')  # 1482126490
     if start_ts and end_ts:
-        node_result = search_node_time_limit(node_type, item, start_ts, end_ts)
+        node_result = search_node_time_limit(node_type, item, start_ts, end_ts, editor)
     else:
         if node_type == 'User' or node_type == 'Org':
             field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'function_mark']
-            node_result = search_user(item, field)
+            node_result = search_user(item, field, editor)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
             field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
              'weibo_counts', 'keywords', 'work_tag','compute_status']
-            node_result = search_event(item, field)
+            node_result = search_event(item, field, editor)
     return json.dumps(node_result)
 
 #特定节点编辑，先查找，展示
@@ -228,6 +231,7 @@ def ajax_node_edit():
 def ajax_node_edit_show():
     node_type = request.args.get('node_type', 'User') #User , Org
     item = request.args.get('item', '')  #id
+    editor = request.args.get('submit_user', 'admin')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = show_node_detail(node_type, item)
     return json.dumps(result)
@@ -239,10 +243,10 @@ def ajax_node_edit_():
     item = request.args.get('item', '5779325975')  #id
     # item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
     editor = request.args.get('submit_user', 'admin')  #admin
-    session = Session()
+    # session = Session()
     if node_type == 'User':
         edit_num = 0
-        field = [['topic_string', 'domain', 'function_mark', 'function_description'],['related_docs']]
+        field = [['topic_string', 'domain', 'function_description'],['related_docs'], ['function_mark']]
         for i in field[0]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
@@ -258,15 +262,22 @@ def ajax_node_edit_():
                     es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
                 except:
                     es_related_docs.index(index=user_docs_name,doc_type=user_docs_type, id=item, body={i:i_value, 'uid':item})
+        for i in field[2]:
+            i_value = request.args.get(i, '')
+            if i_value:
+                edit_num += 1
+                deal_user_tag(item ,submit_user)
+                i_value = i_value.split(',')
+                es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
         if edit_num>0:
-            pelple_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=ts2datetime(time.time()))
-            session.add(pelple_history)
-            session.commit()
-            
+            pelple_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=datetime.now())
+            db.session.add(pelple_history)
+            db.session.commit()
+        return json.dumps(True)
     elif node_type == 'Event':
         edit_num = 0
-        field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
-              'start_ts', 'end_ts','description'], ['related_docs']]
+        field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
+                   'start_ts', 'end_ts','description'], ['related_docs'], ['work_tag']]
         for i in field[0]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
@@ -284,12 +295,13 @@ def ajax_node_edit_():
                 except:
                     es_related_docs.index(index=event_docs_name, doc_type=event_docs_type, id=item, body={i:i_value, 'en_name':item})
         if edit_num>0:
-            event_history = EventHistory(name=editor, eventID=item, modifyRecord='1edit', modifyTime=ts2datetime(time.time()))
-            session.add(event_history)
-            session.commit()
+            event_history = EventHistory(name=editor, eventID=item, modifyRecord='edit', modifyTime=datetime.now())
+            db.session.add(event_history)
+            db.session.commit()
         return json.dumps(True)
     else:
         return '0'
+
 
 
 @mod.route('/relation/')
