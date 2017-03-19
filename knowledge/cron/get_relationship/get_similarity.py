@@ -8,6 +8,7 @@ import sys
 import json
 import heapq
 from config import *
+from elasticsearch.helpers import scan
 sys.path.append('../manage_neo4j/')
 from neo4j_relation import *
 
@@ -23,7 +24,7 @@ def search_es_by_name(dict_name,dict_value,s_uid,type_list):#根据对应的属�
         },
         "size":2000
     }
-    search_results = es_user_portrait.search(index=remote_portrait_name, doc_type=portrait_type, body=query_body)['hits']['hits']
+    search_results = es_user_portrait.search(index=portrait_name, doc_type=portrait_type, body=query_body)['hits']['hits']
     n = len(search_results)
     if n > 0:
         for item in search_results:
@@ -429,7 +430,81 @@ def event_similarity(node_dict):
 
     return similarity
 
-def topic_similarity(p_first,p_second,event_average):
+def get_topic_by_topic_key(t_key):#根据专题id查询专题下的事件
+
+    result = []
+    search_result = es_special_event.mget(index=special_event_name, doc_type=special_event_type, body={"ids": t_key})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            break
+        else:
+            data = item['_source']
+            e_list = json.loads(data['event'])
+            result = e_list
+        break
+
+    return result
+
+def get_group_by_group_key(g_key):#根据群体id查询群体下的人物
+
+    result = []
+    search_result = es_group.mget(index=group_name, doc_type=group_type, body={"ids": g_key})["docs"]
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            break
+        else:
+            data = item['_source']
+            p_list = json.loads(data['people'])
+            result = p_list
+        break
+
+    return result
+
+def get_people_att_by_keys(people_list):#根据人物id获取人物详细属性
+
+    if len(people_list) == 0:
+        return {}
+    result_dict = {}
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": people_uid})["docs"]#判断哪些是人物，哪些是机构
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result_dict[uid] = {}
+            continue
+        else:
+            data = item['_source']
+            domain = data['domain'].encode('utf-8')
+            location = data['location'].encode('utf-8')
+            activity_ip = data['activity_ip']
+            verified_type = data['verified_type']
+            result_dict[uid] = {'uid':uid,'domain':domain,'location':location,'activity_ip':activity_ip,'verified_type':verified_type}
+
+    return result_dict            
+
+def get_event_att_by_keys(event_list):#根据事件id获取事件详细属性
+
+    if len(event_list) == 0:
+        return {}
+    result_dict = {}
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_type, body={"ids": people_uid})["docs"]#判断哪些是人物，哪些是机构
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result_dict[uid] = {}
+            continue
+        else:
+            data = item['_source']
+            e_type = data['category']
+            location = data['real_geo'].encode('utf-8')
+            keyword = data['keywords'].encode('utf-8')
+            user_results = eval(data['user_results'])
+            result_dict[uid] = {'event_id':uid,'type':e_type,'location':location,'keyword':keyword,'user_results':user_results}
+
+    return result_dict
+
+def topic_similarity(t_key):
     '''
         专题相似度计算主函数
         输入数据：
@@ -443,47 +518,27 @@ def topic_similarity(p_first,p_second,event_average):
         similarity 两个专题的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
     '''
 
-    ##共同关联的事件权重之和/关联的事件权重之和的最小值：取值[0,1]，占比0.4
-    s1 = 0
-    if p_first.has_key('event') and p_second.has_key('event'):
-        event_first = set(p_first['event'].keys())
-        event_second = set(p_second['event'].keys())
-        weight = max(sum(p_first['event'].values()),sum(p_second['event'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['event'][key]
-            s1 = float(total)/float(weight)
-        else:
-            s1 = 0
-    else:
-        s1 = 0
-        
-        
-    ##共同关联的人物权重之和/关联的人物权重之和的最小值：取值[0,1]，占比0.3
-    s2 = 0
-    if p_first.has_key('people') and p_second.has_key('people'):
-        event_first = set(p_first['people'].keys())
-        event_second = set(p_second['people'].keys())
-        weight = max(sum(p_first['people'].values()),sum(p_second['people'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['people'][key]
-            s2 = float(total)/float(weight)
-        else:
-            s2 = 0
-    else:
-        s2 = 0
+    event_list = get_topic_by_topic_key(t_key)#根据专题id查询专题下的事件
 
+    event_att = get_event_att_by_keys(event_list)#根据事件id获取事件详细属性
+
+    result_dict = dict()
+    for item in event_att:
+        s_list = event_similarity(item)
+        for s in s_list:
+            try:
+                result_dict[s] = result_dict[s] + 1
+            except KeyError:
+                result_dict[s] = 1
     
-    similarity = s1*t1_weight + s2*t2_weight + event_average*t3_weight
+    similarity_list = []
+    for k,v in result.iteritems():
+        if v >= (len(event_list)*topic_rate):
+            similarity_list.append(k)
 
-    return similarity
+    return similarity_list
 
-def crowd_similarity(p_first,p_second,event_average):
+def crowd_similarity(g_key):
     '''
         群体相似度计算主函数
         输入数据：
@@ -497,45 +552,25 @@ def crowd_similarity(p_first,p_second,event_average):
         similarity 两个专题的相似度（一个0到1的数字），数字小于0.5的不在数据库里面建立相似关系
     '''
 
-    ##共同关联的事件权重之和/关联的事件权重之和的最小值：取值[0,1]，占比0.4
-    s1 = 0
-    if p_first.has_key('event') and p_second.has_key('event'):
-        event_first = set(p_first['event'].keys())
-        event_second = set(p_second['event'].keys())
-        weight = max(sum(p_first['event'].values()),sum(p_second['event'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['event'][key]
-            s1 = float(total)/float(weight)
-        else:
-            s1 = 0
-    else:
-        s1 = 0
-        
-        
-    ##共同关联的人物权重之和/关联的人物权重之和的最小值：取值[0,1]，占比0.3
-    s2 = 0
-    if p_first.has_key('people') and p_second.has_key('people'):
-        event_first = set(p_first['people'].keys())
-        event_second = set(p_second['people'].keys())
-        weight = max(sum(p_first['people'].values()),sum(p_second['people'].values()))
-        union_set = event_first & event_second
-        if len(union_set) > 0 and weight > 0:
-            total = 0
-            for key in list(union_set):
-                total = total + p_first['people'][key]
-            s2 = float(total)/float(weight)
-        else:
-            s2 = 0
-    else:
-        s2 = 0
+    people_list = get_group_by_group_key(g_key)#根据群体id查询群体下的人物
 
+    people_att = get_people_att_by_keys(people_list)#根据人物id获取人物详细属性
+
+    result_dict = dict()
+    for item in people_att:
+        s_list = people_similarity(item)
+        for s in s_list:
+            try:
+                result_dict[s] = result_dict[s] + 1
+            except KeyError:
+                result_dict[s] = 1
     
-    similarity = s1*q1_weight + s2*q2_weight + event_average*q3_weight
+    similarity_list = []
+    for k,v in result.iteritems():
+        if v >= (len(event_list)*group_rate):
+            similarity_list.append(k)
 
-    return similarity
+    return similarity_list
 
 
 if __name__ == '__main__':

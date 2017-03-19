@@ -177,12 +177,11 @@ def get_colleague_r(des,s_uid):#提取业务关联关系（人物与人物、人
 
     if len(des) == 0:
         return []
-    elif len(des) > 0 and len(des) <= 2:
+    elif len(des) > 0 and len(des) <= 3:
         n = 1
     else:
         n = float(len(des))*event_sta
-        if n < 2:
-            n = 2
+        n = int(n)
             
     for w in des:
         w_list.append({"term":{"description":w}})
@@ -346,7 +345,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                         r = create_person(org_node, org_primary, o, org_index_name)
                         if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
-                        input_list.append([[0,uid],k,[0,p]])
+                        input_list.append([[0,uid],k,[0,o]])
                 else:
                     continue
         else:
@@ -377,7 +376,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                         r = create_person(org_node, org_primary, o, org_index_name)
                         if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
-                        input_list.append([[0,uid],k,[0,p]])
+                        input_list.append([[0,uid],k,[0,o]])
                 else:
                     continue
 

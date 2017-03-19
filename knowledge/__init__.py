@@ -17,7 +17,8 @@ import model
 
 def create_app():
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flask-admin.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://root:@localhost/knowledge_management?charset=utf8'
+    #app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flask-admin.db'
 
     # Create modules
     app.register_blueprint(indexModule)

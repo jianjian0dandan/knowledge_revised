@@ -58,7 +58,7 @@ def uid_name_list(uid_list):
 
     return uname
 
-def eventid_name(uidlist):
+def eventid_name(uidlist,result):
 
     search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
@@ -398,15 +398,17 @@ def get_type_key(item):
     else:
         return 'Not Found'
 
-def get_detail_person(uid_list):
+def get_detail_person(uid_list,user_name):
 
     if len(uid_list) == 0:
         return {}
     result = {}
+    user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
-    for item in search_result:
+    for i in range(0,len(search_result)):
+        item = search_result[i]
         uid = item['_id']
         if not item['found']:
             result[uid] = {}
@@ -430,20 +432,35 @@ def get_detail_person(uid_list):
             influence = data['influence']
             activeness = data['activeness']
 
-            #还差粉丝数、业务标签
-            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified}
+            work_tag = data['function_mark'].encode('utf-8')
+            tags = work_tag.split('&')
+            tag_list = []
+            for tag in tags:
+                u,t = tag.split('_')
+                if u == user_name:
+                    tag_str.append(t)
+            
+            bci_dict = user_bci_result[i]
+            try:
+                fansnum = bci_dict['fields']['user_fansnum'][0]
+            except:
+                fansnum = 0
+            
+            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
 
     return result
 
-def get_detail_org(uid_list):
+def get_detail_org(uid_list,user_name):
 
     if len(uid_list) == 0:
         return {}
     result = {}
+    user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
-    for item in search_result:
+    for i in range(0,len(search_result)):
+        item = search_result[i]
         uid = item['_id']
         if not item['found']:
             result[uid] = {}
@@ -464,12 +481,25 @@ def get_detail_org(uid_list):
             else:
                 verified = ver_data[data['verified_type']]
 
-            #还差粉丝数、业务标签
-            result[uid] = {'name':name,'location':location,'verified':verified}
+            work_tag = data['function_mark'].encode('utf-8')
+            tags = work_tag.split('&')
+            tag_list = []
+            for tag in tags:
+                u,t = tag.split('_')
+                if u == user_name:
+                    tag_str.append(t)
+
+            bci_dict = user_bci_result[i]
+            try:
+                fansnum = bci_dict['fields']['user_fansnum'][0]
+            except:
+                fansnum = 0
+            
+            result[uid] = {'name':name,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
 
     return result
 
-def get_detail_event(uid_list):
+def get_detail_event(uid_list,user_name):
 
     if len(uid_list) == 0:
         return {}
@@ -497,12 +527,19 @@ def get_detail_event(uid_list):
             else:
                 time_ts = ''
 
-            #还差业务标签
-            result[uid] = {'name':name,'geo':geo,'category':category,'time_ts':time_ts}
+            work_tag = data['work_tag'].encode('utf-8')
+            tags = work_tag.split('&')
+            tag_list = []
+            for tag in tags:
+                u,t = tag.split('_')
+                if u == user_name:
+                    tag_str.append(t)
+
+            result[uid] = {'name':name,'geo':geo,'category':category,'time_ts':time_ts,'tag':tag_list}
 
     return result
 
-def get_relation_node(user_id,node_type,card_type):#获取关联节点
+def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
 
     node_key = get_type_key(node_type)
     card_key = get_type_key(card_type)
@@ -517,7 +554,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
         elif card_key == event_primary:#uid-event
             start_index_name = node_index_name
@@ -527,7 +564,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_event(uid_list)#获取事件详细信息
+            result = get_detail_event(uid_list,user_name)#获取事件详细信息
             flag = 2
         else:#uid-org
             start_index_name = node_index_name
@@ -537,7 +574,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取用户详细信息
             flag = 0
 
     elif node_key == event_primary:
@@ -549,7 +586,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
         elif card_key == event_primary:#event-event
             start_index_name = event_index_name
@@ -559,7 +596,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_event(uid_list)#获取用户详细信息
+            result = get_detail_event(uid_list,user_name)#获取用户详细信息
             flag = 2
         else:#event-org
             start_index_name = event_index_name
@@ -569,7 +606,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取用户详细信息
             flag = 0
 
     elif node_key == org_primary:
@@ -581,7 +618,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
         elif card_key == event_primary:#org-event
             start_index_name = org_index_name
@@ -591,7 +628,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_event(uid_list)#获取用户详细信息
+            result = get_detail_event(uid_list,user_name)#获取用户详细信息
             flag = 2
         else:#org-org
             start_index_name = org_index_name
@@ -601,7 +638,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取用户详细信息
             flag = 0
 
     elif node_key == special_event_primary:
@@ -613,7 +650,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
         elif card_key == event_primary:#special_event-event
             start_index_name = node_index_name
@@ -623,7 +660,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 2
         else:#special_event-org
             start_index_name = node_index_name
@@ -633,7 +670,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取用户详细信息
             flag = 0
 
     else:
@@ -645,7 +682,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
         elif card_key == event_primary:#group-event
             start_index_name = group_index_name
@@ -655,7 +692,7 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list)#获取用户详细信息
+            result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 2
         else:#group-org
             start_index_name = group_index_name
@@ -665,14 +702,477 @@ def get_relation_node(user_id,node_type,card_type):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取用户详细信息
             flag = 0
 
     return result,flag
-    
 
+def event_id_name(uidlist):
 
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = ''
+            continue
+        else:
+            data = item['_source']
+            try:
+                result[uid] = data['name'].encode('utf-8')
+            except:
+                result[uid] = ''
 
+    return result
+
+def peo_id_name(uidlist):
+
+    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = ''
+            continue
+        else:
+            data = item['_source']
+            try:
+                result[uid] = data['uname'].encode('utf-8')
+            except:
+                result[uid] = ''
+
+    return result
+
+def top_id_name(uidlist):
+
+    search_result = es_special_event.mget(index=special_event_name, doc_type=special_event_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = ''
+            continue
+        else:
+            data = item['_source']
+            try:
+                result[uid] = data['topic_name'].encode('utf-8')
+            except:
+                result[uid] = ''
+
+    return result
+
+def group_id_name(uidlist):
+
+    search_result = es_group.mget(index=group_name, doc_type=group_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = ''
+            continue
+        else:
+            data = item['_source']
+            try:
+                result[uid] = data['group_name'].encode('utf-8')
+            except:
+                result[uid] = ''
+
+    return result
+
+def get_all_graph():#获取首页图谱
+
+    p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m LIMIT 100' % (event_index_name,event_primary)
+
+    p_result = graph.run(p_string)
+    peo_list = []
+    eve_list = []
+    top_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in eve_list:
+            eve_list.append(node1)
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        r = item[1].type()
+        if node2_k == people_primary:#人物
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_primary:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
+        elif node2_k == event_primary:#事件
+            if node2_v not in eve_list:
+                eve_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        elif node2_k == special_event_primary:#专题
+            if node2_v not in top_list:
+                top_list.append(node2_v)
+            r_relation.append([node1,node2_v,'topic',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
+    if len(top_list) > 0:
+        result_top = top_id_name(top_list)
+    else:
+        result_top = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'org':
+            try:
+                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'event':
+            try:
+                relation.append([result_eve[item[0]],'event',result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'topic':
+            try:
+                relation.append([result_eve[item[0]],'event',result_top[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
+
+def get_people_graph(uid):#获取人物节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m LIMIT 100' % (node_index_name,people_primary,uid)
+    p_result = graph.run(c_string)
+    peo_list = []
+    eve_list = []
+    gro_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in peo_list:
+            peo_list.append(node1)
+        r = item[1].type()        
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        if node2_k == people_primary:#人物
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_primary:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
+        elif node2_k == event_primary:#事件
+            if node2_v not in eve_list:
+                eve_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        elif node2_k == group_primary:#群体
+            if node2_v not in gro_list:
+                gro_list.append(node2_v)
+            r_relation.append([node1,node2_v,'group',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
+    if len(gro_list) > 0:
+        result_gro = gro_id_name(gro_list)
+    else:
+        result_gro = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([result_peo[item[0]],'people',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'org':
+            try:
+                relation.append([result_peo[item[0]],'people',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'event':
+            try:
+                relation.append([result_peo[item[0]],'people',result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'group':
+            try:
+                relation.append([result_peo[item[0]],'people',result_gro[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
+
+def get_event_graph(uid):#获取事件节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event_id,r,m LIMIT 100' % (event_index_name,event_primary,uid)
+
+    p_result = graph.run(p_string)
+    peo_list = []
+    eve_list = []
+    top_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in eve_list:
+            eve_list.append(node1)
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        r = item[1].type()
+        if node2_k == people_primary:#人物
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_primary:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
+        elif node2_k == event_primary:#事件
+            if node2_v not in eve_list:
+                eve_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        elif node2_k == special_event_primary:#专题
+            if node2_v not in top_list:
+                top_list.append(node2_v)
+            r_relation.append([node1,node2_v,'topic',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
+    if len(top_list) > 0:
+        result_top = top_id_name(top_list)
+    else:
+        result_top = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'org':
+            try:
+                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'event':
+            try:
+                relation.append([result_eve[item[0]],'event',result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'topic':
+            try:
+                relation.append([result_eve[item[0]],'event',result_top[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
+
+def get_org_graph(uid):#获取机构节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return u.org_id,r,m LIMIT 100' % (org_index_name,org_primary,uid)
+
+    p_result = graph.run(p_string)
+    peo_list = []
+    eve_list = []
+    gro_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in peo_list:
+            peo_list.append(node1)
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        r = item[1].type()
+        if node2_k == people_primary:#人物
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_primary:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
+        elif node2_k == event_primary:#事件
+            if node2_v not in eve_list:
+                eve_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        elif node2_k == group_primary:#群体
+            if node2_v not in gro_list:
+                gro_list.append(node2_v)
+            r_relation.append([node1,node2_v,'group',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
+    if len(gro_list) > 0:
+        result_gro = gro_id_name(gro_list)
+    else:
+        result_gro = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([result_peo[item[0]],'org',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'org':
+            try:
+                relation.append([result_peo[item[0]],'org',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'event':
+            try:
+                relation.append([result_peo[item[0]],'org',result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'group':
+            try:
+                relation.append([result_peo[item[0]],'org',result_gro[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
+
+def get_special_event_graph(uid):#获取专题节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event,r,m LIMIT 100' % (special_event_index_name,special_event_primary,uid)
+
+    p_result = graph.run(p_string)
+    eve_list = []
+    top_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in top_list:
+            top_list.append(node1)
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        r = item[1].type()
+        if node2_k == event_primary:#事件
+            if node2_v not in eve_list:
+                eve_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        else:
+            continue
+
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
+    if len(top_list) > 0:
+        result_top = top_id_name(top_list)
+    else:
+        result_top = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'event':
+            try:
+                relation.append([result_top[item[0]],'topic',result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
+
+def get_group_graph(uid):#获取群体节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.group,r,m LIMIT 100' % (group_index_name,group_primary,uid)
+
+    p_result = graph.run(p_string)
+    peo_list = []
+    gro_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = dict(item[0]).values()[0]
+        if node1 not in top_list:
+            gro_list.append(node1)
+        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
+        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        r = item[1].type()
+        if node2_k == people_primary:#事件
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(gro_list) > 0:
+        result_gro = gro_id_name(gro_list)
+    else:
+        result_gro = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([result_gro[item[0]],'group',result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation
             
             
 
