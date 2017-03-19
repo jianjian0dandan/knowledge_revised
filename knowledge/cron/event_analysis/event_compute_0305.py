@@ -3,7 +3,7 @@ import sys,json
 sys.path.append('../../')
 #from global_utils import R_ADMIN as r
 from global_utils import es_event,topic_queue_name,es_flow_text,flow_text_index_type,flow_text_index_name_pre
-from global_utils import event_task_name,event_task_type,event_analysis_name,event_type
+from global_config import event_task_name,event_task_type,event_analysis_name,event_type
 from global_config import MAX_FREQUENT_WORDS,MAX_LANGUAGE_WEIBO,NEWS_LIMIT
 from flow_text_mappings import get_mappings
 import datetime,time
@@ -208,8 +208,8 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords):
                     print "index 10000 per %s second" %(te - tb)
                     tb = te
         except StopIteration:
-                print "all done"
-                break
+            print "all done"
+            break
     if bulk_action:
         es_event.bulk(bulk_action, index=en_name, doc_type=event_text_type, timeout=100)
 
@@ -290,5 +290,5 @@ if __name__ == '__main__':
     #get_topic_weibo('画画','huahua','1377964800','1378137600')
     #weibo_count = es_event.count(index='aoyunhui')
     #print weibo_count
-    counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
-    # es_event.index(index='event_task',doc_type='mei-guo-da-xuan',id='test',body={'name':'test_task','start_ts':'1480089600','end_ts':'1480176000','submit_ts':'1480089600','comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'military','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1})
+    # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
+    es_event.update(index='event_task',doc_type='mei-guo-da-xuan',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})

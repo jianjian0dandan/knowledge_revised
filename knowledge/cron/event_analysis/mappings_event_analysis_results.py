@@ -28,7 +28,7 @@ def mappings_event_analysis_results():
 		'mappings':{
 			event_type:{
 				'properties':{
-					"topic":{
+					"name":{
 						"type":"string",
 						"index": "not_analyzed"
 					},
@@ -125,12 +125,15 @@ def mappings_event_analysis_results():
 					"compute_status": {
 						"type": "long"
 					},
-					"first_compute":{
-						"type":"long"
+					"mid": {
+						"type": "long"
 					},
-					"immediate_compute":{
-						"type":"long"
-					}
+					# "first_compute":{
+					# 	"type":"long"
+					# },
+					# "immediate_compute":{
+					# 	"type":"long"
+					# }
 				}
 			}
 
