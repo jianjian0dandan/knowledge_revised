@@ -12,13 +12,11 @@ profile_index_type = "user"
 
 # user portrait system
 es_user_portrait = Elasticsearch(user_portrait_host, timeout=600)
-es_bci = Elasticsearch(user_profile_host, timeout=600)
+es_bci = Elasticsearch(bci_es_host, timeout=600)
 
 # es_social_sensing
 es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
 sensing_compute_interval = 2*3600
-es_prediction = es_social_sensing_text 
-
 #recommendation task
 es_recommendation_result = Elasticsearch(user_portrait_host, timeout=600)
 
@@ -43,6 +41,8 @@ es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
 # km event 
 es_event = Elasticsearch(event_host, timeout=600)
 
+es_group = Elasticsearch(event_host, timeout=600)
+es_special_event = Elasticsearch(event_host, timeout=600)
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
 

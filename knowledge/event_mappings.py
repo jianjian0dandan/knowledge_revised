@@ -4,7 +4,7 @@ save some about event
 '''
 from elasticsearch import Elasticsearch
 from global_utils import es_event as es
-from global_utils import event_task_name
+# from global_utils import event_task_name
 
 
 def get_mappings(index_name):
@@ -61,11 +61,11 @@ def get_mappings(index_name):
                         },
                         "relation_compute":{
                             'type': 'string',
-                            'index': 'my_analyzer'
+                            'analyzer': 'my_analyzer'
                         },
                         "event_type":{
                             'type': 'string',
-                            'analyzer': 'not_analyzed'
+                            'index': 'not_analyzed'
                         },
                         # "mid":{
                         #     'type': 'long'
@@ -79,8 +79,8 @@ def get_mappings(index_name):
             }
     exist_indice = es.indices.exists(index=index_name)
     if not exist_indice:
-        es.indices.create(index=index_name, body=index_info, ignore=400)
+        print es.indices.create(index=index_name, body=index_info, ignore=400)
 
 if __name__=='__main__':
-    get_mappings(event_task_name)
+    get_mappings('event_task')
     #es.indices.put_mapping(index='flow_text_2013-09-05', doc_type="text", body={"properties":{"comment":{"type": "long"}, "retweeted":{"type":"long"}}})
