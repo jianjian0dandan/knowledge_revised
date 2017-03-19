@@ -67,9 +67,9 @@ def get_mappings(index_name):
                             'type': 'string',
                             'index': 'not_analyzed'
                         },
-                        # "mid":{
-                        #     'type': 'long'
-                        # },
+                        "compute_ts":{
+                            'type': 'long'
+                        },
                         "recommend_style":{
                             'type':'string'
                         }
