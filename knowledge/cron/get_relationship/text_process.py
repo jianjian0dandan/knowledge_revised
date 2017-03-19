@@ -43,7 +43,7 @@ def get_keyword(w_text, n_gram):
 
     tr4w.analyze(text=w_text, lower=True, window=n_gram)
     word_list = dict()
-    k_dict = tr4w.get_keywords(50, word_min_len=2)
+    k_dict = tr4w.get_keywords(500, word_min_len=2)
     n = len(k_dict)
     keyword = TopkHeap(n)
     for item in k_dict:
@@ -61,17 +61,27 @@ def get_keyword(w_text, n_gram):
 def get_topic_word(texts,nt):
     '''
         输入数据：
-        text:list对象，一条记录表示一条分词之后的微博文本
+        text:list对象，一条记录表示一条微博文本
         nt:需要的topic的数量
 
         输出数据：
         topic的list
     '''
+
+    text_list = []
+    for text in texts:
+        w_text = re_cut(text)
+        words = sw.participle(w_text)
+        word_list = []
+        for word in words:
+            if word[0] not in black and word[1] in cx_dict and len(word[0])>3:
+                word_list.append(word[0])
+        text_list.append(word_list)
     
     ##生成字典
-    dictionary=corpora.Dictionary(texts)
+    dictionary=corpora.Dictionary(text_list)
     dictionary.filter_extremes(no_below=5, no_above=0.5, keep_n=None)
-    corpus = [dictionary.doc2bow(text) for text in texts if len(dictionary.doc2bow(text))]
+    corpus = [dictionary.doc2bow(text) for text in text_list if len(dictionary.doc2bow(text))]
 
     if not len(corpus):
         return 'Null'
@@ -95,7 +105,9 @@ def get_weibo_test():
     texts = ''
     reader = csv.reader(file('./text_data/text_0.csv', 'rb'))
     count = 0
+    ori_text = []
     for uid,text,ts,geo in reader:
+        ori_text.append(text)
         w_text = re_cut(text)
         if count == 0:
             texts = texts + w_text
@@ -125,13 +137,13 @@ def get_weibo_test():
         uid_list.append(k)
         text_list.append(v)
 
-    return texts,text_list
+    return texts,text_list,ori_text
 
 if __name__ == '__main__':
 
-    w_text,text_list = get_weibo_test()
-    topics = get_topic_word(text_list,10)
-    keywords = get_keyword(w_text, 2)
+    w_text,text_list,ori_text = get_weibo_test()
+    topics = get_topic_word(ori_text,10)
+    #keywords = get_keyword(ori_text, 2)
     print topics
-    print keywords
+    #print keywords
     
