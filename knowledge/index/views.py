@@ -20,31 +20,46 @@ def index():#首页
 
     peo_infors = get_people(user_name,2)
 
-    peo_string = 'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
-    peo_object = graph.run(peo_string)
+    try:
+        peo_string = 'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
+        peo_object = graph.run(peo_string)
 
-    for item in peo_object:
-        peo_count = item['count(start_node)']
+        for item in peo_object:
+            peo_count = item['count(start_node)']
+    except:
+        peo_count = 0
 
-    org_string = 'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
-    org_object = graph.run(org_string)
-    for item in org_object:
-        org_count = item['count(start_node)']
+    try:
+        org_string = 'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
+        org_object = graph.run(org_string)
+        for item in org_object:
+            org_count = item['count(start_node)']
+    except:
+        org_count = 0
 
-    event_string = 'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
-    event_object = graph.run(event_string)
-    for item in event_object:
-        event_count = item['count(start_node)']
+    try:
+        event_string = 'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
+        event_object = graph.run(event_string)
+        for item in event_object:
+            event_count = item['count(start_node)']
+    except:
+        event_count = 0
 
-    special_event_string = 'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
-    special_event_object = graph.run(special_event_string)
-    for item in special_event_object:
-        special_event_count = item['count(start_node)']
+    try:
+        special_event_string = 'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
+        special_event_object = graph.run(special_event_string)
+        for item in special_event_object:
+            special_event_count = item['count(start_node)']
+    except:
+        special_event_count = 0
 
-    group_string = 'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
-    group_object = graph.run(group_string)
-    for item in group_object:
-        group_count = item['count(start_node)']
+    try:
+        group_string = 'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
+        group_object = graph.run(group_string)
+        for item in group_object:
+            group_count = item['count(start_node)']
+    except:
+        group_count = 0
 
     neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count}
     
@@ -113,8 +128,9 @@ def get_card():#卡片罗列页面
     user_id = request.args.get('user_id', '')
     node_type = request.args.get('node_type', '')
     card_type = request.args.get('card_type', '')
+    user_name = g.user.email
 
-    result,flag = get_relation_node(user_id,node_type,card_type)#获取关联节点
+    result,flag = get_relation_node(user_id,node_type,card_type,user_name)#获取关联节点
 
     return render_template('index/card_display.html', result = result, flag = flag)
 
