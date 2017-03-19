@@ -32,88 +32,95 @@ from global_config import redis_host,redis_port,contain
 r=redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 
 
+def get_task():
+    query_body = {'query':{'term':{'comput_status':0}},'sort':{'submit_ts':{'order':'asc'}}}
+    result = es_event.search(index=event_task_name,doc_type=event_task_type,body=query_body)
+    return result['hits']['hits']
+
 def compute_topic_task():
     print time.time()
-    while  True:
-        #print r.rpop(topic_queue_name)
-        task = r.rpop('event_portrait_task')
-        #if not task:
-        #   break
-        if  task:
-            continue
-        else:
-           # task = json.loads(task)   事件名称就用关键词拼起来
-            task=['雾霾','type','1480003100','1480176000','1483500427743']
-            topic = task[0]#['name']
-            #en_name = task['en_name']
-            start_ts = int(task[2])  #timestamp
-            end_ts = int(task[3])   #timestamp
-            submit_ts = int(task[4])
-            #可选的计算关系realtion  用&连接的字符串
-            realtion = task[5]  
+    tasks = get_task()
+    if not tasks:
+        return None
+    for task in tasks:
+        print task
+        # task=['雾霾','type','1480003100','1480176000','1483500427743']
+        task_id = task['_id']
+        task = task['_source']
+        topic = task['name']#task[0]#['name']
+        #en_name = task['en_name']
+        start_ts = 1480003200#task['start_ts']
+        end_ts = 1480176000#task['end_ts']
+        if end_ts > time.time():
+            end_ts = time.time()
+        submit_ts = task['submit_ts']#int(task[4])
+        #可选的计算关系realtion  用&连接的字符串
+        relation = task['relation_compute']#task[5]  
 
-            try:
-                keywords = task['keywords']    #关键词或者mid
-            except:
-                keywords = ''
-            #comput_status = task['status']
-            mid = task['mid']
-            task_id = 'event-'+str(start_ts)+'-'+str(end_ts)+'-'+str(submit_ts)
-            en_name = task_id
-            t1=time.time()
-            exist_flag = exist(task_id)
-            #keywords=keywords.split('&')
-            get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
-            print exist_flag
-            if exist_flag:
-                #start compute
-                #try:
+        keywords = task['keywords'].split('&')    #关键词或者mid
+        #comput_status = task['status']
+        # mid = task['mid']
+        # task_id = 'event-'+str(start_ts)+'-'+str(end_ts)+'-'+str(submit_ts)
+        en_name = task_id
+        t1=time.time()
+        re_mid = re.compile('^\d{16}$')
+        try:
+            mid = re.match(re_mid,task_id).group()
+        except:
+            mid = ''
+        exist_flag = exist(task_id)
+        #keywords=keywords.split('&')
+        # get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
+        print exist_flag
+        if exist_flag:
+            #start compute
+            #try:
 
-                resu = create_person(event_node,event_primary,en_name,event_index_name)
-                if resu == 'Node Wrong':
-                    continue
-                weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
-                count_fre(en_name, start_ts=start_ts, over_ts=end_ts,news_limit=NEWS_LIMIT,weibo_limit=MAX_LANGUAGE_WEIBO)
+            resu = create_person(event_node,event_primary,en_name,event_index_name)
+            if resu == 'Node Wrong':
+                continue
+            # weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
+            # # count_fre(en_name, start_ts=start_ts, over_ts=end_ts,news_limit=NEWS_LIMIT,weibo_limit=MAX_LANGUAGE_WEIBO)
 
-                es_event.index(index=event_task_name,doc_type=event_task_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'comput_status':0,'en_name':task_id,'relation_compute':relation})
-                es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-1,'weibo_counts':weibo_counts,'uid_counts':uid_counts}})
-                print 'finish change status'
-                #geo
-                
-                cityTopic(en_name, start_ts, end_ts)
-                es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-3}})
-                print 'finish geo analyze'
-                #language
-                compute_real_info(en_name, start_ts=start_ts, over_ts=end_ts,realtion=relation,news_limit=NEWS_LIMIT,weibo_limit=MAX_LANGUAGE_WEIBO)
-                es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-4}})
-                print 'finish language analyze'
-                #time
-                propagateCronTopic(en_name, start_ts, end_ts)
-                es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-5}})
-                print 'finish time analyze'
+            # # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'comput_status':0,'en_name':task_id,'relation_compute':relation})
+            # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'comput_status':-1,'weibo_counts':weibo_counts,'uid_counts':uid_counts})
+            # print 'finish change status'
+            # #geo
+            
+            # cityTopic(en_name, start_ts, end_ts)
+            # es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-2}})
+            # print 'finish geo analyze'
+            #language
+            compute_real_info(en_name, start_ts, end_ts,relation=relation)
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-3}})
+            print 'finish language analyze'
+            #time
+            propagateCronTopic(en_name, start_ts, end_ts)
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':-4}})
+            print 'finish time analyze'
 
-                
-                #sentiment
-                sentimentTopic(en_name, start_ts=start_ts, over_ts=end_ts)
-                print 'finish sentiment analyze'
-                #finish compute
+            
+            #sentiment
+            sentimentTopic(en_name, start_ts=start_ts, over_ts=end_ts)
+            print 'finish sentiment analyze'
+            #finish compute
 
-                print es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':1,'finish_ts':int(time.time())}})
-                print 'finish change status done'
-                
-                if('contain' in relation.split('&')):
-                    #计算关系
-                    related_event_ids = event_input(keywords,en_name)
-                    rel_list = []
-                    for i in related_event_ids:
-                        create_person(event_node,event_primary,i,event_index_name)
-                        rel_list.append([[2,en_name],'contain',[2,i]])
-                    nodes_rels(rel_list)
+            print es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'comput_status':1,'finish_ts':int(time.time())}})
+            print 'finish change status done'
+            
+            if('contain' in relation.split('&')):
+                #计算关系
+                related_event_ids = event_input(keywords,en_name)
+                rel_list = []
+                for i in related_event_ids:
+                    create_person(event_node,event_primary,i,event_index_name)
+                    rel_list.append([[2,en_name],'contain',[2,i]])
+                nodes_rels(rel_list)
 
-                es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'comput_status':1})
+            es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'comput_status':1})
 
 
-            break
+        break
         t2=time.time()-t1
         print task_id,t2
                 # except:
@@ -126,7 +133,7 @@ def compute_topic_task():
 def exist(task_id):
     #print task_id
     try:
-        task_exist = es_event.get(index='event_status',doc_type='text',id=task_id)['_source']
+        task_exist = es_event.get(index=event_task_name,doc_type=event_task_type,id=task_id)['_source']
     except:
         task_exist = {}
     if not task_exist:
@@ -163,7 +170,7 @@ def find_flow_texts(start_ts,end_ts,topic,en_name,keywords):   #多个wildcard/�
     if result:
         save_es(en_name,result)
 
-def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords):
+def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords,mid):
     index_names = get_day_zero(start_ts,end_ts)
     #mid = re.compile('^\d{16}$')
     if len(keywords) ==0 and len(mid)==0:
@@ -190,7 +197,7 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords):
     tb = time.time()
     while True:
         try:
-            if count > 5000:
+            if count > 100000:
                 break
             scan_re = s_re.next()
             _id = scan_re['_id']
@@ -219,7 +226,8 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords):
 def counts(start_ts,end_ts,topic,en_name,keywords):
     query_body = {   
         'query':{
-            'term':{'en_name':topic}
+            'match_all':{}
+            # 'term':{'en_name':topic}
         },
         'aggs':{'diff_uids':{'cardinality':{'field':'uid'}}},
         'size':999999999
@@ -227,7 +235,7 @@ def counts(start_ts,end_ts,topic,en_name,keywords):
     result = []
     index_list = []
     weibo_count = 0
-    result = es_event.search(index=event_text ,doc_type=event_text_type,body=query_body)
+    result = es_event.search(index=en_name ,doc_type=event_text_type,body=query_body)
     #print result
     weibo_counts=result['hits']['total']
     uid_counts=result['aggregations']['diff_uids']['value']
@@ -291,4 +299,5 @@ if __name__ == '__main__':
     #weibo_count = es_event.count(index='aoyunhui')
     #print weibo_count
     # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
-    es_event.update(index='event_task',doc_type='mei-guo-da-xuan',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
+    # es_event.index(index='event_task',doc_type='text',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'comput_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
+    compute_topic_task()

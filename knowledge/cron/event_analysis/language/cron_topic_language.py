@@ -8,7 +8,7 @@ sys.path.append('../../../')
 from time_utils import * #datetime2ts, ts2HourlyTime
 from global_utils import event_analysis_name,event_type,event_text,event_text_type
 from global_utils import es_event,es_user_portrait,portrait_index_name,portrait_index_type
-from global_utils import bci_day_pre,bci_day_type
+from global_utils import bci_day_pre,bci_day_type,es_bci
 from parameter import RUN_TYPE,RUN_TEST_TIME
 from global_utils import org_node,people_node,event_node,people_primary,org_primary,event_primary,node_index_name,event_index_name,org_index_name
 
@@ -17,6 +17,9 @@ sys.path.append('../')
 from get_relationship.get_pos import get_news_main #抽取事件的人物、机构、地点和时间
 from event_classify.python.event_classify import cut_weibo #事件类型
 from get_relationship.text_process import get_keyword,get_topic_word  #topic,keyword
+from manage_neo4j.neo4j_relation import nodes_rels,create_person
+from global_config import user_type,auth_type,peo_list,org_list
+
 def compute_real_info(topic,begin_ts,end_ts,relation):
 	info_dict = {}
 	
@@ -38,7 +41,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	result = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
 	#抽取事件的人物、机构、地点和时间
 	basics = get_news_main(result[0]['_source']['text'])
-
+	print basics
 	info_dict['real_auth'] = basics['organization']
 	info_dict['real_geo'] = basics['place']
 	info_dict['real_time'] = basics['time']
@@ -49,11 +52,11 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 		if info_dict['real_auth'] !='None':
 			resu = create_person(org_node,org_primary,info_dict['real_auth'],org_index_name)
 			if resu != 'Node Wrong':
-				rel_list.append([[2,en_name],'join',[0,info_dict['real_auth']]])
+				rel_list.append([[2,topic],'join',[0,info_dict['real_auth']]])
 		if info_dict['real_person'] !='None':
 			create_person(people_node,people_primary,info_dict['real_person'],node_index_name)
 			if resu != 'Node Wrong':
-				rel_list.append([[2,en_name],'join',[1,info_dict['real_person']]])
+				rel_list.append([[2,topic],'join',[1,info_dict['real_person']]])
 		try:
 			nodes_rels(rel_list)
 		except:
@@ -76,10 +79,10 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 	text_list = []
 	for i in result:
 		text_list.append(i['fields']['text'][0])
-	#print text_list
+	# print text_list
 	#事件类型
 	info_dict['category'] = cut_weibo(text_list)
-	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
+	# info_dict['topics'] = json.dumps(get_topic_word([i.encode('utf-8') for i in text_list],10))
 	
 	keywords = get_keyword(''.join(text_list),2)
 	info_dict['keywords'] = '&'.join([i[0] for i in keywords])
@@ -114,10 +117,10 @@ def get_hashtag(text):
 def get_users(topic,begin_ts,end_ts,relation):
 	uid_list = set()
 	query_body = {   
-		'query':{
-		'bool':{
-		'must':[
-		{'term':{'en_name':topic}},
+	'query':{
+	'bool':{
+	'must':[
+	{'term':{'en_name':topic}},
 		# {'wildcard':{'text':'【*】*'}},
 		{'range':{
 		'timestamp':{'gte': begin_ts, 'lt':end_ts} 
@@ -127,7 +130,7 @@ def get_users(topic,begin_ts,end_ts,relation):
 		},
 		'size':999999999
 	}
-	result = es_event.search(index=topic,doc_type=event_text_type, fields=['text'],body=query_body)['hits']['hits']
+	result = es_event.search(index=topic,doc_type=event_text_type, fields=['uid'],body=query_body)['hits']['hits']
 	for i in result:
 		uid_list.add(i['fields']['uid'][0])
 	print len(uid_list)
@@ -138,11 +141,11 @@ def get_users(topic,begin_ts,end_ts,relation):
 		post = ts2datetimestr(time.time())
 		
 	print  bci_day_pre+post,bci_day_type,es_user_portrait
-	user_result = es_user_portrait.mget(index=bci_day_pre+post ,doc_type=bci_day_type,body={'ids':list(uid_list)})['docs']
+	user_result = es_bci.mget(index=bci_day_pre+post ,doc_type=bci_day_type,body={'ids':list(uid_list)})['docs']
 	
 	user_influence_dict = {}
 	for i in user_result:
-		#print i
+		# print i
 		if i['found']:
 			i = i['_source']
 			user_influence_dict[i['user']] = i['user_index']
@@ -159,7 +162,7 @@ def get_users(topic,begin_ts,end_ts,relation):
 		try:
 			result = es_user_profile.get(index=profile_index_name,doc_type=profile_index_type,id=i[0])
 			u_type = result['_source']['verified_type']
-			if u_type in auth_list:
+			if u_type in org_list:
 				u_type = auth_type
 				a_list.append(i[0])
 			else:
@@ -176,11 +179,11 @@ def get_users(topic,begin_ts,end_ts,relation):
 		for i in p_list:
 			resu = create_person(people_node,people_primary,i,node_index_name)
 			if resu != 'Node Wrong':
-				rel_list.append([[2,en_name],'discuss',[1,i]])
+				rel_list.append([[2,topic],'discuss',[1,i]])
 		for i in a_list:
 			resu = create_person(org_node,org_primary,i,org_index_name)
 			if resu != 'Node Wrong':
-				rel_list.append([[2,en_name],'discuss',[0,i]])
+				rel_list.append([[2,topic],'discuss',[0,i]])
 		try:
 			nodes_rels(rel_list)
 		except:
@@ -199,4 +202,4 @@ if __name__ == '__main__':
 	end_date = 1484582400#'2017-01-17'
 
 	#get_users(topic,start_date,end_date)
-	compute_real_info(topic,start_date,end_date)
+	compute_real_info(topic,start_date,end_date,'join')
