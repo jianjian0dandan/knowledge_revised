@@ -13,13 +13,13 @@ from datetime import datetime
 from knowledge.global_utils import es_event, R_RECOMMENTATION as r
 from knowledge.global_utils import es_user_portrait as es, portrait_index_name, portrait_index_type
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
-from knowledge.global_config import event_task_name, event_task_type
+from knowledge.global_config import event_task_name, event_task_type, Session
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
-from knowledge.model import PeopleHistory
+from knowledge.model import PeopleHistory, EventHistory
 
 test_time = datetime2ts(RUN_TEST_TIME)
 # from draw_redis import *
@@ -143,7 +143,7 @@ def ajax_submit_event():
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
     input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
                'immediate_compute':'1', 'keywords':u'北京&房价&政策',
-               'event_type':u'经济', 'recommend_style':'submit', 'comput_status':0, 'submit_user':'admin','event_ts':1480176000}
+               'event_type':u'经济', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
     # submit_user = request.args.get('submit_user', 'admin')
     # recommend_style = request.args.get('recommend_style', 'recommend')
@@ -165,7 +165,7 @@ def ajax_submit_identify_file():
     input_data = request.get_json()#文件至少有keywords。
     input_data1 = { 'keywords':u'1两会&方案', 'event_type':u'经济', 'event_ts':1480175030}
     input_data2 = { 'keywords':u'1北京&房价&政策', 'event_type':u'经济'}
-    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'comput_status':0} 
+    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
@@ -189,7 +189,7 @@ def ajax_search_node():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'keywords']  #改成name
+        field = ['en_name', 'name']  #改成name
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -218,7 +218,7 @@ def ajax_node_edit():
             node_result = search_user(item, field)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-            field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
+            field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
              'weibo_counts', 'keywords', 'work_tag','compute_status']
             node_result = search_event(item, field)
     return json.dumps(node_result)
@@ -235,9 +235,11 @@ def ajax_node_edit_show():
 #特定节点编辑，提交
 @mod.route('/node_edit/')
 def ajax_node_edit_():
-    node_type = request.args.get('node_type', 'Event') #User , Org
-    item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
-    editor = request.args.get('submit_user', '')  #admin
+    node_type = request.args.get('node_type', 'User') #User , Org
+    item = request.args.get('item', '5779325975')  #id
+    # item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
+    editor = request.args.get('submit_user', 'admin')  #admin
+    session = Session()
     if node_type == 'User':
         edit_num = 0
         field = [['topic_string', 'domain', 'function_mark', 'function_description'],['related_docs']]
@@ -252,12 +254,15 @@ def ajax_node_edit_():
             if i_value:
                 edit_num += 1
                 i_value = '&'.join(i_value.split(','))
-                es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
-        if edit_num >0:
-            user_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=time.time())
-
-
-
+                try:
+                    es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
+                except:
+                    es_related_docs.index(index=user_docs_name,doc_type=user_docs_type, id=item, body={i:i_value, 'uid':item})
+        if edit_num>0:
+            pelple_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=ts2datetime(time.time()))
+            session.add(pelple_history)
+            session.commit()
+            
     elif node_type == 'Event':
         edit_num = 0
         field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
@@ -273,9 +278,15 @@ def ajax_node_edit_():
             if i_value:
                 edit_num += 1
                 i_value = '&'.join(i_value.split(','))
-                es_related_docs.update(index=event_docs_type,doc_type=event_docs_name, id=item,body={'doc':{i:i_value}})
-    if edit_num>0:
-
+                print i, i_value, event_docs_type, event_docs_name
+                try:
+                    es_related_docs.update(index=event_docs_name, doc_type=event_docs_type, id=item, body={'doc':{i:i_value}})
+                except:
+                    es_related_docs.index(index=event_docs_name, doc_type=event_docs_type, id=item, body={i:i_value, 'en_name':item})
+        if edit_num>0:
+            event_history = EventHistory(name=editor, eventID=item, modifyRecord='1edit', modifyTime=ts2datetime(time.time()))
+            session.add(event_history)
+            session.commit()
         return json.dumps(True)
     else:
         return '0'

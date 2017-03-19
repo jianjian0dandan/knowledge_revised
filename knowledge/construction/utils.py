@@ -494,7 +494,7 @@ def submit_event_file(input_data):
     immediate_compute = input_data['immediate_compute']
     submit_user = input_data['submit_user']
     recommend_style = input_data['recommend_style']
-    comput_status = input_data['comput_status']
+    compute_status = input_data['compute_status']
     file_data = input_data['upload_data']
     result_flag = False
     valid_event = 0
@@ -507,7 +507,7 @@ def submit_event_file(input_data):
         event['immediate_compute'] = immediate_compute
         event['submit_user'] = submit_user
         event['recommend_style'] = recommend_style
-        event['comput_status'] = comput_status
+        event['compute_status'] = compute_status
         result = submit_event(event)
         if result == True:
             valid_event += 1
@@ -717,15 +717,15 @@ def search_node_time_limit(node_type, item, start_ts, end_ts):
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         node_result = search_user_time_limit(item, field, start_ts, end_ts)
     if node_type == 'Event':
-        field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-        # field = ['en_name','topic', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-         # 'weibo_counts', 'keywords', 'work_tag','compute_status']
+        # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
+        field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
+         'weibo_counts', 'keywords', 'work_tag','compute_status']
         node_result = search_event_time_limit(item, field, start_ts, end_ts)
     return node_result
 
 def show_node_detail(node_type, item):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'topic_string', 'domain_v3', 'function_mark', 'function_description']
+        field = ['uid', 'uname', 'topic_string', 'domain_v3', 'function_mark', 'function_description']
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         index_n = node_index_name
         index_key = people_primary
@@ -733,7 +733,7 @@ def show_node_detail(node_type, item):
         node_result = search_user(item, field)
 
     if node_type == 'Event':
-        field = ['en_name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
+        field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
               'start_ts', 'end_ts','description', 'related_docs']
         node_result = search_event(item, field)
         index_n = event_index_name
