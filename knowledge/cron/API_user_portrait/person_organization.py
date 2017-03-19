@@ -309,14 +309,14 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
             relation_dict = {colleague:{'person':p1,'organization':o1},friend:{'person':p2,'organization':o2},ip_relation:{'people':p3}}
             flag = '-1'
         else:
-            if profile[uid]['verified_type'] in peo_list:#输入的为人物
+            if profile[uid]['verified_type'] not in org_list:#输入的为人物
                 p3 = get_ip_r([uid],uid)#IP关联关系
                 relation_dict = {colleague:{'person':p1,'organization':o1},friend:{'person':p2,'organization':o2},ip_relation:{'people':p3}}
                 flag = '1'
             else:
                 relation_dict = {or_colleague:{'person':p1,'organization':o1},or_friend:{'person':p2,'organization':o2}}
                 flag = '0'
-                
+       
         if flag == '0':#节点类型为机构
             r = create_person(org_node, org_primary, uid, org_index_name)
             if r == 'Node Wrong' or r == 'Node Type Wrong':
@@ -331,9 +331,9 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                         person_list = []
 
                     try:
-                        org_list = v['organization']
+                        organ_list = v['organization']
                     except KeyError:
-                        org_list = []
+                        organ_list = []
 
                     for p in person_list:
                         r = create_person(people_node, people_primary, p, node_index_name)
@@ -341,7 +341,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                             continue
                         input_list.append([[0,uid],k,[1,p]])
 
-                    for o in org_list:
+                    for o in organ_list:
                         r = create_person(org_node, org_primary, o, org_index_name)
                         if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
@@ -362,9 +362,9 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                         person_list = []
 
                     try:
-                        org_list = v['organization']
+                        organ_list = v['organization']
                     except KeyError:
-                        org_list = []
+                        organ_list = []
 
                     for p in person_list:
                         r = create_person(people_node, people_primary, p, node_index_name)
@@ -372,7 +372,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
                             continue
                         input_list.append([[0,uid],k,[1,p]])
 
-                    for o in org_list:
+                    for o in organ_list:
                         r = create_person(org_node, org_primary, o, org_index_name)
                         if r == 'Wrong' or r == 'Node Type Wrong':
                             continue
@@ -393,10 +393,10 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-##    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague']})
-##    print result
-    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
-    result = nodes_rels(relation_list)
+    result = person_organization(['2288486705','2770816753'],{'2288486705':['friend','colleague'],'2770816753':['friend','colleague']})
+    print result
+##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
+##    result = nodes_rels(relation_list)
 ##    print result
 ##    p_list = get_colleague_r(["消失","命运"])
 ##    print p_list
