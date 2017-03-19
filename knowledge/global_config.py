@@ -13,6 +13,8 @@ km_user_portrait_host = ["219.224.134.225:9037"]
 user_portrait_port = "9200"
 event_host = ["219.224.134.225:9037"]
 event_port = "9200"
+group_host = ["219.224.134.225:9037"]
+special_event_host = ["219.224.134.225:9037"]
 calculate_status_host=["219.224.134.225:9037"]
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
@@ -205,16 +207,21 @@ flow_text_index_name_pre = 'flow_text_'
 portrait_type = "user"
 flow_text_type = "text"
 
-event_name = "event_task"#"event" # 事件基本信息
-event_name_type = 'event'
+event_task_name = "event_task"#"event" # 事件基本信息
 event_analysis_name = 'event_result'#"event_analysis" # 事件分析结果
 event_text = "event_text"
 event_text_type ="text"
+event_task_type ="event"
 event_type = "text"
 neo4j_name = "neo4j"
 neo4j_password = "database"
 neo4j_data_path = 'http://219.224.134.213:7474/db/data'
 
+
+group_name = 'group'
+group_type = 'group'
+special_event_name = 'speicial_event'
+special_event_type = 'event'
 
 # retweet&comment for test
 retweet_comment_es_host = ['219.224.134.216:9201']
@@ -286,3 +293,5 @@ TOPIC_ABS_PATH = "/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge
 
 DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
 
+peo_list = [-1,0,200,220,400]
+org_list = [1,2,3,4,5,6,7,8]
