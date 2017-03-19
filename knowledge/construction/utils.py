@@ -535,7 +535,28 @@ def relation_add(input_data):
     result_detail[0] = True
     return result_detail
 
+def show_relation(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+    Index = ManualIndexManager(graph)
+    node_index = Index.get_index(Node, node1_index_name)
+    group_index = Index.get_index(Node, node2_index_name)
+    print node_index
+    print group_index
+    tx = graph.begin()
+    node1 = node_index.get(node_key1, node1_id)[0]
+    node2 = group_index.get(node_key2, node2_id)[0]
+    if not (node1 and node2):
+        print "node does not exist"
+        return 'does not exist'
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
+    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    # return c_string
 
+    result = graph.run(c_string)
+    # print result
+    # rel_list = []
+    for item in result:
+        rel_list.append(item)
+    return rel_list
 
 def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
@@ -552,19 +573,18 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key
     c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
     node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
     # return c_string
+
     result = graph.run(c_string)
-    print result
-    rel_list = []
+    # print result
+    # rel_list = []
     for item in result:
         rel_list.append(item)
-    print rel_list
-    if not rel_list:
-        rel = Relationship(node1, rel, node2)
-        graph.create(rel)
-        print "create success"
-    else:
-        print "The current two nodes already have a relationship"
-        return 'have relation'
+    # print rel_list
+    if rel in rel_list:
+        return 'has relation already'
+    rel = Relationship(node1, rel, node2)
+    graph.create(rel)
+    print "create success"
     return True
 
 def search_event(item, field):
@@ -723,19 +743,23 @@ def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
         node_result = search_event_time_limit(item, field, start_ts, end_ts, editor)
     return node_result
 
-def show_node_detail(node_type, item):
+def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'uname', 'topic_string', 'domain_v3', 'function_mark', 'function_description']
+        field = ['uid', 'uname', 'topic_string', 'domain', 'function_description']
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         index_n = node_index_name
         index_key = people_primary
         node_key = group_node
-        node_result = search_user(item, field)
+        node_result = search_user(item, field)[0]
+        tag = deal_user_tag(item, submit_user)[0]
+        node_result.append(tag)
 
     if node_type == 'Event':
-        field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', 'work_tag', \
+        field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
               'start_ts', 'end_ts','description', 'related_docs']
-        node_result = search_event(item, field)
+        node_result = search_event(item, field)[0]
+        tag = deal_event_tag(item, submit_user)[0]
+        node_result.append(tag)
         index_n = event_index_name
         index_key = 'event'
         node_key = special_event_node
@@ -746,23 +770,44 @@ def show_node_detail(node_type, item):
     events = []
     for special_event in event_result:
         events.append(special_event[0][index_key])
-    result = node_result[0]
-    result.append(events)
-    return result
+    # result = node_result[0]
+    node_result.append(events)
+    return node_result
 
 def edit_node():
     pass
 
 def deal_user_tag(item ,submit_user):
-    result = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']
-    print result
+    tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    # return result
+    # tag = tag_value
+    print tag,'======!!=========='
     tag_list = tag.split('&')
     left_tag = []
     keep_tag = []
     for i in tag_list:
         user_tag = i.split('_')
         if user_tag[0] == submit_user:
-            pass
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
+
+def deal_event_tag(item ,submit_user):
+    tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+    # return result
+    # tag = tag_value
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
 
 
 
