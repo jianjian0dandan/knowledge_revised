@@ -1,5 +1,6 @@
-﻿# -*-coding:utf-8-*-
-from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect,make_response,request
+# -*-coding:utf-8-*-
+from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect, make_response, g
+from flask.ext.security import login_required
 from neo4j_event import select_rels_all, select_rels, create_person, create_rel_from_uid2group,  \
     update_node, update_node_or_node_rel, delete_rel, delete_node,nodes_rels,get_es_status,select_event_es,\
     select_people_es
@@ -30,6 +31,20 @@ test_time = datetime2ts(RUN_TEST_TIME)
 
 mod = Blueprint('construction', __name__, url_prefix='/construction')
 
+@mod.route('/')
+@login_required
+def construction_main():#导航页
+    return render_template('construction/construction_main.html')
+
+@mod.route('/graph_add/')
+@login_required
+def construction_graph_add():#图谱添加
+    return render_template('construction/graph_add.html')
+
+@mod.route('/graph_modify')
+@login_required
+def construction_graph_modify():#图谱编辑
+    return render_template('construction/graph_modify.html')
 
 @mod.route('/node/')
 def add_node():

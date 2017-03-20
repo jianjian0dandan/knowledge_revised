@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect
+from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect, make_response, g
+from flask.ext.security import login_required
 import json
 import csv
 import os
@@ -13,12 +14,17 @@ from utils import get_time_series, show_weibo_list, get_weibo_bursting
 
 mod = Blueprint('brust', __name__, url_prefix='/brust')
 
-@mod.route('/test/')
-def brust_analysis():
+@mod.route('/')
+@login_required
+def brust_discover():#热点发现
 
-    return render_template('brust/test.html')
+    return render_template('brust/brust_main.html')
 
+@mod.route('/result/')
+@login_required
+def brust_analysis():#突发分析
 
+    return render_template('brust/brust_analysis.html')
 
 # show all weibo trendline
 @mod.route('/show_weibo/')
