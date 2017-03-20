@@ -12,7 +12,7 @@ from global_utils import es_user_profile as es
 from global_utils import profile_index_name as index_name
 from global_utils import profile_index_type as index_type
 fields_dict = {'uname':"nick_name", 'gender':"sex", 'location':"user_location", \
-               'verified':"isreal", 'verified_type': 'verified_type', \
+               'verified':"isreal", 'verified_type': 'verify_type', \
                'photo_url':"photo_url", 'description': 'description', \
                'born_data':'born_data', 'real_name':'real_name'}
 
