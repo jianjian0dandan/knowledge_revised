@@ -1,0 +1,68 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 820px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 820px;
+    background: url("/static/images/brust_main.png") no-repeat;
+}
+#container {
+    width: 70%;
+    padding: 2% 5%;
+    margin: 13% auto 0;
+}
+/*用户发的微博*/
+#container .hot_find .weibo {
+    /*padding-top:3%;*/
+    /*border-bottom: 1px dashed silver;*/
+    position: relative;
+}
+#container .hot_find .weibo h3 {
+    padding: 1% 3%;
+}
+#container .hot_find .weibo .content .content-1 {
+    border: 5px solid #eee;
+    position: absolute;
+    left:3%;
+    top:14%;
+}
+#container .hot_find .weibo .content .content-1 img {
+    width: 60px;
+    height: 60px;
+}
+#container .hot_find .weibo .content .content-2 {
+    margin-left:15%;
+}
+#container .hot_find .weibo span {
+    color: #676767;
+    font-size: 14px;
+    display: inline-block;
+}
+#container .hot_find .weibo a {
+    display: inline-block;
+    font-size: 14px;
+    color:#23527c;
+}
+#container .hot_find .weibo .content .judgment {
+    float: right;
+    padding: 0.5% 2%;
+    color: white;
+    background-color: #3fcae0;
+    border: 1px solid silver;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px #a0a0a0;
+}
+#container .hot_find .weibo .content .judgment:hover {
+    background-color: #5169e0;
+}
+#container .hot_find .weibo .content .content-2 .fd_nums {
+    text-align: right;
+    padding: 2% 3%;
+}
+/*-----完*/

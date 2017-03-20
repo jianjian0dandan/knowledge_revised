@@ -1,0 +1,52 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 970px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 970px;
+    background: url("/static/images/graph_modify.png") no-repeat;
+}
+#container {
+    width: 60%;
+    padding: 2% 5%;
+    margin: 12% auto 0;
+}
+#container .edit input {
+    position: relative;
+    top: 3px;
+}
+#container .edit label {
+    color: #5a5a5a;
+    font-size: 14px;
+}
+#container .attributes span,#container .rel_attributes span {
+    color: #373737;
+    font-size: 14px;
+}
+#container .attributes input,#container .attributes select,
+#container .rel_attributes input,#container .rel_attributes select{
+    padding: 0.5% 2%;
+    border: 1px solid silver;
+    margin: 1% 2% 1% 1%;
+}
+#container .attributes .submit,#container .rel_attributes .rel_submit {
+    padding: 0.3% 2%;
+    color: white;
+    margin-right:18%;
+    margin-top: 1.5%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #838383;
+    cursor: pointer;
+    float: right;
+}
+#container .attributes .submit:hover,#container .rel_attributes .rel_submit:hover {
+    background-color: #176de2;
+}
+

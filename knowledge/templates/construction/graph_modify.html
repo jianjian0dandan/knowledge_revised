@@ -1,0 +1,85 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 图谱编辑</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/graph_modify.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <div class="edit">
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="node" value="1" checked> 节点编辑
+        </label>
+        &nbsp;&nbsp;
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="relation" value="2"> 关系编辑
+        </label>
+    </div>
+    <div class="node">
+        <div class="attributes" style="margin-top: 3%">
+            <span>节点名称</span><input type="text" class="node_name">
+            <span>节点类型</span>
+            <select id="node_type" onchange="type(this.value)">
+                <option value="人物">人物</option>
+                <option value="事件">事件</option>
+            </select>
+            <div style="display: inline">
+                <!--<span>入库日期</span><input type="text" class="warehousing">-->
+                <button class="submit">确 定</button>
+            </div>
+        </div>
+        <div id="node_list" style="width: 100%"></div>
+    </div>
+
+
+    <!--关系编辑-->
+    <div class="rel" style="display: none;">
+        <div class="rel_attributes" style="margin-top: 3%">
+            <div>
+                <span>节点1</span><input type="text" class="node_1_name">
+                <select id="rel_type-1" onchange="type_1(this.value)">
+                    <option value="人物">人物</option>
+                    <option value="事件">事件</option>
+                </select>
+            </div>
+            <div>
+                <span>节点2</span><input type="text" class="node_2_name">
+                <select id="rel_type-2" onchange="type_2(this.value)">
+                    <option value="人物">人物</option>
+                    <option value="事件">事件</option>
+                </select>
+            </div>
+
+            <div>
+                <!--<span>入库日期</span><input type="text" class="warehousing">-->
+                <button class="rel_submit">确 定</button>
+            </div>
+        </div>
+        <div id="rel_list" style="width: 100%"></div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+<script src="/static/js/graph_modify-1.js"></script>
+<script>
+    $.each($("#container .edit input"),function (index,item) {
+        $(item).on('click',function () {
+            if ($(this).val()==1){
+                $('.node').show();
+                $('.rel').hide();
+            }else {
+                $('.node').hide();
+                $('.rel').show();
+            }
+        })
+    });
+
+</script>
+{% endblock %}
