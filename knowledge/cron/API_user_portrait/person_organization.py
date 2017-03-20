@@ -9,7 +9,7 @@ import json
 import heapq
 from elasticsearch import Elasticsearch
 from config_relation import *
-sys.path.append('../manage_neo4j/')
+#sys.path.append('../manage_neo4j/')
 from neo4j_relation import *
 
 class TopkHeap(object):
