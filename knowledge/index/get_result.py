@@ -372,7 +372,7 @@ def get_geo():#获取事件地址
                     name = scan_re['uid']
                 if len(location.split(' '))>1:
                     location = location.split(' ')[0]
-                if scan_re['verified_type'] in org_list:
+                if scan_re['verify_type'] in org_list:
                     org_result[name] = location
                 else:
                     people_result[name] = location
@@ -424,10 +424,10 @@ def get_detail_person(uid_list,user_name):
                 location = ''
             else:
                 location = data['location'].encode('utf-8')           
-            if not data['verified_type']:
+            if not data['verify_type']:
                 verified = ''
             else:
-                verified = ver_data[data['verified_type']]
+                verified = ver_data[data['verify_type']]
             importance = data['importance']
             influence = data['influence']
             activeness = data['activeness']
@@ -476,10 +476,10 @@ def get_detail_org(uid_list,user_name):
                 location = ''
             else:
                 location = data['location'].encode('utf-8')           
-            if not data['verified_type']:
+            if not data['verify_type']:
                 verified = ''
             else:
-                verified = ver_data[data['verified_type']]
+                verified = ver_data[data['verify_type']]
 
             work_tag = data['function_mark'].encode('utf-8')
             tags = work_tag.split('&')

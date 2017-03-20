@@ -40,7 +40,7 @@ def get_profile_by_uid(uidlist):#根据uid查询用户的背景信息
         else:
             data = item['_source']
             des = data['description'].encode('utf-8')
-            v_type = data['verified_type']
+            v_type = data['verify_type']
             if len(des) > 0:
                 des_set = cut_des(des)
             else:
@@ -203,7 +203,7 @@ def get_colleague_r(des,s_uid):#提取业务关联关系（人物与人物、人
             if uid == s_uid:
                 continue
             data = item['_source']
-            if data['verified_type'] in org_list:
+            if data['verify_type'] in org_list:
                 organization_list.append(uid)
             else:
                 people_list.append(uid)
@@ -255,7 +255,7 @@ def get_ip_r(uidlist,s_uid):#IP关联关系
                     if uid == s_uid:
                         continue
                     data = item['_source']
-                    if data['verified_type'] not in org_list:
+                    if data['verify_type'] not in org_list:
                         people_list.append(uid)
                     else:
                         continue
