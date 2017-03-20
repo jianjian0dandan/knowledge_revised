@@ -21,6 +21,7 @@ a,a:link,a:hover,a:visited,a:active {
 }
 /*内容样式*/
 #nav {
+    position: relative;
     width: 100%;
     height: 135px;
     padding:20px 0 0 100px;
@@ -41,6 +42,25 @@ a,a:link,a:hover,a:visited,a:active {
     font-size: 16px;
     color: white;
     font-weight: 900;
+}
+#nav .username {
+    width: 50%;
+    text-align: right;
+    position: absolute;
+    right: 10%;
+    bottom: -15%;
+}
+#nav .username .sign_out {
+    padding: 0.5% 3%;
+    color: white;
+    margin-left: 2%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px #838383;
+    cursor: pointer;
+}
+#nav .username .sign_out:hover {
+    background-color: #176de2;
 }
 
 

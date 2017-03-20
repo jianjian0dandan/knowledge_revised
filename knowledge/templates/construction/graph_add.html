@@ -1,0 +1,135 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 图谱添加</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/graph_add.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <div class="edit">
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="add_node" value="1" checked> 添加节点
+        </label>
+        &nbsp;&nbsp;
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="add_relation" value="2"> 添加关系
+        </label>
+    </div>
+    <div class="node">
+        <div class="attributes" style="margin-top: 3%">
+            <div>
+                <span>节点类型</span>
+                <select id="node_type" onchange="type_1(this.value)">
+                    <option value="人物">人物</option>
+                    <option value="事件">事件</option>
+                    <option value="机构">机构</option>
+                </select>
+            </div>
+
+            <div>
+                <span>选择模式</span>
+                <select id="choose_mode" onchange="type_2(this.value)">
+                    <option value="1">推荐模式</option>
+                    <option value="2">手工模式</option>
+                </select>
+            </div>
+            <div class="manual" style="display: none">
+                <div>
+                    <span>任务名称</span><input type="text" class="task_name"/>
+                </div>
+                <div class="checkbox" style="padding-left: 10px">
+                    <label>
+                        <input type="checkbox" class="upload"> 上传文件
+                    </label>
+                    <input type="file" class="text" style="display: inline-block;margin-left: 3%">
+                </div>
+            </div>
+            <button class="add_sure">确 定</button>
+        </div>
+        <div id="node_list" style="width: 100%;">
+            <span>推荐人物</span>
+            <div id="recommend" style="width: 100%"></div>
+            <button class="join">加入图谱</button>
+        </div>
+    </div>
+    <div class="relation" style="display: none">
+        <div class="rel_manual">
+            <div class="checkbox manual-1">
+                <label>
+                    <input type="checkbox" style="margin-left: -3%"/> 手动输入
+                </label>
+            </div>
+            <div class="manual-2">
+                <div class="one">
+                    <span>节点一</span>
+                    <input type="text" class="manone"/>
+                    <select class="one-type">
+                        <option value="" disabled selected>请选择节点类型</option>
+                        <option value="人物">人物</option>
+                        <option value="事件">事件</option>
+                    </select>
+                </div>
+                <div class="two">
+                    <span>节点二</span>
+                    <input type="text" class="mantwo"/>
+                    <select class="two-type">
+                        <option value="" disabled selected>请选择节点类型</option>
+                        <option value="人物">人物</option>
+                        <option value="事件">事件</option>
+                    </select>
+                </div>
+                <div class="three">
+                    <span>关系类型</span>
+                    <select id='three-type'>
+                        <option value="" disabled selected>请选择关系类型</option>
+                        <option value="好友">好友</option>
+                        <option value="同事">同事</option>
+                        <option value="亲属">亲属</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="add_plus">
+                <b class="icon icon-plus"></b>
+            </div>
+        </div>
+        <div class="uploading">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" style="margin-left: -3%;"/> 上传文件:
+                </label>
+                <div class="form-group filem" style="display: inline-block">
+                    <input type="file" id="relationFile" style="padding: 0;"
+                           multiple onchange="relationFileSelect(this.files)"/>
+                </div>
+                <button class="upload-1" style="display: inline-block">上&nbsp;传</button>
+                <button class="upload-2">确&nbsp;定</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+<script src="/static/js/graph_add-1.js"></script>
+<script>
+    $.each($("#container .edit input"),function (index,item) {
+        $(item).on('click',function () {
+            if ($(this).val()==1){
+                $('.node').show();
+                $('.relation').hide();
+            }else {
+                $('.node').hide();
+                $('.relation').show();
+            }
+        })
+    });
+
+</script>
+{% endblock %}

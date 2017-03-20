@@ -1,0 +1,95 @@
+
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 970px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 970px;
+    background: url("/static/images/graph_add.png") no-repeat;
+}
+#container {
+    width: 60%;
+    padding: 2% 5%;
+    margin: 10% auto 0;
+}
+#container .edit input {
+    position: relative;
+    top: 3px;
+}
+#container .edit label {
+    color: #5a5a5a;
+    font-size: 14px;
+}
+#container .node .attributes span {
+    color: #373737;
+    font-size: 14px;
+}
+#container .node .attributes select{
+    padding: 0.5% 2%;
+    border: 1px solid silver;
+    margin: 1% 2% 1% 1%;
+}
+#container .node .attributes .add_sure,
+#container .node #node_list .join {
+    float: right;
+    padding: 0.7% 2%;
+    color: white;
+    margin-right:11%;
+    margin-top: 2%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #838383;
+    cursor: pointer;
+}
+#container .node .attributes .add_sure:hover,
+#container .node #node_list .join:hover {
+    background-color: #176de2;
+}
+#container .node #node_list .join {
+    margin: 2% 2% 0 0;
+}
+#container .node .attributes .manual input {
+    margin: 0.5% 2% 1% -4%;
+    /*padding: 0;*/
+    /*padding: 0.5% 2%;*/
+    border: 1px solid silver;
+}
+#container .node .attributes .manual .task_name {
+    margin-left:2%;
+    padding: 0 1%;
+}
+/*关系*/
+
+#container .relation .rel_manual {
+    position: relative;
+}
+#container .relation .rel_manual .add_plus {
+    position: absolute;
+    bottom: 0;
+    right:43%;
+}
+#container .relation input,#container .relation select {
+    display: inline-block;
+    margin: 0.5% 2% 1% 2%;
+    border: 1px solid silver;
+    padding: 0.4% 1%;
+}
+#container .relation .uploading .upload-1,#container .relation .uploading .upload-2{
+    padding: 0.4% 1%;
+    color: white;
+    margin-left:4%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #838383;
+    cursor: pointer;
+}
+#container .relation .uploading .upload-1:hover,
+#container .relation .uploading .upload-2:hover {
+    background-color: #176de2;
+}
