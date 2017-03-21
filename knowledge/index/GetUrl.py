@@ -22,18 +22,16 @@ def getUrlByKeyWord(key_words):
         }
         search_results = es_wiki.search(index=wiki_index_name, doc_type=wiki_type_name, body=query_body)["hits"]["hits"]
         n = len(search_results)
-        url_list = []
+        item_list = []
         if n > 0:
             for item in search_results:
-                url = item['_id'].encode('utf-8')
                 name = item["_source"]['name'].encode('utf-8')
-                print name
-                print url
-                url_list.append(name)
-                url_list.append(url)
+                url = item['_id'].encode('utf-8')
+
+                item_list.append([name, url])
         else:
-            url_list = []  #  查询结果小于等于0时返回空
-    return url_list
+            item_list = []  #  查询结果小于等于0时返回空
+    return item_list
 
 if __name__ == '__main__':
     key = "特朗普"
