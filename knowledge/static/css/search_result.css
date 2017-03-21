@@ -1,0 +1,19 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 3508px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 3508px;
+    background: url("/static/images/search_result.png") no-repeat;
+}
+#container {
+    width: 88%;
+    margin: 0 auto;
+    padding: 5.5% 0 0 0;
+}

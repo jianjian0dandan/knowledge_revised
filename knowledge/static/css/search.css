@@ -1,0 +1,211 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 820px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 820px;
+    background: url("/static/images/similarity.png") no-repeat;
+}
+#container {
+    width: 80%;
+    padding: 2% 5%;
+    margin: 8.5% auto 0;
+}
+#container .search {
+    width: 70%;
+    margin: 7% auto 2%;
+    padding: 1% 2%;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #f1f1ff;
+    border: 1px solid #d2d2d2;
+    box-shadow: 1px 1px 1px #a2a2a2;
+}
+#container .search .find {
+    padding: 0.5% 2%;
+    width: 60%;
+    background-color: #e3e3f2;
+}
+#container .search .sure {
+    margin-left: 5%;
+    padding:0.5% 2%;
+    color: white;
+    background-color: #52bbde;
+    box-shadow: 1px 1px 1px #d4d4e9;
+}
+#container .search .sure:hover {
+    background-color: #358bde;
+}
+#container .look {
+    width: 100%;
+    position: relative;
+}
+#container .look .advanced {
+    position: absolute;
+    right: 4%;
+    bottom: 1%;
+    cursor: pointer;
+}
+/*高级搜索内容*/
+/*节点*/
+#container #advanced_search {
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+}
+/*起始节点*/
+#container #advanced_search .advan-1 {
+    position: relative;
+    padding-left:9%;
+    border-bottom: 1px solid silver;
+}
+#container #advanced_search .advan-1 .start {
+    border-left: 1px solid silver;
+    padding: 3% 0 2% 3%;
+}
+#container #advanced_search .advan-1 .tit {
+    position: absolute;
+    left: 2%;
+    top:50%;
+    color:#676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-1 .options,
+#container #advanced_search .advan-1 span,
+#container #advanced_search .advan-1 select,
+#container #advanced_search .advan-1 input {
+    display: inline-block;
+}
+#container #advanced_search .advan-1 span {
+    color: #676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-1 .options label{
+    margin-left:11%;
+}
+#container #advanced_search .advan-1 select,
+#container #advanced_search .advan-1 input {
+    border: 1px solid silver;
+    padding: 0.4% 1%;
+}
+#container #advanced_search .advan-1 .options-1-value {
+    width: 250px;
+}
+#container #advanced_search .advan-1 .options-2-value{
+    padding: 0;
+}
+#container #advanced_search .advan-1 .options-1-value,
+#container #advanced_search .advan-1 .options-2-value,
+#container #advanced_search .advan-1 .options-3-value {
+    display: block;
+    margin:2% 0 0 27%;
+}
+/*关系*/
+#container #advanced_search .advan-2 {
+    position: relative;
+    padding-left:9%;
+    border-bottom: 1px solid silver;
+}
+#container #advanced_search .advan-2 .relation {
+    border-left: 1px solid silver;
+    padding: 3% 0 2% 3%;
+    text-align: left;
+}
+#container #advanced_search .advan-2 .tit {
+    position: absolute;
+    left: 2%;
+    top:50%;
+    color:#676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-2 input {
+    border: 1px solid silver;
+    padding: 0.4% 1%;
+}
+/*终止节点*/
+#container #advanced_search .advan-3 {
+    position: relative;
+    padding-left:9%;
+    border-bottom: 1px solid silver;
+}
+#container #advanced_search .advan-3 .end {
+    border-left: 1px solid silver;
+    padding: 3% 0 2% 3%;
+}
+#container #advanced_search .advan-3 .tit {
+    position: absolute;
+    left: 2%;
+    top:50%;
+    color:#676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-3 .options-3,
+#container #advanced_search .advan-3 span,
+#container #advanced_search .advan-3 select,
+#container #advanced_search .advan-3 input {
+    display: inline-block;
+}
+#container #advanced_search .advan-3 span {
+    color: #676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-3 .options-3 label{
+    margin-left:11%;
+}
+#container #advanced_search .advan-3 select,
+#container #advanced_search .advan-3 input {
+    border: 1px solid silver;
+    padding: 0.4% 1%;
+}
+#container #advanced_search .advan-3 .options-1-value {
+    width: 250px;
+}
+#container #advanced_search .advan-3 .options-2-value{
+    padding: 0;
+}
+#container #advanced_search .advan-3 .options-1-value,
+#container #advanced_search .advan-3 .options-2-value,
+#container #advanced_search .advan-3 .options-3-value {
+    display: block;
+    margin:2% 0 0 27%;
+}
+/*其他信息*/
+#container #advanced_search .advan-4 {
+    position: relative;
+    padding-left:9%;
+    border-bottom: 1px solid silver;
+}
+#container #advanced_search .advan-4 .other {
+    border-left: 1px solid silver;
+    padding: 3% 0 2% 3%;
+    text-align: left;
+}
+#container #advanced_search .advan-4 .tit {
+    position: absolute;
+    left: 2%;
+    top:50%;
+    color:#676767;
+    font-size: 12px;
+}
+#container #advanced_search .advan-4 input {
+    border: 1px solid silver;
+    padding: 0.4% 1%;
+}
+/**/
+#container #sure_advan {
+    margin: 1% 2% 0 0;
+    float: right;
+    padding:0.5% 2%;
+    color: white;
+    border-radius: 5px;
+    background-color: #52bbde;
+    box-shadow: 1px 1px 1px #d4d4e9;
+}
+#container #sure_advan:hover {
+    background-color: #358bde;
+}
