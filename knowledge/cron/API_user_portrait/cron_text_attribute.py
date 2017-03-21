@@ -69,12 +69,17 @@ def domain_en2ch(domain_en_label):
 
 
 def save_user_results(bulk_action):
-    es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type, timeout=60)
+    print es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type, timeout=60)
     return True  
 
 #use to compute new user attribute by redis_user2portrait.py
 #version: write in 2016-02-28
-def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark):
+def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark, submit_user_dict, submit_ts_dict):
+    #mark index or update
+    id submit_user_dict and submit_ts_dict:
+        save_type = 'index'
+    else:
+        save_type = 'update'
     status = False
     print 'start cron_text_attribute'
     uid_list = user_keywords_dict.keys()
@@ -115,7 +120,11 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
     count = 0
     for user in uid_list:
         count += 1
-        results = {}       
+        results = {}
+        #add submit_user and submit_ts
+        if save_type == 'index':
+            results['submit_user'] = submit_user_dict[user]
+            results['submit_ts']  = submit_ts_dict[user]      
         #get user text attribute: online_pattern
         results['online_pattern'] = json.dumps(online_pattern_dict[user])
         try:
@@ -152,12 +161,17 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
         results['influence'] = influence_results[user]
         
         #bulk_action
-        action = {'index':{'_id': str(user)}}
-        bulk_action.extend([action, results])
+        if save_type == 'index':    
+            action = {'index':{'_id': str(user)}}
+            bulk_action.extend([action, results])
+        else:
+            action = {'update':{'_id': str(user)}}
+            bulk_action.extend([action, {'doc': results}])
         
     status = save_user_results(bulk_action)
     print 'save es_user_portrait:', status 
     #compute relation
+    '''
     if task_mark == 'user':
         save_status = person_organization(uid_list,relation_mark_dict)
         if status and save_status:
@@ -165,6 +179,7 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
         else:
             status = False
     #print 'save neo4j:', save_status
+    '''
     return status
 
 

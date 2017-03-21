@@ -8,7 +8,7 @@ reload(sys)
 sys.path.append('../../')
 from global_utils import r_user as r
 from global_utils import r_user_hash_name
-from time_utils import ts2date
+from time_utils import ts2date, datetime2ts
 from parameter import WEIBO_API_INPUT_TYPE
 
 def scan_compute_redis():
@@ -17,11 +17,13 @@ def scan_compute_redis():
     #results = r.hgetall(hash_name)
     #test
     relation_list = ['friend', 'colleague', 'ip_relation']
-    results = {'2117306420':json.dumps(['2017-09-01', '1', '0', relation_list]), '5779325975':json.dumps(['2017-09-01', '1', '0', relation_list])}
+    results = {'2117306420':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin']), '5779325975':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin'])}
     iter_user_list = []
     mapping_dict = dict()
     verify_mark_dict = dict()
     relation_mark_dict = dict()
+    submit_user_dict = dict()
+    submit_ts_dict = dict()
     count = 0
     for uid in results:
         user_list = json.loads(results[uid])
@@ -29,13 +31,16 @@ def scan_compute_redis():
         status = user_list[1]
         verify_mark = user_list[2]
         relation_list = user_list[3]
+        submit_user = user_list[4]
         verify_mark_dict[uid] = verify_mark
         relation_mark_dict[uid] = relation_list
+        submit_user_dict[uid] = submit_user
+        submit_ts_dict[uid] = datetime2ts(in_date)
         if status == '1': #imme
             #test
             count += 1
             iter_user_list.append(uid)
-            mapping_dict[uid] = json.dumps([in_date, '3', verify_mark, relation_list]) # mark status:3 computing
+            mapping_dict[uid] = json.dumps([in_date, '3', verify_mark, relation_list, submit_user]) # mark status:3 computing
         if len(iter_user_list) % 100 == 0 and len(iter_user_list) != 0:
             r.hmset(r_user_hash_name, mapping_dict)
             #acquire bulk user weibo data
@@ -44,7 +49,7 @@ def scan_compute_redis():
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
             #compute text attribute
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark, submit_user_dict, submit_ts_dict)
  
             if compute_status==True:
                 change_status_computed(mapping_dict)
@@ -56,13 +61,15 @@ def scan_compute_redis():
                 change_mapping_dict = dict()
                 change_user_list = set(iter_user_list) - set(user_keywords_dict.keys())
                 for change_user in change_user_list:
-                    change_mapping_dict[change_user] = json.dumps([in_date, '1', verify_mark_dict[change_user], relation_mark_dict[change_user]])
+                    change_mapping_dict[change_user] = json.dumps([in_date, '1', verify_mark_dict[change_user], relation_mark_dict[change_user], submit_user_dict[change_user]])
                 r.hmset(r_user_hash_name, change_mapping_dict)
 
             iter_user_list = []
             mapping_dict = {}
             relation_mark_dict = dict()
             verify_mark_dict = dict()
+            submit_user_dict = dict()
+            submit_ts_dict = dict()
             
     if iter_user_list != [] and mapping_dict != {}:
         r.hmset(r_user_hash_name, mapping_dict)
@@ -73,7 +80,7 @@ def scan_compute_redis():
         else:
             user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
         #compute text attribute
-        compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark)
+        compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark,submit_user_dict, submit_ts_dict)
         if compute_status==True:
             change_status_computed(mapping_dict)
         else:
@@ -83,7 +90,7 @@ def scan_compute_redis():
             change_mapping_dict = dict()
             change_user_list = set(iter_user_list) - set(user_keywords_dict.keys())
             for change_user in change_user_list:
-                change_mapping_dict[change_user] = json.dumps([in_date, '1', verify_mark_dict[change_user], relation_mark_dict[change_user]])
+                change_mapping_dict[change_user] = json.dumps([in_date, '1', verify_mark_dict[change_user], relation_mark_dict[change_user], submit_user_dict[change_user]])
             r.hmset(r_user_hash_name, change_mapping_dict)
 
 

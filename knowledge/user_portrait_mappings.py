@@ -179,7 +179,15 @@ index_info = {
                 'description':{
                     'type': 'string',
                     'index': 'not_analyzed'
+                },
+                'submit_user':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
+                },
+                'submit_ts':{
+                   'type': 'long'
                 }
+ 
             }
         }
     }
