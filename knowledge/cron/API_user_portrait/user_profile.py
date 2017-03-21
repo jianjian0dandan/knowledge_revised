@@ -12,7 +12,7 @@ from global_utils import es_user_profile as es
 from global_utils import profile_index_name as index_name
 from global_utils import profile_index_type as index_type
 fields_dict = {'uname':"nick_name", 'gender':"sex", 'location':"user_location", \
-               'verified':"isreal", 'verified_type': 'verify_type', \
+               'verified':"isreal", 'verify_type': 'verified_type', \
                'photo_url':"photo_url", 'description': 'description', \
                'born_data':'born_data', 'real_name':'real_name'}
 
@@ -25,7 +25,7 @@ def get_profile_information(uid_list):
         user_dict = {}
         for field in fields_dict:
             try:
-                user_dict[field] = item['_source'][field]
+                user_dict[field] = item['_source'][fields_dict[field]]
             except:
                 user_dict[field] = ''
         result_dict[item['_id']] = user_dict

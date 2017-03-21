@@ -29,7 +29,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation):
 			'bool':{
 				'must':[
 					{'term':{'en_name':topic}},
-					{'term':{'message_type':1}}
+					{'term':{'message_type':1}},
 					{'wildcard':{'text':'【*】*'}},
 						{'range':{
 						'timestamp':{'gte': begin_ts, 'lt':end_ts} 
@@ -126,15 +126,15 @@ def get_users(topic,begin_ts,end_ts,relation):
 	uid_list = set()
 	query_body = {   
 	'query':{
-	'bool':{
-	'must':[
-		{'term':{'en_name':topic}},
-		# {'wildcard':{'text':'【*】*'}},
-		{'range':{
-		'timestamp':{'gte': begin_ts, 'lt':end_ts} 
-		}
-		}]
-		}
+		'bool':{
+			'must':[
+					{'term':{'en_name':topic}},
+					# {'wildcard':{'text':'【*】*'}},
+					{'range':{
+					'timestamp':{'gte': begin_ts, 'lt':end_ts} 
+					}
+				}]
+			}
 		},
 		'size':999999999
 	}
@@ -215,5 +215,5 @@ if __name__ == '__main__':
 	start_date = 1480003200#'2017-01-14'
 	end_date = 1480608000#'2017-01-17'
 
-	#get_users(topic,start_date,end_date)
-	compute_real_info(topic,start_date,end_date,'join&discuss')
+	get_users(topic,start_date,end_date,'discuss')
+	#compute_real_info(topic,start_date,end_date,'join&discuss')
