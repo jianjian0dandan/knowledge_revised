@@ -1,0 +1,218 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 3108px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 3108px;
+    background: url("/static/images/xxx_result.png") no-repeat;
+}
+#container {
+    width: 100%;
+    padding: 5.3% 0 0 0;
+}
+#container #content_left {
+    width: 59%;
+    float: left;
+    margin-left: 9%;
+}
+/*基本信息*/
+#container #content_left .basic .basic-1 {
+    padding: 2% 0 0 5%;
+    position: relative;
+}
+#container #content_left .basic .basic-1 .map_area dl {
+    position: absolute;
+    top: -3%;
+    text-align: center;
+    cursor: pointer;
+}
+#container #content_left .basic .basic-1 .map_area dd {
+    color: white;
+    font-size: 10px;
+    margin-top: 10px;
+}
+#container #content_left .basic .basic-1 .map_area dl img {
+    width: 30px;
+    height: 30px;
+}
+#container #content_left .basic .basic-2 {
+    color: black;
+}
+#container #content_left .basic .basic-2 .information {
+    width: 90%;
+    margin:5% 0 0 5.5%;
+    position: relative;
+}
+#container #content_left .basic .basic-2 .information .tag_2,
+#container #content_left .basic .basic-2 .information .tag_3 {
+    display: inline-block;
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#container #content_left .basic .basic-2 p span {
+    color: #676767;
+    display: inline-block;
+    width: 13%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#container #content_left .basic .basic-2 p {
+    width: 95%;
+    padding: 2px 20px;
+    font-size: 12px;
+    margin-bottom:1%;
+}
+#container #content_left .basic .basic-2 .information a {
+    float: right;
+    cursor: pointer;
+}
+/*包含事件*/
+#container #content_left .include {
+    width: 100%;
+    margin-top: 5.5%;
+}
+/*时空分析*/
+#container #content_left .space_analysis {
+    width: 100%;
+    margin-top: 40.5%;
+}
+#container #content_left .space_analysis .time,
+#container #content_left .space_analysis .place {
+    width: 80%;
+    margin: 4% auto 0;
+}
+#container #content_left .space_analysis .time span ,
+#container #content_left .space_analysis .place span {
+    display: inline-block;
+    font-size: 16px;
+    color: #676767;
+}
+/*网络分析*/
+#container #content_left .network_analysis {
+    width: 100%;
+    margin-top:2%;
+}
+#container #content_left .network_analysis .net_detail {
+    width: 80%;
+    margin: 2% auto;
+}
+#container #content_left .network_analysis .net_detail .detail-1 {
+    width: 80%;
+    padding: 0.5% 0;
+    margin-top:5%;
+    text-align: center;
+    background-color: #fff;
+}
+#container #content_left .network_analysis .net_detail .detail-1 span {
+    display: inline-block;
+    color: #676767;
+    font-size: 12px;
+}
+/*话题分析*/
+#container #content_left .topic_analysis {
+    width: 100%;
+    margin-top:29%;
+}
+#container #content_left .topic_analysis .topic_left span ,
+#container #content_left .topic_analysis .topic_right span {
+    display: inline-block;
+    font-size: 16px;
+    color: #676767;
+}
+#container #content_left .topic_analysis .topic_left,
+#container #content_left .topic_analysis .topic_right {
+    display: inline-block;
+    width: 45%;
+    height: 300px;
+    text-align: left;
+}
+#container #content_left .topic_analysis .topic_left #tag_left,
+#container #content_left .topic_analysis .topic_right #tag_right {
+    width: 100%;
+    height: 100%;
+}
+/*人物分析*/
+#container #content_left .character_analysis {
+    width: 100%;
+    margin-top:1%;
+}
+#container #content_left .character_analysis .character-1 {
+    width: 100%;
+    margin: 2% 0;
+}
+#container #content_left .character_analysis .character_left span ,
+#container #content_left .character_analysis .character_right span {
+    display: inline-block;
+    font-size: 16px;
+    color: #676767;
+}
+#container #content_left .character_analysis .character_left,
+#container #content_left .character_analysis .character_right {
+    display: inline-block;
+    width: 45%;
+    height: 330px;
+    text-align: left;
+}
+#container #content_left .character_analysis .character_left #label_left,
+#container #content_left .character_analysis .character_right #label_right {
+    width: 100%;
+    height: 100%;
+}
+
+/*右边栏*/
+#container #content_right {
+    width: 20%;
+    float: left;
+    margin-left:4%;
+    margin-top: 1.3%;
+}
+#container #content_right .link_user .users a,
+#container #content_right .link_event .events a,
+#container #content_right .link_agency .agencys a,
+#container #content_right .link_knowledge .knowledge a,
+#container #content_right .link_resources .resources a {
+    width: 70%;
+    display: block;
+    margin: 10px 0;
+    color:#676767;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#container #content_right .link_user .user_more,
+#container #content_right .link_event .event_more,
+#container #content_right .link_agency .agency_more,
+#container #content_right .link_knowledge .knowledge_more,
+#container #content_right .link_resources .resources_more {
+    cursor: pointer;
+    padding: 2px;
+    margin-right:-30px;
+    color: #676767;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid #9fe7f5;
+    font-size: 18px;
+    -webkit-transform-origin-x: 0;
+    -webkit-transform: scale(0.5833333333333334);
+    float: right;
+}
+#container #content_right .link_user .user_more:hover,
+#container #content_right .link_event .event_more:hover,
+#container #content_right .link_agency .agency_more:hover,
+#container #content_right .link_knowledge .knowledge_more:hover,
+#container #content_right .link_resources .resources_more:hover {
+    background-color: #bcbcbc;
+    color: white;
+}
+
+

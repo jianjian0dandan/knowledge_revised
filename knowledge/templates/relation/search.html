@@ -1,0 +1,148 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 探索结果</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/search.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <h2 style="color: white;font-weight: 900;">探索页面</h2>
+    <div class="look">
+        <div class="search">
+            <input type="text" class="find"/>
+            <button class="sure">确定</button>
+        </div>
+        <a class="advanced">高级搜索</a>
+    </div>
+
+    <div id="advanced_search" style="width: 100%;">
+        <div class="advan-1">
+            <p class="tit">起始节点</p>
+            <div class="start" style="width:95%;">
+                <b class="icon icon-plus-sign"></b>
+                <span>节点类型</span>
+                <select id="s-type" onchange="">
+                    <option value="">人物</option>
+                    <option value="">事件</option>
+                    <option value="">群体</option>
+                    <option value="">机构</option>
+                    <option value="">专题</option>
+                </select>
+                <div class="options" style="width: 80%;">
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-1" value="" checked> 输入节点标识
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-2" value=""> 上传
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-3" value=""> 属性搜索
+                    </label>
+                </div>
+                <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
+                <input type="file" class="options-2-value" style="display: none;">
+                <div class="options-3-value" style="display: none;">
+                    <select onchange="">
+                        <option value="">与</option>
+                        <option value="">或</option>
+                        <option value="">非</option>
+                    </select>
+                    <select onchange="">
+                        <option value="">不限</option>
+                        <option value="">昵称</option>
+                        <option value="">个人描述</option>
+                        <option value="">业务标签</option>
+                        <option value="">关键词</option>
+                        <option value="">微话题</option>
+                        <option value="">注册地</option>
+                    </select>
+                    <input type="text" class="options-2_down">
+                    <b class="icon icon-plus"></b>
+                    <b class="icon icon-minus"></b>
+                </div>
+            </div>
+        </div>
+        <div class="advan-2">
+            <p class="tit">关系</p>
+            <div class="relation" style="width:95%;">
+                <div class="options" style="width: 80%;">
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="rel-1" value="" checked> 选择关系
+                    </label>
+                    <input type="text" class="rel-1-value"/>
+                    <label class="radio-inline" style="margin-left: 11%">
+                        <input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="advan-3">
+            <p class="tit">终止节点</p>
+            <div class="end" style="width:95%;">
+                <b class="icon icon-plus-sign"></b>
+                <span>节点类型</span>
+                <select id="s-3-type" onchange="">
+                    <option value="">人物</option>
+                    <option value="">事件</option>
+                    <option value="">群体</option>
+                    <option value="">机构</option>
+                    <option value="">专题</option>
+                </select>
+                <div class="options-3" style="width: 80%;">
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-3-1" value="" checked> 输入节点标识
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-3-2" value=""> 上传
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="tions" id="options-3-3" value=""> 属性搜索
+                    </label>
+                </div>
+                <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
+                <input type="file" class="options-2-value" style="display: none;">
+                <div class="options-3-value" style="display: none;">
+                    <select onchange="">
+                        <option value="">与</option>
+                        <option value="">或</option>
+                        <option value="">非</option>
+                    </select>
+                    <select onchange="">
+                        <option value="">不限</option>
+                        <option value="">昵称</option>
+                        <option value="">个人描述</option>
+                        <option value="">业务标签</option>
+                        <option value="">关键词</option>
+                        <option value="">微话题</option>
+                        <option value="">注册地</option>
+                    </select>
+                    <input type="text" class="options-3_down">
+                    <b class="icon icon-plus"></b>
+                    <b class="icon icon-minus"></b>
+                </div>
+            </div>
+        </div>
+        <div class="advan-4">
+            <p class="tit">其他信息</p>
+            <div class="other" style="width:95%;">
+                <span>跳数</span> <input type="text" class="jump">
+                <span>数据量</span> <input type="text" class="datanums">
+            </div>
+        </div>
+    </div>
+    <button id="sure_advan">高级搜索</button>
+</div>
+{% endblock %}
+
+<!------JS-------->
+{% block my_js %}
+<script src="/static/js/search-1.js"></script>
+<script>
+
+</script>
+{% endblock %}
+
