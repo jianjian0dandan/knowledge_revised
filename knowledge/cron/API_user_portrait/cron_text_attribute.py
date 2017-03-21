@@ -76,7 +76,7 @@ def save_user_results(bulk_action):
 #version: write in 2016-02-28
 def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_mark, submit_user_dict, submit_ts_dict):
     #mark index or update
-    id submit_user_dict and submit_ts_dict:
+    if submit_user_dict and submit_ts_dict:
         save_type = 'index'
     else:
         save_type = 'update'
@@ -171,15 +171,16 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
     status = save_user_results(bulk_action)
     print 'save es_user_portrait:', status 
     #compute relation
-    '''
+    
     if task_mark == 'user':
         save_status = person_organization(uid_list,relation_mark_dict)
+        print 'save_status:', save_status
         if status and save_status:
             status = True
         else:
             status = False
     #print 'save neo4j:', save_status
-    '''
+    
     return status
 
 
