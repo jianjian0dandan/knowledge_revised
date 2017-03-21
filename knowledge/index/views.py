@@ -10,6 +10,7 @@ from datetime import date
 from datetime import datetime
 from get_result import *
 from knowledge.global_utils import graph
+from GetUrl import getUrlByKeyWord
 mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/')
@@ -196,6 +197,10 @@ def neo4j_test():
 
     return 'sss'
 
-
+@mod.route('/wiki/')
+def wikitest():
+    key = "特朗普"
+    wiki_list = getUrlByKeyWord(key)
+    return json.dumps(wiki_list)
 
     

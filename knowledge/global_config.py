@@ -16,6 +16,7 @@ event_port = "9200"
 group_host = ["219.224.134.225:9037"]
 special_event_host = ["219.224.134.225:9037"]
 calculate_status_host=["219.224.134.225:9037"]
+wiki_host="219.224.134.216:9201"
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
 
@@ -46,6 +47,8 @@ group_primary = "group"
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
 
+wiki_index_name = "wiki_citiao"
+wiki_type_name = "wiki_result"
 
 domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
         u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
