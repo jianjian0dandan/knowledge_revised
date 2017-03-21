@@ -220,7 +220,7 @@ def get_ip_r(uidlist,s_uid):#IP关联关系
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            user_dict[str(uid)] = {''}
+            user_dict[str(uid)] = {}
             continue
         else:
             data = item['_source']
@@ -393,7 +393,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-    result = person_organization(['2288486705','2770816753'],{'2288486705':['friend','colleague'],'2770816753':['friend','colleague']})
+    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague'],'5779325975':['friend','colleague']})
     print result
 ##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
 ##    result = nodes_rels(relation_list)
