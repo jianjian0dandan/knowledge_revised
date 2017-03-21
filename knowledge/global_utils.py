@@ -51,6 +51,8 @@ es_special_event = Elasticsearch(event_host, timeout=600)
 # The process state is stored
 es_calculate_status = Elasticsearch(calculate_status_host, timeout=600)
 
+es_wiki = Elasticsearch(wiki_host, timeout=600)
+
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
 
 r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
