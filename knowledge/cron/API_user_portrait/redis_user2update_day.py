@@ -17,6 +17,8 @@ def scan_compute_redis_v2():
     iter_user_list = []
     verified_type_dict = dict()
     relation_mark_dict = dict()
+    submit_user_dict = dict()
+    submit_ts_dict = dict()
     while True:
         r_user_item = r.rpop(r_user_update_hash_name)
         if r_user_item:
@@ -34,7 +36,7 @@ def scan_compute_redis_v2():
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
             iter_user_list = []
             relation_mark_dict = dict()
@@ -44,8 +46,7 @@ def scan_compute_redis_v2():
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type)
-
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
 
 '''
