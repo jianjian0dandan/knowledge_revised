@@ -114,10 +114,8 @@ def ajax_update_user():
     submit_user  = request.args.get('submit_user', 'admin')
     relation_string = request.args.get('user_rel', 'friend') # split by ,
     relation_list = relation_string.split(',')
-    r.rpush(uid, json.dumps([date, '1', node_user,  ]))
-
-
-
+    r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
+    return json.dumps(True)
 
 
 #上传文件方式人物入库
