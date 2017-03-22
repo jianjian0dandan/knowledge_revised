@@ -121,7 +121,11 @@ def compute_task(task):
         task['compute_status']=-1
         task['weibo_counts']=weibo_counts
         task['uid_counts']=uid_counts
-        es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
+        try:
+            flag = es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':'compute_status':-1})
+        except:
+            es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
         print 'finish change status'
         #geo
         
