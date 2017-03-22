@@ -17,7 +17,7 @@ from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_ty
 from knowledge.global_config import event_task_name, event_task_type 
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
-                  deal_user_tag, create_node_or_node_rel, show_relation
+                  deal_user_tag, create_node_or_node_rel, show_relation, update_event
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -90,13 +90,14 @@ def ajax_admin_identify_in():
     uid_string = request.args.get('uid_list', '2298607941,5993847641')
     uid_list = uid_string.split(',')
     relation_string = request.args.get('user_rel', 'friend') # split by ,
-    status = request.args.get('status', '2') # 1 compute right now; 2 appointment
-    recommend_style = request.args.get('recommend_style', '')  #influence sensitive auto write
+    status = request.args.get('status', '1') # 1 compute right now; 2 appointment
+    recommend_style = request.args.get('recommend_style', 'influence')  #influence sensitive auto 
+    node_type = request.args.get('node_type', '0') # '0':user  '1'：org
     submit_user  = request.args.get('submit_user', 'admin')
     data = []
     if date and uid_list:
         for uid in uid_list:
-            data.append([date, uid, status, relation_string, recommend_style, submit_user])
+            data.append([date, uid, status, relation_string, recommend_style, submit_user,node_type])
         results = identify_in(data,uid_list)
     else:
         results = None
@@ -108,7 +109,7 @@ def ajax_admin_identify_in():
 def ajax_submit_identify_in():
     results = 0 # mark fail
     input_data = request.get_json()
-    #input_data={'date': 2016-03-13, 'upload_data':[], 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'file', 'type':'uid', 'operation_type': 'show'/'submit'} 
+    #input_data={'date': 2016-03-13, 'upload_data':[],'node_type':'1/2', 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'upload/write', 'type':'uid', 'operation_type': 'show'/'submit'} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
@@ -118,12 +119,16 @@ def ajax_submit_identify_in():
 #显示计算状态
 @mod.route('/show_user_task_status/', methods=['GET', 'POST'])
 def ajax_show_user_task_status():
+    node_type = request.args.get('node_type', '0') # '0':user  '1'：org
     compute_name = 'compute'
     result = r.hgetall(compute_name)
     result_dict = {}
     for k,v in result.iteritems():
         detail = json.loads(v)
-        result_dict[k] = detail
+        if detail[2] == node_type:
+            result_dict[k] = detail
+        else:
+            continue
     return json.dumps(result_dict)
 
 # # submit group analysis task and save to redis as lists
@@ -177,11 +182,20 @@ def ajax_submit_event():
     result = submit_event(input_data)
     return json.dumps(result)
 
+#事件更新
+@mod.route('/submit_event/')
+def ajax_submit_event():
+    event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
+    update_event(event_id)
+    return '1'
+
+
+
 #上传文件方式事件入库
 @mod.route('/submit_event_file/', methods=['GET', 'POST'])
 def ajax_submit_identify_file():
     results = 0 # mark fail
-    input_data = request.get_json()#文件至少有keywords。
+    input_data = request.get_json() #文件至少有keywords。
     input_data1 = { 'keywords':u'1两会&方案', 'event_type':u'经济', 'event_ts':1480175030}
     input_data2 = { 'keywords':u'1北京&房价&政策', 'event_type':u'经济'}
     input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
