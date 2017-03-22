@@ -1,9 +1,92 @@
+function type_1(value) {
+    if (value==1){
+        $('.user').show();
+        $('.event').hide();
+        $('.agency').hide();
+    }else if (value==2) {
+        $('.user').hide();
+        $('.event').show();
+        $('.agency').hide();
+    }else if (value==3){
+        $('.user').hide();
+        $('.event').hide();
+        $('.agency').show();
+    }
+};
 
 function type_2(value) {
     if (value==1){
-        $('#node_list').show();
+        $('.user #tui_shou').empty();
+        $('.user #tui_shou').append(
+            '<option value="1">影响力推荐</option>'+
+            '<option value="2">言论敏感度推荐</option>'+
+            '<option value="3">关注用户推荐</option>'
+        );
     }else {
-        $('.manual').show();
+        $('.user #tui_shou').empty();
+        $('.user #tui_shou').append(
+            '<option value="4">文件导入</option>'+
+            '<option value="5">手动添加</option>'
+        );
+        $('.user .time_t').hide();
+        $('.user .manual-1').show();
+        $('.user .manual').hide();
+    }
+}
+
+function type_3(value) {
+    if (value==4){
+        $('.user .manual-1').show();
+        $('.user .manual').hide();
+    }else if (value==5){
+        $('.user .manual').show();
+        $('.user .manual-1').hide();
+    }
+}
+
+function event_type_2(value) {
+    if(value==2){
+        $('.event .manual').show();
+        $('.event .manual-1').show();
+        $('.event .manual-2').hide();
+    }else if (value==3){
+        $('.event .manual').hide();
+        $('.event .manual-1').hide();
+        $('.event .manual-2').show();
+    }else {
+        $('.event .manual').hide();
+        $('.event .manual-1').hide();
+        $('.event .manual-2').hide();
+    }
+}
+
+function type_2_age(value) {
+    if (value==1){
+        $('.agency #tui_shou_age').empty();
+        $('.agency #tui_shou_age').append(
+            '<option value="1">影响力推荐</option>'+
+            '<option value="2">言论敏感度推荐</option>'+
+            '<option value="3">关注用户推荐</option>'
+        );
+    }else {
+        $('.agency #tui_shou_age').empty();
+        $('.agency #tui_shou_age').append(
+            '<option value="4">文件导入</option>'+
+            '<option value="5">手动添加</option>'
+        );
+        $('.agency .time_t_age').hide();
+        $('.agency .manual-1').show();
+        $('.agency .manual').hide();
+    }
+}
+
+function type_3_age(value) {
+    if (value==4){
+        $('.agency .manual-1').show();
+        $('.agency .manual').hide();
+    }else if (value==5){
+        $('.agency .manual').show();
+        $('.agency .manual-1').hide();
     }
 }
 //推荐人物

@@ -1,0 +1,120 @@
+
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1750px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 1750px;
+    background: url("/static/images/xxx_compare.png") no-repeat;
+}
+#container {
+    width: 90%;
+    padding:0 5% 2% 5%;
+    margin: 7% auto 0;
+}
+#container .two_theme {
+    width: 100%;
+}
+#container .two_theme h2 {
+    width: 45%;
+    text-align: center;
+    padding: 1% 2%;
+    display: inline-block;
+}
+#container .two_theme h2 span {
+    padding: 2% 3%;
+    background-color: #ededed;
+    box-shadow: 2px 2px 2px #7d797c;
+    border-radius: 5px;
+}
+/*包含事件*/
+#container .include {
+    width:100%;
+    margin-top: 8%;
+}
+#container .include .edit {
+    float: right;
+}
+#container .include .edit input {
+    position: relative;
+    top: 3px;
+}
+#container .include .edit label {
+    color: #272727;
+    font-size: 14px;
+}
+#container .include .theme_list {
+    width: 100%;
+    height: 340px;
+}
+#container .include #theme-1,#container .include #theme-2 {
+    width: 45%;
+    float: left;
+}
+/*关联人物*/
+#container .link_user {
+    width:100%;
+    margin-top:6%;
+}
+#container .link_user .edit-user {
+    float: right;
+}
+#container .link_user .edit-user input {
+    position: relative;
+    top: 3px;
+}
+#container .link_user .edit-user label {
+    color: #272727;
+    font-size: 14px;
+}
+#container .link_user .user_list {
+    width: 100%;
+    height: 340px;
+}
+#container .link_user #list-1-user,#container .link_user #list-2-user {
+    width: 45%;
+    float: left;
+}
+/*自动标签*/
+#container .key_words {
+    width:100%;
+    margin-top:6%;
+}
+#container .key_words .edit-words {
+    float: right;
+}
+#container .key_words .edit-words input {
+    position: relative;
+    top: 3px;
+}
+#container .key_words .edit-words label {
+    color: #272727;
+    font-size: 14px;
+}
+#container .key_words .words_list {
+    width: 100%;
+    height: 340px;
+}
+#container .key_words #list-1-words,#container .key_words #list-2-words {
+    width: 45%;
+    float: left;
+}
+/*标签*/
+#container .tags {
+    width:100%;
+    margin-top:6%;
+}
+#container .tags .tags_list {
+    width: 100%;
+    height: 340px;
+}
+#container .tags #list-1-tags,#container .tags #list-2-tags {
+    width: 45%;
+    float: left;
+}

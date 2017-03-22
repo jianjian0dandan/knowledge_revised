@@ -3,6 +3,7 @@
     body {
         width: 1349px;
         height: 2950px;
+        margin: 0 auto;
     }
 }
 /*内容样式*/
@@ -11,10 +12,11 @@ body {
     min-width: 1349px;
     min-height: 2950px;
     background: url("/static/images/person_body.png") no-repeat;
+    background-size: 100% 100%;
 }
 #person_content {
     width: 100%;
-    padding: 5.3% 0 0 0;
+    padding: 72px 0 0 0;
 }
 #person_content #content_left {
     width: 59%;
@@ -28,7 +30,7 @@ body {
 }
 #person_content #content_left .basic .basic-1 .map_area dl {
     position: absolute;
-    top: -15px;
+    top: -10px;
     text-align: center;
     cursor: pointer;
 }
@@ -41,13 +43,31 @@ body {
     width: 30px;
     height: 30px;
 }
+#person_content #content_left .basic .basic-1 .edit {
+    position: relative;
+    top: -6px;
+    left: 40px;
+    padding: 5px 20px;
+    color: black;
+    font-size: 10px;
+    font-weight: 200;
+    background-color:rgba(158, 158, 158, 0.13);
+    border-radius: 18px;;
+    text-align: center;
+    box-shadow: 2px 2px 1px #999;
+}
+#person_content #content_left .basic .basic-1 .edit:hover{
+    background-color:rgba(158, 158, 158, 0.4);
+}
 #person_content #content_left .basic .basic-2 {
     color: black;
     padding-top: 33px;
 }
 #person_content #content_left .basic .basic-2 .information {
-    width: 70%;
-    margin:50px 0 0 55px;
+    width: 77%;
+    height:260px;
+    overflow: hidden;
+    margin:42px 0 0 55px;
     position: relative;
 }
 #person_content #content_left .basic .basic-2 p span {
@@ -73,8 +93,8 @@ body {
 #person_content #content_left .basic .basic-2 .information .in_photo {
     border: 3px solid #a0a0a0;
     position: absolute;
-    top: -27px;
-    right: -50px;
+    top: 2px;
+    right: 0;
 }
 #person_content #content_left .basic .basic-2 .information .in_photo img {
     width: 150px;
@@ -142,7 +162,6 @@ body {
 /*偏好信息*/
 #person_content #content_left .preference {
     width:100%;
-    padding-bottom:4%;
 }
 #person_content #content_left .preference .talk p {
     width: 80%;
@@ -168,6 +187,7 @@ body {
 /*文本信息*/
 #person_content #content_left .text {
     width: 100%;
+    margin-top: 40px;
 }
 #person_content #content_left .text .text_information {
     width: 80%;
@@ -177,8 +197,8 @@ body {
 #person_content #content_right {
     width: 20%;
     float: left;
-    margin-left:4%;
-    margin-top: 1.3%;
+    margin-left:30px;
+    margin-top:16px;
 }
 #person_content #content_right .link_user .users a,
 #person_content #content_right .link_event .events a,
