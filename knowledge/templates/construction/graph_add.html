@@ -3,13 +3,19 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/graph_add.css">
 <style>
-
+    .fixed-table-pagination .pagination-detail {
+        display: none;
+    }
+    .table>thead:first-child>tr:first-child>th {
+        width: 12%;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
+    <h1 class="graph_add"></h1>
     <div class="edit">
         <label class="radio-inline">
             <input type="radio" name="complie" id="add_node" value="1" checked> 添加节点
@@ -19,14 +25,16 @@
             <input type="radio" name="complie" id="add_relation" value="2"> 添加关系
         </label>
     </div>
+
+
     <div class="node">
         <div class="attributes" style="margin-top: 3%">
             <div>
                 <span>节点类型</span>
                 <select id="node_type" onchange="type_1(this.value)">
                     <option value="1">人物</option>
-                    <option value="2">事件</option>
                     <option value="3">机构</option>
+                    <option value="2">事件</option>
                 </select>
             </div>
             <!--人物-->
@@ -46,8 +54,7 @@
                 <div class="time_t" style="margin-top: 5px;">
                     <span>选择时间</span>
                     <select id="task_time">
-                        <option value="2016-11-27">2016-11-27</option>
-                        <option value="2016-11-26">2016-11-26</option>
+
                     </select>
                 </div>
                 <div class="manual" style="display: none;margin-top: 5px;">
@@ -127,8 +134,7 @@
                 <div class="time_t_age" style="margin-top: 5px;">
                     <span>选择时间</span>
                     <select id="task_time_age">
-                        <option value="2016-11-27">2016-11-27</option>
-                        <option value="2016-11-26">2016-11-26</option>
+
                     </select>
                 </div>
                 <div class="manual" style="display: none;margin-top: 5px;">
@@ -142,10 +148,24 @@
             <!------------->
             <button class="add_sure">确 定</button>
         </div>
-        <div id="node_list" style="width: 100%;">
-            <span>推荐人物</span>
+
+        <!--计算任务表格-->
+        <div class="count_task" style="width: 100%;margin-top:50px;">
+            <span class="ct" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
+            <div id="count" style="width: 100%;margin-top: 20px;display:none;"></div>
+        </div>
+
+        <!--推荐人物表格-->
+        <div id="node_list" style="width: 100%;margin-top:50px;">
+            <span style="font-size: 14px;font-weight: 800;">推荐人物</span>
             <div id="recommend" style="width: 100%"></div>
-            <button class="join">加入图谱</button>
+            <button class="node_join">加入图谱</button>
+        </div>
+
+        <!--推荐事件-->
+        <div id="event_list" style="width: 100%;margin-top:50px;display: none;">
+            <span style="font-size: 14px;font-weight: 800;">推荐事件</span>
+            <button class="event_join">加入图谱</button>
         </div>
     </div>
 
@@ -231,6 +251,17 @@
                 $('.relation').show();
             }
         })
+    });
+    //计算任务的出现与隐藏
+    var cc=1;
+    $('.ct').on('click',function () {
+        if (cc==1){
+            $('#count').show();
+            cc=2;
+        }else {
+            $('#count').hide();
+            cc=1;
+        }
     });
 
 </script>
