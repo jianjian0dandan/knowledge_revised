@@ -40,6 +40,10 @@ body {
     line-height: 24px;
     padding-top: 3px;
     margin-bottom: 8px;
+    width: 155px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #container #statistics .statis-2,
 #container #statistics #statis-3{
@@ -101,6 +105,10 @@ body {
     font-size: 8px;
     color: white;
     margin-top: 10px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #container #my_hot {
     margin-top: 120px;
@@ -192,6 +200,7 @@ body {
     body {
         width: 1349px;
         height: 1005px;
+        margin: 0 auto;
     }
 }
 

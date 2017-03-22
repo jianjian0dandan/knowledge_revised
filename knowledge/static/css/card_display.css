@@ -3,17 +3,22 @@ body {
     width: 100%;
     min-width: 1349px;
     min-height: 1408px;
+    margin: 0 auto;
     background: url("/static/images/cards.jpg") no-repeat;
     background-size: 100% 100%;
 }
 #all_cards {
     width: 100%;
+    position: relative;
 }
 #all_cards .cards_content {
-    display: inline-block;
+    /*display: inline-block;*/
     width: 1174px;
+    margin: 0 auto;
 }
 #all_cards .left,#all_cards .right {
+    position: absolute;
+    top:50%;
     width: 80px;
     height: 80px;
     line-height: 80px;
@@ -22,8 +27,12 @@ body {
     font-size: 16px;
     background: #bcbdbf;
     cursor: pointer;
-    display: inline-block;
-    margin-top: 0px;
+}
+#all_cards .left {
+    left:0;
+}
+#all_cards .right {
+    right:0;
 }
 #all_cards .left:hover,#all_cards .right:hover {
     background: #1dd2af;
@@ -194,6 +203,10 @@ body {
 #all_cards .cards_content #card_set #event_card_details .details-left p {
     margin-top:12px;
     font-size: 8px;
+    width:126px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #all_cards .cards_content #card_set #event_card_details .details-right {
     float: left;
@@ -245,6 +258,7 @@ body {
     body {
         width: 1349px;
         height: 1408px;
+        margin: 0 auto;
     }
 }
 
