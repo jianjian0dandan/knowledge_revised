@@ -21,20 +21,20 @@ org_list = [1,2,3,4,5,6,7,8]
 
 def uid_name(uid_list,result):
 
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid]['name'] = ''
+            result[uid]['name'] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid]['name'] = data['uname'].encode('utf-8')
             except:
-                result[uid]['name'] = ''
+                result[uid]['name'] = uid
 
     return result
 
@@ -47,14 +47,14 @@ def uid_name_list(uid_list):
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            uname[uid] = ''
+            uname[uid] = uid
             continue
         else:
             data = item['_source']
             try:
                 uname[uid] = data['uname'].encode('utf-8')
             except:
-                uname[uid] = ''
+                uname[uid] = uid
 
     return uname
 
@@ -66,14 +66,14 @@ def eventid_name(uidlist,result):
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid]['name'] = ''
+            result[uid]['name'] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid]['name'] = data['name'].encode('utf-8')
             except:
-                result[uid]['name'] = ''
+                result[uid]['name'] = uid
 
     return result
             
@@ -86,7 +86,7 @@ def get_people(name,count):#获取我关注的人物
         for infor in infors:
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -95,7 +95,7 @@ def get_people(name,count):#获取我关注的人物
                 break
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
@@ -107,6 +107,7 @@ def get_event(name,count):#获取我关注的事件
     infors = db.session.query(EventAttention).filter(EventAttention.name==name).all()
     result = dict()
     uid_list = []
+    
     if count == 'all':#获取所有数据
         for infor in infors:
             uid = infor.eventID
@@ -186,7 +187,7 @@ def get_hot_weibo():#获取热门微博
         new_result = []
         for item in result:
             uid = item['uid']
-            item['uname'] = ''
+            item['uname'] = uid
             new_result.append(item)
     else:
         new_result = []
@@ -292,7 +293,7 @@ def get_user_detail(date, input_result):
             except:
                 statusnum = 0
 
-        results.append({'uid':uid, 'uname':uname, 'location':location, 'fansnum':fansnum, 'statusnum':statusnum, 'influence':influence})
+        results.append({'uid':uid, 'uname':uname, 'location':location, 'fansnum':fansnum, 'statusnum':statusnum, 'influence':round(influence,2)})
 
     return results
 
@@ -307,7 +308,7 @@ def get_map_count():#获取地图统计
     location_result = dict()
     no_location_count = 0
     count = 0
-    s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_index_name, doc_type=portrait_index_type)
+    s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_name, doc_type=portrait_type)
     while True:
         try:
             count = count + 1
@@ -331,14 +332,17 @@ def get_map_count():#获取地图统计
             print 'ALL done'
             break
 
-    return location_result
+    result_list = []
+    for k,v in location_result.iteritems():
+        result_list.append({'name':k,'value':v})
+    return result_list
 
 def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
 
     if len(uid_list) == 0:
         return []
     result = []
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for i in range(0,len(search_result)):
@@ -348,12 +352,17 @@ def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
             continue
         else:
             data = item['_source']
+            if not data['uname']:
+                name = uid
+            else:
+                name = data['uname'].encode('utf-8')
+
             if not data['location']:
                 continue
             else:
                 location = data['location'].encode('utf-8')
             
-            result.append([uid,location])
+            result.append([name,location])
 
     return result
 
@@ -372,12 +381,16 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             continue
         else:
             data = item['_source']
+            if not data['name']:
+                name = uid
+            else:
+                name = data['name'].encode('utf-8')
             if not data['real_geo']:
                 continue
             else:
                 location = data['real_geo'].encode('utf-8')
             
-            result.append([uid,location])
+            result.append([name,location])
 
     return result 
 
@@ -387,24 +400,24 @@ def get_all_geo():#地图链接：获取地址
     p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 50' % (event_index_name,event_primary)
     result = graph.run(p_string)
     for item in result:
-        event_list.append(item)
+        event_list.append(item[0])
     event_result = get_detail_event_map(event_list)
     
     peo_list = []
-    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 100' % (node_index_name,people_primary)
+    p_string = 'START n=node:%s("%s:*") return n.uid LIMIT 100' % (node_index_name,people_primary)
     result = graph.run(p_string)
     for item in result:
-        peo_list.append(item)
+        peo_list.append(item[0])
     peo_result = get_detail_per_org_map(peo_list)
 
     org_list = []
-    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 100' % (org_index_name,org_primary)
+    p_string = 'START n=node:%s("%s:*") return n.org_id LIMIT 100' % (org_index_name,org_primary)
     result = graph.run(p_string)
     for item in result:
-        org_list.append(item)
+        org_list.append(item[0])
     org_result = get_detail_per_org_map(org_list)
         
-    return event_result,people_result,org_result
+    return event_result,peo_result,org_result
 
 def get_type_key(item):
     if item == 1:#人物
@@ -426,7 +439,7 @@ def get_detail_person(uid_list,user_name):
         return {}
     result = {}
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for i in range(0,len(search_result)):
@@ -478,7 +491,7 @@ def get_detail_org(uid_list,user_name):
         return {}
     result = {}
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for i in range(0,len(search_result)):
@@ -731,83 +744,87 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
 
 def event_id_name(uidlist):
 
+    result = dict()
     search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
         return {}
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = ''
+            result[uid] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid] = data['name'].encode('utf-8')
             except:
-                result[uid] = ''
+                result[uid] = uid
 
     return result
 
 def peo_id_name(uidlist):
 
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    result = dict()
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
         return {}
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = ''
+            result[uid] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid] = data['uname'].encode('utf-8')
             except:
-                result[uid] = ''
+                result[uid] = uid
 
     return result
 
 def top_id_name(uidlist):
 
+    result = dict()
     search_result = es_special_event.mget(index=special_event_name, doc_type=special_event_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
         return {}
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = ''
+            result[uid] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid] = data['topic_name'].encode('utf-8')
             except:
-                result[uid] = ''
+                result[uid] = uid
 
     return result
 
 def group_id_name(uidlist):
 
+    result = dict()
     search_result = es_group.mget(index=group_name, doc_type=group_type, body={"ids": uidlist})["docs"]
     if len(search_result) == 0:
         return {}
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = ''
+            result[uid] = uid
             continue
         else:
             data = item['_source']
             try:
                 result[uid] = data['group_name'].encode('utf-8')
             except:
-                result[uid] = ''
+                result[uid] = uid
 
     return result
 
 def get_all_graph():#获取首页图谱
 
-    p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m LIMIT 100' % (event_index_name,event_primary)
+    p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 100' % (event_index_name,event_primary)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -815,25 +832,25 @@ def get_all_graph():#获取首页图谱
     top_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in eve_list:
             eve_list.append(node1)
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == people_primary:#人物
+        if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
-        elif node2_k == org_primary:#机构
+        elif node2_k == org_node:#机构
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'org',r])
-        elif node2_k == event_primary:#事件
+        elif node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
             r_relation.append([node1,node2_v,'event',r])
-        elif node2_k == special_event_primary:#专题
+        elif node2_k == special_event_node:#专题
             if node2_v not in top_list:
                 top_list.append(node2_v)
             r_relation.append([node1,node2_v,'topic',r])

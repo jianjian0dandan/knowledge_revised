@@ -22,11 +22,11 @@
         <div class="statis-1">
             <div class="s1-top"></div>
             <div class="s1-bot">
-                <p class="bot-nums"><span>人物节点数量:<b id="user">2455</b>个</span></p>
-                <p class="bot-nums"><span>事件节点数量:<b id="event">1334</b>个</span></p>
-                <p class="bot-nums"><span>机构节点数量:<b id="agency">4352</b>个</span></p>
-                <p class="bot-nums"><span>专题数量:<b id="topic">1212</b>个</span></p>
-                <p class="bot-nums"><span>群体数量:<b id="group">1234</b>个</span></p>
+                <p class="bot-nums"><span>人物节点数量:<b id="user">{{neo_count['people']}}</b>个</span></p>
+                <p class="bot-nums"><span>事件节点数量:<b id="event">{{neo_count['event']}}</b>个</span></p>
+                <p class="bot-nums"><span>机构节点数量:<b id="agency">{{neo_count['org']}}</b>个</span></p>
+                <p class="bot-nums"><span>专题数量:<b id="topic">{{neo_count['special_event']}}</b>个</span></p>
+                <p class="bot-nums"><span>群体数量:<b id="group">{{neo_count['group']}}</b>个</span></p>
             </div>
         </div>
 
@@ -59,22 +59,21 @@
                 <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">热点事件</span>
             </h3>
             <div class="event_details" style="padding-top: 12px">
+                {% if weibo_list %}
+                {% for weibo in weibo_list %}
                 <div class="event_caption">
-                    <span class="event_name" title="飞翔的大鹅">飞翔的大鹅</span>
-                    <span class="event_time" style="float:right;margin-right: 50px">2016-9-22</span>
-                    <p class="event_text">
-                        蚂蚁和大象结婚不久，大象就死了。蚂蚁一边埋大象，一边痛哭：“亲爱的，你怎么这么早去了，
-                        我这辈子不干别的，就埋你了！”
+                    <span class="event_name" title="{{weibo['uid']}}">{{weibo['uname']}}</span>
+                    <span class="event_time" style="float:right;margin-right: 30px">{{weibo['time']}}</span>
+                    <p class="event_text" title = "{{weibo['mid']}}">
+                        {{weibo['text'].decode('utf-8')}}
                     </p>
                 </div>
+                {% endfor %}
+                {% else %}
                 <div class="event_caption">
-                    <span class="event_name" title="飞翔的大鹅">飞翔的大鹅</span>
-                    <span class="event_time" style="float:right;margin-right: 50px">2016-9-22</span>
-                    <p class="event_text">
-                        蚂蚁和大象结婚不久，大象就死了。蚂蚁一边埋大象，一边痛哭：“亲爱的，你怎么这么早去了，
-                        我这辈子不干别的，就埋你了！”
-                    </p>
+                    <span class="event_name" title="No Data">暂无数据</span>
                 </div>
+                {% endif %}
                 <button class="event_more" style="margin-top: 6px">+查看更多</button>
             </div>
         </div>
@@ -91,24 +90,23 @@
                     <span>微博</span>
                     <span>影响力</span>
                 </div>
+                {% if people_list %}
+                {% for people in people_list %}
                 <div class="details-2">
-                    <span>马云</span>
-                    <span>1232</span>
-                    <span>20161</span>
-                    <span>3412</span>
+                    <span>{{people['uname']}}</span>
+                    <span>{{people['fansnum']}}</span>
+                    <span>{{people['statusnum']}}</span>
+                    <span>{{people['influence']}}</span>
                 </div>
+                {% endfor %}
+                {% else %}
                 <div class="details-2">
-                    <span>马云</span>
-                    <span>1232</span>
-                    <span>20161</span>
-                    <span>3412</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
                 </div>
-                <div class="details-2">
-                    <span>马云</span>
-                    <span>1232</span>
-                    <span>20161</span>
-                    <span>3412</span>
-                </div>
+                {% endif %}
                 <button class="user_more">+查看更多</button>
             </div>
         </div>
@@ -118,36 +116,35 @@
                 <p style="width: 10px;height: 20px;background-color: #62c14d;display: inline-block;"></p>
                 <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">我的关注</span>
                 <div class="btn-group btn-group-xs ueg" role="group" style="float: right;margin-right: 20px">
-                    <button type="button" class="btn btn-default">人物</button>
-                    <button type="button" class="btn btn-default">事件</button>
-                    <button type="button" class="btn btn-default">机构</button>
+                    <button type="button" class="btn btn-default" id='focus_people'>人物</button>
+                    <button type="button" class="btn btn-default" id='focus_event'>事件</button>
+                    <button type="button" class="btn btn-default" id='focus_org'>机构</button>
                 </div>
             </h3>
-            <div class="focus_details">
+            <div class="focus_details" id="my_focus">
                 <div class="details-1" style="text-align: center;margin-top: 17px">
-                    <span>人物</span>
+                    <span>名称</span>
                     <span>业务标签</span>
                     <span>关注时间</span>
                     <span>查看详情</span>
                 </div>
+                {% if peo_infors %}
+                {% for peo in peo_infors %}
                 <div class="details-2">
-                    <span>马云</span>
-                    <span>标签1、标签2</span>
-                    <span>2016-11-11</span>
-                    <span>查看详情</span>
+                    <span>{{peo['name']}}</span>
+                    <span>{{peo['label']}}</span>
+                    <span>{{peo['time']}}</span>
+                    <a style="font-size: 8px;color: white;" href="/index/person/?{{peo['uid']}}" target="_blank">查看详情</a>
                 </div>
+                {% endfor %}
+                {% else %}
                 <div class="details-2">
-                    <span>马云</span>
-                    <span>标签1、标签2</span>
-                    <span>2016-11-11</span>
-                    <span>查看详情</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
                 </div>
-                <div class="details-2">
-                    <span>马云</span>
-                    <span>标签1、标签2</span>
-                    <span>2016-11-11</span>
-                    <span>查看详情</span>
-                </div>
+                {% endif %}
                 <button class="focus_more">+查看更多</button>
             </div>
         </div>
@@ -157,6 +154,7 @@
 
 {% block my_js %}
 <script src="/static/js/knowledgeHome-1.js"></script>
+<script src="/static/js/index_click.js"></script>
 <script>
     $('.username b').css({color:'white'});
     $('.ueg button').on('click',function () {
@@ -164,10 +162,20 @@
         $(this).siblings('button').css({backgroundColor:'#4192c9',color:'white'});
     });
     $('.map').on('click',function () {
-        window.open('/index/map/');
+        window.open('/index/map/?user_id=ALL&node_type=ALL');
     });
     $('.chart').on('click',function () {
-        window.open('/index/graph/');
+        window.open('/index/graph/?user_id=ALL&node_type=ALL');
     });
+    $('.event_more').on('click',function () {
+        window.open('/brust/');
+    });
+    $('.user_more').on('click',function () {
+        window.open('/construction/graph_add/');
+    });
+    /*$('.focus_more').on('click',function () {
+        window.open('/sysadmin/focus/');
+    });*/
+
 </script>
 {% endblock %}
