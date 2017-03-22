@@ -115,7 +115,8 @@ def compute_task(task):
         if resu == 'Node Wrong':
             return 'Node Wrong'
         weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
-        
+        es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'doc':{'compute_status':-1}})
+
         # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'compute_status':0,'en_name':task_id,'relation_compute':relation})
         task['compute_status']=-1
         task['weibo_counts']=weibo_counts

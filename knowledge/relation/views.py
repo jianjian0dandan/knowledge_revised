@@ -60,43 +60,43 @@ def ajax_submit_task():
         'start_nodes':[
             {
                 'node_type':'User',
-                'ids':[533,522],
-                'conditions':[
-                    {'must':{'keywords':'kkk'}},
-                    {'should':{'hashtag':'ddd'}}
-                ]
-            },
-            {
-                'node_type':'User',
-                'ids':[],
-                'conditions':[
-                    {'must':{'keywords':'kkk'}},
-                    {'should':{'hashtag':'ddd'}}
-                ]
-            }
+                'ids':[2772291221,1470809487]
+                # 'conditions':[
+                #     {'must':{'keywords':'kkk'}},
+                #     {'should':{'hashtag':'ddd'}}
+                # ]
+            }#,
+            # {
+            #     'node_type':'User',
+            #     'ids':[],
+            #     'conditions':[
+            #         {'must':{'keywords':'kkk'}},
+            #         {'should':{'hashtag':'ddd'}}
+            #     ]
+            # }
         ],
         'end_nodes':[
             {
                 'node_type':'User',
                 'ids':[],
-                'conditions':[
-                    {'must':{'keywords':'kkk'}},
-                    {'should':{'hashtag':'ddd'}}
-                ]
-            },
-            {
-                'node_type':'User',
-                'ids':[],
-                'conditions':[
-                    {'must':{'keywords':'kkk'}},
-                    {'should':{'hashtag':'ddd'}}
-                ]
-            }
+                'conditions':{
+                    'must':[{'wildcard':{'keywords':u'*心*'}}],
+                    'should':[{'wildcard':{'hashtag':u'*韩庚*'}}]
+                }
+            }#,
+            # {
+            #     'node_type':'User',
+            #     'ids':[],
+            #     'conditions':[
+            #         {'must':{'keywords':'kkk'}},
+            #         {'should':{'hashtag':'ddd'}}
+            #     ]
+            # }
         ],
         'relation':['join','discuss'],
         'step':'5',
         'limit':'100',
-        'short_path':True
+        'short_path':False#True
     }
     result = search_data(input_data)
     return result
