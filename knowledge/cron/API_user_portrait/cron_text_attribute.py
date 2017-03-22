@@ -80,6 +80,9 @@ def test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_patt
         save_type = 'index'
     else:
         save_type = 'update'
+    print 'save_type:', save_type
+    print 'submit_user_dict:', submit_user_dict
+    print 'submit_ts_dict:', submit_ts_dict
     status = False
     print 'start cron_text_attribute'
     uid_list = user_keywords_dict.keys()

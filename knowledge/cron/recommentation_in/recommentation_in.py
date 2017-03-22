@@ -7,11 +7,12 @@ from elasticsearch import Elasticsearch
 from filter_rules import filter_activity, filter_ip, filter_retweet_count, filter_mention
 reload(sys)
 sys.path.append('../../')
-from global_utils import R_CLUSTER_FLOW2,  R_DICT, ES_DAILY_RANK, es_user_portrait, R_CLUSTER_FLOW3
+from global_utils import R_CLUSTER_FLOW2,  R_DICT, ES_DAILY_RANK, es_user_portrait, R_CLUSTER_FLOW3, R_SENSITIVE_REDIS as r_sensitive
 # from global_utils import ES_DAILY_RANK, es_user_portrait
-from global_config import portrait_name, portrait_type
+from global_config import portrait_name, portrait_type, peo_list, org_list
 from global_utils import R_RECOMMENTATION as r
 from global_utils import portrait_index_name, portrait_index_type
+from global_utils import es_user_profile, profile_index_name, profile_index_type
 from parameter import RECOMMENTATION_TOPK as k
 from time_utils import datetime2ts, ts2datetime, ts2date
 from parameter import DAY, RUN_TYPE, RUN_TEST_TIME
@@ -98,7 +99,7 @@ def get_sensitive_user(date):
     results = set()
     r_cluster = R_CLUSTER_FLOW3 # cluster 3333333333333333333
     ts = datetime2ts(date)
-    results = r_cluster.hgetall('sensitive_'+str(ts))
+    results = r_sensitive.hgetall('sensitive_'+str(ts))
     if results:
         results = sorted(results.iteritems(), key=lambda t:t[1], reverse=True)
         user_list = [result[0] for result in results[0:RECOMMEND_IN_SENSITIVE_TOP]]
@@ -106,6 +107,27 @@ def get_sensitive_user(date):
         return []
     results = filter_in(user_list)
     return results
+
+def search_user_type(uid_list):
+    type_list = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, \
+                body={'ids': uid_list},_source=False, fields=['id', 'verified_type'])['docs']
+    user_list = []
+    org_list = []
+    for i in type_list:
+        if i['found'] == False:
+            user_list.append(i['_id'])
+        else:
+            # print i
+            if not i.has_key('verified_type'):
+                user_list.append(i['_id'])
+                continue
+            verified_type = i['fields']['verified_type'][0]
+            if verified_type in org_list:
+                org_list.append(i['_id'])
+            else:
+                user_list.append(i['_id'])
+    return user_list,org_list
+
 
 def main():
     #run_type
@@ -127,18 +149,39 @@ def main():
     #step4: filter rules about ip count& reposts/bereposts count&activity count
     results = filter_rules(candidate_results)
     new_date = ts2datetime(now_ts)
-    hashname_influence = "recomment_" + new_date + "_influence"
+    # print new_date,'00000000000000'
+    hashname_influence_u = "recomment_" + new_date + "_influence_user"
+    hashname_influence_o = "recomment_" + new_date + "_influence_org"
     if results:
-        for uid in results:
-            r.hset(hashname_influence, uid, "0")
+        user_list, org_list = search_user_type(results)
+        if user_list:
+            for uid in user_list:
+                # print uid
+                r.hset(hashname_influence_u, uid, "0")
+        if org_list:
+            for oid in org_list:
+                # print oid
+                r.hset(hashname_influence_o, oid, "0")
     #step5: get sensitive user
     print date,'date'
     sensitive_user = list(get_sensitive_user(date))
-    hashname_sensitive = "recomment_" + new_date + "_sensitive"
+    hashname_sensitive_u = "recomment_" + new_date + "_sensitive_user"
+    hashname_sensitive_o = "recomment_" + new_date + "_sensitive_org"
     if sensitive_user:
-        for uid in sensitive_user:
-            print uid, hashname_sensitive
-            r.hset(hashname_sensitive, uid, "0")
+        # print sensitive_user,'!!!!!'
+        s_user_list, s_org_list = search_user_type(sensitive_user)
+        if s_user_list:
+            for uid in s_user_list:
+                # print uid, 'sensitive_user'
+                r.hset(hashname_sensitive_u, uid, "0")
+        if s_org_list:
+            for oid in s_org_list:
+                # print oid, 'sensitive_org'
+                r.hset(hashname_sensitive_o, oid, "0")
+
+        # for uid in sensitive_user:
+        #     print uid, hashname_sensitive
+        #     r.hset(hashname_sensitive, uid, "0")
 
     results.extend(sensitive_user)
     results = set(results)
