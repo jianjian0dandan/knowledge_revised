@@ -112,22 +112,22 @@ def get_map():#地图页面
     node_type = request.args.get('node_type', '')
 
     if node_type == 'ALL':#首页跳转
-        event_result,people_result,org_relation = get_geo()
+        event_result,people_result,org_relation = get_all_geo()
         flag = 'Success'
     elif node_type == 'people':#人物节点图谱
-        get_people
+        event_result,people_result,org_relation = get_people_geo(user_id)
         flag = 'Success'
     elif node_type == 'event':#事件节点图谱
-        get_event
+        event_result,people_result,org_relation = get_event_geo(user_id)
         flag = 'Success'
     elif node_type == 'org':#机构节点图谱
-        get_org
+        event_result,people_result,org_relation = get_org_geo(user_id)
         flag = 'Success'
     elif node_type == 'topic':#专题节点图谱
-        get_topic
+        event_result,people_result,org_relation = get_topic_geo(user_id)
         flag = 'Success'
     elif node_type == 'group':#群体节点图谱
-        get_group
+        event_result,people_result,org_relation = get_group_geo(user_id)
         flag = 'Success'
     else:
         event_result = []
