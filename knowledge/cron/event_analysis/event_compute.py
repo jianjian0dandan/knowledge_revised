@@ -1,6 +1,9 @@
 #-*-coding:utf-8-*-
 import sys,json
+sys.path.append('./knowledge')
+sys.path.append('./knowledge/cron')
 sys.path.append('../../')
+
 #from global_utils import R_ADMIN as r
 from global_utils import es_event,topic_queue_name,es_flow_text,flow_text_index_type,flow_text_index_name_pre
 from global_config import event_task_name,event_task_type,event_analysis_name,event_type
@@ -353,6 +356,6 @@ if __name__ == '__main__':
     # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
     # es_event.index(index='event_task',doc_type='text',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'compute_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
     # compute_topic_task()
-    task_id = argv[1]
-    immediate_compute(task_id)
-    # uid_diff()
+    # task_id = argv[1]
+    # immediate_compute(task_id)
+    uid_diff()
