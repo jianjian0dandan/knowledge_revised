@@ -17,6 +17,8 @@ es_bci = Elasticsearch(bci_es_host, timeout=600)
 #related_docs
 es_related_docs = Elasticsearch(user_portrait_host, timeout=600)
 
+es_bci_history = Elasticsearch(user_profile_host, timeout=600)
+
 # es_social_sensing
 es_social_sensing_text = Elasticsearch(social_sensing_text, timeout=600)
 es_prediction = es_social_sensing_text 
@@ -127,6 +129,10 @@ ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 #copy_portrait_index_name = 'user_portrait_1222'#'this_is_a_copy_user_portrait'
 copy_portrait_index_name = 'this_is_a_copy_user_portrait'
 copy_portrait_index_type = 'user'
+
+#es_sensitive
+sensitive_index_name = 'sensitive_history'
+sensitive_index_type = 'sensitive'
 
 #neo4j
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
@@ -366,7 +372,6 @@ r_recommendation_in_after = 'recommendation_in_after'
 '''
 # elasticsearch initialize, one for user_profile, one for user_portrait
 es_user_profile = Elasticsearch(USER_PROFILE_ES_HOST, timeout = 600)
-es_bci_history = Elasticsearch(USER_PROFILE_ES_HOST, timeout=600)
 es_sensitive = Elasticsearch(USER_PROFILE_ES_HOST, timeout=600)
 es_user_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 6000)
 es_social_sensing = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
