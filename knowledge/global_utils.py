@@ -116,6 +116,10 @@ COPY_USER_PORTRAIT_ACTIVENESS_TYPE = 'activeness'
 COPY_USER_PORTRAIT_SENSITIVE = "copy_user_portrait_sensitive"
 COPY_USER_PORTRAIT_SENSITIVE_TYPE = 'sensitive'
 
+# #weibo_user
+# profile_index_name = 'weibo_user'  # user profile es
+# profile_index_type = 'user'
+
 #recommendation_in
 ES_DAILY_RANK = _default_es_cluster_flow1(host=ES_COPY_USER_PORTAIT_HOST)
 
@@ -277,6 +281,7 @@ R_CLUSTER_FLOW2 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW2, port=REDIS_CL
 ######
 R_CLUSTER_FLOW3 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW2, port=REDIS_CLUSTER_PORT_FLOW2)
 
+R_SENSITIVE_REDIS = redis.StrictRedis(host=SENSITIVE_REDIS_HOST, port=SENSITIVE_REDIS_POST)
 
 def _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=1):
     return redis.StrictRedis(host, port, db)
