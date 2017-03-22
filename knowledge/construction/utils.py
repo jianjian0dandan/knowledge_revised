@@ -3,6 +3,7 @@
 recommentation
 save uid list should be in
 '''
+import  os
 import IP
 import sys
 import time
@@ -31,8 +32,8 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
-from knowledge.cron.event_analysis.event_compute import immediate_compute
-
+# from knowledge.cron.event_analysis.event_compute import immediate_compute
+sys.path.append('/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/event_analysis')
 p = Pinyin()
 WEEK = 7
 
@@ -497,12 +498,12 @@ def submit_event(input_data):
 
 def update_event(event_id):
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
-    print result
+    # print result
     now_ts = int(time.time())
     if result['end_ts'] < now_ts:
         es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
 
-    os.system("python ../cron/event_analysis/immediate_compute(%s) " % event_id)
+    os.system("python ./knowledge/cron/event_analysis/event_compute.py %s " % event_id)
     # immediate_compute(event_id)
 
 

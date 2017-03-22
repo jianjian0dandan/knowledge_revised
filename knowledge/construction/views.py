@@ -105,10 +105,18 @@ def ajax_admin_identify_in():
 
 # 立即更新人或机构
 @mod.route('/update_user/')
-def ajax_admin_identify_in():
+def ajax_update_user():
     results = 0
-    node_type = request.args.get('node_type', 'user') # event
-    
+    date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
+    node_type = request.args.get('node_type', '0') # '0':user  '1'：org
+    uid = request.args.get('uid', '2298607941')
+    recommend_style = request.args.get('recommend_style', 'influence')  #influence sensitive auto 
+    submit_user  = request.args.get('submit_user', 'admin')
+    relation_string = request.args.get('user_rel', 'friend') # split by ,
+    relation_list = relation_string.split(',')
+    r.rpush(uid, json.dumps([date, '1', node_user,  ]))
+
+
 
 
 
@@ -192,8 +200,8 @@ def ajax_submit_event():
     return json.dumps(result)
 
 #事件更新
-@mod.route('/submit_event/')
-def ajax_submit_event():
+@mod.route('/event_update/')
+def ajax_event_update():
     event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
     update_event(event_id)
     return '1'
