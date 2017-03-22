@@ -103,6 +103,14 @@ def ajax_admin_identify_in():
         results = None
     return json.dumps(results)
 
+# 立即更新人或机构
+@mod.route('/update_user/')
+def ajax_admin_identify_in():
+    results = 0
+    node_type = request.args.get('node_type', 'user') # event
+    
+
+
 
 #上传文件方式人物入库
 @mod.route('/submit_identify_in/', methods=['GET', 'POST'])
@@ -114,6 +122,7 @@ def ajax_submit_identify_in():
     print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
     return json.dumps(results)
+
 
 
 #显示计算状态
@@ -188,8 +197,6 @@ def ajax_submit_event():
     event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
     update_event(event_id)
     return '1'
-
-
 
 #上传文件方式事件入库
 @mod.route('/submit_event_file/', methods=['GET', 'POST'])

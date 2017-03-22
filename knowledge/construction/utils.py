@@ -494,14 +494,16 @@ def submit_event(input_data):
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
     return True
+
 def update_event(event_id):
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
     print result
     now_ts = int(time.time())
-    if result['end_ts'] > now_ts:
+    if result['end_ts'] < now_ts:
+        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
 
+    os.system("python ../cron/event_analysis/immediate_compute(%s) " % event_id)
     # immediate_compute(event_id)
-
 
 
 def submit_event_file(input_data):
