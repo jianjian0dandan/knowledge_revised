@@ -3,6 +3,7 @@
 recommentation
 save uid list should be in
 '''
+import  os
 import IP
 import sys
 import time
@@ -31,7 +32,8 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
-
+# from knowledge.cron.event_analysis.event_compute import immediate_compute
+sys.path.append('/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/event_analysis')
 p = Pinyin()
 WEEK = 7
 
@@ -47,16 +49,18 @@ def identify_in(data, uid_list):
         relation_string = item[3]
         recommend_style = item[4]
         submit_user = item[5]
+        node_type = item[6]
         value_string = []
-        identify_in_hashname = "identify_in_" + str(date)
-        r.hset(identify_in_hashname, uid, in_status)
+        # identify_in_hashname = "identify_in_" + str(date)
+        # r.hset(identify_in_hashname, uid, in_status)
         if status == '1':
             in_date = date
             compute_status = '1'
         elif status == '2':
             in_date = date
             compute_status = '2'
-        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user,0]))
+        relation_list = relation_string.split(',')
+        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
     return True
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
@@ -95,6 +99,7 @@ def submit_identify_in_uid(input_data):
     compute_status = input_data['compute_status'] 
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
+    node_type = input_data['node_type']
     hashname_submit = 'submit_recomment_' + date
     hashname_influence = 'recomment_' + date + '_influence'
     hashname_sensitive = 'recomment_' + date + '_sensitive'
@@ -102,7 +107,10 @@ def submit_identify_in_uid(input_data):
     # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
-    line_list = upload_data.split('\n')
+    if recommend_style == 'upload':
+        line_list = upload_data.split('\n')
+    if recommend_style == 'write':
+        line_list = upload_data.split(',')
     uid_list = []
     invalid_uid_list = []
     for line in line_list:
@@ -150,7 +158,8 @@ def submit_identify_in_uid(input_data):
         else:
             tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
-            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user, 0 ]))
+            relation_list = relation_string.split(',')
+            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
             r.hset(hashname_submit, in_item, json.dumps(tmp))
             # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
@@ -486,6 +495,17 @@ def submit_event(input_data):
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
     return True
+
+def update_event(event_id):
+    result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
+    # print result
+    now_ts = int(time.time())
+    if result['end_ts'] < now_ts:
+        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
+
+    os.system("python ./knowledge/cron/event_analysis/event_compute.py %s " % event_id)
+    # immediate_compute(event_id)
+
 
 def submit_event_file(input_data):
     submit_ts = input_data['submit_ts']
