@@ -63,7 +63,7 @@ def get_flow_information_v2(uid_list, all_user_keywords_dict):
         #compute hashtag and geo
         hashtag_results = r_cluster_3.hmget('hashtag_'+str(ts), uid_list)
         ip_results = r_cluster.hmget('new_ip_'+str(ts), uid_list)
-        print 'ip_results:', ip_results
+        #print 'ip_results:', ip_results
         #compute sensitive_words
         sensitive_results = r_cluster_3.hmget('sensitive_'+str(ts), uid_list)
         count = 0 
