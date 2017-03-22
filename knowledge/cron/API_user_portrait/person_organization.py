@@ -184,7 +184,7 @@ def get_colleague_r(des,s_uid):#提取业务关联关系（人物与人物、人
         n = int(n)
             
     for w in des:
-        w_list.append({"term":{"description":w}})
+        w_list.append({"wildcard":{"description":'*'+w+'*'}})
             
     query_body = {
         "query":{
@@ -393,7 +393,7 @@ def person_organization(uid_list,relation_dict):#计算人物-人物，人物-�
     
 if __name__ == '__main__':
 
-    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague'],'5779325975':['friend','colleague']})
+    result = person_organization(['2117306420','5779325975'],{'2117306420':['friend','colleague','ip_relation'],'5779325975':['friend','colleague','ip_relation']})
     print result
 ##    relation_list = [[[0,'5779325975'],'friend',[0,'1703371307']]]
 ##    result = nodes_rels(relation_list)
