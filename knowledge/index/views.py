@@ -66,14 +66,19 @@ def index():#首页
     
     weibo_list = get_hot_weibo()
 
-    people_list = get_hot_people()
+    people_list = get_hot_people()    
+    
+    return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
+                           people_list = people_list)
+
+@mod.route('/get_index_map/')
+def get_index_map():#地图
 
     map_count = get_map_count()
 
-    return render_template('index/knowledge_home.html', peo_infors = peo_infors, neo_count = neo_count, weibo_list = weibo_list,\
-                           people_list = people_list, map_count = map_count)
+    return json.dumps(map_count)
 
-@mod.route('/graph/')
+@mod.route('/graph/', methods=['GET','POST'])
 @login_required
 def get_graph():#图谱页面
 
@@ -104,7 +109,7 @@ def get_graph():#图谱页面
 
     return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
-@mod.route('/map/')
+@mod.route('/map/', methods=['GET','POST'])
 @login_required
 def get_map():#地图页面
 
@@ -135,27 +140,39 @@ def get_map():#地图页面
         org_relation = []
         flag = 'Wrong Type'
 
-    return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation)
+    return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation, flag = flag)
 
-@mod.route('/person/')
+@mod.route('/person/', methods=['GET','POST'])
 @login_required
-def get_person():#人物属性页面
+def get_person_atr():#人物属性页面
+
+    user_id = request.args.get('user_id', '')
+
+    ### 人物属性查询函数
 
     return render_template('index/person.html')
 
-@mod.route('/event/')
+@mod.route('/event/', methods=['GET','POST'])
 @login_required
-def get_event():#事件属性页面
+def get_event_atr():#事件属性页面
 
+    user_id = request.args.get('user_id', '')
+
+    ### 事件属性查询函数
+    
     return render_template('index/event.html')
 
-@mod.route('/organization/')
+@mod.route('/organization/', methods=['GET','POST'])
 @login_required
 def get_organization():#机构属性页面
 
+    user_id = request.args.get('user_id', '')
+
+    ### 机构属性查询函数
+    
     return render_template('index/organization.html')
 
-@mod.route('/cards/')
+@mod.route('/cards/', methods=['GET','POST'])
 @login_required
 def get_card():#卡片罗列页面
 
@@ -171,11 +188,8 @@ def get_card():#卡片罗列页面
 @mod.route('/show_attention/', methods=['GET','POST'])
 def show_attention():
 
-    user_name = request.args.get('user_name', '')
-    s_type = request.args.get('s_type', '')
-
-    if not user_name or not s_type:
-        return json.dumps('Wrong')
+    user_name = request.form['user_name']
+    s_type = request.form['s_type']
     
     if s_type == 'people':
         infors = get_people(user_name,2)

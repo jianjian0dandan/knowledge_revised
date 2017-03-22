@@ -1,6 +1,9 @@
 #-*-coding:utf-8-*-
 import sys,json
+sys.path.append('./knowledge')
+sys.path.append('./knowledge/cron')
 sys.path.append('../../')
+
 #from global_utils import R_ADMIN as r
 from global_utils import es_event,topic_queue_name,es_flow_text,flow_text_index_type,flow_text_index_name_pre
 from global_config import event_task_name,event_task_type,event_analysis_name,event_type
@@ -14,7 +17,7 @@ import redis,requests
 from global_utils import event_text,event_text_type
 import re
 from parameter import RUN_TYPE
-
+from sys import argv
 #from geo.city_repost_search import repost_search
 from geo.cron_topic_city import cityTopic
 #from network.cron_topic_identify import compute_network
@@ -112,12 +115,17 @@ def compute_task(task):
         if resu == 'Node Wrong':
             return 'Node Wrong'
         weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
-        
+        es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'doc':{'compute_status':-1}})
+
         # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'compute_status':0,'en_name':task_id,'relation_compute':relation})
         task['compute_status']=-1
         task['weibo_counts']=weibo_counts
         task['uid_counts']=uid_counts
-        es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
+        try:
+            flag = es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':'compute_status':-1})
+        except:
+            es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
         print 'finish change status'
         #geo
         
@@ -353,5 +361,6 @@ if __name__ == '__main__':
     # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
     # es_event.index(index='event_task',doc_type='text',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'compute_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
     # compute_topic_task()
-    # immediate_compute('bei-jing-fang-jia-zheng-ce-1489649713')
+    task_id = argv[1]
+    immediate_compute(task_id)
     # uid_diff()

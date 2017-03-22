@@ -3,6 +3,7 @@
 recommentation
 save uid list should be in
 '''
+import  os
 import IP
 import sys
 import time
@@ -26,13 +27,12 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
-# from knowledge.global_utils import es_bci_history, bci_history_index_name, bci_history_index_type, ES_SENSITIVE_INDEX, DOCTYPE_SENSITIVE_INDEX
-# from knowledge.filter_uid import all_delete_uid
+from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
-
+# from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
 
@@ -48,16 +48,18 @@ def identify_in(data, uid_list):
         relation_string = item[3]
         recommend_style = item[4]
         submit_user = item[5]
+        node_type = item[6]
         value_string = []
-        identify_in_hashname = "identify_in_" + str(date)
-        r.hset(identify_in_hashname, uid, in_status)
+        # identify_in_hashname = "identify_in_" + str(date)
+        # r.hset(identify_in_hashname, uid, in_status)
         if status == '1':
             in_date = date
             compute_status = '1'
         elif status == '2':
             in_date = date
             compute_status = '2'
-        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user,0]))
+        relation_list = relation_string.split(',')
+        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
     return True
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
@@ -96,6 +98,7 @@ def submit_identify_in_uid(input_data):
     compute_status = input_data['compute_status'] 
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
+    node_type = input_data['node_type']
     hashname_submit = 'submit_recomment_' + date
     hashname_influence = 'recomment_' + date + '_influence'
     hashname_sensitive = 'recomment_' + date + '_sensitive'
@@ -103,7 +106,10 @@ def submit_identify_in_uid(input_data):
     # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
-    line_list = upload_data.split('\n')
+    if recommend_style == 'upload':
+        line_list = upload_data.split('\n')
+    if recommend_style == 'write':
+        line_list = upload_data.split(',')
     uid_list = []
     invalid_uid_list = []
     for line in line_list:
@@ -151,7 +157,8 @@ def submit_identify_in_uid(input_data):
         else:
             tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
-            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user, 0 ]))
+            relation_list = relation_string.split(',')
+            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
             r.hset(hashname_submit, in_item, json.dumps(tmp))
             # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
@@ -178,10 +185,10 @@ def get_final_submit_user_info(uid_list):
         'sort': [{bci_key:{'order': 'desc'}}],
         'size': 1
     }
-    #try:
-    bci_max_result = es_bci_history.search(index=bci_history_index_name, doc_type=bci_history_index_type, body=query_body, _source=False, fields=[bci_key])['hits']['hits']
-    #except:
-    #    bci_max_result = {}
+    try:
+        bci_max_result = es_bci_history.search(index=bci_history_index_name, doc_type=bci_history_index_type, body=query_body, _source=False, fields=[bci_key])['hits']['hits']
+    except:
+       bci_max_result = {}
     if bci_max_result:
         bci_max_value = bci_max_result[0]['fields'][bci_key][0]
     else:
@@ -234,12 +241,12 @@ def submit_identify_in(input_data):
     return result_mark
 
 # show recommentation in uid
-def recommentation_in(input_ts, recomment_type, submit_user):
+def recommentation_in(input_ts, recomment_type, submit_user, node_type):
     date = ts2datetime(input_ts)
     recomment_results = []
     # read from redis
     results = []
-    hash_name = 'recomment_'+str(date) + "_" + recomment_type
+    hash_name = 'recomment_'+str(date) + "_" + recomment_type + "_" + node_type
     identify_in_hashname = "identify_in_" + str(date)
     # submit_user_recomment = "recomment_" + submit_user + "_" + str(date) # 用户自推荐名单
     results = r.hgetall(hash_name)
@@ -253,7 +260,7 @@ def recommentation_in(input_ts, recomment_type, submit_user):
     # recomment_results = list(set(recomment_results) - submit_user_recomment)
 
     if recomment_results:
-        results = get_user_detail(date, recomment_results, 'show_in', recomment_type)
+        results = get_user_detail(date, recomment_results[:1000], 'show_in', recomment_type)
     else:
         results = []
     return results
@@ -286,7 +293,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
         "sort":{sensitive_string:{"order":"desc"}}
     }
     try:
-        top_sensitive_result = es_bci_history.search(index=ES_SENSITIVE_INDEX, doc_type=DOCTYPE_SENSITIVE_INDEX, body=query_sensitive_body, _source=False, fields=[sensitive_string])['hits']['hits']
+        top_sensitive_result = es_bci_history.search(index=sensitive_index_name, doc_type=sensitive_index_type, body=query_sensitive_body, _source=False, fields=[sensitive_string])['hits']['hits']
         top_sensitive = top_sensitive_result[0]['fields'][sensitive_string][0]
     except Exception, reason:
         print Exception, reason
@@ -295,14 +302,14 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']  #INFLUENCE,fans,status
     user_profile_result = es_user_profile.mget(index='weibo_user', doc_type='user', body={'ids':uid_list}, _source=True)['docs'] #个人姓名，注册地
     # bci_history_result = es_bci_history.mget(index=bci_history_index_name, doc_type=bci_history_index_type, body={"ids":uid_list}, fields=['user_fansnum', 'weibo_month_sum'])['docs']
-    # sensitive_history_result = es_bci_history.mget(index=ES_SENSITIVE_INDEX, doc_type=DOCTYPE_SENSITIVE_INDEX, body={'ids':uid_list}, fields=[sensitive_string], _source=False)['docs']
+    sensitive_history_result = es_bci_history.mget(index=sensitive_index_name, doc_type=sensitive_index_type, body={'ids':uid_list}, fields=[sensitive_string], _source=False)['docs']
     max_evaluate_influ = get_evaluate_max(index_name)
     for i in range(0, len(uid_list)):
         uid = uid_list[i]
         bci_dict = user_bci_result[i]
         profile_dict = user_profile_result[i]
         # bci_history_dict = bci_history_result[i]
-        # sensitive_history_dict = sensitive_history_result[i]
+        sensitive_history_dict = sensitive_history_result[i]
         #print sensitive_history_dict
         try:
             bci_source = bci_dict['_source']
@@ -412,18 +419,18 @@ def get_evaluate_max(index_name):
         max_result[evaluate] = max_evaluate
     return max_result
 
-def recommentation_in_auto(date, submit_user):
+def recommentation_in_auto(date, submit_user, node_type):
     results = []
     #run type
     if RUN_TYPE == 1:
         now_date = search_date
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
-    recomment_hash_name = 'recomment_' + now_date + '_auto'
+    recomment_hash_name = 'recomment_' + now_date + '_auto_' + node_type
     # print recomment_hash_name,'============'
-    recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
-    recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
-    recomment_submit_hash_name = 'recomment_' + submit_user + '_' + now_date
+    recomment_influence_hash_name = 'recomment_' + now_date + '_influence_' + node_type
+    recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive_' + node_type
+    # recomment_submit_hash_name = 'recomment_' + submit_user + '_' + now_date
     recomment_compute_hash_name = 'compute'
     # #step1: get auto
     # auto_result = r.hget(recomment_hash_name, 'auto')
@@ -446,8 +453,8 @@ def recommentation_in_auto(date, submit_user):
         influence_user = set(r.hkeys(recomment_influence_hash_name))
         sensitive_user = set(r.hkeys(recomment_sensitive_hash_name))
         compute_user = set(r.hkeys(recomment_compute_hash_name))
-        been_submit_user = set(r.hkeys(recomment_submit_hash_name))
-        filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user | been_submit_user)
+        # been_submit_user = set(r.hkeys(recomment_submit_hash_name))
+        filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user)
         auto_user_list = list(filter_union_user)
         #step4: get user detail
         if auto_user_list == []:
@@ -487,6 +494,17 @@ def submit_event(input_data):
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
     return True
+
+def update_event(event_id):
+    result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
+    # print result
+    now_ts = int(time.time())
+    if result['end_ts'] < now_ts:
+        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
+
+    os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py %s &" % event_id)
+    # immediate_compute(event_id)
+
 
 def submit_event_file(input_data):
     submit_ts = input_data['submit_ts']
