@@ -1,0 +1,71 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1300px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 1300px;
+    background: url("/static/images/brust_analysis.png") no-repeat;
+}
+#container {
+    width: 90%;
+    padding: 2% 5%;
+    margin: 12.3% auto 0;
+}
+#container .current_situation .forward_discussion {
+    width: 80%;
+    margin:5% auto 0;
+}
+#container .current_situation .forward_discussion label {
+    color: #3d3d3d;
+}
+/*用户发的微博*/
+#container .current_situation .forward_discussion #weibo .user {
+    padding: 3% 3% 1% 9%;
+    border-bottom: 1px dashed silver;
+    position: relative;
+}
+#container .current_situation .forward_discussion #weibo .user .user_left {
+    border: 5px solid #eee;
+    position: absolute;
+    left:3%;
+    top:14%;
+}
+#container .current_situation .forward_discussion #weibo .user .user_left img {
+    width: 60px;
+    height: 60px;
+}
+#container .current_situation .forward_discussion #weibo .user .user_right {
+    margin-left: 4%;
+}
+#container .current_situation .forward_discussion #weibo .user .user_right span {
+    color: #676767;
+    font-size: 14px;
+}
+#container .current_situation .forward_discussion #weibo .user .user_right .fd_nums {
+    text-align: right;
+    padding: 1% 3%;
+}
+/*-----完*/
+
+#container .trend_forecast .forecast_content {
+    padding: 4%;
+}
+#container .trend_forecast .forecast_content p {
+    font-size: 16px;
+    margin-bottom:1%;
+    color: #565656;
+}
+#container .trend_forecast .forecast_content #forecast_img {
+    width: 100%;
+    height: 430px;
+}
+
+
+
+

@@ -19,6 +19,7 @@ from parameter import DAY,RUN_TYPE, RUN_TEST_TIME, RECOMMEND_IN_AUTO_DATE,\
         RECOMMEND_IN_OUT_SIZE, RECOMMEND_IN_ITER_COUNT,\
         RECOMMEND_IN_MEDIA_PATH, RECOMMEND_MAX_KEYWORDS, RECOMMEND_IN_WEIBO_MAX,\
         SENTIMENT_SORT_EVALUATE_MAX
+from global_utils import es_user_profile, profile_index_name, profile_index_type
 from global_config import R_BEGIN_TIME, Session
 from time_utils import datetime2ts, ts2datetime, ts2date
 from model import PeopleAttention, EventAttention, User
@@ -383,7 +384,28 @@ def get_close_user(attention_id):
     extend_result = get_extend(attention_id)
     return extend_result
 
-# get recommentation from admin user operation
+def search_user_type(uid):
+    type_list = es_user_profile.get(index=profile_index_name, doc_type=profile_index_type, id=uid, \
+                _source=False, fields=['id', 'verified_type'])
+    print type_list
+    user_list = []
+    org_list = []
+    for i in type_list:
+        if i['found'] == False:
+            user_list.append(i['_id'])
+        else:
+            # print i
+            if not i.has_key('verified_type'):
+                user_list.append(i['_id'])
+                continue
+            verified_type = i['fields']['verified_type'][0]
+            if verified_type in org_list:
+                org_list.append(i['_id'])
+            else:
+                user_list.append(i['_id'])
+    return user_list,org_list    
+
+# get recommentation from admin user operation,先查找用户关注的用户，再查找与之相关的用户
 def get_operation_recommentation():
     results = {}
     now_ts = time.time()
@@ -392,17 +414,18 @@ def get_operation_recommentation():
         now_date = ts2datetime(now_ts)
     else:
         now_date = RUN_TEST_TIME
-    user_dict = query_attention_user()  #{admin:[a,b,c],...}
+    user_dict = {'admin':['5825134863', '3036528532']}
+    # user_dict = query_attention_user()  #{admin:[a,b,c],...}
     for k,v in user_dict.iteritems():
         user = k
         attention_ids = [i for i in set(v)]
         attention_dict = {}
+
         for attention_id in attention_ids:
             operation_results = get_close_user([attention_id])
             attention_dict[attention_id] = operation_results
         save_type = 'operation'
-        print k, attention_dict
-        # save_results(save_type, user, attention_dict)
+        save_results(save_type, user, attention_dict)
     return results
 
 # save results
@@ -412,10 +435,11 @@ def save_results(save_type, user, recomment_results):
     if RUN_TYPE == 1:
         now_date = ts2datetime(time.time())
     else:
-        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
-    recomment_hash_name = 'recomment_' + now_date + '_auto'
+        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
+    u_recomment_hash_name = 'recomment_' + now_date + '_auto_user'
+    o_recomment_hash_name = 'recomment_' + now_date + '_auto_org'
     #print 'save operation results'
-    R_RECOMMENTATION.hset(recomment_hash_name, user, recomment_results)
+    R_RECOMMENTATION.hset(recomment_hash_name, user, json.dumps(recomment_results))
     save_mark = True
     return save_mark
 
@@ -436,10 +460,10 @@ if __name__=='__main__':
     log_time_start_date = ts2datetime(log_time_start_ts)
     print 'cron/recommend_in/recommend_in_auto.py&start&' + log_time_start_date
     
-    # try:
-    compute_auto_recommentation()
-    # except Exception, e:
-    #     print e, '&error&', ts2date(time.time())
+    try:
+        compute_auto_recommentation()
+    except Exception, e:
+        print e, '&error&', ts2date(time.time())
     
     log_time_end_ts = time.time()
     log_time_end_date = ts2datetime(log_time_end_ts)

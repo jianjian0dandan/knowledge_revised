@@ -4,7 +4,7 @@ import json
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
 from global_utils import es_user_portrait as es
-from global_config import portrait_name, portrait_type
+from global_utils import portrait_index_name, portrait_index_type
 
 index_info = {
     "settings":{
@@ -179,12 +179,20 @@ index_info = {
                 'description':{
                     'type': 'string',
                     'index': 'not_analyzed'
+                },
+                'submit_user':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
+                },
+                'submit_ts':{
+                   'type': 'long'
                 }
+ 
             }
         }
     }
 }
 
 
-print es.indices.create(index=portrait_name, body=index_info, ignore=400)
+print es.indices.create(index=portrait_index_name, body=index_info, ignore=400)
 

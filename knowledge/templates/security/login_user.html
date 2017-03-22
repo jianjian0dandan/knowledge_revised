@@ -2,16 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0" />
+		<!--<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0" />-->
 		<title>用户登陆</title>
 
 		<style type="text/css">
-			div{
-				font-family: "Microsoft YaHei UI";
+			html, body, div, img, h1, h2, h3, h4, h5, h6, input, button, span, p, b, strong, em, li, ul, ol, dl, dt,
+			dd, th,textarea, select, table, form {
+				margin: 0;
+				padding: 0;
+				-webkit-user-select: none;
+				font-family: "宋体";
 			}
-			ul li {
-				list-style-type:none; 
-				/*background-color: whitesmoke;*/
+			input {
+				outline: none;
+			}
+			body {
+				background: url('/static/images/login.png') no-repeat;
+				background-size: 100%;
+			}
+			.tit {
+				width: 100%;
+				height: 90px;
+				background: url('/static/images/title.png') no-repeat center;
+				margin-top: 30px;
 			}
 			.shadow{
 				-webkit-box-shadow:5px 6px 3px #ABA8A8;
@@ -20,26 +33,41 @@
 				border: 2px solid #cccccc;
 
 			}
-			#email{
-				width: 200px;
-				height: 15px;
-				padding: 5px;
-				border-radius: 4px;
+			#box {
+				margin:140px auto 0 auto;
+				width:400px;
+				padding:20px;
+				border-radius: 10px;
+				height:270px;
+				background-color: rgba(21, 21, 21, 0.56);
 			}
-			#password{
+			#email,#password {
 				width: 200px;
-				height: 15px;
-				padding: 5px;
-				border-radius: 4px;
+				height: 18px;
+				padding: 2px 5px 2px 10px;
+				border-radius: 10px;
+				margin-bottom: 20px;
+				font-size: 12px;
 			}
 			#submit{
-				display: inline-block;
-				color: #FFF;
-				border: 1px solid #334EE3;
-				border-radius: 2px;
-				background-color:#6699FF;
-				width:80px;
-				height:40px;
+				text-align: center;
+				/*background: rgb(252, 182, 22);*/
+				background-color: #19b2e1;
+				color: rgb(255, 255, 255);
+				font-size: 14px;
+				/*text-shadow: rgb(173, 60, 37) 1px 1px 1px;*/
+				text-shadow: rgb(173, 60, 37) 1px 1px 1px;
+				width: 288px;
+				height: 32px;
+				/*border: 1px solid rgb(219, 166, 88);*/
+				border: 1px solid rgba(25, 178, 225, 0.57);
+				border-radius: 5px;
+				font-weight: bold;
+				cursor: pointer;
+			}
+			#submit:hover {
+				/*background: rgb(255, 192, 49);*/
+				background-color: rgba(27, 205, 255, 0.9);
 			}
 
 		</style>
@@ -53,15 +81,16 @@
 	    {% endblock %}		
 	</head>
 
-	<body style="background-image:url(/static/images/bg1.png);color:#fff;">
+	<body>
 <!-- 		<div style="width:100%;height:60px;background-color:#3399FF;margin: -10px;color:white;font-size:24px;padding-left: 20px;line-height: 50px;"><b>网民画像系统</b></div> -->
-		<div style="width:100%;height:60px;margin-top: 40px;color:white;font-size:32px;padding-left: 20px;line-height: 50px;"><b><center>知 识 图 谱 系 统</center></b></div>
-		<div style="margin-top:5%;margin-left:35%;width:390px;padding:20px;height:270px;border-radius: 10px;background-color: rgba(21, 21, 21, 0.32);">
+		<!--<h1 style="width:100%;height:60px;margin-top: 40px;color:black;font-weight:900;font-size:62px;line-height: 50px;text-align: center;">知 识 图 谱 系 统</h1>-->
+		<h1 class="tit"></h1>
+		<div style="margin:5% auto 0;width:390px;padding:20px;height:270px;border-radius: 10px;background-color: rgba(21, 21, 21, 0.56);">
 			{% from "security/_macros.html" import render_field_with_errors, render_field %}
 			{% include "security/_messages.html" %}
-			<h2>用户登陆 </h2>
+			<h2 style="color: white">用户登陆 </h2>
 			<hr style="width:100%;">
-			<form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+			<form action="{{ url_for_security('login') }}" method="POST" name="login_user_form" style="margin-top: 35px;padding-left: 35px">
 			  {{ login_user_form.hidden_tag() }}
 			  {{ render_field_with_errors(login_user_form.email) }}
 			  {{ render_field_with_errors(login_user_form.password) }}
@@ -81,13 +110,13 @@
   <script>
   //$('#email').placeholder()
   $('#email').prev().empty();
-  $('#email').prev().append('<div style="float: left;line-height:25px;width:60px;">用户名</div>');
+  $('#email').prev().append('<div style="float: left;line-height:25px;width:60px;font-size:14px;color:#fff;">用户名</div>');
   $('#password').prev().empty();
-  $('#password').prev().append('<div style="float: left;line-height:25px;width:60px;">密码</div>');
+  $('#password').prev().append('<div style="float: left;line-height:25px;width:60px;font-size:14px;color:#fff;">密码</div>');
   $('#remember').prev().empty();
-  $('#remember').prev().append('<div style="float：left;color：#888888;float: left;">记住密码</div>');
-$('#submit').attr('value','登陆')
-$('#submit').css('float','right')
-$('#submit').css('font-weight','bold')
-  
+  $('#remember').after('<div style="font-size: 12px;color:#fff;margin-bottom:20px;display: inline-block;position: relative;top: -3px;">记住密码</div>');
+$('#submit').attr('value','登      陆');
+//$('#submit').css('float','right');
+//$('#submit').css('font-weight','bold')
+
   </script>

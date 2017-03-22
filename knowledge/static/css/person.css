@@ -1,0 +1,239 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 2950px;
+        margin: 0 auto;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 2950px;
+    background: url("/static/images/person_body.png") no-repeat;
+    background-size: 100% 100%;
+}
+#person_content {
+    width: 100%;
+    padding: 72px 0 0 0;
+}
+#person_content #content_left {
+    width: 59%;
+    float: left;
+    margin-left: 9%;
+}
+/*基本信息*/
+#person_content #content_left .basic .basic-1 {
+    padding: 20px 0 0 100px;
+    position: relative;
+}
+#person_content #content_left .basic .basic-1 .map_area dl {
+    position: absolute;
+    top: -10px;
+    text-align: center;
+    cursor: pointer;
+}
+#person_content #content_left .basic .basic-1 .map_area dd {
+    color: white;
+    font-size: 10px;
+    margin-top: 10px;
+}
+#person_content #content_left .basic .basic-1 .map_area dl img {
+    width: 30px;
+    height: 30px;
+}
+#person_content #content_left .basic .basic-1 .edit {
+    position: relative;
+    top: -6px;
+    left: 40px;
+    padding: 5px 20px;
+    color: black;
+    font-size: 10px;
+    font-weight: 200;
+    background-color:rgba(158, 158, 158, 0.13);
+    border-radius: 18px;;
+    text-align: center;
+    box-shadow: 2px 2px 1px #999;
+}
+#person_content #content_left .basic .basic-1 .edit:hover{
+    background-color:rgba(158, 158, 158, 0.4);
+}
+#person_content #content_left .basic .basic-2 {
+    color: black;
+    padding-top: 33px;
+}
+#person_content #content_left .basic .basic-2 .information {
+    width: 77%;
+    height:260px;
+    overflow: hidden;
+    margin:42px 0 0 55px;
+    position: relative;
+}
+#person_content #content_left .basic .basic-2 p span {
+    color: #676767;
+    display: inline-block;
+    width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#person_content #content_left .basic .basic-2 p {
+    width: 95%;
+    padding: 2px 20px;
+    font-size: 14px;
+    margin-bottom:7px;
+    border-bottom:1px dashed #919191;
+}
+#person_content #content_left .basic .basic-2 p .crude {
+    width: 120px;
+    color: black;
+    font-weight: 800;
+}
+#person_content #content_left .basic .basic-2 .information .in_photo {
+    border: 3px solid #a0a0a0;
+    position: absolute;
+    top: 2px;
+    right: 0;
+}
+#person_content #content_left .basic .basic-2 .information .in_photo img {
+    width: 150px;
+    height: 150px;
+}
+/*影响力*/
+#person_content #content_left .influnce .influ-1 {
+    width: 60%;
+    margin: 50px auto 0;
+}
+#person_content #content_left .influnce .influ-1 h3 {
+    /*width: 95%;*/
+    padding: 5px 20px;
+    color: #676767;
+    letter-spacing: 8px;
+    text-align: center;
+    margin-bottom:10px;
+    border-bottom:1px dashed #919191;
+}
+/*活动信息*/
+#person_content #content_left .activity .location {
+    width: 70%;
+    margin:40px auto 0;
+}
+#person_content #content_left .activity .location .message p {
+    padding: 5px 10px;
+    font-size: 14px;
+    margin-bottom:7px;
+    border-bottom:1px dashed #919191;
+}
+#person_content #content_left .activity .location .message p span {
+    color: #676767;
+}
+#person_content #content_left .activity .location .message .position,
+#person_content #content_left .activity .location .message .IP,
+#person_content #content_left .activity .location .message .time{
+    color: black;
+    font-weight: 700;
+}
+/*社交信息*/
+#person_content #content_left .social .social-1 {
+    width:70%;
+    margin: 40px auto;
+}
+#person_content #content_left .social .social-1 h3 {
+    font-size: 24px;
+    padding:20px 0;
+}
+#person_content #content_left .social .social-1 span {
+    display: inline-block;
+    color: #676767;
+}
+#person_content #content_left .social .social-1 span.user {
+    color: #000;
+    font-weight: 800;
+    width:80%;
+    float: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding:0 15px 10px;
+    border-bottom:1px dashed #919191;
+    cursor: pointer;
+}
+/*偏好信息*/
+#person_content #content_left .preference {
+    width:100%;
+}
+#person_content #content_left .preference .talk p {
+    width: 80%;
+}
+#person_content #content_left .preference .talk span {
+    color: #676767;
+    font-size: 16px;
+    display: inline-block;
+    width: 7%;
+    font-weight: 600;
+}
+#person_content #content_left .preference .talk .talk_name {
+    font-weight: 800;
+    color: black;
+    border-bottom: 1px dashed silver;
+    float: right;
+    padding-bottom: 5px;
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/*文本信息*/
+#person_content #content_left .text {
+    width: 100%;
+    margin-top: 40px;
+}
+#person_content #content_left .text .text_information {
+    width: 80%;
+    margin: 0 auto;
+}
+/*右边栏*/
+#person_content #content_right {
+    width: 20%;
+    float: left;
+    margin-left:30px;
+    margin-top:16px;
+}
+#person_content #content_right .link_user .users a,
+#person_content #content_right .link_event .events a,
+#person_content #content_right .link_agency .agencys a,
+#person_content #content_right .link_resources .resources a {
+    width: 70%;
+    display: block;
+    margin: 10px 0;
+    color:#676767;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#person_content #content_right .link_user .user_more,
+#person_content #content_right .link_event .event_more,
+#person_content #content_right .link_agency .agency_more,
+#person_content #content_right .link_resources .resources_more {
+    cursor: pointer;
+    padding: 2px;
+    margin-right:-30px;
+    color: #676767;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid #9fe7f5;
+    font-size: 18px;
+    -webkit-transform-origin-x: 0;
+    -webkit-transform: scale(0.5833333333333334);
+    float: right;
+}
+#person_content #content_right .link_user .user_more:hover,
+#person_content #content_right .link_event .event_more:hover,
+#person_content #content_right .link_agency .agency_more:hover,
+#person_content #content_right .link_resources .resources_more:hover {
+    background-color: #bcbcbc;
+    color: white;
+}
+

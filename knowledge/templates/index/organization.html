@@ -1,0 +1,195 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 机构详情页</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/organization.css">
+<style>
+
+</style>
+{% endblock %}
+
+
+{% block main %}
+<div id="organization">
+    <div id="content_left">
+        <div class="basic" style="padding-bottom:1%">
+            <div class="basic-1">
+                <h1 class="user_name" style="font-weight:900;display:inline-block;">无忧无虑的大鹅</h1>
+                <button class="edit">编&nbsp;辑</button>
+                <div class="map_area">
+                    <dl id="map" style="right:10.6%">
+                        <dt><img src="/static/images/earth.png"></dt>
+                        <dd>地图链接</dd>
+                    </dl>
+                    <dl id="chart" style="right:14px">
+                        <dt><img src="/static/images/go_line.png" alt=""></dt>
+                        <dd>图谱链接</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="basic-2">
+                <h3 style="color: white;font-weight:800;">基本信息</h3>
+                <div class="information">
+                    <p class="in_one">
+                        <span>微博ID</span><span class="ID crude">28109213</span>
+
+                    </p>
+                    <p class="in_two">
+                        <span>机构名称</span><span class="happen_time crude">唐老鸭</span>
+                        <span>注册地</span><span class="place crude">北京</span>
+                    </p>
+                    <p class="in_three">
+                        <span>机构描述</span><span class="description crude">诈骗</span>
+                    </p>
+                    <p class="in_four">
+                        <span>是否认证</span><span class="attest crude">是</span>
+                        <span>认证类型</span><span class="attest_type crude">律师</span>
+                    </p>
+                    <p class="in_five">
+                        <span>粉丝数</span><span class="fansnum crude">213</span>
+                        <span>关注数</span><span class="focus crude">20161</span>
+                    </p>
+                    <p class="in_six">
+                        <span>微博数</span><span class="weibonum crude">213</span>
+                        <span>微博链接</span><span class="weibo_link crude" style="width:180px"><a href="https://www.baidu.com/">https://www.baidu.com/</a> </span>
+                    </p>
+                    <p class="in_seven">
+                        <span>业务标签</span><span class="tag crude">抵制日韩</span>
+                        <span>业务描述</span><span class="description crude" style="width:180px">抵制日韩</span>
+                    </p>
+                    <div class="in_photo">
+                        <img src="/static/images/unknown.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="influnce" style="margin-top:8px;padding-bottom:79px;">
+            <h3 style="color:white;font-weight:900;margin-left: -20px;">影响力信息</h3>
+            <div class="influ-1">
+                <h3 class="influ_one">
+                    <span>活跃度为</span><b class="active0">***</b>
+                    <span>,处于</span><b class="level0">&&&</b><span>水平</span>
+                </h3>
+                <h3 class="influ_two">
+                    <span>影响力为</span><b class="active0">***</b>
+                    <span>,处于</span><b class="level0">&&&</b><span>水平</span>
+                </h3>
+                <h3 class="influ_three">
+                    <span>敏感度为</span><b class="active0">***</b>
+                    <span>,处于</span><b class="level0">&&&</b><span>水平</span>
+                </h3>
+            </div>
+        </div>
+        <div class="activity">
+            <h3 style="color:white;font-weight:900;">活动信息</h3>
+            <div class="location">
+                <div class="message">
+                    <p class="mes_one">
+                        <span>活跃位置</span>&nbsp;&nbsp;<span class="position">北京</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span>IP地址</span>&nbsp;&nbsp;<span class="IP">231.412.45.21</span>
+                    </p>
+                    <p class="mes_two">
+                        <span>在</span>&nbsp;<span class="time">19:00 - 22:00</span>&nbsp;<span>最为活跃</span>
+                    </p>
+                </div>
+            </div>
+            <div id="activity_map" style="width:80%;height:400px;margin:40px auto 0;">
+
+            </div>
+        </div>
+        <div class="social" style="padding-top:35px;">
+            <h3 style="color:white;font-weight:900;">社交信息</h3>
+            <div class="social-1">
+                <h3 class="soc_one">
+                    <span>转发</span>
+                    <span class="user">
+                        谭三藏 谭三藏 谭三藏 谭三藏 谭三藏 谭三藏
+                        谭三藏 谭三藏 谭三藏 谭三藏 谭三藏 谭三藏
+                    </span>
+                </h3>
+                <h3 class="soc_two">
+                    <span>被转发</span>
+                    <span class="user">八戒</span>
+                </h3>
+                <h3 class="soc_three">
+                    <span>评论</span>
+                    <span class="user">悟饭</span>
+                </h3>
+                <h3 class="soc_four">
+                    <span>被评论</span>
+                    <span class="user">如来</span>
+                </h3>
+            </div>
+        </div>
+        <div class="preference" style="margin-top:18px;">
+            <h3 style="color:white;font-weight:900;padding-top:1.5%">偏好信息</h3>
+            <div id="key_words" style="width: 80%;height:250px;margin:20px auto;"></div>
+            <div id="micro_topic" style="width: 80%;height:250px;margin:0 auto;"></div>
+            <div class="talk" style="width: 80%;margin: 0 auto">
+                <p>
+                    <span>话题</span>
+                    <span class="talk_name">电信诈骗</span>
+                </p>
+            </div>
+        </div>
+        <div class="text">
+            <h3 style="color:white;font-weight:900;">文本信息</h3>
+            <div class="text_information">
+
+            </div>
+        </div>
+    </div>
+    <div id="content_right">
+        <div class="link_user" style="padding-top:5px;height: 265px">
+            <h3 style="padding-left:30px;color: white;font-weight:800;">关联人物</h3>
+            <div class="users" style="text-align: center;margin-top: 50px;">
+                <a href="###">王二麻子</a>
+                <a href="###">李思</a>
+                <a href="###">张三</a>
+                <a href="###">乌鸡</a>
+            </div>
+            <button class="user_more">+查看更多</button>
+        </div>
+        <div class="link_event" style="padding-top:29px;height: 265px">
+            <h3 style="padding-left:30px;color: white;font-weight:800;">关联事件</h3>
+            <div class="events" style="text-align: center;margin-top: 50px;">
+                <a href="###">抢银行</a>
+                <a href="###">抢车</a>
+                <a href="###">打人</a>
+                <a href="###">送快递</a>
+            </div>
+            <button class="event_more">+查看更多</button>
+        </div>
+        <div class="link_agency" style="padding-top:49px;height: 265px">
+            <h3 style="padding-left:30px;color: white;font-weight:800;">关联机构</h3>
+            <div class="agencys" style="text-align: center;margin-top: 50px;">
+                <a href="###">美国CIA</a>
+                <a href="###">俄罗斯KGB</a>
+                <a href="###">以色列Mossad</a>
+                <a href="###">英国MI6</a>
+            </div>
+            <button class="agency_more">+查看更多</button>
+        </div>
+        <div class="link_resources" style="padding-top: 81px;height: 265px">
+            <h3 style="padding-left:30px;color: white;font-weight:800;">关联资源</h3>
+            <div class="resources" style="text-align: center;margin-top: 50px;">
+                <a href="###">抢银行</a>
+                <a href="###">抢车</a>
+                <a href="###">打人</a>
+                <a href="###">送快递</a>
+            </div>
+            <button class="resources_more">+查看更多</button>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block my_js %}
+<script src="/static/js/echarts-2/build/dist/echarts.js"></script>
+<script src="/static/js/organization-1.js"></script>
+<script>
+
+
+</script>
+{% endblock %}

@@ -107,7 +107,7 @@ def get_mappings(index_name):
                     'properties':{
                         'en_name':{
                             'type': 'string',
-                            'index': 'my_analyzer'
+                            'index': 'not_analyzed'
                             },
                         'text':{
                             'type': 'string',

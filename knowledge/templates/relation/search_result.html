@@ -1,0 +1,57 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 探索结果</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/search_result.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <h3 style="color: white;font-weight: 900;padding-left: 2%;">探索结果</h3>
+
+    <div class="related_network" style="margin-top:8.5%;">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关网络</h3>
+        <div id="network" style="width: 80%;margin: 5% auto;"></div>
+    </div>
+
+    <div class="related_person" style="margin-top:8.5%;">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关人物</h3>
+        <div id="person" style="width: 80%;margin: 5% auto;"></div>
+    </div>
+
+    <div class="related_agencies">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关机构</h3>
+        <div id="agencies" style="width: 100%;margin: 5% auto;"></div>
+    </div>
+
+    <div class="related_events">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关事件</h3>
+        <div id="events" style="width: 100%;margin: 5% auto;"></div>
+    </div>
+
+    <div class="related_organization">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关组织</h3>
+        <div id="organization" style="width: 100%;margin: 5% auto;"></div>
+    </div>
+
+    <div class="related_subject">
+        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关专题</h3>
+        <div id="subject" style="width: 100%;margin: 5% auto;"></div>
+    </div>
+
+
+
+</div>
+{% endblock %}
+
+<!------JS-------->
+{% block my_js %}
+<script src="/static/js/search_result-1.js"></script>
+<script>
+
+</script>
+{% endblock %}
+

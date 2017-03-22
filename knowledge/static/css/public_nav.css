@@ -20,3 +20,47 @@ a,a:link,a:hover,a:visited,a:active {
     text-decoration: none;
 }
 /*内容样式*/
+#nav {
+    position: relative;
+    width: 1349px;
+    height: 135px;
+    padding:20px 0 0 100px;
+    margin: 10px auto 0;
+    background: url("/static/images/nav.png") no-repeat;
+    background-size: 100% 100%;
+}
+#nav .nav_list li {
+    float: left;
+}
+#nav .nav_list li a {
+    font-family: '微软雅黑';
+    display: block;
+    width: 140px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    font-weight: 900;
+}
+#nav .username {
+    width: 50%;
+    text-align: right;
+    position: absolute;
+    right: 10%;
+    bottom: -15%;
+}
+#nav .username .sign_out {
+    padding: 0.5% 3%;
+    color: white;
+    margin-left: 2%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px #838383;
+    cursor: pointer;
+}
+#nav .username .sign_out:hover {
+    background-color: #176de2;
+}
+
+

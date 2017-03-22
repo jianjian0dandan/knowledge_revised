@@ -1,42 +1,21 @@
 /*内容样式*/
 body {
     width: 100%;
-    /*width: 1349px;*/
     /*max-width: 1349px;*/
     min-width: 1349px;
     min-height: 1005px;
     /*max-height: 1005px;*/
-    background: url("/static/images/body-1.jpg") no-repeat;
+    background: url("/static/images/body.png") no-repeat;
 }
 #container {
     width: 100%;
     height: 800px;
     padding: 20px 20px 50px 20px;
 }
-#container #nav {
-    width: 90%;
-    height: 80px;
-    padding-left: 20px;
-    margin: 10px auto 0;
-}
-#container #nav .nav_list li {
-    float: left;
-}
-#container #nav .nav_list li a {
-    font-family: '微软雅黑';
-    display: block;
-    width: 140px;
-    height: 80px;
-    line-height: 80px;
-    text-align: center;
-    font-size: 16px;
-    color: white;
-    font-weight: 900;
-}
 #container #statistics {
     width: 90%;
     height: 368px;
-    margin: 75px auto 0;
+    margin: 20px auto 0;
 }
 #container #statistics .statis-1 {
     width: 155px;
@@ -61,6 +40,10 @@ body {
     line-height: 24px;
     padding-top: 3px;
     margin-bottom: 8px;
+    width: 155px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #container #statistics .statis-2,
 #container #statistics #statis-3{
@@ -122,6 +105,10 @@ body {
     font-size: 8px;
     color: white;
     margin-top: 10px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #container #my_hot {
     margin-top: 120px;
@@ -149,13 +136,20 @@ body {
     color: white;
     padding-left: 20px;
     margin-top: 6px;
-    height: 22px;
+    /*height: 22px;*/
     line-height: 22px;
 }
 #container #my_hot .hot_event .event_caption .event_name,
 #container #my_hot .hot_user .user_caption .user_name{
     display: inline-block;
-    width: 200px;
+    width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+#container #my_hot .hot_event .event_caption .event_text {
+    width: 240px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -180,12 +174,33 @@ body {
 #container #my_hot .hot_user .user_more:hover {
     background-color: #465f7d;
 }
+#container #my_hot .hot_user .user_details .details-2,
 #container #my_hot .my_focus .focus_details .details-2 {
     text-align: center;
-    margin-top: 11px;
+    margin-top: 8px;
 }
+#container #my_hot .hot_user .user_details .details-1 span,
+#container #my_hot .hot_user .user_details .details-2 span,
 #container #my_hot .my_focus .focus_details .details-1 span,
 #container #my_hot .my_focus .focus_details .details-2 span {
     font-size: 8px;
     color: white;
+    display: inline-block;
+    width: 65px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+#container #my_hot .my_focus .focus_details .details-1 span,
+#container #my_hot .my_focus .focus_details .details-2 span {
+    width: 80px;
+}
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1005px;
+        margin: 0 auto;
+    }
+}
+

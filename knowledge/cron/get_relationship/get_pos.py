@@ -139,7 +139,8 @@ def get_news_main(news_text):
             title = ''
             text = news
         else:
-            title,text = news_text.split('】')
+            title = news_text.split('】')[0]
+            text = news_text.split('】')[-1]
             if '【' in title:
                 title = title[2:len(title)]
             else:
@@ -159,7 +160,7 @@ def get_news_main(news_text):
     else:
         re_dict = {'people':'Null','organization':'Null','time':'Null','place':'Null'}
         
-    return result
+    return re_dict
 
 if __name__ == '__main__':
 

@@ -1,0 +1,264 @@
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 1408px;
+    margin: 0 auto;
+    background: url("/static/images/cards.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+#all_cards {
+    width: 100%;
+    position: relative;
+}
+#all_cards .cards_content {
+    /*display: inline-block;*/
+    width: 1174px;
+    margin: 0 auto;
+}
+#all_cards .left,#all_cards .right {
+    position: absolute;
+    top:50%;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    background: #bcbdbf;
+    cursor: pointer;
+}
+#all_cards .left {
+    left:0;
+}
+#all_cards .right {
+    right:0;
+}
+#all_cards .left:hover,#all_cards .right:hover {
+    background: #1dd2af;
+}
+#all_cards .cards_content #card_set {
+    width: 100%;
+    padding: 30px 100px;
+}
+/*----卡片----*/
+#all_cards .cards_content #card_set .card {
+    float: left;
+    margin-right: 20px;
+    width: 31%;
+    height: 22%;
+    min-width: 300px;
+    min-height: 200px;
+    border-radius: 10px;
+}
+
+/*三种卡片样式*/
+#all_cards .cards_content #card_set .name {
+    cursor: pointer;
+}
+/*政府机构*/
+#all_cards .cards_content #card_set #gov_card_details {
+    background: url("/static/images/government_card.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+#all_cards .cards_content #card_set #gov_card_details .details-1-left  {
+    width:60%;
+    display: inline-block;
+    text-align: center;
+    color: white;
+}
+#all_cards .cards_content #card_set #gov_card_details .details-1-left h3 {
+    width: 110px;
+    margin:0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #gov_card_details .details-1-left p {
+    margin-top:12px;
+    font-size: 8px
+}
+#all_cards .cards_content #card_set #gov_card_details .details-1-right {
+    float: right;
+    margin-top: -10px;
+    margin-right: 20px;
+    border: 2px solid #44b3e6
+}
+#all_cards .cards_content #card_set #gov_card_details .details-1-bottom {
+    text-align: center;
+    color: white;
+    font-size: 8px;
+    margin-top: 20px
+}
+#all_cards .cards_content #card_set #gov_card_details .details-2 {
+    width: 190px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    margin: 45px 0 0 25px;
+}
+#all_cards .cards_content #card_set #gov_card_details .details-2 .business {
+    font-weight: 800;
+    font-size: 10px
+}
+#all_cards .cards_content #card_set #gov_card_details .details-2 .tag {
+    display:inline-block;
+    padding: 2px 5px;
+    background-color:#3a89ad;
+    border-radius: 6px;
+    font-size: 6px;
+}
+/*人物卡片*/
+#all_cards .cards_content #card_set #per_card_details {
+    background: url("/static/images/person_card.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-top {
+    text-align: center;
+    position: relative;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-top .photo{
+    border: 2px solid black;
+    border-radius: 50%;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-top .per_xin{
+    position: absolute;
+    top: 41px;
+    left: 136px;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-top .name {
+    width: 110px;
+    margin:15px auto 0;
+    font-size:10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-left {
+    width:50%;
+    color: white;
+    padding:10px 0 0 15px;
+    float: left;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-left .attest {
+    width: 110px;
+    margin:5px 0;
+    font-size:10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-left span {
+    font-size: 10px;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-right {
+    width: 50%;
+    float: left;
+    color: white;
+    padding: 15px 0 0 10px
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-right .tag {
+    display:inline-block;
+    position: relative;
+    top: 4px;
+    width: 70px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-right .field {
+    display:inline-block;
+    position: relative;
+    top: 4px;
+    width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-right .range {
+    margin-top: 5px;
+}
+#all_cards .cards_content #card_set #per_card_details .details-1-bottom-right .range span {
+    font-size:10px;
+}
+/*事件卡片*/
+#all_cards .cards_content #card_set #event_card_details {
+    background: url("/static/images/event_card.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+#all_cards .cards_content #card_set #event_card_details .details-left {
+    float:left;
+    width:45%;
+    color: white;
+    padding-left: 10px;
+    height: 100%;
+}
+#all_cards .cards_content #card_set #event_card_details .details-left .name {
+    width: 130px;
+    padding:85px 0 0 38px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+#all_cards .cards_content #card_set #event_card_details .details-left p {
+    margin-top:12px;
+    font-size: 8px;
+    width:126px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right {
+    float: left;
+    position: relative;
+    width: 50%;
+    margin-top:40px;
+    padding-left: 20px;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right .details-right-1 {
+    width: 60%;
+    font-size: 10px;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right .photo {
+    position: absolute;
+    top:0;
+    right:0;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right .details-right-2 .tag {
+    display:inline-block;
+    padding: 2px 5px;
+    background-color:#b8bbbd;
+    border-radius: 6px;
+    font-size: 6px;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right .details-right-2 .legend {
+    color: #b8bbbd;
+    font-size: 8px;
+    text-indent: 15px;
+    height:56px;
+    position:relative;
+    line-height: 14px;
+    overflow: hidden;
+}
+#all_cards .cards_content #card_set #event_card_details .details-right .details-right-2 .legend::after {
+    content:"...";
+    font-weight:bold;
+    position:absolute;
+    bottom:0;
+    right:0;
+    color: black;
+    padding:0 20px 3px 25px;
+    background:url(http://css88.b0.upaiyun.com/css88/2014/09/ellipsis_bg.png) repeat-y;
+}
+/*------卡片样式 ---完----*/
+
+
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1408px;
+        margin: 0 auto;
+    }
+}
+

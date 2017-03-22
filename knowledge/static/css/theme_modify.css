@@ -1,0 +1,65 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1700px;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 1700px;
+    background: url("/static/images/modify.png") no-repeat;
+}
+#container {
+    width: 80%;
+    margin:5% auto 0;
+}
+#container .theme,#container .event {
+    width: 100%;
+}
+#container .theme #theme_list,#container .event #event_list {
+    width: 80%;
+    margin: 4% auto 0;
+}
+#container .theme #add_thing, #container .event #add_theme {
+    float: right;
+    padding: 5px 10px;
+    margin-top: 2%;
+    border-radius: 5px;
+    color: white;
+    background-color:#00aad8;
+    box-shadow: 2px 2px 2px #7c7c7d;
+    cursor: pointer;
+}
+#container .theme #add_thing:hover, #container .event #add_theme:hover {
+    background-color: #0b7ed8;
+}
+#container .event .event-1 {
+    width: 85%;
+    margin: 4% auto 0;
+}
+#container .event .event-1 span {
+    color: #676767;
+    font-size: 12px;
+}
+#container .event .event-1 #add_way,
+#container .event .event-1 #name_or_word {
+    display: inline-block;
+    margin: 10px 30px 10px 15px;
+    border: 1px solid #c6c6c6;
+    padding: 3px 5px;
+}
+#container .event .event-1 .sure {
+    padding: 4px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color:#00aad8;
+    box-shadow: 2px 2px 2px #7c7c7d;
+    cursor: pointer;
+}
+#container .event .event-1 .sure:hover {
+    background-color: #0b7ed8;
+}
+

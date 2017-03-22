@@ -28,7 +28,7 @@ def mappings_event_analysis_results():
 		'mappings':{
 			event_type:{
 				'properties':{
-					"topic":{
+					"name":{
 						"type":"string",
 						"index": "not_analyzed"
 					},
@@ -37,9 +37,10 @@ def mappings_event_analysis_results():
 						"type": "string"
 					},
 					"real_time":{
-						"type":"long"
+						"type":"string",
+						"index": "no"
 					},
-					"category":{
+					"event_type":{
 						"type":"string",
 						"index": "not_analyzed"
 					},
@@ -94,7 +95,7 @@ def mappings_event_analysis_results():
 						"type": "string"
 					},
 					"keywords_list":{
-						"index": "nos",
+						"index": "no",
 						"type": "string"
 					},
 					"hashtag_dict":{
@@ -119,10 +120,16 @@ def mappings_event_analysis_results():
 						"index": "not_analyzed",
 						"type": "string"
 					},
+					"compute_ts": {
+						"type": "long"
+					},
 					"submit_ts": {
 						"type": "long"
 					},
 					"compute_status": {
+						"type": "long"
+					},
+					"mid": {
 						"type": "long"
 					},
 					"first_compute":{
@@ -130,6 +137,9 @@ def mappings_event_analysis_results():
 					},
 					"immediate_compute":{
 						"type":"long"
+					},
+					"recommend_style":{
+					    'type':'string'
 					}
 				}
 			}
@@ -148,8 +158,8 @@ def mappings_event_analysis_results():
 
 if __name__ == "__main__":
 
-	#mappings_event_analysis_results()
-	a = es.get(index='event_result',doc_type='text',id='xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')['_source']['time_results']
-	print json.loads(a)
-	print type(json.loads(a))
+	mappings_event_analysis_results()
+	# a = es.get(index='event_result',doc_type='text',id='xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')['_source']['time_results']
+	# print json.loads(a)
+	# print type(json.loads(a))
 

@@ -1,0 +1,237 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 图谱添加</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/graph_add.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <div class="edit">
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="add_node" value="1" checked> 添加节点
+        </label>
+        &nbsp;&nbsp;
+        <label class="radio-inline">
+            <input type="radio" name="complie" id="add_relation" value="2"> 添加关系
+        </label>
+    </div>
+    <div class="node">
+        <div class="attributes" style="margin-top: 3%">
+            <div>
+                <span>节点类型</span>
+                <select id="node_type" onchange="type_1(this.value)">
+                    <option value="1">人物</option>
+                    <option value="2">事件</option>
+                    <option value="3">机构</option>
+                </select>
+            </div>
+            <!--人物-->
+            <div class="user">
+                <div>
+                    <span>选择模式</span>
+                    <select id="choose_mode" onchange="type_2(this.value)">
+                        <option value="1">推荐模式</option>
+                        <option value="2">手工模式</option>
+                    </select>
+                    <select id="tui_shou" onchange="type_3(this.value)">
+                        <option value="1">影响力推荐</option>
+                        <option value="2">言论敏感度推荐</option>
+                        <option value="3">关注用户推荐</option>
+                    </select>
+                </div>
+                <div class="time_t" style="margin-top: 5px;">
+                    <span>选择时间</span>
+                    <select id="task_time">
+                        <option value="2016-11-27">2016-11-27</option>
+                        <option value="2016-11-26">2016-11-26</option>
+                    </select>
+                </div>
+                <div class="manual" style="display: none;margin-top: 5px;">
+                    <span>输入用户</span> <input type="text" class="task_users" placeholder="输入用户id，多个用户用空格隔开"/>
+                </div>
+                <div class="manual-1" style="display: none;margin-top: 5px;">
+                    <span>上传文件</span>
+                    <input type="file" class="text" style="display: inline-block;padding: 0;">
+                </div>
+            </div>
+            <!--事件-->
+            <div class="event" style="display:none;">
+                <div>
+                    <span>添加方式</span>
+                    <select id="choose_mode-2" onchange="event_type_2(this.value)">
+                        <option value="1">推荐模式</option>
+                        <option value="2">手动添加</option>
+                        <option value="3">文件导入</option>
+                    </select>
+                </div>
+                <div class="manual" style="display: none;margin-top: 5px;">
+                    <span>事件名称</span> <input type="text" class="event_name"/>
+                    <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用空格隔开"/>
+                    <span>事件类型</span>
+                    <select id="event_lx">
+                        <option value="1">1</option>
+                    </select>
+                </div>
+                <div class="manual-1" style="display: none;margin-top: -15px;">
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;margin-right: 5px">时间范围:</span>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">从</span>
+                    <div style="display: inline-block;width: 200px;margin: 20px 0 0 0;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker6'>
+                                <input type='text' class="form-control start" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">到</span>
+                    <div style="display: inline-block;width: 200px;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker7'>
+                                <input type='text' class="form-control end" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="manual-2" style="display: none;margin-top: 5px;">
+                    <span>事件名称</span> <input type="text" class="event_name-2"/>
+                    <span>上传文件</span>
+                    <input type="file" class="text" style="display: inline-block;padding: 0;">
+                </div>
+            </div>
+            <!--机构-->
+            <div class="agency" style="display: none;">
+                <div>
+                    <span>选择模式</span>
+                    <select id="choose_mode_age" onchange="type_2_age(this.value)">
+                        <option value="1">推荐模式</option>
+                        <option value="2">手工模式</option>
+                    </select>
+                    <select id="tui_shou_age" onchange="type_3_age(this.value)">
+                        <option value="1">影响力推荐</option>
+                        <option value="2">言论敏感度推荐</option>
+                        <option value="3">关注用户推荐</option>
+                    </select>
+                </div>
+                <div class="time_t_age" style="margin-top: 5px;">
+                    <span>选择时间</span>
+                    <select id="task_time_age">
+                        <option value="2016-11-27">2016-11-27</option>
+                        <option value="2016-11-26">2016-11-26</option>
+                    </select>
+                </div>
+                <div class="manual" style="display: none;margin-top: 5px;">
+                    <span>输入机构</span> <input type="text" class="task_age"/>
+                </div>
+                <div class="manual-1" style="display: none;margin-top: 5px;">
+                    <span>上传文件</span>
+                    <input type="file" class="text" style="display: inline-block;padding: 0;">
+                </div>
+            </div>
+            <!------------->
+            <button class="add_sure">确 定</button>
+        </div>
+        <div id="node_list" style="width: 100%;">
+            <span>推荐人物</span>
+            <div id="recommend" style="width: 100%"></div>
+            <button class="join">加入图谱</button>
+        </div>
+    </div>
+
+
+    <div class="relation" style="display: none;">
+        <div class="rel_manual">
+            <div class="checkbox manual-1">
+                <label>
+                    <input type="checkbox" style="margin-left: -3%"/> 手动输入
+                </label>
+            </div>
+            <div class="manual-2">
+                <div class="one">
+                    <span>节点一</span>
+                    <input type="text" class="manone"/>
+                    <select class="one-type">
+                        <option value="" disabled selected>请选择节点类型</option>
+                        <option value="人物">人物</option>
+                        <option value="事件">事件</option>
+                    </select>
+                </div>
+                <div class="two">
+                    <span>节点二</span>
+                    <input type="text" class="mantwo"/>
+                    <select class="two-type">
+                        <option value="" disabled selected>请选择节点类型</option>
+                        <option value="人物">人物</option>
+                        <option value="事件">事件</option>
+                    </select>
+                </div>
+                <div class="three">
+                    <span>关系类型</span>
+                    <select id='three-type'>
+                        <option value="" disabled selected>请选择关系类型</option>
+                        <option value="好友">好友</option>
+                        <option value="同事">同事</option>
+                        <option value="亲属">亲属</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="add_plus">
+                <b class="icon icon-plus"></b>
+            </div>
+        </div>
+        <div class="uploading">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" style="margin-left: -3%;"/> 上传文件:
+                </label>
+                <div class="form-group filem" style="display: inline-block">
+                    <input type="file" id="relationFile" style="padding: 0;"
+                           multiple onchange="relationFileSelect(this.files)"/>
+                </div>
+                <button class="upload-1" style="display: inline-block">上&nbsp;传</button>
+                <button class="upload-2">确&nbsp;定</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+<script src="/static/js/graph_add-1.js"></script>
+<script>
+    $('#datetimepicker6').datetimepicker();
+    $('#datetimepicker7').datetimepicker();
+    $("#datetimepicker6").on("dp.change",function (e) {
+        $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+    });
+    $("#datetimepicker7").on("dp.change",function (e) {
+        $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+    });
+    $.each($("#container .edit input"),function (index,item) {
+        $(item).on('click',function () {
+            if ($(this).val()==1){
+                $('.node').show();
+                $('.relation').hide();
+            }else {
+                $('.node').hide();
+                $('.relation').show();
+            }
+        })
+    });
+
+</script>
+{% endblock %}

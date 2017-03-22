@@ -1,0 +1,53 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 920px;
+        margin: 0;
+    }
+}
+/*内容样式*/
+body {
+    width: 100%;
+    min-width: 1349px;
+    min-height: 920px;
+    background: url("/static/images/xxx_main.png") no-repeat;
+    margin: 0;
+}
+#container {
+    width: 80%;
+    padding: 2% 5%;
+    margin: 8.5% auto 0;
+}
+#container .new_property b {
+    display: inline-block;
+    width: 100px;
+}
+#container .new_property span {
+    color: #373737;
+    font-size: 14px;
+}
+#container .new_property input {
+    padding: 0.5% 1%;
+    border: 1px solid silver;
+    margin: 1% 2% 1% 1%;
+}
+#container .new_property .pro_sure,#container .theme_list .new_build {
+    padding: 0.4% 2%;
+    color: white;
+    margin-left: 2%;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #838383;
+    cursor: pointer;
+}
+#container .new_property .pro_sure:hover,#container .theme_list .new_build:hover {
+    background-color: #176de2;
+}
+#container .theme_list #special_topic {
+    width: 100%;
+}
+#container .theme_list .new_build {
+    float: right;
+    margin:2% 4% 0 0;
+}
