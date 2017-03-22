@@ -32,7 +32,8 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
-
+from knowledge.global_config import *
+from knowledge.global_utils import *
 p = Pinyin()
 WEEK = 7
 
@@ -811,23 +812,39 @@ def deal_event_tag(item ,submit_user):
 
 
 def search_data(input_data):
-        start_id = get_node_id(input_data['start_nodes'])
-        end_id = get_node_id(input_data['end_nodes'])
-        relation = input_data['relation'].split('&')
-        step = int(input_data['step'])
-        if input_data['limit']:
-            limit = 'limit '+input_data['limit']
-        else:
-            limit = ''
-        if input_data['short_path']:
-            compute_short_path(start_id,end_id,relation,step,limit)
-        else:
-            query = 'start n=node('+','.join(start_id)+'),e=node('+','.join(end_id)+') match (n)-[r:'+'|:'.join(relation)+'*0..'+step+']-(e) return n,x,e'+limit
-            result = graph.run(query)
+    start_id = get_node_id(input_data['start_nodes'])
+    end_id = get_node_id(input_data['end_nodes'])
+    relation = input_data['relation']
+    step = str(input_data['step'])
+    if input_data['limit']:
+        limit = 'limit '+input_data['limit']
+    else:
+        limit = ''
+    if len(start_id) == 0:
+        start_id = '*'
+    else:
+        start_id = ','.join(start_id)
+    if len(end_id) == 0:
+        end_id = '*'
+    else:
+        end_id = ','.join(end_id)
+    if len(relation) == 0:
+        relation = 'r'
+    else:
+        relation = 'r:'+'|:'.join(relation)
 
-        # start n=node(123,208),x=node(161) match (n)-[r:discuss|:join*1..2]-(x) return n,r,x
-
-
+    if input_data['short_path']==True:
+        compute_short_path(start_id,end_id,relation,step,limit)
+    else:
+        query = 'start n=node('+start_id+'),e=node('+end_id+') match (n)-['+relation+'*0..'+step+']-(e) return n,r,e '+limit
+        result = graph.run(query)
+        for i in result:
+            i = dict(i)
+            print i['n'],i['r'],i['e']
+            print i['n'].labels(),dict(i['n']).keys(),dict(i['n']).values()
+            for j in i['r']:
+                print j.type() #discuss
+    
 def get_node_id(start_node):
     input_id = []
     for node in start_node:
@@ -847,15 +864,22 @@ def get_node_id(start_node):
         elif node_type == group_node:
             primary = group_primary
             neo_index = group_index_name
-        if id_list:  #输入或者上传id
-            id_list
+        if node['ids']:  #输入或者上传id
+            id_list = node['ids']
         else:#属性搜索
-            condition={'must/should/must_not':{'key1':'value1','key2':'value2'}}
+            # condition={'must/should/must_not':{'key1':'value1','key2':'value2'}}
+            condition = node['conditions']
             if node_type == people_node or node_type == org_node:#人，机构
                 if node_type == people_node:
-                    condition['must']['terms']={'verify_type':peo_list}
+                    try:
+                        condition['must'].append({'terms':{'verify_type':peo_list}})
+                    except:
+                        condition['must'] = [{'terms':{'verify_type':peo_list}}]
                 else:
-                    condition['must']['terms']={'verify_type':org_list}
+                    try:
+                        condition['must'].append({'terms':{'verify_type':org_list}})
+                    except:
+                        condition['must'] = [{'terms':{'verify_type':org_list}}]
                 es = es_user_portrait
                 es_index = portrait_index_name
                 es_type = portrait_index_type
@@ -877,14 +901,20 @@ def get_node_id(start_node):
                     'bool':condition
                 }
             }
-            result = es_user_portrait.search(index=portrait_index_name,type=portrait_index_type,body=query_body)['hits']['hits']
+            print query_body
+            result = es.search(index=es_index,doc_type=es_type,body=query_body)['hits']['hits']
             id_list = [i['_id'] for i in result]
         #'node:node_type(primary=id_list)'
+        print id_list
         for i in id_list:
-            input_id.append(graph.run('start n=node:'+neo_index+'("'+primary+':'+i+'") return id(n)')) 
+            a = graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')
+            for j in a:
+                input_id.append(str(dict(j)['id(n)']))
+            # input_id.append(graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')) 
     return input_id     
 
 def compute_short_path(start_id,end_id,relation,step,limit):
-    quert = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-[r:'+'|:'.join(relation)+'*0..'+step+']-e ) return p'+limit
+    query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
     result = graph.run(query)
-
+    for i in result:
+        print dict(i)
