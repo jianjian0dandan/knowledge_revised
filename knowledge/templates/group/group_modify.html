@@ -1,0 +1,51 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 编辑群体</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/group_modify.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <h1 style="color: white;font-weight:800;padding-top: 0.5%">编辑群体</h1>
+    <div class="theme" style="margin-top: 8%;">
+        <h3 class="theme_name" style="color: white;font-weight:800;padding-top: 0.5%">XX群体</h3>
+        <div id="theme_list"></div>
+        <button id="add_thing">添加人物</button>
+    </div>
+    <div class="event" style="margin-top: 48%">
+        <h3 style="color: white;font-weight:800;padding-top: 0.5%">添加人物</h3>
+        <div class="event-1">
+            <span>添加方式</span>
+            <select id="add_way" onchange="add_way(this.value)">
+                <option value="1">关联添加</option>
+                <option value="2">手动添加</option>
+            </select>
+            <div class="hands" style="display:none;">
+                <span>输入人物名称或ID</span>
+                <input type="text" id="name_or_word"/>
+                <button class="sure">确定</button>
+            </div>
+        </div>
+        <div id="event_list"></div>
+        <button id="add_theme">加入群体</button>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+<!--<script src="/static/js/theme_modify-1.js"></script>-->
+<script>
+    function add_way(value) {
+        if (value==2){
+            $('.hands').show();
+        }else {
+            $('.hands').hide();
+        }
+    }
+</script>
+{% endblock %}

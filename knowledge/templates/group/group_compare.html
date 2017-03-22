@@ -1,0 +1,89 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 群体对比</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/theme_compare.css">
+<style>
+
+</style>
+{% endblock %}
+
+<!-------主要内容------->
+{% block main %}
+<div id="container">
+    <h1 style="font-weight:800;font-size: 38px">群体对比</h1>
+    <div class="two_theme" style="margin-top: 2%;text-align: center;">
+        <h2><span class="theme-1">群体1</span></h2>
+        <h2><span class="theme-2">群体2</span></h2>
+    </div>
+    <div class="link_user">
+        <div class="edit-user">
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="all_user" value="" checked> 全部人物
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="same_user" value=""> 相同人物
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="different_user" value=""> 不同人物
+            </label>
+        </div>
+        <div class="user_list">
+            <div id="list-1-user"></div>
+            <div id="list-2-user"></div>
+        </div>
+    </div>
+    <div class="include">
+        <div class="edit">
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="all" value="" checked> 全部事件
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="same" value=""> 相同事件
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="different" value=""> 不同事件
+            </label>
+        </div>
+        <div class="theme_list">
+            <div id="list-1"></div>
+            <div id="list-2"></div>
+        </div>
+    </div>
+    <div class="key_words">
+        <div class="edit-words">
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="all_words" value="" checked> 全部标签
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="same_words" value=""> 相同标签
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="complie" id="different_words" value=""> 不同标签
+            </label>
+        </div>
+        <div class="words_list">
+            <div id="list-1-words"></div>
+            <div id="list-2-words"></div>
+        </div>
+    </div>
+    <div class="tags">
+        <div class="tags_list">
+            <div id="list-1-tags"></div>
+            <div id="list-2-tags"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+
+<script>
+</script>
+{% endblock %}
