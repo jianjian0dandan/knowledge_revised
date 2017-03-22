@@ -306,9 +306,13 @@ def get_map_count():#获取地图统计
 
     location_result = dict()
     no_location_count = 0
+    count = 0
     s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_index_name, doc_type=portrait_index_type)
     while True:
         try:
+            count = count + 1
+            if count > 500:
+                break
             scan_re = s_re.next()['_source']
             try:
                 location = scan_re['location']
@@ -328,60 +332,78 @@ def get_map_count():#获取地图统计
             break
 
     return location_result
+
+def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
+
+    if len(uid_list) == 0:
+        return []
+    result = []
+    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return result
+    for i in range(0,len(search_result)):
+        item = search_result[i]
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']
+            if not data['location']:
+                continue
+            else:
+                location = data['location'].encode('utf-8')
+            
+            result.append([uid,location])
+
+    return result
+
+def get_detail_event_map(uid_list):#根据uid查询事件的location
+
+    if len(uid_list) == 0:
+        return []
+    result = []
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return result
+    for i in range(0,len(search_result)):
+        item = search_result[i]
+        uid = item['_id']
+        if not item['found']:
+            continue
+        else:
+            data = item['_source']
+            if not data['real_geo']:
+                continue
+            else:
+                location = data['real_geo'].encode('utf-8')
+            
+            result.append([uid,location])
+
+    return result 
+
+def get_all_geo():#地图链接：获取地址
+
+    event_list = []
+    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 50' % (event_index_name,event_primary)
+    result = graph.run(p_string)
+    for item in result:
+        event_list.append(item)
+    event_result = get_detail_event_map(event_list)
     
+    peo_list = []
+    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 100' % (node_index_name,people_primary)
+    result = graph.run(p_string)
+    for item in result:
+        peo_list.append(item)
+    peo_result = get_detail_per_org_map(peo_list)
 
-def get_geo():#获取事件地址
-
-    event_result = dict()
-    no_location_count = 0
-    s_re = scan(es_event, query={'query':{'match_all':{}}}, index=event_analysis_name, doc_type=event_text_type)
-    count = 0
-    while True:
-        count = count + 1
-        if count > 20:
-            break
-        try:
-            scan_re = s_re.next()['_source']
-            try:
-                location = eval(scan_re['geo_results'])
-                name = scan_re['name'].encode('utf-8')
-                event_result[name] = location
-            except:
-                no_location_count += 1
-        except StopIteration:
-            print 'ALL done'
-            break
-
-    people_result = dict()
-    org_result = dict()
-    s_re = scan(es_user_portrait, query={'query':{'match_all':{}}}, index=portrait_index_name, doc_type=portrait_index_type)
-    count = 0
-    while True:
-        count = count + 1
-        if count > 100:
-            break
-        try:
-            scan_re = s_re.next()['_source']
-            try:
-                location = scan_re['location'].encode('utf-8')
-                name = scan_re['uname'].encode('utf-8')
-                if not location:
-                    no_location_count += 1
-                    continue
-                if not name:
-                    name = scan_re['uid']
-                if len(location.split(' '))>1:
-                    location = location.split(' ')[0]
-                if scan_re['verify_type'] in org_list:
-                    org_result[name] = location
-                else:
-                    people_result[name] = location
-            except:
-                no_location_count += 1
-        except StopIteration:
-            print 'ALL done'
-            break
-    
+    org_list = []
+    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 100' % (org_index_name,org_primary)
+    result = graph.run(p_string)
+    for item in result:
+        org_list.append(item)
+    org_result = get_detail_per_org_map(org_list)
+        
     return event_result,people_result,org_result
 
 def get_type_key(item):
@@ -1175,9 +1197,121 @@ def get_group_graph(uid):#获取群体节点图谱
     return relation
             
             
+def get_people_geo(uid):#根据人物id查询人物的地图
 
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (node_index_name,node_primary,uid)
+    p_result = graph.run(p_string)
+    peo_list = [uid]
+    org_list = []
+    event_list = []
+    for item in p_result:
+        id_key = dict(dict(item[0]).values()[0]).values()[0]
+        id_type = dict(item[1]).values()[0]
+        if id_type == people_node:
+            peo_list.append(id_key)
+        elif id_type == org_node:
+            org_list.append(id_key)
+        elif id_type == event_node:
+            event_list.append(id_key)
+        else:
+            continue
 
+    event_result = get_detail_event_map(event_list)
+    people_result = get_detail_peo_org_map(peo_list)
+    org_relation = get_detail_peo_org_map(org_list)
+    
+    return event_result,people_result,org_relation
 
+def get_event_geo(uid):#根据事件id查询事件的地图
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (event_index_name,event_primary,uid)
+    p_result = graph.run(p_string)
+    peo_list = []
+    org_list = []
+    event_list = [uid]
+    for item in p_result:
+        id_key = dict(dict(item[0]).values()[0]).values()[0]
+        id_type = dict(item[1]).values()[0]
+        if id_type == people_node:
+            peo_list.append(id_key)
+        elif id_type == org_node:
+            org_list.append(id_key)
+        elif id_type == event_node:
+            event_list.append(id_key)
+        else:
+            continue
+
+    event_result = get_detail_event_map(event_list)
+    people_result = get_detail_peo_org_map(peo_list)
+    org_relation = get_detail_peo_org_map(org_list)
+    
+    return event_result,people_result,org_relation
+
+def get_org_geo(uid):#根据机构id查询机构的地图
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
+    p_result = graph.run(p_string)
+    peo_list = []
+    org_list = [uid]
+    event_list = []
+    for item in p_result:
+        id_key = dict(dict(item[0]).values()[0]).values()[0]
+        id_type = dict(item[1]).values()[0]
+        if id_type == people_node:
+            peo_list.append(id_key)
+        elif id_type == org_node:
+            org_list.append(id_key)
+        elif id_type == event_node:
+            event_list.append(id_key)
+        else:
+            continue
+
+    event_result = get_detail_event_map(event_list)
+    people_result = get_detail_peo_org_map(peo_list)
+    org_relation = get_detail_peo_org_map(org_list)
+    
+    return event_result,people_result,org_relation
+
+def get_topic_geo(uid):#根据专题id查询专题的地图
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (special_event_index_name,special_event_primary,uid)
+    p_result = graph.run(p_string)
+    event_list = []    
+    for item in p_result:
+        id_key = dict(dict(item[0]).values()[0]).values()[0]
+        id_type = dict(item[1]).values()[0]
+        if id_type == event_node:
+            event_list.append(id_key)
+        else:
+            continue
+
+    event_result = get_detail_event_map(event_list)
+    people_result = []
+    org_relation = []
+    
+    return event_result,people_result,org_relation
+
+def get_group_geo(uid):#根据群体id查询群体的地图
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (group_index_name,group_primary,uid)
+    p_result = graph.run(p_string)
+    peo_list = []
+    org_list = []
+    for item in p_result:
+        id_key = dict(dict(item[0]).values()[0]).values()[0]
+        id_type = dict(item[1]).values()[0]
+        if id_type == people_node:
+            peo_list.append(id_key)
+        elif id_type == org_node:
+            org_list.append(id_key)
+        else:
+            continue
+
+    event_result = []
+    people_result = get_detail_peo_org_map(peo_list)
+    org_relation = get_detail_peo_org_map(org_list)
+    
+    return event_result,people_result,org_relation
 
 
 
