@@ -146,18 +146,30 @@ def get_map():#地图页面
 @login_required
 def get_person_atr():#人物属性页面
 
+    user_id = request.args.get('user_id', '')
+
+    ### 人物属性查询函数
+
     return render_template('index/person.html')
 
 @mod.route('/event/', methods=['GET','POST'])
 @login_required
 def get_event_atr():#事件属性页面
 
+    user_id = request.args.get('user_id', '')
+
+    ### 事件属性查询函数
+    
     return render_template('index/event.html')
 
 @mod.route('/organization/', methods=['GET','POST'])
 @login_required
 def get_organization():#机构属性页面
 
+    user_id = request.args.get('user_id', '')
+
+    ### 机构属性查询函数
+    
     return render_template('index/organization.html')
 
 @mod.route('/cards/', methods=['GET','POST'])
