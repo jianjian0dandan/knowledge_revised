@@ -10,56 +10,51 @@
  function map_geo(data) {
      var geo=eval(data);
      var myChart = echarts.init(document.getElementById('statis-3'));
-// 指定图表的配置项和数据
-//function randomData() {
-//    return Math.round(Math.random()*1000);
-//}
-
-option = {
-    tooltip: {
-        trigger: 'item',
-    },
-    visualMap: {
-        min: 0,
-        max: 2500,
-        left: 'left',
-        top: 'bottom',
-        itemWidth: 20,
-        itemHeight: 80,
-        text: ['高','低'],           // 文本，默认为数值文本
-        inRange: {
-            color: ['#e0ffff', '#006edd']
+    option = {
+        tooltip: {
+            trigger: 'item',
         },
-        textStyle: {
-            color: '#fff',
-            fontSize: 12,
-        },
-        calculable: true
-    },
-    series: [
-        {
-            name:'地理位置',
-            type: 'map',
-            mapType: 'china',
-            roam: true,
-            label: {
-                normal: {
-                    show: false,
-                    areaColor: '#142d41',
-                    borderColor: '#477bc4'
-                },
-                emphasis: {
-                    show: true,
-                    areaColor: '#67b4d0'
-                }
+        visualMap: {
+            min: 0,
+            max: 2500,
+            left: 'left',
+            top: 'bottom',
+            itemWidth: 20,
+            itemHeight: 80,
+            text: ['高','低'],           // 文本，默认为数值文本
+            inRange: {
+                color: ['#e0ffff', '#006edd']
             },
-            data:geo
-        }
-    ]
-};
+            textStyle: {
+                color: '#fff',
+                fontSize: 12,
+            },
+            calculable: true
+        },
+        series: [
+            {
+                name:'地理位置',
+                type: 'map',
+                mapType: 'china',
+                roam: true,
+                label: {
+                    normal: {
+                        show: false,
+                        areaColor: '#142d41',
+                        borderColor: '#477bc4'
+                    },
+                    emphasis: {
+                        show: true,
+                        areaColor: '#67b4d0'
+                    }
+                },
+                data:geo
+            }
+        ]
+    };
 
 // 使用刚指定的配置项和数据显示图表。
-myChart.setOption(option);
+    myChart.setOption(option);
 
  }
 
