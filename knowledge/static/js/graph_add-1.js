@@ -169,7 +169,6 @@ $.ajax({
     success:recommend
 });
 function recommend(data) {
-    console.log(data)
     var data = eval(data);
     $('#recommend').bootstrapTable('load', data);
     $('#recommend').bootstrapTable({
