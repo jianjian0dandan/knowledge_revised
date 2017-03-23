@@ -19,6 +19,8 @@ from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
 org_list = [1,2,3,4,5,6,7,8]
+black_location = [u'北京',u'天津',u'上海',u'重庆',u'河北',u'山西',u'辽宁',u'吉林',u'黑龙江',u'江苏',u'浙江',u'安徽',u'福建',u'江西',u'山东',u'河南',\
+                    u'湖北',u'湖南',u'广东',u'海南',u'四川',u'贵州',u'云南',u'陕西',u'甘肃',u'青海',u'台湾',u'内蒙古',u'广西',u'西藏',u'宁夏',u'新疆',u'香港',u'澳门']
 
 def uid_name(uid_list,result):
 
@@ -323,10 +325,13 @@ def get_map_count():#获取地图统计
                     continue
                 if len(location.split(' '))>1:
                     location = location.split(' ')[0]
-                try:
-                    location_result[location] += 1
-                except:
-                    location_result[location] = 1
+                if location in set(black_location):
+                    try:
+                        location_result[location] += 1
+                    except:
+                        location_result[location] = 1
+                else:
+                    continue
             except:
                 no_location_count += 1
         except StopIteration:
@@ -358,10 +363,14 @@ def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
             else:
                 name = data['uname']
 
-            if not data['location']:
+            if not data['location'] or not len(data['location'].split(' ')):
                 continue
             else:
-                location = data['location']
+                lo = data['location'].split(' ')[0]
+                if lo in set(black_location):
+                    location = data['location']
+                else:
+                    continue                    
             
             result.append([name,location])
 
@@ -386,10 +395,10 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
                 name = uid
             else:
                 name = data['name'].replace('&',',')
-            if not data['real_geo']:
+            if not data['real_geo'] or not data['real_geo'] in set(black_location):
                 continue
             else:
-                location = data['real_geo'].replace('&',',')
+                location = data['real_geo']
             
             result.append([name,location])
 
