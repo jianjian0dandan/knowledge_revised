@@ -10,7 +10,7 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h2 style="color: white;font-weight: 900;">探索页面</h2>
+    <h1 class="search_add" style="color: white;font-weight: 900;">探索页面</h1>
     <div class="look">
         <div class="search">
             <input type="text" class="find"/>
@@ -25,44 +25,43 @@
             <div class="start" style="width:95%;">
                 <b class="icon icon-plus-sign"></b>
                 <span>节点类型</span>
-                <select id="s-type" onchange="">
-                    <option value="">人物</option>
-                    <option value="">事件</option>
-                    <option value="">群体</option>
-                    <option value="">机构</option>
-                    <option value="">专题</option>
+                <select id="s-type" onchange="start(this.value)">
+                    <option value="1">人物</option>
+                    <option value="2">机构</option>
+                    <option value="3">事件</option>
+                    <option value="4">专题</option>
+                    <option value="5">群体</option>
                 </select>
                 <div class="options" style="width: 80%;">
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-1" value="" checked> 输入节点标识
+                        <input type="radio" name="tionses" id="options-1" value="1" checked> 输入节点标识
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-2" value=""> 上传
+                        <input type="radio" name="tionses" id="options-2" value="2"> 上传
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-3" value=""> 属性搜索
+                        <input type="radio" name="tionses" id="options-3" value="3"> 属性搜索
                     </label>
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
                 <input type="file" class="options-2-value" style="display: none;">
                 <div class="options-3-value" style="display: none;">
-                    <select onchange="">
-                        <option value="">与</option>
-                        <option value="">或</option>
-                        <option value="">非</option>
+                    <select onchange="s_yhf(this.value)">
+                        <option value="y">与</option>
+                        <option value="h">或</option>
+                        <option value="f">非</option>
                     </select>
-                    <select onchange="">
-                        <option value="">不限</option>
-                        <option value="">昵称</option>
-                        <option value="">个人描述</option>
-                        <option value="">业务标签</option>
-                        <option value="">关键词</option>
-                        <option value="">微话题</option>
-                        <option value="">注册地</option>
+                    <select id="s_tag" onchange="tag_start(this.value)">
+                        <option value="uname">微博昵称</option>
+                        <option value="description">个人描述</option>
+                        <option value="function_mark">业务标签</option>
+                        <option value="keywords">关键词</option>
+                        <option value="hashtag">微话题</option>
+                        <option value="location">注册地</option>
                     </select>
                     <input type="text" class="options-2_down">
-                    <b class="icon icon-plus"></b>
-                    <b class="icon icon-minus"></b>
+                    <b class="icon icon-plus options-2_down_up"></b>
+                    <b class="icon icon-minus options-2_down_down"></b>
                 </div>
             </div>
         </div>
@@ -70,13 +69,15 @@
             <p class="tit">关系</p>
             <div class="relation" style="width:95%;">
                 <div class="options" style="width: 80%;">
-                    <label class="radio-inline">
-                        <input type="radio" name="tions" id="rel-1" value="" checked> 选择关系
-                    </label>
-                    <input type="text" class="rel-1-value"/>
-                    <label class="radio-inline" style="margin-left: 11%">
-                        <input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系
-                    </label>
+                    <!--<label class="radio-inline">-->
+                        <!--<input type="radio" name="tions" id="rel-1" value="" checked> 选择关系-->
+                    <!--</label>-->
+                    <span>选择关系</span>
+                    <input type="text" class="rel-1-value" placeholder="请输入您想添加的关系"/>
+                    <button class="rel-2-value" type="button" data-toggle="modal">选择为您推荐的关系</button>
+                    <!--<label class="radio-inline" style="margin-left: 11%">-->
+                        <!--<input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系-->
+                    <!--</label>-->
                 </div>
             </div>
         </div>
@@ -86,21 +87,21 @@
                 <b class="icon icon-plus-sign"></b>
                 <span>节点类型</span>
                 <select id="s-3-type" onchange="">
-                    <option value="">人物</option>
-                    <option value="">事件</option>
-                    <option value="">群体</option>
-                    <option value="">机构</option>
-                    <option value="">专题</option>
+                    <option value="1">人物</option>
+                    <option value="2">事件</option>
+                    <option value="3">群体</option>
+                    <option value="4">机构</option>
+                    <option value="5">专题</option>
                 </select>
                 <div class="options-3" style="width: 80%;">
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-3-1" value="" checked> 输入节点标识
+                        <input type="radio" name="strotions" id="options-3-1" value="1" checked> 输入节点标识
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-3-2" value=""> 上传
+                        <input type="radio" name="strotions" id="options-3-2" value="2"> 上传
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="tions" id="options-3-3" value=""> 属性搜索
+                        <input type="radio" name="strotions" id="options-3-3" value="3"> 属性搜索
                     </label>
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
@@ -136,13 +137,68 @@
     </div>
     <button id="sure_advan">高级搜索</button>
 </div>
+<!--关系模态框-->
+<div class="modal fade" id="relation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">关系选择</h4>
+            </div>
+            <div class="modal-body" id="rel_value_list">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="rel_value()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 <!------JS-------->
 {% block my_js %}
 <script src="/static/js/search-1.js"></script>
 <script>
-
+    $('.rel-2-value').on('click',function () {
+        $('#relation').modal('show');
+    });
+    $.each($("#container .start input"),function (index,item) {
+        $(item).on('click',function () {
+            if ($(this).val()==1){
+                $('.start .options-1-value').show();
+                $('.start .options-2-value').hide();
+                $('.start .options-3-value').hide();
+            }else if ($(this).val()==2){
+                $('.start .options-1-value').hide();
+                $('.start .options-2-value').show();
+                $('.start .options-3-value').hide();
+            }else if ($(this).val()==3){
+                $('.start .options-1-value').hide();
+                $('.start .options-2-value').hide();
+                $('.start .options-3-value').show();
+            }
+        })
+    });
+    $.each($("#container .end input"),function (index,item) {
+        $(item).on('click',function () {
+            if ($(this).val()==1){
+                $('.end .options-1-value').show();
+                $('.end .options-2-value').hide();
+                $('.end .options-3-value').hide();
+            }else if ($(this).val()==2){
+                $('.end .options-1-value').hide();
+                $('.end .options-2-value').show();
+                $('.end .options-3-value').hide();
+            }else if ($(this).val()==3){
+                $('.end .options-1-value').hide();
+                $('.end .options-2-value').hide();
+                $('.end .options-3-value').show();
+            }
+        })
+    });
 </script>
 {% endblock %}
 

@@ -2,20 +2,35 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 820px;
     }
 }
 /*内容样式*/
 body {
     width: 100%;
+    margin: 0;
     min-width: 1349px;
-    min-height: 820px;
-    background: url("/static/images/similarity.png") no-repeat;
+    /*min-height: 820px;*/
+    background: url("/static/images/graph_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container {
     width: 80%;
-    padding: 2% 5%;
-    margin: 8.5% auto 0;
+    padding:45px 80px 100px;
+    margin: 100px auto 100px;
+    position: relative;
+    background: #f3f4f5;
+    box-shadow: 2px 1px 1px #ccced0;
+}
+#container .search_add {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 225px;
+    height:78px;
+    line-height: 70px;
+    text-align: center;
+    background: url("/static/images/xxx_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container .search {
     width: 70%;
@@ -126,6 +141,15 @@ body {
 #container #advanced_search .advan-2 input {
     border: 1px solid silver;
     padding: 0.4% 1%;
+}
+#container #advanced_search .advan-2 .rel-2-value {
+    padding: 3px 8px;
+    border: 1px solid #979797;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+#container #advanced_search .advan-2 .rel-2-value:hover {
+    background-color: #dadada;
 }
 /*终止节点*/
 #container #advanced_search .advan-3 {
