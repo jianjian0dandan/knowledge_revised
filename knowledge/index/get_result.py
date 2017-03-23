@@ -355,12 +355,12 @@ def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
             if not data['uname']:
                 name = uid
             else:
-                name = data['uname'].encode('utf-8')
+                name = data['uname']
 
             if not data['location']:
                 continue
             else:
-                location = data['location'].encode('utf-8')
+                location = data['location']
             
             result.append([name,location])
 
@@ -384,11 +384,11 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             if not data['name']:
                 name = uid
             else:
-                name = data['name'].encode('utf-8')
+                name = data['name']
             if not data['real_geo']:
                 continue
             else:
-                location = data['real_geo'].encode('utf-8')
+                location = data['real_geo']
             
             result.append([name,location])
 

@@ -139,7 +139,7 @@ def get_map():#地图页面
         people_result = []
         org_relation = []
         flag = 'Wrong Type'
-
+    print event_result,people_result,org_relation
     return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation, flag = flag)
 
 @mod.route('/person/', methods=['GET','POST'])
