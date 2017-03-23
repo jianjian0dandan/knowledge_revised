@@ -78,11 +78,7 @@
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0ECXIPy41grtI3jUXqQMgILaG1vKUiLo"></script>
 <script src="/static/js/DrawingManager_min.js"></script>
 <script>
-    //var event_result=decodeURIComponent("{{data_dict}}");
-    var event_result={{data_dict|tojson}};
-//    var people_result='{{people_result}}';
-//    var org_relation='{{org_relation}}';
-    console.log(event_result)
+    var result={{data_dict|tojson}};
 
     $('#legend p').on('click',function () {
         var colour=$(this).find('.dot').css('backgroundColor');
@@ -99,27 +95,55 @@
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
     var index = 0;
     var myGeo = new BMap.Geocoder();
-    var adds = [
-        '北京','上海','泰安','福州','深圳','大连','乌鲁木齐','西藏'
-    ];
+    var adds = [];
+
+    for(var key in result){
+        if (key== 'event'){
+            $.each(result[key],function (index,item) {
+                geocodeSearch(item[1],item[0],'event');
+            })
+        }else if (key== 'org'){
+            $.each(result[key],function (index,item) {
+                geocodeSearch(item[1],item[0],'org');
+            })
+        }if (key== 'people'){
+            $.each(result[key],function (index,item) {
+                geocodeSearch(item[1],item[0],'people');
+            })
+        }
+    }
 
     // 编写自定义函数,创建标注
     var marker;
-    function addMarker(point,label){
-        var myIcon = new BMap.Icon("/static/images/map_event.png", new BMap.Size(19,50));
-        marker = new BMap.Marker(point,{icon:myIcon});
+    function addMarker(point,label,news,type){
+        var title,message;
+        if (type=='event'){
+            var myIcon = new BMap.Icon("/static/images/map_event.png", new BMap.Size(19,50));
+            marker = new BMap.Marker(point,{icon:myIcon});
+            title='事件';
+            message='事件关键词：'+news+'<br/> 所在地：';
+        }else if (type=='people'){
+            var myIcon = new BMap.Icon("/static/images/map_user.png", new BMap.Size(19,50));
+            marker = new BMap.Marker(point,{icon:myIcon});
+            title='人物';
+            message='人物昵称：'+news+'<br/> 所在地：';
+        }else {
+            var marker = new BMap.Marker(point);
+            title='机构';
+            message='机构名称：'+news+'<br/> 所在地：';
+        }
         map.addOverlay(marker);
         marker.setLabel(label);
         marker.addEventListener("click", function(){
-            opts.title=this.xc.innerText+'----╮(╯▽╰)╭';
-            map.openInfoWindow(new BMap.InfoWindow(this.xc.innerText, opts),point); //开启信息窗口
+            var information=(message + this.xc.innerText);
+            map.openInfoWindow(new BMap.InfoWindow(information,opts),point); //开启信息窗口
         });
         var opts = {
             width : 100,     // 信息窗口宽度
-            height: 20,     // 信息窗口高度
-            title : '' , // 信息窗口标题
+            height: 80,     // 信息窗口高度
+            title : title ,    // 信息窗口标题
             enableMessage:true,//设置允许信息窗发送短息
-            message:""
+            message:''
         };
 
     };
@@ -203,26 +227,24 @@
 
     ///-----------------------------
     var zuobiao_nums=[];
-    function bdGEO(){
-        var add = adds[index];
-        geocodeSearch(add);
-        index++;
-    };
-    bdGEO();
+//    function bdGEO(){
+//        var add = adds[index];
+//        geocodeSearch(add);
+//        index++;
+//    };
+//    bdGEO();
     var dote=[];
     var curve;
-    function geocodeSearch(add){
+    function geocodeSearch(add,news,type){
         if(index < adds.length){
             setTimeout(window.bdGEO,400);
         }
         myGeo.getPoint(add, function(point){
             if (point) {
                 zuobiao_nums.push(point);
-//                document.getElementById("result").innerHTML +=  index + "、" + add + ":" + point.lng + "," + point.lat + "</br>";
                 var address = new BMap.Point(point.lng, point.lat);
-//                addMarker(address,new BMap.Label(index+":"+add,{offset:new BMap.Size(20,-10)}));
-                addMarker(address,new BMap.Label(add,{offset:new BMap.Size(20,-10)}));
-                Draw_arc(point);
+                addMarker(address,new BMap.Label(add,{offset:new BMap.Size(20,-10)}),news,type);
+//                Draw_arc(point);
             }
         });
     }
@@ -236,16 +258,19 @@
         map.addOverlay(curve); //添加到地图中
         arcline.push(curve);
     };
-    window.setInterval(arc,3000);
-    function arc() {
-        window.clearInterval();
-        for (var ls=0;ls<arcline.length;ls++){
-            map.removeOverlay(arcline[ls]);
-        }
-        arcline=[];
-        var curve2 = new BMapLib.CurveLine(dote, {strokeColor:'red', strokeWeight:3, strokeOpacity:0.5}); //创建弧线对象
-        map.addOverlay(curve2); //添加到地图中
-        arcline.push(curve2);
+    for (var ls=0;ls<arcline.length;ls++){
+        map.removeOverlay(arcline[ls]);
     }
+    arcline=[];
+    var curve2 = new BMapLib.CurveLine(dote, {strokeColor:'red', strokeWeight:3, strokeOpacity:0.5}); //创建弧线对象
+    map.addOverlay(curve2); //添加到地图中
+    arcline.push(curve2);
+
+//    window.setInterval(arc,3000);
+//    function arc() {
+//        window.clearInterval();
+//
+//    }
+
 </script>
 {% endblock %}

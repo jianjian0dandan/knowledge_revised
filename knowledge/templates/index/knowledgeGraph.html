@@ -1,3 +1,4 @@
+<meta charset="UTF-8">
 {% block title %}<title>知识图谱 - 图谱关系图</title>{% endblock %}
 {% block css %}
 <style>
@@ -38,24 +39,22 @@
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/d3.min.js"></script>
 <script>
-    var links = [
-        {source: "IFIND", target: "同花顺", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "IFIND", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "手机金融信息服务", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "互联网金融信息服务", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "网上行情交易系统", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "金融资讯及数据服务", type: "resolved", rela:"主营产品"},
-        {source: "同花顺", target: "互联网金融", type: "resolved",rela:"主营产品"},
-        {source: "同花顺", target: "金融服务", type: "resolved",rela:"主营产品"},
-        {source: "手机金融信息服务", target: "金融信息服务", type: "resolved", rela:"上位产品"},
-        {source: "互联网金融信息服务", target: "金融信息服务", type: "resolved", rela:"上位产品"},
-        {source: "二三四五002195", target: "金融信息服务", type: "resolved", rela:"主营产品"},
-        {source: "大智慧601519", target: "金融信息服务", type: "resolved", rela:"主营产品"},
-        {source: "大智慧601519", target: "互联网金融信息服务", type: "resolved", rela:"主营产品"},
-        {source: "金融服务", target: "移动互联网", type: "resolved", rela:"上游"},
-        {source: "金融服务", target: "互联网金融服务", type: "resolved", rela:"下位产品"},
-        {source: "金融服务", target: "综合金融服务", type: "resolved", rela:"下位产品"}
-    ];
+    var relation={{relation|tojson}};
+    var links = [];
+    $.each(relation,function (index,item) {
+        var source,target;
+        if (item[0]==''){
+            source='未知';
+        }else {
+            source=item[0];
+        }
+        if (item[2]==''){
+            target='未知';
+        }else {
+            target=item[2];
+        }
+        links.push({source:source,type1:item[1], target:target, type2:item[3], rela:item[4]});
+    });
 
     var nodes = {};
 
@@ -125,15 +124,15 @@
             .style("stroke",function(d){
                 var lineColor;
                 //根据关系的不同设置线条颜色
-                if(d.rela=="上位产品" || d.rela=="上游" || d.rela=="下位产品"){
+                if(d.rela=="discuss"){
                     lineColor="#A254A2";
-                }else if(d.rela=="主营产品"){
+                }else {
                     lineColor="#B43232";
                 }
                 return lineColor;
             })
             .style("pointer-events", "none")
-            .style("stroke-width",0.5)//线条粗细
+            .style("stroke-width",1.5)//线条粗细
             .attr("marker-end", "url(#resolved)" );//根据箭头标记的id号标记箭头
 
     var edges_text = svg.append("g").selectAll(".edgelabel")
@@ -162,22 +161,26 @@
             .data(force.nodes())//表示使用force.nodes数据
             .enter().append("circle")
             .style("fill",function(node){
-                var color;//圆圈背景色
+                var color="#F6E8E9";//圆圈背景色
                 var link=links[node.index];
-                if(node.name==link.source.name && link.rela=="主营产品"){
+                if(link.type1=='event'){
                     color="#F6E8E9";
-                }else{
-                    color="#F9EBF9";
+                }else if(link.type1=='org'){
+                    color="rgb(243, 25, 47)";
+                }else if(link.type1=="people"){
+                    color="#00d464";
                 }
                 return color;
             })
             .style('stroke',function(node){
                 var color;//圆圈线条的颜色
                 var link=links[node.index];
-                if(node.name==link.source.name && link.rela=="主营产品"){
+                if(link.type1=='event'){
                     color="#B43232";
-                }else{
+                }else if(link.type1=='org'){
                     color="#A254A2";
+                }else if(link.type1=='people'){
+                    color="#795548";
                 }
                 return color;
             })
@@ -188,7 +191,7 @@
                     if(line.source.name==node.name || line.target.name==node.name){
                         return 4;
                     }else{
-                        return 0.5;
+                        return 1.5;
                     }
                 });
                 //d3.select(this).style('stroke-width',2);
@@ -233,7 +236,7 @@
             .style('fill',function(node){
                 var color;//文字颜色
                 var link=links[node.index];
-                if(node.name==link.source.name && link.rela=="主营产品"){
+                if(node.name==link.source.name){
                     color="#B43232";
                 }else{
                     color="#A254A2";
