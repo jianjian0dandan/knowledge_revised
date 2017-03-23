@@ -1,6 +1,11 @@
 #encoding:UTF-8
 import sys
+import json
 from time import time
+
+reload(sys)
+sys.path.append('../')
+from global_utils import R_ADMIN as r_sensitive
 '''
 @author: ahuaxuan 
 @date: 2009-02-20
@@ -17,8 +22,11 @@ def readInputText():
 
 def createWordTree():
     awords = []
-    for b in open('sensitive_words.txt', 'rb'):
-        awords.append(b.strip())
+    # for b in open('sensitive_words.txt', 'rb'):
+    #     awords.append(b.strip())
+    sensitive_word_list=[]
+    sensitive_word_list = r_sensitive.hgetall("sensitive_words")
+    awords=json.dumps(sensitive_word_list)
     
     for word in awords:
         temp = wordTree
