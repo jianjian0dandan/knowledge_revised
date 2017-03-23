@@ -139,8 +139,9 @@ def get_map():#地图页面
         people_result = []
         org_relation = []
         flag = 'Wrong Type'
-    print event_result,people_result,org_relation
-    return render_template('index/baidu_map.html', event_result = event_result, people_result = people_result, org_relation = org_relation, flag = flag)
+
+    data_dict = {'event':event_result,'people':people_result,'org':org_relation}
+    return render_template('index/baidu_map.html', data_dict = data_dict, flag = flag)
 
 @mod.route('/person/', methods=['GET','POST'])
 @login_required

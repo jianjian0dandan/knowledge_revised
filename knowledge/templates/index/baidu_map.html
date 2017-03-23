@@ -1,3 +1,4 @@
+<meta charset="UTF-8">
 {% block title %}<title>知识图谱 - 地域分布图</title>{% endblock %}
 {% block css %}
 <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
@@ -77,6 +78,12 @@
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0ECXIPy41grtI3jUXqQMgILaG1vKUiLo"></script>
 <script src="/static/js/DrawingManager_min.js"></script>
 <script>
+    //var event_result=decodeURIComponent("{{data_dict}}");
+    var event_result={{data_dict|tojson}};
+//    var people_result='{{people_result}}';
+//    var org_relation='{{org_relation}}';
+    console.log(event_result)
+
     $('#legend p').on('click',function () {
         var colour=$(this).find('.dot').css('backgroundColor');
         $(this).find('.name').css({color:colour});

@@ -5,6 +5,7 @@ import csv
 import os
 import time
 import math
+import re
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
@@ -384,11 +385,11 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             if not data['name']:
                 name = uid
             else:
-                name = data['name']
+                name = data['name'].replace('&',',')
             if not data['real_geo']:
                 continue
             else:
-                location = data['real_geo']
+                location = data['real_geo'].replace('&',',')
             
             result.append([name,location])
 

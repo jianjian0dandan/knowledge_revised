@@ -143,8 +143,9 @@ function type_3_age(value) {
     }
 }
 
-//-----------人物下----------
+//-----------推荐人物下----------
 $('.add_sure').on('click',function () {
+    $('#recommend').empty();
     // var date=$('#task_time').val();
     var date='2016-11-27';
     var submit_user=$('#name').text();
@@ -169,7 +170,6 @@ $.ajax({
     success:recommend
 });
 function recommend(data) {
-    console.log(data)
     var data = eval(data);
     $('#recommend').bootstrapTable('load', data);
     $('#recommend').bootstrapTable({
