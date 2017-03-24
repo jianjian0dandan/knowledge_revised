@@ -123,7 +123,7 @@ def compute_task(task):
         task['uid_counts']=uid_counts
         try:
             flag = es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)
-            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':'compute_status':-1})
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-1}})
         except:
             es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
         print 'finish change status'

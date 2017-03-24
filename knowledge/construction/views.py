@@ -179,19 +179,8 @@ def ajax_submit_event():
     #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
     input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
-               'immediate_compute':'1', 'keywords':u'北京&房价&政策',
-               'event_type':u'经济', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
-    # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
-    # submit_user = request.args.get('submit_user', 'admin')
-    # recommend_style = request.args.get('recommend_style', 'recommend')
-    # relation_string = request.args.get('relation_string', 'join') # split by ,
-    # cal_style = request.args.get('cal_style', '2') # 1 compute right now; 2 appointment
-    # key_words = request.args.get('key_words', '') # a&b&c
-    # event_name = request.args.get('event_name', '') 
-    # event_type = request.args.get('event_type', '') 
-    # start_from = request.args.get('start_from', '') 
-    # start_end = request.args.get('start_end', '') 
-    # mid = request.args.get('mid', '') 
+               'immediate_compute':'1', 'keywords':u'特朗普',
+               'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     result = submit_event(input_data)
     return json.dumps(result)
 
@@ -313,7 +302,7 @@ def ajax_node_edit():
 #特定节点编辑，先查找，展示
 @mod.route('/node_edit_show/')
 def ajax_node_edit_show():
-    node_type = request.args.get('node_type', 'User') #User , Org
+    node_type = request.args.get('node_type', 'User') #User , Org, Event
     item = request.args.get('item', '5779325975')  #id
     submit_user = request.args.get('submit_user', 'admin1')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id

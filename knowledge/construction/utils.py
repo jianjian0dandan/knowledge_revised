@@ -488,11 +488,14 @@ def submit_event(input_data):
         input_data['end_ts'] = end_ts
     input_data['submit_ts'] = int(time.time())
     del input_data['event_ts']
+    # result = es_event.delete(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])
     try:
         result = es_event.get(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])['_source']
         return 'already in'
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
+        if input_data['immediate_compute'] == '1':
+            os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py %s &" % event_id)
     return True
 
 def update_event(event_id):
