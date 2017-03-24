@@ -65,28 +65,12 @@
                 </div>
             </div>
         </div>
-        <div class="advan-2">
-            <p class="tit">关系</p>
-            <div class="relation" style="width:95%;">
-                <div class="options" style="width: 80%;">
-                    <!--<label class="radio-inline">-->
-                        <!--<input type="radio" name="tions" id="rel-1" value="" checked> 选择关系-->
-                    <!--</label>-->
-                    <span>选择关系</span>
-                    <input type="text" class="rel-1-value" placeholder="请输入您想添加的关系"/>
-                    <button class="rel-2-value" type="button" data-toggle="modal">选择为您推荐的关系</button>
-                    <!--<label class="radio-inline" style="margin-left: 11%">-->
-                        <!--<input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系-->
-                    <!--</label>-->
-                </div>
-            </div>
-        </div>
         <div class="advan-3">
             <p class="tit">终止节点</p>
             <div class="end" style="width:95%;">
                 <b class="icon icon-plus-sign"></b>
                 <span>节点类型</span>
-                <select id="s-3-type" onchange="">
+                <select id="s-3-type" onchange="end(this.value)">
                     <option value="1">人物</option>
                     <option value="2">事件</option>
                     <option value="3">群体</option>
@@ -107,23 +91,38 @@
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
                 <input type="file" class="options-2-value" style="display: none;">
                 <div class="options-3-value" style="display: none;">
-                    <select onchange="">
-                        <option value="">与</option>
-                        <option value="">或</option>
-                        <option value="">非</option>
+                    <select onchange="e_yhf(this.value)">
+                        <option value="y">与</option>
+                        <option value="h">或</option>
+                        <option value="f">非</option>
                     </select>
-                    <select onchange="">
-                        <option value="">不限</option>
-                        <option value="">昵称</option>
-                        <option value="">个人描述</option>
-                        <option value="">业务标签</option>
-                        <option value="">关键词</option>
-                        <option value="">微话题</option>
-                        <option value="">注册地</option>
+                    <select onchange="tag_end(this.value)">
+                        <option value="uname">微博昵称</option>
+                        <option value="description">个人描述</option>
+                        <option value="function_mark">业务标签</option>
+                        <option value="keywords">关键词</option>
+                        <option value="hashtag">微话题</option>
+                        <option value="location">注册地</option>
                     </select>
                     <input type="text" class="options-3_down">
                     <b class="icon icon-plus"></b>
                     <b class="icon icon-minus"></b>
+                </div>
+            </div>
+        </div>
+        <div class="advan-2">
+            <p class="tit">关系</p>
+            <div class="relation" style="width:95%;">
+                <div class="options" style="width: 80%;">
+                    <!--<label class="radio-inline">-->
+                        <!--<input type="radio" name="tions" id="rel-1" value="" checked> 选择关系-->
+                    <!--</label>-->
+                    <span>选择关系</span>
+                    <input type="text" class="rel-1-value" placeholder="请输入您想添加的关系"/>
+                    <button class="rel-2-value" type="button" data-toggle="modal">选择为您推荐的关系</button>
+                    <!--<label class="radio-inline" style="margin-left: 11%">-->
+                        <!--<input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系-->
+                    <!--</label>-->
                 </div>
             </div>
         </div>
