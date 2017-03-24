@@ -237,7 +237,7 @@ def ajax_search_node():
         result = search_event(item, field)
     return json.dumps(result)
 
-#添加关系
+#添加关系,上传文件
 @mod.route('/relation_add/', methods=['GET', 'POST'])
 def ajax_relation_add():
     input_data = dict()
@@ -266,11 +266,11 @@ def ajax_relation_show_edit():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', '1join')
+    # rel = request.args.get('rel', '')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
-    flag = show_relation(node_key1, node1_id, node1_index_name, rel, \
+    flag = show_relation(node_key1, node1_id, node1_index_name,  \
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
 
@@ -280,7 +280,7 @@ def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', '1join')
+    rel = request.args.get('rel', 'join')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
@@ -339,7 +339,7 @@ def ajax_node_edit_():
     # item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
     editor = request.args.get('submit_user', 'admin')  #admin
     # session = Session()
-    if node_type == 'User':
+    if node_type == 'User' or node_type == 'Org':
         edit_num = 0
         field = [['topic_string', 'domain', 'function_description'],['related_docs'], ['function_mark']]
         for i in field[0]:
@@ -418,6 +418,7 @@ def ajax_node_edit_():
     else:
         return '0'
 
+@mod.route('/relation_edit/')
 
 
 @mod.route('/relation/')
