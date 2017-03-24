@@ -54,7 +54,7 @@ def add_node():
 def ajax_recommentation_in():
     #按影响力推荐，按敏感度推荐
     date = request.args.get('date', '2016-11-27') # '2013-09-01'
-    recomment_type = request.args.get('type', 'sensitive')  #influence  sensitive
+    recomment_type = request.args.get('type', 'influence')  #influence  sensitive
     submit_user = request.args.get('submit_user', 'admin') # 提交人
     node_type = request.args.get('node_type', 'user') # user  org
     input_ts = datetime2ts(date)
@@ -128,8 +128,6 @@ def ajax_submit_identify_in():
     print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
     return json.dumps(results)
-
-
 
 #显示计算状态
 @mod.route('/show_user_task_status/', methods=['GET', 'POST'])
