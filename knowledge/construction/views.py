@@ -54,7 +54,7 @@ def add_node():
 def ajax_recommentation_in():
     #按影响力推荐，按敏感度推荐
     date = request.args.get('date', '2016-11-27') # '2013-09-01'
-    recomment_type = request.args.get('type', 'sensitive')  #influence  sensitive
+    recomment_type = request.args.get('type', 'influence')  #influence  sensitive
     submit_user = request.args.get('submit_user', 'admin') # 提交人
     node_type = request.args.get('node_type', 'user') # user  org
     input_ts = datetime2ts(date)
@@ -129,8 +129,6 @@ def ajax_submit_identify_in():
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
     return json.dumps(results)
 
-
-
 #显示计算状态
 @mod.route('/show_user_task_status/', methods=['GET', 'POST'])
 def ajax_show_user_task_status():
@@ -181,19 +179,8 @@ def ajax_submit_event():
     #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
     input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
-               'immediate_compute':'1', 'keywords':u'北京&房价&政策',
-               'event_type':u'经济', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
-    # date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
-    # submit_user = request.args.get('submit_user', 'admin')
-    # recommend_style = request.args.get('recommend_style', 'recommend')
-    # relation_string = request.args.get('relation_string', 'join') # split by ,
-    # cal_style = request.args.get('cal_style', '2') # 1 compute right now; 2 appointment
-    # key_words = request.args.get('key_words', '') # a&b&c
-    # event_name = request.args.get('event_name', '') 
-    # event_type = request.args.get('event_type', '') 
-    # start_from = request.args.get('start_from', '') 
-    # start_end = request.args.get('start_end', '') 
-    # mid = request.args.get('mid', '') 
+               'immediate_compute':'1', 'keywords':u'特朗普',
+               'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     result = submit_event(input_data)
     return json.dumps(result)
 
@@ -239,7 +226,7 @@ def ajax_search_node():
         result = search_event(item, field)
     return json.dumps(result)
 
-#添加关系
+#添加关系,上传文件
 @mod.route('/relation_add/', methods=['GET', 'POST'])
 def ajax_relation_add():
     input_data = dict()
@@ -268,11 +255,11 @@ def ajax_relation_show_edit():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', '1join')
+    # rel = request.args.get('rel', '')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
-    flag = show_relation(node_key1, node1_id, node1_index_name, rel, \
+    flag = show_relation(node_key1, node1_id, node1_index_name,  \
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
 
@@ -282,7 +269,7 @@ def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', '1join')
+    rel = request.args.get('rel', 'join')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
@@ -315,7 +302,7 @@ def ajax_node_edit():
 #特定节点编辑，先查找，展示
 @mod.route('/node_edit_show/')
 def ajax_node_edit_show():
-    node_type = request.args.get('node_type', 'User') #User , Org
+    node_type = request.args.get('node_type', 'User') #User , Org, Event
     item = request.args.get('item', '5779325975')  #id
     submit_user = request.args.get('submit_user', 'admin1')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
@@ -341,7 +328,7 @@ def ajax_node_edit_():
     # item = request.args.get('item', 'xiang-gang-qian-zong-du-qian-ze-liang-you-er-ren-1482126431')  #id
     editor = request.args.get('submit_user', 'admin')  #admin
     # session = Session()
-    if node_type == 'User':
+    if node_type == 'User' or node_type == 'Org':
         edit_num = 0
         field = [['topic_string', 'domain', 'function_description'],['related_docs'], ['function_mark']]
         for i in field[0]:
@@ -420,6 +407,7 @@ def ajax_node_edit_():
     else:
         return '0'
 
+@mod.route('/relation_edit/')
 
 
 @mod.route('/relation/')

@@ -9,9 +9,10 @@ import math
 from datetime import datetime
 
 reload(sys)
-sys.path.append('../../')
+sys.path.append('../')
 from time_utils import ts2datetime, datetime2ts, ts2date
-from global_utils import R_CLUSTER_FLOW2 as r_cluster
+from global_utils import R_CLUSTER_FLOW4 as r_cluster
+from global_utils import R_ADMIN as r_sensitive
 from triple_sentiment_classifier import triple_classifier
 from global_config import ZMQ_VENT_PORT_FLOW4, ZMQ_CTRL_VENT_PORT_FLOW4,\
                           ZMQ_VENT_HOST_FLOW1, ZMQ_CTRL_HOST_FLOW1
@@ -19,24 +20,10 @@ from global_utils import R_DOMAIN, r_domain_name, R_TOPIC, r_topic_name,\
                          R_DOMAIN_SENTIMENT, r_domain_sentiment_pre, \
                          R_TOPIC_SENTIMENT, r_topic_sentiment_pre,\
                          R_SENTIMENT_ALL
-#from global_config import SENSITIVE_WORDS_PATH
+from global_config import SENSITIVE_WORDS_PATH
 from parameter import Fifteen, RUN_TYPE, RUN_TEST_TIME
 
-#abandon in version-160312
-'''
-f = open(SENSITIVE_WORDS_PATH, 'rb')
 
-def load_sensitive_words():
-    ZZ_WORD = []
-    for line in f:
-        line_list = line.split('=')
-        word = line_list[0]
-        ZZ_WORD.append(word.decode('utf-8'))
-    f.close()
-    return ZZ_WORD
-
-SENSITIVE_WORD = load_sensitive_words()
-'''
 
 def cal_text_work(item):
     uid = item['uid']
@@ -69,8 +56,7 @@ def cal_text_work(item):
         except:
             r_cluster.hset('hashtag_'+str(ts), str(uid), json.dumps(hashtag_dict))
 
-#abandon in version-160312
-''' 
+
 def cal_text_sensitive(item):
     text = item['text']
     uid = item['uid']
@@ -79,6 +65,11 @@ def cal_text_sensitive(item):
     ts = datetime2ts(date)
     if isinstance(text, str):
         text = text.decode('utf-8', 'ignore')
+
+    sensitive_word_list=[]
+    sensitive_word_list = r_sensitive.hgetall("sensitive_words")
+    SENSITIVE_WORD=json.dumps(sensitive_word_list)
+
     sensitive_result = [word for word in SENSITIVE_WORD if word in text]
     if sensitive_result:
         sensitive_dict = dict()
@@ -99,7 +90,6 @@ def cal_text_sensitive(item):
             r_cluster.hset('sensitive_'+str(ts), str(uid), json.dumps(sensitive_count_dict))
         except:
             r_cluster.hset('sensitive_'+str(ts), str(uid), json.dumps(sensitive_dict))
-'''
 
 #use to compute sentiment trend for all
 def save_sentiment_all(date, new_timestamp, sentiment):
@@ -158,6 +148,8 @@ if __name__ == "__main__":
         if int(item['sp_type']) == 1:
             #step1: compute hashtag to save redis
             cal_text_work(item)
+            #step7: compute sensitive to redis
+            cal_text_sensitive(item)
             #step2: compute sentiment to redis
             uid = item['uid']
             text = item['text']

@@ -5,6 +5,7 @@ import csv
 import os
 import time
 import math
+import re
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
@@ -18,6 +19,8 @@ from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
 org_list = [1,2,3,4,5,6,7,8]
+black_location = [u'北京',u'天津',u'上海',u'重庆',u'河北',u'山西',u'辽宁',u'吉林',u'黑龙江',u'江苏',u'浙江',u'安徽',u'福建',u'江西',u'山东',u'河南',\
+                    u'湖北',u'湖南',u'广东',u'海南',u'四川',u'贵州',u'云南',u'陕西',u'甘肃',u'青海',u'台湾',u'内蒙古',u'广西',u'西藏',u'宁夏',u'新疆',u'香港',u'澳门']
 
 def uid_name(uid_list,result):
 
@@ -40,7 +43,7 @@ def uid_name(uid_list,result):
 
 def uid_name_list(uid_list):
 
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return '-1'
     uname = dict()
@@ -322,10 +325,13 @@ def get_map_count():#获取地图统计
                     continue
                 if len(location.split(' '))>1:
                     location = location.split(' ')[0]
-                try:
-                    location_result[location] += 1
-                except:
-                    location_result[location] = 1
+                if location in set(black_location):
+                    try:
+                        location_result[location] += 1
+                    except:
+                        location_result[location] = 1
+                else:
+                    continue
             except:
                 no_location_count += 1
         except StopIteration:
@@ -355,12 +361,16 @@ def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
             if not data['uname']:
                 name = uid
             else:
-                name = data['uname'].encode('utf-8')
+                name = data['uname']
 
-            if not data['location']:
+            if not data['location'] or not len(data['location'].split(' ')):
                 continue
             else:
-                location = data['location'].encode('utf-8')
+                lo = data['location'].split(' ')[0]
+                if lo in set(black_location):
+                    location = data['location']
+                else:
+                    continue                    
             
             result.append([name,location])
 
@@ -384,11 +394,11 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             if not data['name']:
                 name = uid
             else:
-                name = data['name'].encode('utf-8')
-            if not data['real_geo']:
+                name = data['name'].replace('&',',')
+            if not data['real_geo'] or not data['real_geo'] in set(black_location):
                 continue
             else:
-                location = data['real_geo'].encode('utf-8')
+                location = data['real_geo']
             
             result.append([name,location])
 
@@ -481,7 +491,7 @@ def get_detail_person(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
+            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':round(influence,2),'activeness':activeness,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
 
     return result
 
@@ -900,32 +910,32 @@ def get_all_graph():#获取首页图谱
 
 def get_people_graph(uid):#获取人物节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m LIMIT 100' % (node_index_name,people_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m,labels(m) LIMIT 100' % (node_index_name,people_primary,uid)
     p_result = graph.run(c_string)
     peo_list = []
     eve_list = []
     gro_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in peo_list:
             peo_list.append(node1)
-        r = item[1].type()        
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
-        if node2_k == people_primary:#人物
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
+        r = item[1].type()
+        if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
-        elif node2_k == org_primary:#机构
+        elif node2_k == org_node:#机构
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'org',r])
-        elif node2_k == event_primary:#事件
+        elif node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
             r_relation.append([node1,node2_v,'event',r])
-        elif node2_k == group_primary:#群体
+        elif node2_k == group_node:#群体
             if node2_v not in gro_list:
                 gro_list.append(node2_v)
             r_relation.append([node1,node2_v,'group',r])
@@ -975,7 +985,7 @@ def get_people_graph(uid):#获取人物节点图谱
 
 def get_event_graph(uid):#获取事件节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event_id,r,m LIMIT 100' % (event_index_name,event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 100' % (event_index_name,event_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -983,25 +993,25 @@ def get_event_graph(uid):#获取事件节点图谱
     top_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in eve_list:
             eve_list.append(node1)
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == people_primary:#人物
+        if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
-        elif node2_k == org_primary:#机构
+        elif node2_k == org_node:#机构
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'org',r])
-        elif node2_k == event_primary:#事件
+        elif node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
             r_relation.append([node1,node2_v,'event',r])
-        elif node2_k == special_event_primary:#专题
+        elif node2_k == special_event_node:#专题
             if node2_v not in top_list:
                 top_list.append(node2_v)
             r_relation.append([node1,node2_v,'topic',r])
@@ -1051,7 +1061,7 @@ def get_event_graph(uid):#获取事件节点图谱
 
 def get_org_graph(uid):#获取机构节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return u.org_id,r,m LIMIT 100' % (org_index_name,org_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return u.org_id,r,m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1059,25 +1069,25 @@ def get_org_graph(uid):#获取机构节点图谱
     gro_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in peo_list:
             peo_list.append(node1)
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == people_primary:#人物
+        if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
-        elif node2_k == org_primary:#机构
+        elif node2_k == org_node:#机构
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'org',r])
-        elif node2_k == event_primary:#事件
+        elif node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
             r_relation.append([node1,node2_v,'event',r])
-        elif node2_k == group_primary:#群体
+        elif node2_k == group_node:#群体
             if node2_v not in gro_list:
                 gro_list.append(node2_v)
             r_relation.append([node1,node2_v,'group',r])
@@ -1127,20 +1137,20 @@ def get_org_graph(uid):#获取机构节点图谱
 
 def get_special_event_graph(uid):#获取专题节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event,r,m LIMIT 100' % (special_event_index_name,special_event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event,r,m,labels(m) LIMIT 100' % (special_event_index_name,special_event_primary,uid)
 
     p_result = graph.run(p_string)
     eve_list = []
     top_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in top_list:
             top_list.append(node1)
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == event_primary:#事件
+        if node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
             r_relation.append([node1,node2_v,'event',r])
@@ -1171,20 +1181,20 @@ def get_special_event_graph(uid):#获取专题节点图谱
 
 def get_group_graph(uid):#获取群体节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.group,r,m LIMIT 100' % (group_index_name,group_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.group,r,m,labels(m) LIMIT 100' % (group_index_name,group_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
     gro_list = []
     r_relation = []
     for item in p_result:
-        node1 = dict(item[0]).values()[0]
+        node1 = item[0]
         if node1 not in top_list:
             gro_list.append(node1)
-        node2_k = dict(dict(item[2]).values()[0]).keys()[0]
-        node2_v = dict(dict(item[2]).values()[0]).values()[0]
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == people_primary:#事件
+        if node2_k == people_node:#事件
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
@@ -1222,8 +1232,8 @@ def get_people_geo(uid):#根据人物id查询人物的地图
     org_list = []
     event_list = []
     for item in p_result:
-        id_key = dict(dict(item[0]).values()[0]).values()[0]
-        id_type = dict(item[1]).values()[0]
+        id_key = dict(item[0]).values()[0]
+        id_type = item[1][0]
         if id_type == people_node:
             peo_list.append(id_key)
         elif id_type == org_node:
@@ -1247,8 +1257,8 @@ def get_event_geo(uid):#根据事件id查询事件的地图
     org_list = []
     event_list = [uid]
     for item in p_result:
-        id_key = dict(dict(item[0]).values()[0]).values()[0]
-        id_type = dict(item[1]).values()[0]
+        id_key = dict(item[0]).values()[0]
+        id_type = item[1][0]
         if id_type == people_node:
             peo_list.append(id_key)
         elif id_type == org_node:
@@ -1272,8 +1282,8 @@ def get_org_geo(uid):#根据机构id查询机构的地图
     org_list = [uid]
     event_list = []
     for item in p_result:
-        id_key = dict(dict(item[0]).values()[0]).values()[0]
-        id_type = dict(item[1]).values()[0]
+        id_key = dict(item[0]).values()[0]
+        id_type = item[1][0]
         if id_type == people_node:
             peo_list.append(id_key)
         elif id_type == org_node:
@@ -1295,8 +1305,8 @@ def get_topic_geo(uid):#根据专题id查询专题的地图
     p_result = graph.run(p_string)
     event_list = []    
     for item in p_result:
-        id_key = dict(dict(item[0]).values()[0]).values()[0]
-        id_type = dict(item[1]).values()[0]
+        id_key = dict(item[0]).values()[0]
+        id_type = item[1][0]
         if id_type == event_node:
             event_list.append(id_key)
         else:
@@ -1315,8 +1325,8 @@ def get_group_geo(uid):#根据群体id查询群体的地图
     peo_list = []
     org_list = []
     for item in p_result:
-        id_key = dict(dict(item[0]).values()[0]).values()[0]
-        id_type = dict(item[1]).values()[0]
+        id_key = dict(item[0]).values()[0]
+        id_type = item[1][0]
         if id_type == people_node:
             peo_list.append(id_key)
         elif id_type == org_node:

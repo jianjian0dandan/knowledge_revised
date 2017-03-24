@@ -285,8 +285,8 @@ def event_detail_search(eid_list,sort_flag):
 R_CLUSTER_FLOW1 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW1, port=REDIS_CLUSTER_PORT_FLOW1)
 R_CLUSTER_FLOW2 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW2, port=REDIS_CLUSTER_PORT_FLOW2)
 ######
-R_CLUSTER_FLOW3 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW2, port=REDIS_CLUSTER_PORT_FLOW2)
-
+R_CLUSTER_FLOW3 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW3, port=REDIS_CLUSTER_PORT_FLOW3)
+R_CLUSTER_FLOW4 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW4, port=REDIS_CLUSTER_PORT_FLOW4)
 R_SENSITIVE_REDIS = redis.StrictRedis(host=SENSITIVE_REDIS_HOST, port=SENSITIVE_REDIS_POST)
 
 def _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=1):
@@ -354,7 +354,7 @@ R_SOCIAL_SENSING = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=14)
 
 topic_queue_name = 'topics_task'
 #jln   add topic computing in db15
-R_ADMIN = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=15)
+R_ADMIN = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 #use to write portrait user list to redis as queue for update_day and update_week
 update_day_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
@@ -365,7 +365,7 @@ update_month_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_MONTH_REDIS_KEY = 'update_month'
 
 #recommendation_in 
-R_RECOMMENTATION  = _default_redis(host=REDIS_CLUSTER_HOST_FLOW1, port=REDIS_CLUSTER_PORT_FLOW1, db=1)
+R_RECOMMENTATION  = _default_redis(host=REDIS_RECOMMEND_HOST, port=REDIS_RECOMMEND_PORT, db=1)
 r_recommendation_in_now = 'recommendation_in_now'
 r_recommendation_in_after = 'recommendation_in_after'
 
