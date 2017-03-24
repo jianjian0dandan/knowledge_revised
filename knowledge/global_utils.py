@@ -365,7 +365,7 @@ update_month_redis = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=5)
 UPDATE_MONTH_REDIS_KEY = 'update_month'
 
 #recommendation_in 
-R_RECOMMENTATION  = _default_redis(host=REDIS_CLUSTER_HOST_FLOW1, port=REDIS_CLUSTER_PORT_FLOW1, db=1)
+R_RECOMMENTATION  = _default_redis(host=REDIS_RECOMMEND_HOST, port=REDIS_RECOMMEND_PORT, db=1)
 r_recommendation_in_now = 'recommendation_in_now'
 r_recommendation_in_after = 'recommendation_in_after'
 
