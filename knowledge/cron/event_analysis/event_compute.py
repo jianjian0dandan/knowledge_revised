@@ -129,7 +129,7 @@ def compute_task(task):
         print 'finish change status'
         #geo
         
-        cityTopic(en_name, start_ts, end_ts)
+        # cityTopic(en_name, start_ts, end_ts)
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-2}})
         print 'finish geo analyze'
         #language
@@ -219,14 +219,16 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords,mid):
         query_body = {'query':{'wildcard':{'text':'*'+topic+'*'}}}
     elif len(mid) == 16:
     #elif len(mid.findall(keywords))>0:
-        query_body = {'query':{'term':{'root_mid':mid}}}
+        # query_body = {'query':{'term':{'root_mid':mid}}}
+        query_body = {'query':{'bool':{'should':[{'term':{'root_mid':mid}},{'term':{'mid':mid}}]}}}
     else:
     #keywords_list = [{'wildcard':{'text':'*'+topic+'*'}}]
         keywords_list = []
         for i in keywords:
             print i
             # keywords_list.append({'wildcard':{'text':'*'+i+'*'}})
-            keywords_list.append({'term':{'keywords_string':i}})
+            # keywords_list.append({'term':{'keywords_string':i}})
+            keywords_list.append({'wildcard':{'keywords_string':'*'+i+'*'}})
 
         query_body = {'query':{'bool':{'should':keywords_list,'minimum_should_match':'60%'}}}
     
@@ -359,8 +361,12 @@ if __name__ == '__main__':
     #weibo_count = es_event.count(index='aoyunhui')
     #print weibo_count
     # counts(1484323200,1484582400,'zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming','zui_gao_fa_di_zhi_yan_se_ge_ming')
-    # es_event.index(index='event_task',doc_type='text',id='test',body={'doc':{'name':'test_task','start_ts':1480089600,'end_ts':1480176000,'submit_ts':1480089600,'compute_status':0,'en_name':'mei-guo-da-xuan','relation_compute':'join&discuss&contain','event_type':'军事类','keywords':'美国大选&美选&美国','submit_user':'jln','recommend_style':'xxx','immediate_compute':1}})
+    # es_event.delete(index='event_task',doc_type='event',id='4045701413449427')
+    # es_event.index(index='event_task',doc_type='event',id='4045701413449427',body={'name':'test_task','start_ts':1480003200,'end_ts':1480176000,'submit_ts':1480089600,'compute_status':0,'en_name':'4045701413449427','relation_compute':'join&discuss&contain','event_type':'娱乐','keywords':'张杰跳&深圳&落地&这是&来吧&热浪','submit_user':'jln','recommend_style':'jln','immediate_compute':0})
     # compute_topic_task()
-    task_id = argv[1]
-    immediate_compute(task_id)
+    if argv[1] == 'imme':   #python event_compute.py imme task_id
+        task_id = argv[2]
+        immediate_compute(task_id)
+    else:
+        compute_topic_task() #python event_compute.py ontime
     # uid_diff()

@@ -840,10 +840,55 @@ def search_data(input_data):
         result = graph.run(query)
         for i in result:
             i = dict(i)
-            print i['n'],i['r'],i['e']
-            print i['n'].labels(),dict(i['n']).keys(),dict(i['n']).values()
+            # print i['n'],i['r'],i['e']
+            # print i['n'].labels(),dict(i['n']).keys(),dict(i['n']).values()
+            print i['n'].labels(),dict(i['n']).keys()[0],dict(i['n']).values()[0]
             for j in i['r']:
                 print j.type() #discuss
+            print i['e'].labels(),dict(i['e']).keys()[0],dict(i['e']).values()[0]
+            #返回图
+            '''
+            #neo4j node primary_key
+            people_primary = "uid"
+            org_primary = "org_id"
+            event_primary = "event_id"
+            special_event_primary = "event"
+            group_primary = "group"
+            '''
+
+def get_es_by_id(primary_key,node_id):
+    people_node = []
+    org_node = []
+    event_node = []
+    special_event_node = []
+    group_node = []
+    if primary_key == people_primary:
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        people_node.append(node_id)
+    elif primary_key == org_primary:
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        org_node.append(node_id)
+    elif primary_key == event_primary:
+        es = es_event
+        es_index = event_analysis_name
+        es_type = event_type
+        event_node.append(node_id)
+    elif primary_key == special_event_primary:
+        es = es_special_event
+        es_index = special_event_name
+        es_type = special_event_type
+        special_event_node.append(node_id)
+    else:
+        es = es_group
+        es_index = group_name
+        es_type = group_type
+        group_node.append(node_id)
+    去对应es里找，然后返回相应的属性   5个表
+
     
 def get_node_id(start_node):
     input_id = []

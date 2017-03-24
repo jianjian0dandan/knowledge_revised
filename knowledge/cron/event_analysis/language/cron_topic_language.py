@@ -41,14 +41,35 @@ def compute_real_info(topic,begin_ts,end_ts,relation,submit_user,submit_ts):
 			'sort':{'retweeted':{'order':'desc'}}
 	}
 	result = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
+	if len(result) == 0:
+		query_body = {   
+			'query':{
+				'bool':{
+					'must':[
+						{'term':{'en_name':topic}},
+						{'wildcard':{'text':'【*】*'}},
+							{'range':{
+							'timestamp':{'gte': begin_ts, 'lt':end_ts} 
+							}
+						}]
+						}
+					},
+				'size':1,
+				'sort':{'retweeted':{'order':'desc'}}
+		}
+		result = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
+
 	#抽取事件的人物、机构、地点和时间
-	print result[0]['_source']['text']
-	basics = get_news_main(result[0]['_source']['text'])
-	print basics
-	info_dict['real_auth'] = basics['organization']
-	info_dict['real_geo'] = basics['place']
-	info_dict['real_time'] = basics['time']
-	info_dict['real_person'] = basics['people']
+	if len(result) != 0:
+		print result[0]['_source']['text']
+		basics = get_news_main(result[0]['_source']['text'])
+		print basics
+		info_dict['real_auth'] = basics['organization']
+		info_dict['real_geo'] = basics['place']
+		info_dict['real_time'] = basics['time']
+		info_dict['real_person'] = basics['people']
+	else:
+		info_dict['real_auth'] =info_dict['real_geo'] = info_dict['real_time'] =info_dict['real_person']='NULL'
 	#存关系
 	if('join' in relation.split('&')):
 		rel_list = []
