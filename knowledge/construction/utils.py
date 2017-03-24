@@ -320,7 +320,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
             influence = math.log(influence/float(max_evaluate_influ['user_index']) * 9 + 1 ,10)
             influence = influence * 100
         else:
-            influence = ''
+            influence = 0
         try:
             profile_source = profile_dict['_source']
         except:
@@ -363,7 +363,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
                     #print "sensitive_value", sensitive_value
                 else:
                     sensitive_value = 0
-                results.append([uid, uname, location, fansnum, statusnum, influence, sensitive_words, sensitive_value])
+                results.append([uid, uname, location, fansnum, statusnum, sensitive_value, sensitive_words, influence])
             else:
                 results.append([uid, uname, location, fansnum, statusnum, influence])
             if auth:
@@ -550,10 +550,13 @@ def relation_add(input_data):
         if result == 'have relation':
             result_detail.append(rel_num)
             return result_detail
+        if result == 'node does not exist':
+            result_detail.append(rel_num)
+            return result_detail
     result_detail[0] = True
     return result_detail
 
-def show_relation(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
@@ -565,13 +568,13 @@ def show_relation(node_key1, node1_id, node1_index_name, rel, node_key2, node2_i
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
-    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r]->(end_node) RETURN r" % (
+    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id)
     # return c_string
-
+    print c_string
     result = graph.run(c_string)
     # print result
-    # rel_list = []
+    rel_list = []
     for item in result:
         rel_list.append(item)
     return rel_list
@@ -594,7 +597,7 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key
 
     result = graph.run(c_string)
     # print result
-    # rel_list = []
+    rel_list = []
     for item in result:
         rel_list.append(item)
     # print rel_list
