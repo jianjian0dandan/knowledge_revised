@@ -3,7 +3,14 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/search.css">
 <style>
-
+    #relation #rel_value_list input,#container #advanced_search .advan-4 .short {
+        margin: 0 5px 0 30px;
+        position: relative;
+        top:2px;
+    }
+    #container #advanced_search .advan-4 .short {
+        margin: 0 5px 0 20px;
+    }
 </style>
 {% endblock %}
 
@@ -19,11 +26,11 @@
         <a class="advanced">高级搜索</a>
     </div>
 
-    <div id="advanced_search" style="width: 100%;">
+    <div id="advanced_search" style="width: 100%;display: none;">
         <div class="advan-1">
             <p class="tit">起始节点</p>
             <div class="start" style="width:95%;">
-                <b class="icon icon-plus-sign"></b>
+                <b class="icon icon-plus-sign start_plus"></b>
                 <span>节点类型</span>
                 <select id="s-type" onchange="start(this.value)">
                     <option value="1">人物</option>
@@ -44,7 +51,10 @@
                     </label>
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
-                <input type="file" class="options-2-value" style="display: none;">
+                <div class="options-2-value" style="display: none;">
+                    <input type="file" class="files" style="padding: 0;"/>
+                    <button type="button" class="upload" onchange="start_handleFileSelect(this.files)">上传</button>
+                </div>
                 <div class="options-3-value" style="display: none;">
                     <select onchange="s_yhf(this.value)">
                         <option value="y">与</option>
@@ -68,14 +78,14 @@
         <div class="advan-3">
             <p class="tit">终止节点</p>
             <div class="end" style="width:95%;">
-                <b class="icon icon-plus-sign"></b>
+                <b class="icon icon-plus-sign end_plus"></b>
                 <span>节点类型</span>
                 <select id="s-3-type" onchange="end(this.value)">
                     <option value="1">人物</option>
-                    <option value="2">事件</option>
-                    <option value="3">群体</option>
-                    <option value="4">机构</option>
-                    <option value="5">专题</option>
+                    <option value="2">机构</option>
+                    <option value="3">事件</option>
+                    <option value="4">专题</option>
+                    <option value="5">群体</option>
                 </select>
                 <div class="options-3" style="width: 80%;">
                     <label class="radio-inline">
@@ -89,14 +99,17 @@
                     </label>
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
-                <input type="file" class="options-2-value" style="display: none;">
+                <div class="options-2-value" style="display: none;">
+                    <input type="file" class="files" style="padding: 0;"/>
+                    <button type="button" class="upload" onchange="end_handleFileSelect(this.files)">上传</button>
+                </div>
                 <div class="options-3-value" style="display: none;">
                     <select onchange="e_yhf(this.value)">
                         <option value="y">与</option>
                         <option value="h">或</option>
                         <option value="f">非</option>
                     </select>
-                    <select onchange="tag_end(this.value)">
+                    <select id="e_tag" onchange="tag_end(this.value)">
                         <option value="uname">微博昵称</option>
                         <option value="description">个人描述</option>
                         <option value="function_mark">业务标签</option>
@@ -119,7 +132,7 @@
                     <!--</label>-->
                     <span>选择关系</span>
                     <input type="text" class="rel-1-value" placeholder="请输入您想添加的关系"/>
-                    <button class="rel-2-value" type="button" data-toggle="modal">选择为您推荐的关系</button>
+                    <button class="rel-2-value" type="button" data-toggle="modal" onclick="show_rel()">选择为您推荐的关系</button>
                     <!--<label class="radio-inline" style="margin-left: 11%">-->
                         <!--<input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系-->
                     <!--</label>-->
@@ -131,10 +144,11 @@
             <div class="other" style="width:95%;">
                 <span>跳数</span> <input type="text" class="jump">
                 <span>数据量</span> <input type="text" class="datanums">
+                <input type="checkbox" class="short" name="short">只返回最短路径
             </div>
         </div>
     </div>
-    <button id="sure_advan">高级搜索</button>
+    <button id="sure_advan" style="display: none;">高级搜索</button>
 </div>
 <!--关系模态框-->
 <div class="modal fade" id="relation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -145,6 +159,7 @@
                 <h4 class="modal-title" id="myModalLabel">关系选择</h4>
             </div>
             <div class="modal-body" id="rel_value_list">
+
 
             </div>
             <div class="modal-footer">
@@ -164,6 +179,43 @@
     $('.rel-2-value').on('click',function () {
         $('#relation').modal('show');
     });
+    //开始节点和终止节点的增加与减少
+    $('.advan-1 .start_plus').on('click',function () {
+        console.log($('.advan-1 .start_plus'))
+        var copy_start='';
+        for (var s=0;s<$(this).parent('.advan-1 .start').length;s++){
+            copy_start+=$(this).parent('.advan-1 .start')[s].outerHTML;
+        };
+        $('#container #advanced_search .advan-1').append(copy_start);
+    });
+    $('.advan-3 .end_plus').on('click',function () {
+        var copy_end='';
+        for (var s=0;s<$(this).parent('.advan-3 .end').length;s++){
+            copy_end+=$(this).parent('.advan-3 .end')[s].outerHTML;
+        };
+        $('#container #advanced_search .advan-3').append(copy_end);
+    });
+
+
+    
+    
+    
+    
+    //高级搜索出现与隐藏
+    var s=1;
+    $('#container .look .advanced').on('click',function () {
+        if (s==1){
+            $('#advanced_search').slideDown(100);
+            $('#sure_advan').slideDown(100);
+            s=2;
+        }else {
+            $('#advanced_search').slideUp(50);
+            $('#sure_advan').slideUp(50);
+            s=1;
+        }
+    });
+    //高级搜索出现与隐藏----完
+    
     $.each($("#container .start input"),function (index,item) {
         $(item).on('click',function () {
             if ($(this).val()==1){
@@ -198,6 +250,16 @@
             }
         })
     });
+
+    //简单搜索
+    $('#container .search .sure').on('click',function () {
+        var key_words=$('#container .search .find').val();
+        if (key_words==''){
+            alert('请输入您想查询的内容。(不能为空)');
+        }else {
+            window.open('/relation/search_result/?key_words='+key_words);
+        }
+    })
 </script>
 {% endblock %}
 

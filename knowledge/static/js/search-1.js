@@ -64,6 +64,31 @@ $.each($("#container .start .options input"),function (index,item) {
         }
     })
 });
+//--------文件传输--
+function start_handleFileSelect(evt){
+    var files = evt;
+    for(var i=0,f;f=files[i];i++){
+        var reader = new FileReader();
+        reader.onload = function (oFREvent) {
+            var a = oFREvent.target.result;
+            $.ajax({
+                type:"POST",
+                url:"",
+                dataType: "json",
+                async:false,
+                data:{new_words:a},
+                success: function(data){
+                    if( data ){
+                        var data=data;
+                        console.log(data);
+                    }
+                }
+            });
+        };
+        reader.readAsText(f,'GB2312');
+    }
+};
+
 
 // 属性搜索
 //与或非
@@ -89,8 +114,8 @@ var end_type='User';
 function end(value) {
     if (value==1){
         end_type='User';
-        $('.end #s-3-type').empty();
-        $('.end #s-3-type').append(
+        $('.end #e_tag').empty();
+        $('.end #e_tag').append(
             '<option value="uname">微博昵称</option>'+
             '<option value="description">个人描述</option>'+
             '<option value="function_mark">业务标签</option>'+
@@ -100,8 +125,8 @@ function end(value) {
         );
     }else if (value==2){
         end_type='Org';
-        $('.end #s-3-type').empty();
-        $('.end #s-3-type').append(
+        $('.end #e_tag').empty();
+        $('.end #e_tag').append(
             '<option value="uname">微博昵称</option>'+
             '<option value="description">个人描述</option>'+
             '<option value="function_mark">业务标签</option>'+
@@ -111,16 +136,16 @@ function end(value) {
         );
     }else if (value==3){
         end_type='Event';
-        $('.end #s-3-type').empty();
-        $('.end #s-3-type').append(
+        $('.end #e_tag').empty();
+        $('.end #e_tag').append(
             '<option value="name">事件名称</option>'+
             '<option value="keywords">自动标签</option>'+
             '<option value="work_tag">业务标签</option> '
         );
     }else if (value==4){
         end_type='SpecialEvent';
-        $('.end #s-3-type').empty();
-        $('.end #s-3-type').append(
+        $('.end #e_tag').empty();
+        $('.end #e_tag').append(
             '<option value="topic_name">专题名称</option>'+
             '<option value="k_label">自动标签</option>'+
             '<option value="label">业务标签</option>'+
@@ -128,8 +153,8 @@ function end(value) {
         );
     }else if (value==5){
         end_type='Group';
-        $('.end #s-3-type').empty();
-        $('.end #s-3-type').append(
+        $('.end #e_tag').empty();
+        $('.end #e_tag').append(
             '<option value="group_name">群体名称</option>'+
             '<option value="k_label">自动标签</option>'+
             '<option value="label">业务标签</option>'+
@@ -150,6 +175,32 @@ $.each($("#container .end .options-3 input"),function (index,item) {
         }
     })
 });
+
+//文件传输
+function end_handleFileSelect(evt){
+    var files = evt;
+    for(var i=0,f;f=files[i];i++){
+        var reader = new FileReader();
+        reader.onload = function (oFREvent) {
+            var a = oFREvent.target.result;
+            $.ajax({
+                type:"POST",
+                url:"",
+                dataType: "json",
+                async:false,
+                data:{new_words:a},
+                success: function(data){
+                    if( data ){
+                        var data=data;
+                        console.log(data);
+                    }
+                }
+            });
+        };
+        reader.readAsText(f,'GB2312');
+    }
+};
+
 
 // 属性搜索
 //与或非
@@ -172,41 +223,89 @@ var end_yhf_value=$('.end .options-3_down').val();
 
 
 //----------关系添加----------
-if ()
+
 var relation=[];
 relation.push($('.advan-2 .rel-1-value').val());
-function rel_value() {
-    if($("[name=items]:checkbox").prop("checked",true)){
-
+function show_rel() {
+    $('#relation #rel_value_list').empty();
+    if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Event')||
+        (((end_type=='User')||(end_type=='Org'))&&start_type=='Event')){
+        $('#relation #rel_value_list').append(
+            '<input type="checkbox" name="rels" value="join" title="参与事件"/>参与事件'+
+            '<input type="checkbox" name="rels" value="discuss" title="参与舆论"/>参与舆论'+
+            '<input type="checkbox" name="rels" value="other_relation" title="其他关系"/>其他关系'
+        );
+    }else if (start_type=='Event'&&end_type=='Event'){
+        $('#relation #rel_value_list').append(
+            '<input type="checkbox" name="rels" value="contain" title="主题关联"/>主题关联'+
+            '<input type="checkbox" name="rels" value="event_other" title="其他关系"/>其他关系'
+        );
+    }else if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Org')||
+        (((end_type=='User')||(end_type=='Org'))&&start_type=='Org')){
+        $('#relation #rel_value_list').append(
+            '<input type="checkbox" name="rels" value="friend" title="交互"/>交互'+
+            '<input type="checkbox" name="rels" value="colleague" title="业务关联"/>业务关联'+
+            '<input type="checkbox" name="rels" value="organization_tag" title="其他"/>其他'
+        );
+    } else if (start_type=='User'&&end_type=='User'){
+        $('#relation #rel_value_list').append(
+            '<input type="checkbox" name="rels" value="friend" title="交互"/>交互'+
+            '<input type="checkbox" name="rels" value="relative" title="亲属"/>亲属'+
+            '<input type="checkbox" name="rels" value="leader" title="上下级关系"/>上下级关系'+
+            '<input type="checkbox" name="rels" value="colleague" title="自述关联"/>自述关联'+
+            '<input type="checkbox" name="rels" value="ip_relation" title="IP关联"/>IP关联'+
+            '<input type="checkbox" name="rels" value="user_tag" title="其他"/>其他'
+        );
     }
+}
+function rel_value() {
+    $("[name=rels]:checkbox:checked").each(function (index,item) {
+        relation.push($(this).val());
+    });
 }
 //----------关系添加-----完-----
 
-
+//--------其他信息----
+var step=$('.advan-4 .other .jump').val();
+var limit=$('.advan-4 .other .datanums').val();
+var short_path='False';
+if ($("[name=short]:checkbox").prop("checked")=='true'){
+    short_path='True';
+};
+//--------其他信息----完
 
 //高级搜索开始
 var input_data;
 $('#sure_advan').on('click',function () {
-    input_data={
-        'start_nodes':[
-            {
-                'node_type':start_type,
-                'ids':ids,
-                'conditions':{
-                    yhf:[{'wildcard':{yhf_key:yhf_value}}],
+    if (short_path=='True'){
+        //此处要对起始节点进行判断，只能输入一个节点
+        if(!(ids.length==1&&end_ids.length==1)){
+            alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+        }
+    }else {
+        input_data={
+            'start_nodes':[
+                {
+                    'node_type':start_type,
+                    'ids':ids,
+                    'conditions':{
+                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
+                    }
                 }
-            }
-        ],
-        'end_nodes':[
-            {
-                'node_type':start_type,
-                'ids':ids,
-                'conditions':{
-                    yhf:[{'wildcard':{yhf_key:yhf_value}}],
+            ],
+            'end_nodes':[
+                {
+                    'node_type':start_type,
+                    'ids':ids,
+                    'conditions':{
+                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
+                    }
                 }
-            }
-        ],
-        'relation':relation,
-
+            ],
+            'relation':relation,
+            'step':step,
+            'limit':limit,
+            'short_path':short_path,
+        }
     }
 })
