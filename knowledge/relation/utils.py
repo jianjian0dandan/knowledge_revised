@@ -863,9 +863,6 @@ def get_es_by_id(primary_key,node_id):
     special_event_node = []
     group_node = []
     if primary_key == people_primary:
-        es = es_user_portrait
-        es_index = portrait_index_name
-        es_type = portrait_index_type
         people_node.append(node_id)
     elif primary_key == org_primary:
         es = es_user_portrait
@@ -887,7 +884,19 @@ def get_es_by_id(primary_key,node_id):
         es_index = group_name
         es_type = group_type
         group_node.append(node_id)
-    去对应es里找，然后返回相应的属性   5个表
+    if people_node:
+        people_result = []
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        p_result = es.mget(index=es_index,doc_type=es_type,fields=p_column,body={'ids':people_node})['docs']
+        for i in p_result:
+            if i['found'] == True:
+                people_result.append(i['_source'])
+
+
+
+    #去对应es里找，然后返回相应的属性   5个表
 
     
 def get_node_id(start_node):
