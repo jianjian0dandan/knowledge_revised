@@ -12,7 +12,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import recommentation_in, recommentation_in_auto,submit_task,search_data
+from utils import search_data,simple_search
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 test_time = datetime2ts(RUN_TEST_TIME)
@@ -29,10 +29,16 @@ def relation_index():#导航页
     return render_template('relation/relation_index.html')
 
 @mod.route('/search/')
-@login_required
+# @login_required
 def relation_search():#图谱搜索
-
-    return render_template('relation/search.html')
+    keywords = request.args.get('keywords', '')
+    keywords = keywords.split('&') 
+    submit_user = request.args.get('submit_user', '')
+    keywords = ['2635695961','2121667213']
+    submit_user = 'admin'
+    result = simple_search(keywords,submit_user)
+    return json.dumps(result)
+    # return render_template('relation/search.html')
 
 @mod.route('/search_result/')
 @login_required
@@ -96,10 +102,11 @@ def ajax_submit_task():
         'relation':['join','discuss'],
         'step':'5',
         'limit':'100',
-        'short_path':False#True
+        'submit_user':'admin',
+        'short_path':True#True
     }
     result = search_data(input_data)
-    return result
+    return json.dumps(result)
 
 
 #start d=node(533),e=node(522) match p=allShortestPaths( d-[r:discuss|:join*0..15]-e ) return p limit 10

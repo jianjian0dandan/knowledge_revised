@@ -76,9 +76,11 @@ def compute_task(task):
     #en_name = task['en_name']
     if RUN_TYPE == 0:
         start_ts = 1480003200#task['start_ts']
+        begin_ts = 1480003200
         end_ts = 1480176000#task['end_ts']
     else:
         start_ts = task['start_ts']
+        begin_ts = task['start_ts']
         end_ts = task['end_ts']
 
     try:
@@ -132,8 +134,8 @@ def compute_task(task):
         cityTopic(en_name, start_ts, end_ts)
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-2}})
         print 'finish geo analyze'
-        #language
-        compute_real_info(en_name, start_ts, end_ts,relation,task['submit_user'],task['submit_ts'])
+        #language  重头算
+        compute_real_info(en_name, begin_ts, end_ts,relation,task['submit_user'],task['submit_ts'])
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-3}})
         print 'finish language analyze'
         #time
