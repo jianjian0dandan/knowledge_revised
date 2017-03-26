@@ -6,12 +6,14 @@ import json
 import csv
 import os
 import time
+from xpinyin import Pinyin
 from datetime import date
 from datetime import datetime
 from utils import search_related_e_card,  create_node_and_rel, create_rel,query_detail_theme, create_theme_relation,\
                   del_e_theme_rel, add_theme_k_label, compare_theme, compare_theme_user, compare_theme_keywords,\
-                  compare_theme_k_label, search_related_event
+                  compare_theme_k_label, search_related_event, get_theme_flow
 from knowledge.global_utils import get_theme
+p = Pinyin()
 
 mod = Blueprint('theme', __name__, url_prefix='/theme')
 
@@ -56,6 +58,7 @@ def search_related_event_item():  #专题编辑-增加前先搜索事件,如果�
     theme_name = request.args.get('theme_name', u'房价')
     search_item = request.args.get('item', u'北京')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
     event_card = search_related_e_card(search_item, submit_user, theme_name)
     return json.dumps(event_card)
 
@@ -63,6 +66,7 @@ def search_related_event_item():  #专题编辑-增加前先搜索事件,如果�
 def ajax_search_related_event():  #专题编辑，推荐与之相关的一跳事件
     theme_name = request.args.get('theme_name', u'房价')
     submit_user = request.args.get('submit_user', 'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
     event_card = search_related_event(theme_name, submit_user)
     return json.dumps(event_card)
 
@@ -77,6 +81,8 @@ def detail_theme():  #专题包含事件
 @mod.route('/del_event_in_theme/')
 def del_event_in_theme():  #专题编辑-删除事件
     theme_name = request.args.get('theme_name', u'房价')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
     event_id = request.args.get('event_id', u'te-lang-pu-1480176000')
     flag = del_e_theme_rel(theme_name, event_id)
     return json.dumps(flag)
@@ -84,6 +90,8 @@ def del_event_in_theme():  #专题编辑-删除事件
 @mod.route('/theme_add_tag/')
 def theme_add_tag():  #专题编辑-添加标签,删除标签
     theme_name = request.args.get('theme_name', u'美国大选')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
     k_label = request.args.get('k_label', u'贵')
     operation = request.args.get('operation', 'add') #add del
     flag = add_theme_k_label(theme_name, k_label, operation)
@@ -96,6 +104,7 @@ def create_new_relation():
     if node1_id == '':
     	return 'must add event'
     node1_list = node1_id.split(',')
+    print node1_list,'===@@@==='
     node1_index_name = request.args.get('node1_index_name', 'event_index')  # node_index event_index
     rel = request.args.get('rel', 'special_event')
     node_key2 = request.args.get('node_key2', 'event')  # event,uid
@@ -173,11 +182,18 @@ def ajax_get_difference_k_label():
 
 #专题分析
 @mod.route('/theme_analysis_basic/')
-def ajax_theme_analysis():  #专题包含事件
-    theme_name = request.args.get('theme_name', u'房价')
+def ajax_theme_analysis():  #专题基本信息
+    theme_name = request.args.get('theme_name', u'美国大选')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    detail_t = get_theme(theme_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/theme_analysis_flow/')
+def ajax_theme_flow():  #专题鱼骨图
+    theme_name = request.args.get('theme_name', u'美国大选')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     theme_name = theme_name + '_' + submit_user
-    detail_t = get_theme(theme_name, submit_user)
+    detail_t = get_theme_flow(theme_name, submit_user)
     return json.dumps(detail_t)
 
 

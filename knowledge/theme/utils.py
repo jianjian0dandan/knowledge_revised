@@ -140,6 +140,7 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
     tx = graph.begin()
+    print node1_list,'00990909000000000000'
     for node1_id in node1_list:
         print node1_id, '----==！！！==----'
         node1 = node_index.get(node_key1, node1_id)
@@ -158,11 +159,7 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
             rel2 = Relationship(node1, rel, node2)
             graph.create(rel2)
             print "create success"
-            return 'success'
-        # else:
-        #     print "The current two nodes already have a relationship"
-        #     return '0'
-    return 'has relation'
+    return 'success'
 
 
 def get_special_labels(node1_list):
@@ -176,7 +173,7 @@ def get_special_labels(node1_list):
     for i in set(theme_label):
         keywords_dict[i] = theme_label.count(i)
     sorted_keywords = sorted(keywords_dict.iteritems(), key=lambda x:x[1], reverse=True)
-    print sorted_keywords
+    # print sorted_keywords
     result_label = [i[0] for i in sorted_keywords[:100]]
     result_label_string = '&'.join(result_label)
     return result_label_string
@@ -469,6 +466,42 @@ def search_related_event(theme_name, submit_user):
     return result
 
 # def theme_analysis_basic(theme_name, submit_user):
+def get_theme_flow(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    query_body = {
+        'query':{
+            'terms':{'en_name':event_list}
+            },
+        "sort": [{'start_ts':'asc'}]
+    }
+    name_list = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+                body=query_body,  fields=['name', 'en_name'])['hits']['hits']
+    query_body2 = {
+        'query':{"match_all":{}},
+        "sort": [{'retweeted':'desc'}],
+        'size':1
+    }
+    event_name_list = []
+    for i in name_list:
+        event_name_list.append(i['fields']['en_name'][0])
+    print event_name_list
+    result_list = []
+    for i in event_name_list:
+        max_retweet = es_event.search(index=i, doc_type='text', body=query_body2, \
+            fields=['text', 'timestamp'])['hits']['hits']
+        print max_retweet,'00000000000'
+        text = max_retweet[0]['fields']['text'][0]
+        t_datetime = ts2date(max_retweet[0]['fields']['timestamp'][0])
+        result_list.append([i, text, t_datetime])
+    return result_list
+
+
+
+
+
+
 
 
 
