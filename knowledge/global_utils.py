@@ -5,6 +5,7 @@ from py2neo import Graph
 from elasticsearch import Elasticsearch
 from global_config import *
 import math
+from time_utils import ts2datetime, datetime2ts, ts2date
 
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
@@ -254,33 +255,91 @@ def related_user_search(uid_list,sort_flag):
         detail_result.append(detail)
     return detail_result
 
+def deal_event_tag(tag ,submit_user):
+    # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+    # return result
+    # tag = tag_value
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
 
 # 查找该专题下的包含事件卡片信息，事件卡片
-def event_detail_search(eid_list,sort_flag):
-    query_body = {
-        'query':{
-            'terms':{'en_name':eid_list}
+def event_detail_search(eid_list, submit_user):
+    if not eid_list:
+        return []
+    fields_list = ['en_name','name', 'event_type','real_time', 'real_geo', 'uid_counts', 'weibo_counts', 'keywords', 'work_tag']
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    # try:
+    event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+            body={'ids':eid_list}, fields=fields_list)['docs']
+    # except:
+    #     return 'node does not exist'
+    result = []
+    for i in event_result:
+        event = []
+        i_fields = i['fields']
+        for j in fields_list:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_event_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
+
+def get_theme(theme_name, submit_user):
+    if theme_name == '': 
+        theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
+            body={'query':{'term':{'user':submit_user}}})['hits']['hits']
+    else:
+        query_body = {
+            "query":{
+                'bool':{
+                    'must':[
+                        {'match':   {"user":submit_user}},         
+                        {'match':   {"topic_name":theme_name}},         
+                    ]
+
+                }
+
             },
-        'size':100,
-        "sort": [{sort_flag:'desc'}]
-    }
-    fields_list = ['name', 'en_name', 'weibo_counts','start_ts','location','uid_counts','user_tag','description','photo_url']
-
-    event_detail = es_event.search(index=event_analysis_name, doc_type=event_type, \
-                body=query_body, _source=False, fields=fields_list)['hits']['hits']
-    detail_result = []
-    for i in event_detail:
-        fields = i['fields']
-        detail = dict()
-        for i in fields_list:
-            try:
-                detail[i] = fields[i][0]
-            except:
-                detail[i] = 'null'
-        detail_result.append(detail)
-    return detail_result
-
-
+            'size':100
+        }
+        theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
+            body=query_body)['hits']['hits']
+    theme_result = []
+    for i in theme_detail:
+        topic_id = i['_id']
+        theme_name = i['_source']['topic_name']
+        contain_event = i['_source']['event_count']
+        auto_label = i['_source']['label'].split('&')[:5]
+        try:
+            work_tag = i['_source']['k_label'].split('&')
+        # work_tag = deal_event_tag(work_tag, submit_user)[0]
+        except:
+            work_tag = []
+        submit_ts = ts2date(i['_source']['create_ts'])
+        theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
+    return theme_result
 
 #jln
 R_CLUSTER_FLOW1 = redis.StrictRedis(host=REDIS_CLUSTER_HOST_FLOW1, port=REDIS_CLUSTER_PORT_FLOW1)
