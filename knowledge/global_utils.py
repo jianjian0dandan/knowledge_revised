@@ -254,6 +254,21 @@ def related_user_search(uid_list,sort_flag):
         detail_result.append(detail)
     return detail_result
 
+def deal_event_tag(tag ,submit_user):
+    # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+    # return result
+    # tag = tag_value
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
 
 # 查找该专题下的包含事件卡片信息，事件卡片
 def event_detail_search(eid_list, submit_user):
@@ -298,14 +313,10 @@ def get_theme(theme_name, submit_user):
         query_body = {
             "query":{
                 'bool':{
-                    'must':{
-                        'match':
-                            {"user":submit_user}         
-                    },
-                    'should':[
-                        {"wildcard":{'topic_name':'*'+str(theme_name.encode('utf-8'))+'*'}},            
-                        {"wildcard":{'label':'*'+str(theme_name.encode('utf-8'))+'*'}}         
-                    ],
+                    'must':[
+                        {'match':   {"user":submit_user}},         
+                        {'match':   {"topic_name":theme_name}},         
+                    ]
 
                 }
 

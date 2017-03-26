@@ -139,26 +139,21 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
-    # print node_index
-    # print group_index
     tx = graph.begin()
     for node1_id in node1_list:
-        print node1_id, '--------'
+        print node1_id, '----==！！！==----'
         node1 = node_index.get(node_key1, node1_id)
-        print node1
         node1 = node_index.get(node_key1, node1_id)[0]
         node2 = group_index.get(node_key2, node2_id)[0]
         if not (node1 and node2):
             print "node does not exist"
-            return '1'
+            return 'node does not exist'
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
         node1_index_name, node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
-        # print c_string
         result = graph.run(c_string)
         rel_list = []
         for item in result:
             rel_list.append(item)
-        # print rel_list,'----------------'
         if rel not in rel_list:
             rel2 = Relationship(node1, rel, node2)
             graph.create(rel2)
@@ -186,12 +181,13 @@ def get_special_labels(node1_list):
     result_label_string = '&'.join(result_label)
     return result_label_string
 
-def create_node_and_rel(node_key1, node1_list, node1_index_name,\
-                        rel, node_key2, node2_id, node2_index_name, submit_user, k_label):
+def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2, \
+                        node2_id, node2_index_name, submit_user, k_label, node2_name):
     Index = ManualIndexManager(graph) # manage index
     theme_index = Index.get_or_create_index(Node, node2_index_name)
+    p_node2_id = p.get_pinyin(node2_id)
     c_string = "START end_node=node:%s(%s='%s')  RETURN end_node"\
-                 % (node2_index_name, node_key2, node2_id)
+                 % (node2_index_name, node_key2, p_node2_id)
     print c_string
     try:
         result = graph.run(c_string)
@@ -205,7 +201,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name,\
         return 'theme already exist'
     else:
         theme_dict = {}
-        theme_dict['topic_name'] = node2_id
+        theme_dict['topic_name'] = node2_name
         theme_dict['event'] = '&'.join(node1_list)
         theme_dict['event_count'] = len(node1_list)
         theme_dict['create_ts'] = int(time.time())
@@ -214,7 +210,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name,\
         topic_id = p.get_pinyin(node2_id)
         labels = get_special_labels(node1_list)
         theme_dict['label'] = labels
-        # es_event.delete(index=special_event_name, doc_type=special_event_type, id=topic_id)
+        es_event.delete(index=special_event_name, doc_type=special_event_type, id='mei-guo-da-xuan-_admin@qq.com')
         es_event.index(index=special_event_name, doc_type=special_event_type, id=topic_id, body=theme_dict)
         new_theme = Node(special_event_node, event=topic_id)
         graph.create(new_theme)
@@ -225,6 +221,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name,\
 
 def query_detail_theme(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    # topic_id = topic_id + '_' + submit_user
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     eid_list = eid_string['fields']['event'][0].split('&')
     result = event_detail_search(eid_list, submit_user)
@@ -471,6 +468,7 @@ def search_related_event(theme_name, submit_user):
     result = event_detail_search(related_list, submit_user)
     return result
 
+# def theme_analysis_basic(theme_name, submit_user):
 
 
 
