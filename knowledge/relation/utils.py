@@ -7,7 +7,7 @@ import IP
 import sys
 import time
 import datetime
-import math
+import math,re
 import json
 import redis
 import math
@@ -15,7 +15,7 @@ from xpinyin import Pinyin
 from py2neo.ext.batman import ManualIndexManager
 from py2neo.ext.batman import ManualIndexWriteBatch
 from py2neo.ogm import GraphObject, Property
-from py2neo import Node, Relationship
+from py2neo import Node, Relationship,Path,walk
 from elasticsearch import Elasticsearch
 # from update_activeness_record import update_record_index
 from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
@@ -37,227 +37,6 @@ from knowledge.global_utils import *
 p = Pinyin()
 WEEK = 7
 
-def identify_in(data, uid_list):
-    in_status = 1
-    compute_status = 0
-    compute_hash_name = 'compute'
-    compute_uid = r.hkeys(compute_hash_name)
-    for item in data:
-        date = item[0] # identify the date form '2013-09-01' with web
-        uid = item[1]
-        status = item[2]
-        relation_string = item[3]
-        recommend_style = item[4]
-        submit_user = item[5]
-        value_string = []
-        identify_in_hashname = "identify_in_" + str(date)
-        r.hset(identify_in_hashname, uid, in_status)
-        if status == '1':
-            in_date = date
-            compute_status = '1'
-        elif status == '2':
-            in_date = date
-            compute_status = '2'
-        r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user,0]))
-    return True
-
-#submit new task and identify the task name unique in es-group_result and save it to redis list
-def submit_task(input_data):
-    status = 0 # mark it can not submit
-    task_name = input_data['task_name']
-    submit_user = input_data['submit_user']
-    task_id = input_data['task_id']
-    try:
-        result = es_recommendation_result.get(index=recommendation_index_name, doc_type=recommendation_index_type, id=task_id)['_source']
-    except:
-        status = 1
-    
-    if status != 0 and 'uid_file' not in input_data:
-        input_data['status'] = 0 # mark the task not compute
-        count = len(json.loads(input_data['uid_list']))
-        input_data['count'] = count
-        input_data['submit_user'] = submit_user
-        # add_es_dict = {'task_information': input_data, 'query_condition':''}
-        es_recommendation_result.index(index=recommendation_index_name, doc_type=recommendation_index_type, id=task_id, body=input_data)
-        if input_data['cal_style'] == 0:
-            group_analysis_queue_name = 'recommendation_in_now'
-        if input_data['cal_style'] == 1:
-            group_analysis_queue_name = 'recommendation_in_later'
-        r.lpush(group_analysis_queue_name, json.dumps(input_data))
-    return status
-
-
-
-# identify in by upload file to admin user
-# input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}
-def submit_identify_in_uid(input_data):
-    date = input_data['date']
-    submit_user = input_data['user']
-    operation_type = input_data['operation_type']
-    compute_status = input_data['compute_status'] 
-    relation_string = input_data['relation_string'] 
-    recommend_style = input_data['recommend_style']
-    hashname_submit = 'submit_recomment_' + date
-    hashname_influence = 'recomment_' + date + '_influence'
-    hashname_sensitive = 'recomment_' + date + '_sensitive'
-    compute_hash_name = 'compute'
-    # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
-    auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
-    upload_data = input_data['upload_data']
-    line_list = upload_data.split('\n')
-    uid_list = []
-    invalid_uid_list = []
-    for line in line_list:
-        uid = line.split('\r')[0]
-        #if len(uid)==10:
-        #    uid_list.append(uid)
-        if uid != '':
-            uid_list.append(uid)
-    if len(invalid_uid_list)!=0:
-        return False, 'invalid user info', invalid_uid_list
-    #identify the uid is not exist in user_portrait and compute
-    #step1: filter in user_portrait
-    new_uid_list = []
-    have_in_uid_list = []
-    try:
-        exist_portrait_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids':uid_list}, _source=False)['docs']
-    except:
-        exist_portrait_result = []
-    if exist_portrait_result:
-        for exist_item in exist_portrait_result:
-            if exist_item['found'] == False:
-                new_uid_list.append(exist_item['_id'])
-            else:
-                have_in_uid_list.append(exist_item['_id'])
-    else:
-        new_uid_list = uid_list
-   
-    #step2: filter in compute
-    new_uid_set = set(new_uid_list)
-    compute_set = set(r.hkeys('compute'))
-    in_uid_set = list(new_uid_set - compute_set)
-    print 'new_uid_set:', new_uid_set 
-    print 'in_uid_set:', in_uid_set
-    if len(in_uid_set)==0:
-        return False, 'all user in'
-    #identify the final add user
-    final_submit_user_list = []
-    for in_item in in_uid_set:
-        if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashname_submit, in_item))
-            recommentor_list = tmp['operation'].split('&')
-            recommentor_list.append(str(submit_user))
-            new_list = list(set(recommentor_list))
-            tmp['operation'] = '&'.join(new_list)
-        else:
-            tmp = {'system':'0', 'operation':submit_user}
-        if operation_type == 'submit':
-            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, relation_string, recommend_style, submit_user, 0 ]))
-            r.hset(hashname_submit, in_item, json.dumps(tmp))
-            # r.hset(submit_user_recomment, in_item, '0')
-        final_submit_user_list.append(in_item)
-    return True, invalid_uid_list, have_in_uid_list, final_submit_user_list
-
-def get_final_submit_user_info(uid_list):
-    final_results = []
-    try:
-        profile_results = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids': uid_list})['docs']
-    except:
-        profile_results = []
-    try:
-        bci_history_results =es_bci_history.mget(index=bci_history_index_name, doc_type=bci_history_index_type, body={'ids': uid_list})['docs']
-    except:
-        bci_history_results = []
-    #get bci_history max value
-    now_time_ts = time.time()
-    search_date_ts = datetime2ts(ts2datetime(now_time_ts - DAY))
-    bci_key = 'bci_' + str(search_date_ts)
-    query_body = {
-        'query':{
-             'match_all':{}
-        },
-        'sort': [{bci_key:{'order': 'desc'}}],
-        'size': 1
-    }
-    #try:
-    bci_max_result = es_bci_history.search(index=bci_history_index_name, doc_type=bci_history_index_type, body=query_body, _source=False, fields=[bci_key])['hits']['hits']
-    #except:
-    #    bci_max_result = {}
-    if bci_max_result:
-        bci_max_value = bci_max_result[0]['fields'][bci_key][0]
-    else:
-        bci_max_value = MAX_VALUE
-    iter_count = 0
-    for uid in uid_list:
-        try:
-            profile_item = profile_results[iter_count]
-        except:
-            profile_item = {}
-        try:
-            bci_history_item = bci_history_results[iter_count]
-        except:
-            bci_history_item = {}
-        if profile_item and profile_item['found'] == True:
-            uname = profile_item['_source']['nick_name']
-            location = profile_item['_source']['user_location']
-        else:
-            uname = ''
-            location = ''
-        if bci_history_item and bci_history_item['found'] == True:
-            fansnum = bci_history_item['_source']['user_fansnum']
-            statusnum = bci_history_item['_source']['weibo_month_sum']
-            try:
-                bci = bci_history_item['_source'][bci_key]
-                normal_bci = math.log(bci / bci_max_value * 9 + 1, 10) * 100
-            except:
-                normal_bci = ''
-        else:
-            fansnum = ''
-            statusnum = ''
-            normal_bci = ''
-        final_results.append([uid, uname, location, fansnum, statusnum, normal_bci])
-        iter_count += 1
-
-    return final_results
-
-def submit_identify_in(input_data):
-    result_mark = False
-    result_mark = submit_identify_in_uid(input_data)
-
-    if len(result_mark) == 4:
-        final_submit_user_list = result_mark[-1]
-        if final_submit_user_list:
-            final_submit_user_info = get_final_submit_user_info(final_submit_user_list)
-        else:
-            final_submit_user_info = []
-        result_mark = list(result_mark)[:3]
-        result_mark.append(final_submit_user_info)
-    return result_mark
-
-# show recommentation in uid
-def recommentation_in(input_ts, recomment_type, submit_user):
-    date = ts2datetime(input_ts)
-    recomment_results = []
-    # read from redis
-    results = []
-    hash_name = 'recomment_'+str(date) + "_" + recomment_type
-    identify_in_hashname = "identify_in_" + str(date)
-    # submit_user_recomment = "recomment_" + submit_user + "_" + str(date) # 用户自推荐名单
-    results = r.hgetall(hash_name)
-    if not results:
-        return []
-    # search from user_profile to rich the show information
-    recommend_list = set(r.hkeys(hash_name))
-    identify_in_list = set(r.hkeys("compute"))
-    # submit_user_recomment = set(r.hkeys(submit_user_recomment))
-    recomment_results = list(recommend_list - identify_in_list)
-    # recomment_results = list(set(recomment_results) - submit_user_recomment)
-
-    if recomment_results:
-        results = get_user_detail(date, recomment_results, 'show_in', recomment_type)
-    else:
-        results = []
-    return results
 
 
 #get user detail
@@ -413,52 +192,6 @@ def get_evaluate_max(index_name):
         max_result[evaluate] = max_evaluate
     return max_result
 
-def recommentation_in_auto(date, submit_user):
-    results = []
-    #run type
-    if RUN_TYPE == 1:
-        now_date = search_date
-    else:
-        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME))
-    recomment_hash_name = 'recomment_' + now_date + '_auto'
-    # print recomment_hash_name,'============'
-    recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
-    recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
-    recomment_submit_hash_name = 'recomment_' + submit_user + '_' + now_date
-    recomment_compute_hash_name = 'compute'
-    # #step1: get auto
-    # auto_result = r.hget(recomment_hash_name, 'auto')
-    # if auto_result:
-    #     auto_user_list = json.loads(auto_result)
-    # else:
-    #     auto_user_list = []
-    #step2: get admin user result
-    admin_result = r.hget(recomment_hash_name, submit_user)
-    admin_user_list = []
-    if admin_result:
-        admin_result_dict = json.loads(admin_result)
-    else:
-        return None
-    final_result = []
-    #step3: get union user and filter compute/influence/sensitive
-    for k,v in admin_result_dict.iteritems():
-        admin_user_list = v
-        union_user_auto_set = set(admin_user_list)
-        influence_user = set(r.hkeys(recomment_influence_hash_name))
-        sensitive_user = set(r.hkeys(recomment_sensitive_hash_name))
-        compute_user = set(r.hkeys(recomment_compute_hash_name))
-        been_submit_user = set(r.hkeys(recomment_submit_hash_name))
-        filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user | been_submit_user)
-        auto_user_list = list(filter_union_user)
-        #step4: get user detail
-        if auto_user_list == []:
-            return auto_user_list
-        results = get_user_detail(now_date, auto_user_list, 'show_in', 'auto')
-        for detail in results:  #add root
-            re_detail = detail
-            re_detail.append(k)
-            final_result.append(re_detail)
-    return final_result
 
 def submit_event(input_data):
     if not input_data.has_key('name'):
@@ -775,9 +508,6 @@ def show_node_detail(node_type, item, submit_user):
     node_result.append(events)
     return node_result
 
-def edit_node():
-    pass
-
 def deal_user_tag(item ,submit_user):
     tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
     # return result
@@ -815,6 +545,7 @@ def search_data(input_data):
     start_id = get_node_id(input_data['start_nodes'])
     end_id = get_node_id(input_data['end_nodes'])
     relation = input_data['relation']
+    submit_user = input_data['submit_user']
     step = str(input_data['step'])
     if input_data['limit']:
         limit = 'limit '+input_data['limit']
@@ -834,29 +565,126 @@ def search_data(input_data):
         relation = 'r:'+'|:'.join(relation)
 
     if input_data['short_path']==True:
-        compute_short_path(start_id,end_id,relation,step,limit)
+        query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
+        print query
+        return get_info_by_query(query,submit_user)
+        # compute_short_path(start_id,end_id,relation,step,limit)
     else:
         query = 'start n=node('+start_id+'),e=node('+end_id+') match (n)-['+relation+'*0..'+step+']-(e) return n,r,e '+limit
-        result = graph.run(query)
-        for i in result:
-            i = dict(i)
-            # print i['n'],i['r'],i['e']
-            # print i['n'].labels(),dict(i['n']).keys(),dict(i['n']).values()
-            print i['n'].labels(),dict(i['n']).keys()[0],dict(i['n']).values()[0]
-            for j in i['r']:
-                print j.type() #discuss
-            print i['e'].labels(),dict(i['e']).keys()[0],dict(i['e']).values()[0]
-            #返回图
-            '''
-            #neo4j node primary_key
-            people_primary = "uid"
-            org_primary = "org_id"
-            event_primary = "event_id"
-            special_event_primary = "event"
-            group_primary = "group"
-            '''
+        print query
+        return get_info_by_query(query,submit_user)
 
-def get_es_by_id(primary_key,node_id):
+
+def get_info_by_query(query,submit_user):
+    node_list = []
+    result = list(graph.run(query))
+    graph_result = []
+    for i in result:
+        i = dict(i)
+        # print i['n'],i['r'],i['e']
+        # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
+        try: 
+            i_type = i['r']
+        except:
+            i_type = i['p']
+        for j in i_type:
+            print j.start_node(),j.type(),j.end_node()
+            print dict(j.start_node())
+            start_node = dict(j.start_node())
+            relation = j.type()
+            end_node = dict(j.end_node())
+            #节点信息，名字
+            info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
+            if info and info not in node_list :
+                node_list.append(info)
+            info,end_node['name'] = get_es_by_id(end_node.keys()[0],end_node.values()[0],submit_user)
+            if info and info not in node_list :
+                node_list.append(info)
+
+            this_relation = [start_node,relation,end_node]
+            if this_relation not in graph_result:
+                graph_result.append(this_relation)
+        # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
+
+    # print '?????',graph_result
+    max_influence =  get_max_index('influence')
+    max_activeness = get_max_index('activeness')
+    max_sensitive = get_max_index('sensitive')
+    print max_influence,max_activeness,max_sensitive
+    table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
+    for i in node_list:
+        if i[0] == people_primary:
+            tem = i[1]
+            tem['influence'] = normal_index(tem['influence'],max_influence)
+            tem['activeness'] = normal_index(tem['activeness'],max_influence)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            table_result['p_nodes'].append(tem)
+        elif i[0] == org_primary:
+            tem = i[1]
+            tem['influence'] = normal_index(tem['influence'],max_influence)
+            tem['activeness'] = normal_index(tem['activeness'],max_influence)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            table_result['o_nodes'].append(tem)
+        elif i[0] == event_primary:
+            table_result['e_nodes'].append(i[1])
+        elif i[0] == special_event_primary:
+            table_result['s_nodes'].append(i[1])
+        else:
+            table_result['g_nodes'].append(i[1])
+
+    return {'graph_result':graph_result,'table_result':table_result}
+
+
+def get_es_by_id(primary_key,node_id,submit_user):
+    if primary_key == people_primary:
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        column = p_column
+        name = 'uname'
+        tag = 'function_mark'
+    elif primary_key == org_primary:
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        column = o_column
+        name = 'uname'
+        tag = 'function_mark'
+    elif primary_key == event_primary:
+        es = es_event
+        es_index = event_analysis_name
+        es_type = event_type
+        column = e_column
+        name = 'name'
+        tag = 'work_tag'
+    elif primary_key == special_event_primary:
+        es = es_special_event
+        es_index = special_event_name
+        es_type = special_event_type
+        column = s_column
+        name = 'topic_name'
+        tag = 'label'
+    else:
+        es = es_group
+        es_index = group_name
+        es_type = group_type
+        column = g_column
+        name = 'group_name'
+        tag = 'label'
+    try:
+        result = es.get(index=es_index,doc_type=es_type,fields=column,id=node_id)
+        f_result = {}
+        for k,v in result['fields'].iteritems():
+            f_result[k] = v[0]
+        f_result[tag] = deal_event_tag(f_result[tag],submit_user)[0]
+        return [[primary_key,f_result],result['fields'][name]]
+    except:#人造节点
+        # return None
+        return [0,node_id]
+
+
+
+def get_es_by_id_multi(primary_key,node_id):
     people_node = []
     org_node = []
     event_node = []
@@ -865,9 +693,6 @@ def get_es_by_id(primary_key,node_id):
     if primary_key == people_primary:
         people_node.append(node_id)
     elif primary_key == org_primary:
-        es = es_user_portrait
-        es_index = portrait_index_name
-        es_type = portrait_index_type
         org_node.append(node_id)
     elif primary_key == event_primary:
         es = es_event
@@ -889,11 +714,18 @@ def get_es_by_id(primary_key,node_id):
         es = es_user_portrait
         es_index = portrait_index_name
         es_type = portrait_index_type
-        p_result = es.mget(index=es_index,doc_type=es_type,fields=p_column,body={'ids':people_node})['docs']
-        for i in p_result:
-            if i['found'] == True:
-                people_result.append(i['_source'])
+        result = get_user_info(people_node)
 
+        # p_result = es.mget(index=es_index,doc_type=es_type,fields=p_column,body={'ids':people_node})['docs']
+        # for i in p_result:
+        #     if i['found'] == True:
+        #         people_result.append(i['_source'])
+    elif org_node:
+        org_result = []
+        es = es_user_portrait
+        es_index = portrait_index_name
+        es_type = portrait_index_type
+        result = get_user_info(org_node)
 
 
     #去对应es里找，然后返回相应的属性   5个表
@@ -969,6 +801,121 @@ def get_node_id(start_node):
 
 def compute_short_path(start_id,end_id,relation,step,limit):
     query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
+    print query
     result = graph.run(query)
     for i in result:
-        print dict(i)
+        i = dict(i)
+
+
+def simple_search(keywords_list,submit_user):
+    chinese = re.compile(u"[\u4e00-\u9fa5]+")
+    table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
+    nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+    for key in keywords_list:
+        print key
+        '''
+        if len(chinese.findall(key)) == 0: #可能是id
+            for i in range(len(es_list)):
+                if column_list[i] == p_column:
+                    query_body = {
+                        'query':{
+                            'bool':{
+                                'must':[
+                                    {'term':{'uid':key}},
+                                    {'terms':{'verify_type':peo_list}}
+                                ]
+                            }
+                        }
+                    }
+                    result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+                    if result:
+                        f_result = {}
+                        print result
+                        for k,v in result[0]['fields'].iteritems():
+                            f_result[k] = v[0]
+                        try:
+                            f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                        except KeyError:
+                            pass
+                        table_result['p_nodes'].append(f_result)
+                elif column_list[i] == o_column:
+                    query_body = {
+                        'query':{
+                            'bool':{
+                                'must':[
+                                    {'term':{'uid':key}},
+                                    {'terms':{'verify_type':org_list}}
+                                ]
+                            }
+                        }
+                    }
+                    result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+                    if result:
+                        f_result = {}
+                        for k,v in result[0]['fields'].iteritems():
+                            f_result[k] = v[0]
+                        try:
+                            f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                        except KeyError:
+                            pass
+                        table_result['o_nodes'].append(f_result)
+                else:
+                    try:
+                        result = es_list[i].get(index=es_index_list[i],doc_type=es_type_list[i],id=key,fields=column_list[i])
+                        f_result = {}
+                        for k,v in result['fields'].iteritems():
+                            f_result[k] = v[0]
+                        f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                        table_result[node_list[i]].append(f_result)
+                    except :
+                        continue
+        '''
+
+        for i in range(len(es_list)):
+            query_body = {
+                'query':{
+                    'bool':{
+                        'should':[
+                            {'term':{'uid':key}},
+                            {'term':{'en_name':key}},
+                            {'term':{'group_name':key}},
+                            {'term':{'topic_name':key}},
+                            {'wildcard':{'uname':'*'+key+'*'}},
+                            {'wildcard':{'description':'*'+key+'*'}},
+                            {'wildcard':{'function_mark':'*'+key+'*'}},
+                            {'wildcard':{'keywords':'*'+key+'*'}},
+                            {'wildcard':{'hashtag':'*'+key+'*'}},
+                            {'wildcard':{'location':'*'+key+'*'}},
+                            {'wildcard':{'name':'*'+key+'*'}},
+                            {'wildcard':{'work_tag':'*'+key+'*'}},
+                            {'wildcard':{'topic_name':'*'+key+'*'}},
+                            {'wildcard':{'k_label':'*'+key+'*'}},
+                            {'wildcard':{'label':'*'+key+'*'}},
+                            {'wildcard':{'event':'*'+key+'*'}},
+                            {'wildcard':{'group_name':'*'+key+'*'}},
+                        ],
+                        'minimum_should_match':1
+                    }
+                }
+            }
+            if i == 0:
+                query_body['query']['bool']['must'] = [{'terms':{'verify_type':peo_list}}]
+            elif i == 1:
+                query_body['query']['bool']['must'] = [{'terms':{'verify_type':org_list}}]
+            else:
+                pass
+            print query_body
+            result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+            if result:
+                for j in result:
+                    print j
+                    print '======================='
+                    f_result = {}
+                    for k,v in j['fields'].iteritems():
+                        f_result[k] = v[0]
+                    try:
+                        f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                    except KeyError:
+                        pass
+                    table_result[nodes_list[i]].append(f_result)
+    return table_result

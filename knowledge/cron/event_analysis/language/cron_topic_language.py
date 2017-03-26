@@ -23,7 +23,60 @@ from API_user_portrait.event_user_portrait import event_user_portrait
 
 def compute_real_info(topic,begin_ts,end_ts,relation,submit_user,submit_ts):
 	info_dict = {}
+	query_body = {   
+		'query':{
+		'bool':{
+			'must':[
+				{'term':{'en_name':topic}},
+				{'range':{
+					'timestamp':{'gte': begin_ts, 'lt':end_ts} 
+				}
+				}]
+			}
+		},
+		'size':10000
+	}
+	result = es_event.search(index=topic,doc_type=event_text_type,fields=['text'],body=query_body)['hits']['hits']
+	text_list = []
+	for i in result:
+		text_list.append(i['fields']['text'][0])
+
+	#事件类型
+	try:
+		event = es_event.get(index=event_task_name,doc_type=event_task_type,id=topic)['_source']
+		info_dict['event_type'] = event['event_type']
+	except:
+		info_dict['event_type'] = cut_weibo(text_list)
+
+	try:
+		event = es_event.get(index=event_task_name,doc_type=event_task_type,id=topic)['_source']
+		info_dict['real_auth'] = event['real_auth']
+		info_dict['real_geo'] = event['real_geo']
+		info_dict['real_time'] = event['real_time']
+		info_dict['real_person'] = event['real_person']
+	except:
+		info_dict = get_real(info_dict)
+
+
+	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
 	
+	keywords = get_keyword(''.join(text_list),2)
+	info_dict['keywords'] = '&'.join([i[0] for i in keywords])
+	info_dict['keywords_list'] = json.dumps(keywords)
+
+	hashtag = get_hashtag(''.join(text_list))
+	info_dict['hashtag_dict'] = json.dumps(hashtag)
+	info_dict['hashtag'] = '&'.join(list(hashtag.keys()))
+	
+
+	try:
+		es_event.update(index=event_analysis_name,doc_type=event_type,id=topic,body={'doc':info_dict})
+	except Exception,e:
+		es_event.index(index=event_analysis_name,doc_type=event_type,id=topic,body=info_dict)
+	get_users(topic,begin_ts,end_ts,relation,submit_user,submit_ts)
+
+
+def get_real(info_dict):
 	query_body = {   
 		'query':{
 			'bool':{
@@ -85,49 +138,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation,submit_user,submit_ts):
 			nodes_rels(rel_list)
 		except:
 			pass
-
-	query_body = {   
-		'query':{
-		'bool':{
-			'must':[
-				{'term':{'en_name':topic}},
-				{'range':{
-					'timestamp':{'gte': begin_ts, 'lt':end_ts} 
-				}
-				}]
-			}
-		},
-		'size':10000
-	}
-	result = es_event.search(index=topic,doc_type=event_text_type,fields=['text'],body=query_body)['hits']['hits']
-	text_list = []
-	for i in result:
-		text_list.append(i['fields']['text'][0])
-	# print text_list
-
-	#事件类型
-	try:
-		event = es_event.get(index=event_task_name,doc_type=event_task_type,id=topic)['_source']
-		info_dict['event_type'] = event['event_type']
-	except:
-		info_dict['event_type'] = cut_weibo(text_list)
-	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
-	
-	keywords = get_keyword(''.join(text_list),2)
-	info_dict['keywords'] = '&'.join([i[0] for i in keywords])
-	info_dict['keywords_list'] = json.dumps(keywords)
-
-	hashtag = get_hashtag(''.join(text_list))
-	info_dict['hashtag_dict'] = json.dumps(hashtag)
-	info_dict['hashtag'] = '&'.join(list(hashtag.keys()))
-	
-
-	try:
-		es_event.update(index=event_analysis_name,doc_type=event_type,id=topic,body={'doc':info_dict})
-	except Exception,e:
-		es_event.index(index=event_analysis_name,doc_type=event_type,id=topic,body=info_dict)
-	get_users(topic,begin_ts,end_ts,relation,submit_user,submit_ts)
-
+	return info_dict
 
 def get_hashtag(text):
 	if isinstance(text, str):

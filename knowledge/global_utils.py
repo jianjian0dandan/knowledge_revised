@@ -4,6 +4,7 @@ import redis
 from py2neo import Graph
 from elasticsearch import Elasticsearch
 from global_config import *
+import math
 from time_utils import ts2datetime, datetime2ts, ts2date
 
 # user profile info
@@ -540,3 +541,80 @@ o_column = ['uid','uname','location','influence','activeness','sensitive','keywo
 e_column = ['name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
 s_column = ['topic_name','event','create_ts','k_label','label']
 g_column = ['group_name','people_count','create_ts','k_label','label']
+
+
+es_list = [es_user_portrait,es_user_portrait,es_event,es_special_event,es_group]
+es_index_list  = [portrait_index_name,portrait_index_name,event_analysis_name,special_event_name,group_name]
+es_type_list = [portrait_index_type,portrait_index_type,event_type,special_event_type,group_type]
+column_list = [p_column,o_column,e_column,s_column,g_column]
+tag_list = ['function_mark','function_mark','work_tag','topic_name','group_name']
+
+def get_user_info(uid_list,uname):
+    query_body = {
+        'query':{
+            'terms':{
+                'uid':uid_list
+            },
+            'terms':{
+                'verify_type':user_list
+            }
+        }
+    }
+    print 'vvvvvvvvvvvvvvvvv'
+    result = es_user_portrait.search(index=portrait_index_name,doc_type=portrait_index_type,body=query_body,fields=column_list[i])['hits']['hits']
+    print result
+    return result 
+    '''
+    max_influence =  get_max_index('influence')
+    max_activeness = get_max_index('activeness')
+    max_sensitive = get_max_index('sensitive')
+    info_result = []
+    for i in result:
+        i = i['_source']
+        print i
+        i['influence'] = normal_index(i['influence'],max_influence)
+        i['activeness'] = normal_index(i['activeness'],max_influence)
+        i['sensitive'] = normal_index(i['sensitive'],max_influence)
+    '''
+
+# 获取最大值
+def get_max_index(term):
+    query_body = {
+        'query':{
+            'match_all':{}
+        },
+        'size':1,
+        'sort':[{term: {'order': 'desc'}}]
+        }
+    try:
+        iter_max_value = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type, \
+                        body=query_body)['hits']['hits']
+    except Exception, e:
+        raise e
+    iter_max = iter_max_value[0]['_source'][term]
+
+    return iter_max
+
+
+def normal_index(index, max_index):
+    normal_value = math.log((index / max_index) * 9 + 1, 10) * 100
+    return normal_value
+
+def get_org_info(uid_list,uname):
+    pass
+
+def deal_event_tag(tag ,submit_user):
+    # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+    # return result
+    # tag = tag_value
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
