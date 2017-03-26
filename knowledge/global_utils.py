@@ -474,3 +474,10 @@ def getWeiboByNameStEt(topic,start_date,end_date):
     search_result = weibo_es.search(index=topic,doc_type=weibo_index_type,body=query_body)
     print search_result
     return search_result
+
+#结果展示字段
+p_column = ['uid','uname','location','influence','activeness','sensitive','keywords_string','function_mark']
+o_column = ['uid','uname','location','influence','activeness','sensitive','keywords_string','function_mark']
+e_column = ['name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
+s_column = ['topic_name','event','create_ts','k_label','label']
+g_column = ['group_name','people_count','create_ts','k_label','label']
