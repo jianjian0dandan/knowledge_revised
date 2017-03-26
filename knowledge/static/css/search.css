@@ -81,7 +81,13 @@ body {
 }
 #container #advanced_search .advan-1 .start {
     border-left: 1px solid silver;
-    padding: 3% 0 2% 3%;
+    padding:30px 0 10px 30px;
+}
+#container #advanced_search .advan-1 b.start_plus {
+    color: #f3f4f5;
+}
+#container #advanced_search .advan-1 div:first-of-type b {
+    color: #000;
 }
 #container #advanced_search .advan-1 .tit {
     position: absolute;
@@ -142,13 +148,17 @@ body {
     border: 1px solid silver;
     padding: 0.4% 1%;
 }
-#container #advanced_search .advan-2 .rel-2-value {
+#container #advanced_search .advan-2 .rel-2-value,
+#container .advan-1 .start .upload,
+#container .advan-3 .end .upload {
     padding: 3px 8px;
     border: 1px solid #979797;
     background-color: #eaeaea;
     border-radius: 5px;
 }
-#container #advanced_search .advan-2 .rel-2-value:hover {
+#container #advanced_search .advan-2 .rel-2-value:hover,
+#container .advan-1 .start .upload:hover,
+#container .advan-3 .end .upload:hover {
     background-color: #dadada;
 }
 /*终止节点*/
@@ -160,6 +170,12 @@ body {
 #container #advanced_search .advan-3 .end {
     border-left: 1px solid silver;
     padding: 3% 0 2% 3%;
+}
+#container #advanced_search .advan-3 b.end_plus {
+    color: #f3f4f5;
+}
+#container #advanced_search .advan-3 div:first-of-type b {
+    color: #000;
 }
 #container #advanced_search .advan-3 .tit {
     position: absolute;
