@@ -158,7 +158,7 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
         rel_list = []
         for item in result:
             rel_list.append(item)
-        print rel_list,'----------------'
+        # print rel_list,'----------------'
         if rel not in rel_list:
             rel2 = Relationship(node1, rel, node2)
             graph.create(rel2)
@@ -304,5 +304,177 @@ def del_e_theme_rel(theme_name, event_id):
             body={'doc':{'event':eid_string, 'event_count':len(new_eid_list)}}) 
     return 'true'
 
-def edit_theme_k_label(theme_name, k_label):
-    pass
+def add_theme_k_label(theme_name, k_label,operation):
+    new_label = k_label.split('&')
+    en_name = p.get_pinyin(theme_name)
+    print en_name
+    theme_label = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
+            fields=['k_label'])
+    print theme_label,'------------'
+    # try:
+    theme_label_list = theme_label['fields']['k_label'][0].split('&')
+    # except:
+    #     theme_label_list = []
+    if operation == 'add':
+        theme_label_list.extend(new_label)
+    elif operation == 'del':
+        theme_label_list = set(theme_label_list) - set(new_label)
+    theme_label_list = [i for i in set(theme_label_list)]
+    theme_label_string = '&'.join(theme_label_list)
+    es_event.update(index=special_event_name,doc_type=special_event_type,id=en_name,\
+            body={'doc':{'k_label':theme_label_string}})
+    return True
+
+def compare_theme(theme_name1, theme_name2, submit_user, flag):
+    if flag == 'all':
+        theme1 = query_detail_theme(theme_name1, submit_user)
+        theme2 = query_detail_theme(theme_name2, submit_user)
+        return [theme1, theme2]
+    else:
+        topic_id1 = p.get_pinyin(theme_name1)
+        eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['event'])
+        event_list1 = eid_string1['fields']['event'][0].split('&')
+        topic_id2 = p.get_pinyin(theme_name2)
+        eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['event'])
+        event_list2 = eid_string2['fields']['event'][0].split('&')
+        if flag == 'same':
+            same_e = set(event_list1)&set(event_list2)
+            same_e = [i for i in same_e]
+            detail_result1 = event_detail_search(same_e,submit_user)
+            detail_result2 = event_detail_search(same_e,submit_user)
+        if flag == 'diff':
+            diff_e1 = set(event_list1) - (set(event_list1)&set(event_list2))
+            diff_e1 = [i for i in diff_e1]
+            diff_e2 = set(event_list2) - (set(event_list1)&set(event_list2))
+            diff_e2 = [i for i in diff_e2]
+            detail_result1 = event_detail_search(diff_e1,submit_user)
+            detail_result2 = event_detail_search(diff_e2,submit_user)
+        return [detail_result1, detail_result2]
+
+def compare_theme_user(theme_name1, theme_name2, submit_user, flag):
+    topic_id1 = p.get_pinyin(theme_name1)
+    eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['event'])
+    event_list1 = eid_string1['fields']['event'][0].split('&')
+    
+    topic_id2 = p.get_pinyin(theme_name2)
+    eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['event'])
+    event_list2 = eid_string2['fields']['event'][0].split('&')
+    
+    event_list_all = [event_list1, event_list2]
+    uid_list = []
+    for event_result in event_list_all:
+        uid_list1 = []
+        print event_result
+        for event in event_result:
+            event_value = event
+            # event_list.append(event_value)
+            c_string = 'START s0 = node:event_index(event_id="'+str(event_value)+'") '
+            c_string += 'MATCH (s0)-[r]-(s1:User) return s1 LIMIT 50'
+            print c_string
+            result = graph.run(c_string)
+            for i in list(result):
+                end_id = dict(i['s1'])
+                uid_list1.append(end_id['uid'])
+        uid_list.append(uid_list1)
+    return uid_list
+    ##对于实际的人怎么处理？
+    if flag == 'all':
+        uid_list1 = [i for i in set(uid_list1)]
+        uid_list2 = [i for i in set(uid_list2)]
+        detail_result1 = related_user_search(uid_list1,submit_user)
+        detail_result2 = related_user_search(uid_list2,submit_user)
+
+    if flag == 'same':
+        same_u = set(uid_list1)&set(uid_list2)
+        same_u = [i for i in same_u]
+        detail_result1 = related_user_search(same_u,submit_user)
+        detail_result2 = related_user_search(same_u,submit_user)
+
+    if flag == 'diff':
+        diff_u1 = set(uid_list1) - (set(uid_list1)&set(uid_list2))
+        diff_u1 = [i for i in diff_u1]
+        diff_u2 = set(uid_list2) - (set(uid_list1)&set(uid_list2))
+        diff_u2 = [i for i in diff_u2]
+        detail_result1 = related_user_search(diff_u1,submit_user)
+        detail_result2 = related_user_search(diff_u2,submit_user)
+    return {'detail_result1':detail_result1,'detail_result2':detail_result2}
+
+def compare_theme_keywords(theme_name1, theme_name2, submit_user, flag):
+    topic_id1 = p.get_pinyin(theme_name1)
+    eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['label'])
+    label_list1 = eid_string1['fields']['label'][0].split('&')
+    
+    topic_id2 = p.get_pinyin(theme_name2)
+    eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['label'])
+    label_list2 = eid_string2['fields']['label'][0].split('&')
+    if flag == 'all':
+        new_label_list1 = [i for i in set(label_list1)]
+        new_label_list2 = [i for i in set(label_list2)]
+
+    if flag == 'same':
+        same_u = set(label_list1)&set(label_list2)
+        same_u = [i for i in same_u]
+        new_label_list1 = same_u
+        new_label_list2 = same_u
+
+    if flag == 'diff':
+        diff_u1 = set(label_list1) - (set(label_list1)&set(label_list2))
+        new_label_list1 = [i for i in diff_u1]
+
+        diff_u2 = set(label_list2) - (set(label_list1)&set(label_list2))
+        new_label_list2 = [i for i in diff_u2]
+
+    return [new_label_list1, new_label_list2]
+
+def compare_theme_k_label(theme_name1, theme_name2, submit_user, flag):
+    topic_id1 = p.get_pinyin(theme_name1)
+    eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['k_label'])
+    label_list1 = eid_string1['fields']['k_label'][0].split('&')
+    
+    topic_id2 = p.get_pinyin(theme_name2)
+    eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['k_label'])
+    label_list2 = eid_string2['fields']['k_label'][0].split('&')
+    if flag == 'all':
+        new_label_list1 = [i for i in set(label_list1)]
+        new_label_list2 = [i for i in set(label_list2)]
+
+    if flag == 'same':
+        same_u = set(label_list1)&set(label_list2)
+        same_u = [i for i in same_u]
+        new_label_list1 = same_u
+        new_label_list2 = same_u
+
+    if flag == 'diff':
+        diff_u1 = set(label_list1) - (set(label_list1)&set(label_list2))
+        new_label_list1 = [i for i in diff_u1]
+
+        diff_u2 = set(label_list2) - (set(label_list1)&set(label_list2))
+        new_label_list2 = [i for i in diff_u2]
+
+    return [new_label_list1, new_label_list2]
+
+def search_related_event(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    related_list = []
+    for en_name in event_list:
+        s_string = 'START s0 = node:event_index(event_id="%s") \
+                MATCH (s0)-[r]-(s3:Event) return s3' %(en_name)
+        print s_string
+        result = graph.run(s_string)
+        for item in result:
+            item_dict = dict(item)
+            related_list.append(item_dict['s3']['event_id'])
+    related_list = set(related_list) - set(event_list)
+    related_list = [i for i in related_list]
+    result = event_detail_search(related_list, submit_user)
+    return result
+
+
+
+
+
+
+
+
