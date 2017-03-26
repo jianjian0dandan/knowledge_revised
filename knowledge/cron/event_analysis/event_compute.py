@@ -105,7 +105,7 @@ def compute_task(task):
     except:
         mid = ''
     exist_flag = exist(task_id)
-    # get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
+    get_topic_weibo(topic,task_id,start_ts,end_ts,keywords,mid)
     print exist_flag
     if exist_flag:
         #start compute
@@ -129,7 +129,7 @@ def compute_task(task):
         print 'finish change status'
         #geo
         
-        # cityTopic(en_name, start_ts, end_ts)
+        cityTopic(en_name, start_ts, end_ts)
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-2}})
         print 'finish geo analyze'
         #language
@@ -369,4 +369,3 @@ if __name__ == '__main__':
         immediate_compute(task_id)
     else:
         compute_topic_task() #python event_compute.py ontime
-    # uid_diff()
