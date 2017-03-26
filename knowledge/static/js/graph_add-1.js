@@ -7,12 +7,11 @@ $.ajax({
     async: true,
     success:recommend_1
 });
-function recommend_1(data) {
-    var data = eval(data);
-    console.log(data)
-    $('#recommend').bootstrapTable('load', data);
+function recommend_1(data1) {
+    var data1 = eval(data1);
+    $('#recommend').bootstrapTable('load', data1);
     $('#recommend').bootstrapTable({
-        data:data,
+        data:data1,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -128,12 +127,12 @@ function recommend_1(data) {
         // }
     });
 };
-function recommend_2(data) {
-    var data = eval(data);
-    console.log(data)
-    $('#recommend').bootstrapTable('load', data);
+
+function recommend_2(data2) {
+    var data2 = eval(data2);
+    $('#recommend').bootstrapTable('load', data2);
     $('#recommend').bootstrapTable({
-        data:data,
+        data:data2,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -268,12 +267,12 @@ function recommend_2(data) {
         // }
     });
 };
-function recommend_3(data) {
-    var data = eval(data);
-    console.log(data)
-    $('#recommend').bootstrapTable('load', data);
+
+function recommend_3(data3) {
+    var data3 = eval(data3);
+    $('#recommend').bootstrapTable('load', data3);
     $('#recommend').bootstrapTable({
-        data:data,
+        data:data3,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -494,7 +493,6 @@ function type_3(value) {
         type='sensitive';
     }else if (value==3){
         recommend='关注度';
-        // var focus_url='/construction/show_auto_in/';
     }
 };
 
@@ -580,14 +578,14 @@ $('.add_sure').on('click',function () {
             success:recommend_2
         });
     }else {
-        var recommend_url='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+        var recommend_url_1='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
             '&node_type='+node_type;
         $.ajax({
-            url: recommend_url,
+            url: recommend_url_1,
             type: 'GET',
             dataType: 'json',
             async: true,
-            success:recommend
+            success:recommend_1
         });
     }
 })
