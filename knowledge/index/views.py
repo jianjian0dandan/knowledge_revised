@@ -9,8 +9,9 @@ import time
 from datetime import date
 from datetime import datetime
 from get_result import *
+from search_protrait import *
 from knowledge.global_utils import graph
-from GetUrl import getUrlByKeyWord
+from GetUrl import getUrlByKeyWord,getUrlByKeyWordList
 mod = Blueprint('index', __name__, url_prefix='/index')
 
 @mod.route('/')
@@ -150,8 +151,29 @@ def get_person_atr():#人物属性页面
     user_id = request.args.get('user_id', '')
 
     ### 人物属性查询函数
+    if user_id:
+        result_att = search_person_by_id(user_id)
+    else:
+        result_att = {}
 
-    return render_template('index/person.html')
+    ### 获取相关wiki
+    try:
+        if result_att['uname']:#name不为空
+            wiki_list = getUrlByKeyWord(result_att['uname'])
+        else:
+            wiki_list = []
+    except KeyError:
+        wiki_list = []
+
+    ### 获取关联实体
+    if user_id:
+        relation_dict = search_neo4j_by_uid(user_id,node_index_name,people_primary)
+    else:
+        relation_dict = {'people':[],'org':[],'event':[]}
+    
+    relation_dict['wiki'] = wiki_list[0:10]
+
+    return render_template('index/person.html',result_att = result_att,relation_dict = relation_dict)
 
 @mod.route('/event/', methods=['GET','POST'])
 @login_required
@@ -160,8 +182,30 @@ def get_event_atr():#事件属性页面
     user_id = request.args.get('user_id', '')
 
     ### 事件属性查询函数
+    if user_id:
+        result_att = search_event_by_id(user_id)
+    else:
+        result_att = {}
+
+    ### 获取相关wiki
+    try:
+        if result_att['name']:#name不为空
+            key_words = result_att['name'].split('&') 
+            wiki_list = getUrlByKeyWordList(key_words)
+        else:
+            wiki_list = []
+    except KeyError:
+        wiki_list = []
+
+    ### 获取关联实体
+    if user_id:
+        relation_dict = search_neo4j_by_uid(user_id,event_index_name,event_primary)
+    else:
+        relation_dict = {'people':[],'org':[],'event':[]}
     
-    return render_template('index/event.html')
+    relation_dict['wiki'] = wiki_list[0:10]
+    
+    return render_template('index/event.html',result_att = result_att,relation_dict = relation_dict)
 
 @mod.route('/organization/', methods=['GET','POST'])
 @login_required
@@ -170,8 +214,29 @@ def get_organization():#机构属性页面
     user_id = request.args.get('user_id', '')
 
     ### 机构属性查询函数
+    if user_id:
+        result_att = search_org_by_id(user_id)
+    else:
+        result_att = {}
+
+    ### 获取相关wiki
+    try:
+        if result_att['uname']:#name不为空
+            wiki_list = getUrlByKeyWord(result_att['uname'])
+        else:
+            wiki_list = []
+    except KeyError:
+        wiki_list = []
+
+    ### 获取关联实体
+    if user_id:
+        relation_dict = search_neo4j_by_uid(user_id,org_index_name,org_primary)
+    else:
+        relation_dict = {'people':[],'org':[],'event':[]}
     
-    return render_template('index/organization.html')
+    relation_dict['wiki'] = wiki_list[0:10]
+    
+    return render_template('index/organization.html',result_att = result_att,relation_dict = relation_dict)
 
 @mod.route('/cards/', methods=['GET','POST'])
 @login_required

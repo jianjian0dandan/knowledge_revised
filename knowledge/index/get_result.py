@@ -43,7 +43,7 @@ def uid_name(uid_list,result):
 
 def uid_name_list(uid_list):
 
-    search_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids": uid_list})["docs"]
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return '-1'
     uname = dict()
