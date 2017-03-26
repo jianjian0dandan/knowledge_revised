@@ -257,6 +257,8 @@ def related_user_search(uid_list,sort_flag):
 
 # 查找该专题下的包含事件卡片信息，事件卡片
 def event_detail_search(eid_list, submit_user):
+    if not eid_list:
+        return []
     fields_list = ['en_name','name', 'event_type','real_time', 'real_geo', 'uid_counts', 'weibo_counts', 'keywords', 'work_tag']
     only_eid = []
     event_id_list = []
