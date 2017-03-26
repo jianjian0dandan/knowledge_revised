@@ -495,7 +495,7 @@ def submit_event(input_data):
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
         if input_data['immediate_compute'] == '1':
-            os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py %s &" % event_id)
+            os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     return True
 
 def update_event(event_id):

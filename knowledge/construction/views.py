@@ -178,8 +178,8 @@ def ajax_submit_event():
     # input_data = { 'submit_ts':'date', 'name':u'名&字', 'relation_list': 'join&discuss',\
     #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
-    input_data = { 'submit_ts':'date', 'relation_compute': 'join&discuss',\
-               'immediate_compute':'1', 'keywords':u'特朗普',
+    input_data = {'submit_ts':'date', 'relation_compute': 'join&discuss',\
+               'immediate_compute':'1', 'keywords':u'希拉里',
                'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     result = submit_event(input_data)
     return json.dumps(result)
