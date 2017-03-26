@@ -4,10 +4,10 @@
 <link rel="stylesheet" href="/static/css/graph_add.css">
 <style>
     .fixed-table-pagination .pagination-detail {
-        display: none;
+        /*display: none;*/
     }
     .table>thead:first-child>tr:first-child>th {
-        width: 12%;
+        width: 14%;
     }
 </style>
 {% endblock %}
@@ -158,7 +158,16 @@
         <!--推荐人物表格-->
         <div id="node_list" style="width: 100%;margin-top:50px;">
             <span style="font-size: 14px;font-weight: 800;">推荐人物</span>
-            <div id="recommend" style="width: 100%"></div>
+            <div class="recommend">
+                <div id="recommend" style="width: 100%"></div>
+            </div>
+            <div class="recommend2" style="display: none;">
+                <div id="recommend2" style="width: 100%;"></div>
+            </div>
+            <div class="recommend3" style="display: none;">
+                <div id="recommend3" style="width: 100%;"></div>
+            </div>
+
             <button class="node_join">加入图谱</button>
         </div>
 
@@ -224,6 +233,59 @@
                 <button class="upload-2">确&nbsp;定</button>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!--关系模态框-->
+<div class="modal fade" id="relation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">关系选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="way">
+                    <span style="font-size: 12px;color: #676767">计算方式</span>
+                    <div style="display: inline-block;margin: 0 10px;">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="box1" value="1" checked> 立即计算
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="box2" value="2"> 预约计算
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <span style="font-size: 12px;color: #676767">计算关系</span>
+                    <div class="rel_list" style="display: inline-block;margin: 0 10px;"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sure_task()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--成功或者失败-->
+<div class="modal fade" id="fail_success" tabindex="-1" role="dialog" aria-labelledby="myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModal">创建人物提示信息</h4>
+            </div>
+            <div class="modal-body">
+                <h3 id="prompt"></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
         </div>
     </div>
 </div>
