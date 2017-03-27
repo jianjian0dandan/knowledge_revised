@@ -498,14 +498,46 @@ def get_theme_flow(theme_name, submit_user):
     return result_list
 
 
+def get_theme_geo(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+                body={'ids':event_list}, fields=['geo_results', 'name'])['docs']
+    city_dict = {}
+    event_city = {}
+    event_name_list = []
+    for i in event_result:
+        event_name = i['fields']['name'][0]
+        event_city[event_name] = {}
+        event_name_list.append(event_name)
+        geo_event = json.loads(i['fields']['geo_results'][0])
+        print geo_event
+        for k,v in geo_event.iteritems():
+            for province_k, city_v in v.iteritems():
+                for city_name, city_count in city_v.iteritems():
+                    if city_name == 'total' or city_name == 'unknown':
+                        continue
+                    try:
+                        city_dict[city_name] += city_count
+                    except:
+                        city_dict[city_name] = city_count
+                    try:
+                        event_city[event_name][city_name] += city_count
+                    except:
+                        event_city[event_name][city_name] = city_count
 
+    sorted_city_dict = sorted(city_dict.iteritems(), key=lambda x:x[1], reverse=True)[:10]
+    top_city = [i[0] for i in sorted_city_dict]
+    final_city_count = {}
+    for city in event_name_list:
+        final_city_count[city] = []
+        for i in top_city:
+            final_city_count[city].append(event_city[event_name][i])
+    return {'top_city': top_city, 'event_city':final_city_count}
 
-
-
-
-
-
-
-
-
+def get_theme_net(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
 
