@@ -90,6 +90,7 @@ def submit_task(input_data):
 # identify in by upload file to admin user
 # input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}
 def submit_identify_in_uid(input_data):
+    print input_data,'00000000000'
     in_date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
@@ -97,9 +98,9 @@ def submit_identify_in_uid(input_data):
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
     node_type = input_data['node_type']
-    hashname_submit = 'submit_recomment_' + date
-    hashname_influence = 'recomment_' + date + '_influence'
-    hashname_sensitive = 'recomment_' + date + '_sensitive'
+    hashname_submit = 'submit_recomment_' + in_date
+    hashname_influence = 'recomment_' + in_date + '_influence'
+    hashname_sensitive = 'recomment_' + in_date + '_sensitive'
     compute_hash_name = 'compute'
     # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
@@ -107,18 +108,21 @@ def submit_identify_in_uid(input_data):
     uid_list = []
     invalid_uid_list = []
     if recommend_style == 'upload':
-        line_list = upload_data.split('\n')
+        line_list = upload_data
+        # print line_list,'====8888===='
         for line in line_list:
-            uid = line.split('\r')[0]
-            if len(uid)==10:
+            uid = line.strip('\r')
+            # print len(str(uid)),'!!!0000000000999999999999'
+            if len(str(uid))==10:
                uid_list.append(uid)
             else:
                 invalid_uid_list.append(uid)
     if recommend_style == 'write':
         line_list = upload_data
+        # print line_list,'====8888===='
         for line in line_list:
             uid = line
-            if len(uid)==10:
+            if len(str(uid))==10:
                uid_list.append(uid)
             else:
                 invalid_uid_list.append(uid)
@@ -163,7 +167,7 @@ def submit_identify_in_uid(input_data):
         if operation_type == 'submit':
             relation_list = relation_string.split(',')
             r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
-            r.hset(hashname_submit, in_item, json.dumps(tmp))
+            # r.hset(hashname_submit, in_item, json.dumps(tmp))
             # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
     return 1, invalid_uid_list, have_in_uid_list, final_submit_user_list
@@ -233,15 +237,15 @@ def get_final_submit_user_info(uid_list):
 def submit_identify_in(input_data):
     result_mark = False
     result_mark = submit_identify_in_uid(input_data)
-
-    if len(result_mark) == 4:
-        final_submit_user_list = result_mark[-1]
-        if final_submit_user_list:
-            final_submit_user_info = get_final_submit_user_info(final_submit_user_list)
-        else:
-            final_submit_user_info = []
-        result_mark = list(result_mark)[:3]
-        result_mark.append(final_submit_user_info)
+    print result_mark,'====333333333333333============'
+    # if len(result_mark) == 4:
+    #     final_submit_user_list = result_mark[-1]
+    #     if final_submit_user_list:
+    #         final_submit_user_info = get_final_submit_user_info(final_submit_user_list)
+    #     else:
+    #         final_submit_user_listuser_info = []
+    #     result_mark = list(result_mark)[:3]
+    #     result_mark.append(final_submit_user_info)
     return result_mark
 
 # show recommentation in uid
@@ -471,9 +475,11 @@ def recommentation_in_auto(date, submit_user, node_type):
     return final_result
 
 def submit_event(input_data):
+    print input_data
     if not input_data.has_key('name'):
-        input_data['name'] = input_data['keywords']
-
+        name_s = input_data['keywords'].split('&')[3]
+        name_string = ''.join(name_s)
+        input_data['name'] = name_string
     if input_data.has_key('mid'):
         # event_id = mid
         input_data['en_name'] = input_data['mid']
@@ -495,12 +501,12 @@ def submit_event(input_data):
     # result = es_event.delete(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])
     try:
         result = es_event.get(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])['_source']
-        return 'already in'
+        return '0'
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
         if input_data['immediate_compute'] == '1':
             os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
-    return True
+    return '1'
 
 def update_event(event_id):
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
@@ -509,7 +515,7 @@ def update_event(event_id):
     if result['end_ts'] < now_ts:
         es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
 
-    os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py %s &" % event_id)
+    os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
 
 
