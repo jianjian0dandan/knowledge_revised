@@ -104,7 +104,6 @@ def create_new_relation():
     if node1_id == '':
     	return 'must add event'
     node1_list = node1_id.split(',')
-    print node1_list,'===@@@==='
     node1_index_name = request.args.get('node1_index_name', 'event_index')  # node_index event_index
     rel = request.args.get('rel', 'special_event')
     node_key2 = request.args.get('node_key2', 'event')  # event,uid
