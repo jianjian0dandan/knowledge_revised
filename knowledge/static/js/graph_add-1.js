@@ -254,10 +254,12 @@ function recommend_2(data2) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if(row[6]==''){
+                    if(row[6].length==0){
                         return '暂无';
                     }else {
-                        return row[6];
+                        $.each(row[6],function (index,item) {
+                            return item;
+                        })
                     }
                 },
             },
@@ -571,6 +573,7 @@ function type_3_age(value) {
         type='sensitive';
     }else if (value==3){
         recommend='关注度';
+        type='auto';
     }
 }
 
@@ -681,9 +684,15 @@ function sure_task() {
     var date='2016-11-27';
     // var submit_user=$('#name').text();
     var submit_user='admin';
+    var n_t=0;
+    if(node_type=='user'){
+        n_t=0;
+    }else if(node_type=='org') {
+        n_t=1;
+    }
     var new_task_url='/construction/admin_identify_in/?date='+date+'&uid_list='+uid_list+
-        '&user_rel='+user_rel_list+'&status='+status+'&recommend_style='+recommend+
-            '&node_type='+node_type+'&submit_user='+submit_user;
+        '&user_rel='+user_rel_list+'&status='+status+'&recommend_style='+type+
+            '&node_type='+n_t+'&submit_user='+submit_user;
     $.ajax({
         url: new_task_url,
         type: 'GET',
@@ -703,8 +712,23 @@ function fail_or_success(data) {
 }
 
 //任务列表
+var nt=0;
+if(node_type=='user'){
+    nt=0;
+}else if(node_type=='org') {
+    nt=1;
+}
+var task_url='/construction/show_user_task_status/?node_type='+nt;
+$.ajax({
+    url: task_url,
+    type: 'GET',
+    dataType: 'json',
+    async: true,
+    success:task_list
+});
 function task_list(data) {
     var data = eval(data);
+    console.log(data)
     $('#count').bootstrapTable('load', data);
     $('#count').bootstrapTable({
         data:data,
@@ -725,7 +749,7 @@ function task_list(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "序号",//标题
+                title: "人物名称",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -736,7 +760,7 @@ function task_list(data) {
                 }
             },
             {
-                title: "UID",//标题
+                title: "添加方式",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -747,7 +771,7 @@ function task_list(data) {
                 }
             },
             {
-                title: "昵称",//标题
+                title: "添加人",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -758,7 +782,7 @@ function task_list(data) {
                 },
             },
             {
-                title: "注册地",//标题
+                title: "提交时间",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -773,7 +797,7 @@ function task_list(data) {
                 },
             },
             {
-                title: "粉丝数",//标题
+                title: "任务状态",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -782,55 +806,6 @@ function task_list(data) {
                 formatter: function (value, row, index) {
                     return row[3];
                 },
-            },
-            {
-                title: "微博数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[4]
-                },
-            },
-            {
-                title: '敏感度',//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if(row[5]==''){
-                        return '未知';
-                    }else {
-                        return row[5].toFixed(2);
-                    }
-                },
-            },
-            {
-                title: '敏感词',//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if(row[6]==''){
-                        return '暂无';
-                    }else {
-                        return row[6];
-                    }
-                },
-            },
-            //多选框
-            {
-                title: "",//标题
-                field: "select",
-                checkbox: true,
-                align: "center",//水平
-                valign: "middle"//垂直
             },
 
         ],
