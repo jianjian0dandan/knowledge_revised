@@ -17,7 +17,7 @@ from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_ty
 from knowledge.global_config import event_task_name, event_task_type 
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
-                  deal_user_tag, create_node_or_node_rel, show_relation, update_event
+                  deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
