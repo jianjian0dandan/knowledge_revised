@@ -90,7 +90,7 @@ def submit_task(input_data):
 # identify in by upload file to admin user
 # input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}
 def submit_identify_in_uid(input_data):
-    date = input_data['date']
+    in_date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
     compute_status = input_data['compute_status'] 
@@ -104,26 +104,32 @@ def submit_identify_in_uid(input_data):
     # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
-    if recommend_style == 'upload':
-        line_list = upload_data.split('\n')
-    if recommend_style == 'write':
-        line_list = upload_data.split(',')
     uid_list = []
     invalid_uid_list = []
-    for line in line_list:
-        uid = line.split('\r')[0]
-        #if len(uid)==10:
-        #    uid_list.append(uid)
-        if uid != '':
-            uid_list.append(uid)
-    if len(invalid_uid_list)!=0:
-        return False, 'invalid user info', invalid_uid_list
+    if recommend_style == 'upload':
+        line_list = upload_data.split('\n')
+        for line in line_list:
+            uid = line.split('\r')[0]
+            if len(uid)==10:
+               uid_list.append(uid)
+            else:
+                invalid_uid_list.append(uid)
+    if recommend_style == 'write':
+        line_list = upload_data
+        for line in line_list:
+            uid = line
+            if len(uid)==10:
+               uid_list.append(uid)
+            else:
+                invalid_uid_list.append(uid)
+    if len(invalid_uid_list) != 0:
+        return 0, 'invalid user info', invalid_uid_list
     #identify the uid is not exist in user_portrait and compute
     #step1: filter in user_portrait
     new_uid_list = []
     have_in_uid_list = []
     try:
-        exist_portrait_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids':uid_list}, _source=False)['docs']
+        exist_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, _source=False)['docs']
     except:
         exist_portrait_result = []
     if exist_portrait_result:
@@ -142,25 +148,25 @@ def submit_identify_in_uid(input_data):
     print 'new_uid_set:', new_uid_set 
     print 'in_uid_set:', in_uid_set
     if len(in_uid_set)==0:
-        return False, 'all user in'
+        return 0, 'all user in'
     #identify the final add user
     final_submit_user_list = []
     for in_item in in_uid_set:
-        if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashname_submit, in_item))
-            recommentor_list = tmp['operation'].split('&')
-            recommentor_list.append(str(submit_user))
-            new_list = list(set(recommentor_list))
-            tmp['operation'] = '&'.join(new_list)
-        else:
-            tmp = {'system':'0', 'operation':submit_user}
+        # if in_item in auto_recomment_set:
+        #     tmp = json.loads(r.hget(hashname_submit, in_item))
+        #     recommentor_list = tmp['operation'].split('&')
+        #     recommentor_list.append(str(submit_user))
+        #     new_list = list(set(recommentor_list))
+        #     tmp['operation'] = '&'.join(new_list)
+        # else:
+        #     tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
             relation_list = relation_string.split(',')
             r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
             r.hset(hashname_submit, in_item, json.dumps(tmp))
             # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
-    return True, invalid_uid_list, have_in_uid_list, final_submit_user_list
+    return 1, invalid_uid_list, have_in_uid_list, final_submit_user_list
 
 def get_final_submit_user_info(uid_list):
     final_results = []

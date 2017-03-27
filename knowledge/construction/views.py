@@ -117,7 +117,6 @@ def ajax_update_user():
     r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
     return json.dumps(1)
 
-
 #上传文件方式人物入库
 @mod.route('/submit_identify_in/', methods=['GET', 'POST'])
 def ajax_submit_identify_in():
