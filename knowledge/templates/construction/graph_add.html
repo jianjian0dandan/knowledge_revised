@@ -7,7 +7,7 @@
         /*display: none;*/
     }
     .table>thead:first-child>tr:first-child>th {
-        width: 14%;
+        width: 18%;
     }
 </style>
 {% endblock %}
@@ -63,6 +63,7 @@
                 <div class="manual-1" style="display: none;margin-top: 5px;">
                     <span>上传文件</span>
                     <input type="file" class="text" style="display: inline-block;padding: 0;">
+                    <button class="upload">上传</button>
                 </div>
             </div>
             <!--事件-->
@@ -152,7 +153,9 @@
         <!--计算任务表格-->
         <div class="count_task" style="width: 100%;margin-top:50px;">
             <span class="ct" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
-            <div id="count" style="width: 100%;margin-top: 20px;display:none;"></div>
+            <div class="ct_1" style="display:none;">
+                <div id="count" style="width: 100%;"></div>
+            </div>
         </div>
 
         <!--推荐人物表格-->
@@ -318,10 +321,10 @@
     var cc=1;
     $('.ct').on('click',function () {
         if (cc==1){
-            $('#count').show();
+            $('.ct_1').show();
             cc=2;
         }else {
-            $('#count').hide();
+            $('.ct_1').hide();
             cc=1;
         }
     });

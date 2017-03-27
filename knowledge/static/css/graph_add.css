@@ -63,6 +63,18 @@ body {
     cursor: pointer;
     margin: 10px 30px 0 0;
 }
+#container .node .attributes .manual-1 .upload {
+    padding: 2px 8px;
+    color: white;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px #838383;
+    cursor: pointer;
+    margin: 10px 0 0 20px;
+}
+#container .node .attributes .manual-1 .upload:hover {
+    background-color: #176de2;
+}
 #container .node .attributes .add_sure:hover,
 #container .node #node_list .node_join:hover {
     background-color: #176de2;

@@ -254,10 +254,12 @@ function recommend_2(data2) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if(row[6]==''){
+                    if(row[6].length==0){
                         return '暂无';
                     }else {
-                        return row[6];
+                        $.each(row[6],function (index,item) {
+                            return item;
+                        })
                     }
                 },
             },
@@ -451,6 +453,7 @@ function type_1(value) {
     }
 };
 
+var recommendation_manual='r';
 function type_2(value) {
     if (value==1){
         $('.user #tui_shou').empty();
@@ -459,6 +462,7 @@ function type_2(value) {
             '<option value="2">言论敏感度推荐</option>'+
             '<option value="3">关注用户推荐</option>'
         );
+        recommendation_manual='r';
         $('.user .time_t').show();
         $('.user .manual-1').hide();
         $('.user .manual').hide();
@@ -468,11 +472,21 @@ function type_2(value) {
             '<option value="4">文件导入</option>'+
             '<option value="5">手动添加</option>'
         );
+        recommendation_manual='m';
         $('.user .time_t').hide();
         $('.user .manual-1').show();
         $('.user .manual').hide();
     }
 };
+
+var recommend_style='upload';
+function type_3(value) {
+    if (value==4){
+        recommend_style='upload';
+    }else if (value==5) {
+        recommend_style='write';
+    }
+}
 //---7天时间
 function get7DaysBefore(date,m){
     var date = date || new Date(),
@@ -571,51 +585,57 @@ function type_3_age(value) {
         type='sensitive';
     }else if (value==3){
         recommend='关注度';
+        type='auto';
     }
 }
 
 //-----------推荐人物----------
 $('.add_sure').on('click',function () {
-    $('#recommend').empty();
-    // var date=$('#task_time').val();
-    var date='2016-11-27';
-    // var submit_user=$('#name').text();
-    var submit_user='admin';
-    if (recommend=='关注度'){
-        var recommend_url_3='/construction/show_auto_in/?date='+date+'&submit_user='+submit_user+
-            '&node_type='+node_type;
-        $.ajax({
-            url: recommend_url_3,
-            type: 'GET',
-            dataType: 'json',
-            async: true,
-            success:recommend_3
-        });
-    }else if (recommend=='敏感度'){
-        var recommend_url_2='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
-            '&node_type='+node_type;
-        $.ajax({
-            url: recommend_url_2,
-            type: 'GET',
-            dataType: 'json',
-            async: true,
-            success:recommend_2
-        });
-    }else {
-        var recommend_url_1='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
-            '&node_type='+node_type;
-        $.ajax({
-            url: recommend_url_1,
-            type: 'GET',
-            dataType: 'json',
-            async: true,
-            success:recommend_1
-        });
+    if (recommendation_manual=='r'){
+        $('#recommend').empty();
+        // var date=$('#task_time').val();
+        var date='2016-11-27';
+        // var submit_user=$('#name').text();
+        var submit_user='admin';
+        if (recommend=='关注度'){
+            var recommend_url_3='/construction/show_auto_in/?date='+date+'&submit_user='+submit_user+
+                '&node_type='+node_type;
+            $.ajax({
+                url: recommend_url_3,
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                success:recommend_3
+            });
+        }else if (recommend=='敏感度'){
+            var recommend_url_2='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+                '&node_type='+node_type;
+            $.ajax({
+                url: recommend_url_2,
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                success:recommend_2
+            });
+        }else {
+            var recommend_url_1='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+                '&node_type='+node_type;
+            $.ajax({
+                url: recommend_url_1,
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                success:recommend_1
+            });
+        }
+    }else if (recommendation_manual=='m'){
+        calculate_rel();
     }
+
 })
 
 //创建任务
-$('#container .node #node_list .node_join').on('click',function () {
+function calculate_rel() {
     if (node_type=='user'){
         $('#relation .rel_list').empty();
         $('#relation .rel_list').append(
@@ -666,24 +686,51 @@ $('#container .node #node_list .node_join').on('click',function () {
         )
     }
     $('#relation').modal('show');
-
+}
+$('#container .node #node_list .node_join').on('click',function () {
+    calculate_rel();
 });
 function sure_task() {
+    // var date=$('#task_time').val();
+    var date='2016-11-27';
+    // var submit_user=$('#name').text();
+    var submit_user='admin';
     var status,user_rel=[];
     if($('#box1').is(':checked')) { status=1; };
     if($('#box2').is(':checked')) { status=2; };
     $("#relation .rel_list input:checkbox:checked").each(function (index,item) {
         user_rel.push($(this).val());
     });
-    var uid_list=uid.join(',');
     var user_rel_list=user_rel.join(',');
-    // var date=$('#task_time').val();
-    var date='2016-11-27';
-    // var submit_user=$('#name').text();
-    var submit_user='admin';
-    var new_task_url='/construction/admin_identify_in/?date='+date+'&uid_list='+uid_list+
-        '&user_rel='+user_rel_list+'&status='+status+'&recommend_style='+recommend+
-            '&node_type='+node_type+'&submit_user='+submit_user;
+    var n_t=0;
+    if(node_type=='user'){
+        n_t=0;
+    }else if(node_type=='org') {
+        n_t=1;
+    }
+    if (recommendation_manual=='m'){
+        var input_data;
+        var updata=$('#container .node .attributes .manual .task_users').val().split(" ");
+        input_data={
+            'date':date,'upload_data':updata,'node_type':n_t,'user':submit_user,'compute_status':status,
+            'relation_string':user_rel_list,'recommend_style':recommend_style,'operation_type':'submit'
+        };
+        var group_url = '/construction/submit_identify_in/';
+        $.ajax({
+            type:'POST',
+            url: group_url,
+            contentType:"application/json",
+            data: JSON.stringify(input_data),
+            dataType: "json",
+            success: fail_or_success
+        });
+    }else {
+        var uid_list=uid.join(',');
+        var new_task_url='/construction/admin_identify_in/?date='+date+'&uid_list='+uid_list+
+            '&user_rel='+user_rel_list+'&status='+status+'&recommend_style='+type+
+            '&node_type='+n_t+'&submit_user='+submit_user;
+    }
+
     $.ajax({
         url: new_task_url,
         type: 'GET',
@@ -700,148 +747,144 @@ function fail_or_success(data) {
         $('#fail_success #prompt').text('创建失败');
     }
     $('#fail_success').modal('show');
+    task_renew();
 }
 
 //任务列表
-function task_list(data) {
-    var data = eval(data);
-    $('#count').bootstrapTable('load', data);
-    $('#count').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: false,//回车搜索
-        showRefresh: false,//刷新按钮
-        showColumns: false,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-            {
-                title: "序号",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return index+1;
-                }
-            },
-            {
-                title: "UID",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[0];
-                }
-            },
-            {
-                title: "昵称",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[1];
-                },
-            },
-            {
-                title: "注册地",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[2]==''){
-                        return '未知';
-                    }else {
-                        return row[2];
-                    }
-                },
-            },
-            {
-                title: "粉丝数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[3];
-                },
-            },
-            {
-                title: "微博数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[4]
-                },
-            },
-            {
-                title: '敏感度',//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if(row[5]==''){
-                        return '未知';
-                    }else {
-                        return row[5].toFixed(2);
-                    }
-                },
-            },
-            {
-                title: '敏感词',//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if(row[6]==''){
-                        return '暂无';
-                    }else {
-                        return row[6];
-                    }
-                },
-            },
-            //多选框
-            {
-                title: "",//标题
-                field: "select",
-                checkbox: true,
-                align: "center",//水平
-                valign: "middle"//垂直
-            },
-
-        ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+function task_renew() {
+    var nt=0;
+    if(node_type=='user'){
+        nt=0;
+    }else if(node_type=='org') {
+        nt=1;
+    }
+    var task_url='/construction/show_user_task_status/?node_type='+nt;
+    $.ajax({
+        url: task_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:task_list
     });
-};
+    function task_list(data) {
+        var data = eval(data);
+        console.log(data)
+        $('#count').bootstrapTable('load', data);
+        $('#count').bootstrapTable({
+            data:data,
+            search: true,//是否搜索
+            pagination: true,//是否分页
+            pageSize: 5,//单页记录数
+            pageList: [5, 20, 40, 80],//分页步进值
+            sidePagination: "client",//服务端分页
+            searchAlign: "left",
+            searchOnEnterKey: false,//回车搜索
+            showRefresh: false,//刷新按钮
+            showColumns: false,//列选择按钮
+            buttonsAlign: "right",//按钮对齐方式
+            locale: "zh-CN",//中文支持
+            detailView: false,
+            showToggle:true,
+            sortName:'bci',
+            sortOrder:"desc",
+            columns: [
+                {
+                    title: "人物名称",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        return row[0];
+                    }
+                },
+                {
+                    title: "添加方式",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[6]=="influence"){
+                            return '影响力推荐';
+                        }else if(row[6]=="sensitive"){
+                            return '敏感度推荐';
+                        }else if(row[6]=="upload"){
+                            return '上传文件';
+                        }else if(row[6]=="write"){
+                            return '手动输入';
+                        }else if(row[6]=="auto"){
+                            return '关注用户推荐';
+                        }
+                    }
+                },
+                {
+                    title: "添加人",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        return row[5];
+                    },
+                },
+                {
+                    title: "提交时间",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        return row[1];
+                    },
+                },
+                {
+                    title: "任务状态",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[2]==1){
+                            return '立即计算';
+                        }else if (row[2]==2){
+                            return '预约计算';
+                        }else if (row[2]==3){
+                            return '正在计算';
+                        }else if (row[2]==4){
+                            return '计算完成';
+                        }
+
+                    },
+                },
+                {
+                    title: "立即更新",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        return '<a>立即更新</a>';
+                    },
+                },
+
+            ],
+            // onClickRow: function (row, tr) {
+            //     if ($(tr.context).index()==2) {
+            //         del_eventuid=row[0];
+            //         $('#del_ject').modal("show");
+            //     }
+            // }
+        });
+    };
+}
+task_renew();
 
 
 
