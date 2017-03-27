@@ -60,7 +60,7 @@ def identify_in(data, uid_list):
             compute_status = '2'
         relation_list = relation_string.split(',')
         r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
-    return True
+    return 1
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
 def submit_task(input_data):
@@ -86,8 +86,6 @@ def submit_task(input_data):
             group_analysis_queue_name = 'recommendation_in_later'
         r.lpush(group_analysis_queue_name, json.dumps(input_data))
     return status
-
-
 
 # identify in by upload file to admin user
 # input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}

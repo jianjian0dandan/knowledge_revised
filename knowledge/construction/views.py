@@ -100,7 +100,7 @@ def ajax_admin_identify_in():
             data.append([date, uid, status, relation_string, recommend_style, submit_user,node_type])
         results = identify_in(data,uid_list)
     else:
-        results = None
+        results = 0
     return json.dumps(results)
 
 # 立即更新人或机构
@@ -115,7 +115,7 @@ def ajax_update_user():
     relation_string = request.args.get('user_rel', 'friend') # split by ,
     relation_list = relation_string.split(',')
     r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
-    return json.dumps(True)
+    return json.dumps(1)
 
 
 #上传文件方式人物入库
@@ -135,14 +135,17 @@ def ajax_show_user_task_status():
     node_type = request.args.get('node_type', '0') # '0':user  '1'：org
     compute_name = 'compute'
     result = r.hgetall(compute_name)
-    result_dict = {}
+    # return json.dumps(result)
+    result_list = []
     for k,v in result.iteritems():
         detail = json.loads(v)
         if detail[2] == node_type:
-            result_dict[k] = detail
+            kv_list = [k]
+            kv_list.extend(detail)
+            result_list.append(kv_list)
         else:
             continue
-    return json.dumps(result_dict)
+    return json.dumps(result_list)
 
 # # submit group analysis task and save to redis as lists
 # # submit group task: task name should be unique
