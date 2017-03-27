@@ -90,7 +90,7 @@ def submit_task(input_data):
 # identify in by upload file to admin user
 # input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}
 def submit_identify_in_uid(input_data):
-    date = input_data['date']
+    in_date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
     compute_status = input_data['compute_status'] 
@@ -160,11 +160,11 @@ def submit_identify_in_uid(input_data):
         #     tmp['operation'] = '&'.join(new_list)
         # else:
         #     tmp = {'system':'0', 'operation':submit_user}
-        # if operation_type == 'submit':
-        #     relation_list = relation_string.split(',')
-        #     r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
-        #     r.hset(hashname_submit, in_item, json.dumps(tmp))
-        #     # r.hset(submit_user_recomment, in_item, '0')
+        if operation_type == 'submit':
+            relation_list = relation_string.split(',')
+            r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
+            r.hset(hashname_submit, in_item, json.dumps(tmp))
+            # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
     return 1, invalid_uid_list, have_in_uid_list, final_submit_user_list
 
