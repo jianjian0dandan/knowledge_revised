@@ -3,9 +3,6 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/graph_add.css">
 <style>
-    .fixed-table-pagination .pagination-detail {
-        /*display: none;*/
-    }
     .table>thead:first-child>tr:first-child>th {
         width: 18%;
     }
@@ -62,8 +59,7 @@
                 </div>
                 <div class="manual-1" style="display: none;margin-top: 5px;">
                     <span>上传文件</span>
-                    <input type="file" class="text" style="display: inline-block;padding: 0;">
-                    <button class="upload">上传</button>
+                    <input type="file" class="text" multiple onchange="handleFileSelect(this.files)" style="display: inline-block;padding: 0;">
                 </div>
             </div>
             <!--事件-->
@@ -78,9 +74,9 @@
                 </div>
                 <div class="manual" style="display: none;margin-top: 5px;">
                     <span>事件名称</span> <input type="text" class="event_name"/>
-                    <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用空格隔开"/>
+                    <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用'&'隔开"/>
                     <span>事件类型</span>
-                    <select id="event_lx">
+                    <select id="event_lx" onchange="event_lx(this.value)">
                         <option value="1">1</option>
                     </select>
                 </div>
@@ -115,7 +111,7 @@
                 <div class="manual-2" style="display: none;margin-top: 5px;">
                     <span>事件名称</span> <input type="text" class="event_name-2"/>
                     <span>上传文件</span>
-                    <input type="file" class="text" style="display: inline-block;padding: 0;">
+                    <input type="file" class="text" multiple onchange="handleFileSelect_event(this.files)"  style="display: inline-block;padding: 0;">
                 </div>
             </div>
             <!--机构-->
@@ -143,14 +139,14 @@
                 </div>
                 <div class="manual-1" style="display: none;margin-top: 5px;">
                     <span>上传文件</span>
-                    <input type="file" class="text" style="display: inline-block;padding: 0;">
+                    <input type="file" class="text" multiple onchange="handleFileSelect(this.files)" style="display: inline-block;padding: 0;">
                 </div>
             </div>
             <!------------->
             <button class="add_sure">确 定</button>
         </div>
 
-        <!--计算任务表格-->
+        <!--计算任务表格-----人物机构----->
         <div class="count_task" style="width: 100%;margin-top:50px;">
             <span class="ct" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
             <div class="ct_1" style="display:none;">
@@ -170,14 +166,49 @@
             <div class="recommend3" style="display: none;">
                 <div id="recommend3" style="width: 100%;"></div>
             </div>
-
+            <div class="recommend4" style="display: none;">
+                <div id="recommend4" style="width: 100%;"></div>
+            </div>
+            <div class="recommend5" style="display: none;">
+                <div id="recommend5" style="width: 100%;"></div>
+            </div>
             <button class="node_join">加入图谱</button>
         </div>
 
+
+        <!--计算任务表格-----事件----->
+        <div class="event_task" style="width: 100%;margin-top:50px;display: none;">
+            <span class="et" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
+            <div class="et_1" style="display:none;">
+                <div id="event" style="width: 100%;"></div>
+            </div>
+        </div>
         <!--推荐事件-->
         <div id="event_list" style="width: 100%;margin-top:50px;display: none;">
             <span style="font-size: 14px;font-weight: 800;">推荐事件</span>
-            <button class="event_join">加入图谱</button>
+            <div class="weibo_content">
+                <div id="group_emotion_loading" style="display:block;text-align:center;">正在加载，请稍后...</div>
+                <div id="influeweibo" style="overflow-x: auto; overflow-y: auto;">
+                    <table id="input-table" class="In-table" style="display: block;">
+                        <tbody class="In-table" style='width:100%!important;'>
+                        </tbody>
+                    </table>
+                </div>
+                <div class='page' style="width:100%;text-align:center;margin: 15px auto 10px;">
+                    <span style="display:inline-block;">
+                        每页显示<input type="text" id="PageNo" size="5" value="5"
+                                   style='text-align:center;border:1px solid #ccc;'/>组
+                    </span>
+                    <div id="div-button" style="display:inline-block;margin-left:5px;">
+                        <input type="button" value="首页" id="F-page">
+                        <input type="button" value="上一页" id="Pre-page">
+                        <input type="button" value="下一页" id="Nex-page">
+                        <input type="button" value="尾页" id="L-page">
+                    </div>
+                    <span style="display:inline-block;">&nbsp;当前第<span id="s2"></span>页</span>
+                    <span style="display:inline-block;">总共<span id="s1"></span>页</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -252,11 +283,11 @@
                 <div class="way">
                     <span style="font-size: 12px;color: #676767">计算方式</span>
                     <div style="display: inline-block;margin: 0 10px;">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" id="box1" value="1" checked> 立即计算
+                        <label class="radio-inline">
+                            <input type="radio" name="ming" id="box1" value="1" checked> 立即计算
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" id="box2" value="2"> 预约计算
+                        <label class="radio-inline">
+                            <input type="radio" name="ming" id="box2" value="2"> 预约计算
                         </label>
                     </div>
                 </div>
@@ -269,6 +300,40 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sure_task()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--关系模态框---------事件--->
+<div class="modal fade" id="relation_event" tabindex="-1" role="dialog" aria-labelledby="lsabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="lsabel">关系选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="way">
+                    <span style="font-size: 12px;color: #676767">计算方式</span>
+                    <div style="display: inline-block;margin: 0 10px;">
+                        <label class="radio-inline">
+                            <input type="radio" name="ming" id="box1_e" value="1" checked> 立即计算
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="ming" id="box2_e" value="2"> 预约计算
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <span style="font-size: 12px;color: #676767">计算关系</span>
+                    <div class="rel_list_event" style="display: inline-block;margin: 0 10px;"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sure_task_event()">确定</button>
             </div>
         </div>
     </div>
@@ -297,6 +362,7 @@
 
 {% block my_js %}
 <script src="/static/js/graph_add-1.js"></script>
+<script src="/static/js/graph_add-2.js"></script>
 <script>
     $('#datetimepicker6').datetimepicker();
     $('#datetimepicker7').datetimepicker();
@@ -317,7 +383,7 @@
             }
         })
     });
-    //计算任务的出现与隐藏
+    //计算任务的出现与隐藏--人物
     var cc=1;
     $('.ct').on('click',function () {
         if (cc==1){
@@ -326,6 +392,17 @@
         }else {
             $('.ct_1').hide();
             cc=1;
+        }
+    });
+    //计算任务的出现与隐藏--事件
+    var ee=1;
+    $('.et').on('click',function () {
+        if (ee==1){
+            $('.et_1').show();
+            ee=2;
+        }else {
+            $('.et_1').hide();
+            ee=1;
         }
     });
 

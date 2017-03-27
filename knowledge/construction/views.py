@@ -117,12 +117,16 @@ def ajax_update_user():
     r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
     return json.dumps(1)
 
+
+
 #上传文件方式人物入库
-@mod.route('/submit_identify_in/', methods=['GET', 'POST'])
+@mod.route('/submit_identify_in/', methods=['POST', 'GET' ])
 def ajax_submit_identify_in():
     results = 0 # mark fail
     input_data = request.get_json()
+    # print type(input_data),'=======!!!'
     #input_data={'date': 2016-03-13, 'upload_data':[],'node_type':'1/2', 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'upload/write', 'type':'uid', 'operation_type': 'show'/'submit'} 
+    # input_data={'date': '2016-03-13', 'upload_data':[2674977220, 1895944731],'node_type':'0', 'user':'admin@qq.com','compute_status':0,'relation_string':'friend', 'recommend_style':'write',  'operation_type': 'submit'} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
@@ -177,12 +181,13 @@ def ajax_show_user_task_status():
 def ajax_submit_event():
     input_data = dict()
     input_data = request.get_json()
+    print input_data 
     # input_data = { 'submit_ts':'date', 'name':u'名&字', 'relation_list': 'join&discuss',\
     #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
-    input_data = {'submit_ts':'date', 'relation_compute': 'join&discuss',\
-               'immediate_compute':'1', 'keywords':u'希拉里',
-               'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
+    # input_data = {'submit_ts':'date', 'relation_compute': 'join&discuss',\
+    #            'immediate_compute':'1', 'keywords':u'希拉里',
+    #            'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     result = submit_event(input_data)
     return json.dumps(result)
 
