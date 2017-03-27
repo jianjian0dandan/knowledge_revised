@@ -11,7 +11,7 @@ from datetime import date
 from datetime import datetime
 from utils import search_related_e_card,  create_node_and_rel, create_rel,query_detail_theme, create_theme_relation,\
                   del_e_theme_rel, add_theme_k_label, compare_theme, compare_theme_user, compare_theme_keywords,\
-                  compare_theme_k_label, search_related_event, get_theme_flow
+                  compare_theme_k_label, search_related_event, get_theme_flow, get_theme_geo
 from knowledge.global_utils import get_theme
 p = Pinyin()
 
@@ -195,4 +195,10 @@ def ajax_theme_flow():  #专题鱼骨图
     detail_t = get_theme_flow(theme_name, submit_user)
     return json.dumps(detail_t)
 
-
+@mod.route('/theme_analysis_geo/')
+def ajax_theme_geo():  #专题鱼骨图
+    theme_name = request.args.get('theme_name', u'美国大选')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
+    detail_t = get_theme_geo(theme_name, submit_user)
+    return json.dumps(detail_t)
