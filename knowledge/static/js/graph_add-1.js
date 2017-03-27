@@ -14,6 +14,7 @@ function recommend_1(data1) {
     $('.recommend').css({display:'block'});
     $('.recommend2').css({display:'none'});
     $('.recommend3').css({display:'none'});
+    $('.recommend4').css({display:'none'});
     $('#recommend').bootstrapTable('load', data1);
     $('#recommend').bootstrapTable({
         data:data1,
@@ -142,6 +143,7 @@ function recommend_2(data2) {
     $('.recommend').css({display:'none'});
     $('.recommend2').css({display:'block'});
     $('.recommend3').css({display:'none'});
+    $('.recommend4').css({display:'none'});
     $('#recommend2').bootstrapTable('load', data2);
     $('#recommend2').bootstrapTable({
         data:data2,
@@ -291,6 +293,7 @@ function recommend_3(data3) {
     $('.recommend').css({display:'none'});
     $('.recommend2').css({display:'none'});
     $('.recommend3').css({display:'block'});
+    $('.recommend4').css({display:'none'});
     $('#recommend3').bootstrapTable('load', data3);
     $('#recommend3').bootstrapTable({
         data:data3,
@@ -423,6 +426,265 @@ function recommend_3(data3) {
         // }
     });
 };
+
+function recommend_4(data4) {
+    var data4 = eval(data4);
+    uid=[];
+    $('.recommend').css({display:'none'});
+    $('.recommend2').css({display:'none'});
+    $('.recommend3').css({display:'none'});
+    $('.recommend4').css({display:'block'});
+    $('#recommend4').bootstrapTable('load', data4);
+    $('#recommend4').bootstrapTable({
+        data:data4,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 5,//单页记录数
+        pageList: [5, 20, 40, 80],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:true,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "序号",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return index+1;
+                }
+            },
+            {
+                title: "UID",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[0];
+                }
+            },
+            {
+                title: "昵称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[1];
+                },
+            },
+            {
+                title: "注册地",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[2]==''){
+                        return '未知';
+                    }else {
+                        return row[2];
+                    }
+                },
+            },
+            {
+                title: "微博数",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[3];
+                },
+            },
+            {
+                title: "粉丝数",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[4];
+                },
+            },
+            {
+                title: '影响力',//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[5].toFixed(2);
+                },
+            },
+            //多选框
+            {
+                title: "",//标题
+                field: "select",
+                checkbox: true,
+                align: "center",//水平
+                valign: "middle"//垂直
+            },
+
+        ],
+        onCheck:function (row) {
+            uid.push(row[0]);
+        }
+        // onClickRow: function (row, tr) {
+        //     if ($(tr.context).index()==2) {
+        //         del_eventuid=row[0];
+        //         $('#del_ject').modal("show");
+        //     }
+        // }
+    });
+};
+
+function recommend_5(data5) {
+    var data5 = eval(data5);
+    uid=[];
+    $('.recommend').css({display:'none'});
+    $('.recommend2').css({display:'none'});
+    $('.recommend3').css({display:'none'});
+    $('.recommend4').css({display:'none'});
+    $('.recommend5').css({display:'block'});
+    $('#recommend5').bootstrapTable('load', data5);
+    $('#recommend5').bootstrapTable({
+        data:data5,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 5,//单页记录数
+        pageList: [5, 20, 40, 80],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:true,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "序号",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return index+1;
+                }
+            },
+            {
+                title: "UID",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[0];
+                }
+            },
+            {
+                title: "昵称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[1];
+                },
+            },
+            {
+                title: "注册地",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[2]==''){
+                        return '未知';
+                    }else {
+                        return row[2];
+                    }
+                },
+            },
+            {
+                title: "微博数",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[3];
+                },
+            },
+            {
+                title: "粉丝数",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[4];
+                },
+            },
+            {
+                title: '影响力',//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[5].toFixed(2);
+                },
+            },
+            //多选框
+            {
+                title: "",//标题
+                field: "select",
+                checkbox: true,
+                align: "center",//水平
+                valign: "middle"//垂直
+            },
+
+        ],
+        onCheck:function (row) {
+            uid.push(row[0]);
+        }
+        // onClickRow: function (row, tr) {
+        //     if ($(tr.context).index()==2) {
+        //         del_eventuid=row[0];
+        //         $('#del_ject').modal("show");
+        //     }
+        // }
+    });
+};
 //=======推荐人物==完=====
 
 
@@ -435,6 +697,10 @@ function type_1(value) {
         $('#event_list').hide();
         node_type='user';
         type='influence';
+        $('#node_list').css({display:'block'});
+        $('#event_list').css({display:'none'});
+        $('.count_task').css({display:'block'});
+        $('.event_task').css({display:'none'});
     }else if (value==2) {
         $('.user').hide();
         $('.event').show();
@@ -442,6 +708,10 @@ function type_1(value) {
         $('#node_list').hide();
         $('#event_list').show();
         node_type='event';
+        $('#node_list').css({display:'none'});
+        $('#event_list').css({display:'block'});
+        $('.count_task').css({display:'none'});
+        $('.event_task').css({display:'block'});
     }else if (value==3){
         $('.user').hide();
         $('.event').hide();
@@ -450,6 +720,10 @@ function type_1(value) {
         $('#event_list').hide();
         node_type='org';
         type='influence';
+        $('#node_list').css({display:'block'});
+        $('#event_list').css({display:'none'});
+        $('.count_task').css({display:'block'});
+        $('.event_task').css({display:'none'});
     }
 };
 
@@ -478,15 +752,6 @@ function type_2(value) {
         $('.user .manual').hide();
     }
 };
-
-var recommend_style='upload';
-function type_3(value) {
-    if (value==4){
-        recommend_style='upload';
-    }else if (value==5) {
-        recommend_style='write';
-    }
-}
 //---7天时间
 function get7DaysBefore(date,m){
     var date = date || new Date(),
@@ -515,13 +780,16 @@ for (var y=0;y<day7.length;y++){
 var recommend='影响力';
 var type='influence';
 var node_type='user';
+var recommend_style='upload';
 function type_3(value) {
     if (value==4){
         $('.user .manual-1').show();
         $('.user .manual').hide();
+        recommend_style='upload';
     }else if (value==5){
         $('.user .manual').show();
         $('.user .manual-1').hide();
+        recommend_style='write';
     }else if (value==1){
         recommend='影响力';
         type='influence';
@@ -534,22 +802,8 @@ function type_3(value) {
     }
 };
 
-function event_type_2(value) {
-    if(value==2){
-        $('.event .manual').show();
-        $('.event .manual-1').show();
-        $('.event .manual-2').hide();
-    }else if (value==3){
-        $('.event .manual').hide();
-        $('.event .manual-1').hide();
-        $('.event .manual-2').show();
-    }else {
-        $('.event .manual').hide();
-        $('.event .manual-1').hide();
-        $('.event .manual-2').hide();
-    }
-}
 
+//===========机构组织===============
 function type_2_age(value) {
     if (value==1){
         $('.agency #tui_shou_age').empty();
@@ -558,12 +812,17 @@ function type_2_age(value) {
             '<option value="2">言论敏感度推荐</option>'+
             '<option value="3">关注用户推荐</option>'
         );
+        recommendation_manual='r';
+        $('.agency .time_t_age').show();
+        $('.agency .manual-1').hide();
+        $('.agency .manual').hide();
     }else {
-        $('.agency #tui_shou_age').empty();
-        $('.agency #tui_shou_age').append(
+        $('.agency #tui_shou').empty();
+        $('.agency #tui_shou').append(
             '<option value="4">文件导入</option>'+
             '<option value="5">手动添加</option>'
         );
+        recommendation_manual='m';
         $('.agency .time_t_age').hide();
         $('.agency .manual-1').show();
         $('.agency .manual').hide();
@@ -574,9 +833,11 @@ function type_3_age(value) {
     if (value==4){
         $('.agency .manual-1').show();
         $('.agency .manual').hide();
+        recommend_style='upload';
     }else if (value==5){
         $('.agency .manual').show();
         $('.agency .manual-1').hide();
+        recommend_style='write';
     }else if (value==1){
         recommend='影响力';
         type='influence';
@@ -588,50 +849,71 @@ function type_3_age(value) {
         type='auto';
     }
 }
+//===========机构组织=========完======
+
 
 //-----------推荐人物----------
 $('.add_sure').on('click',function () {
-    if (recommendation_manual=='r'){
-        $('#recommend').empty();
-        // var date=$('#task_time').val();
+    if (node_type=='event'){
+        null;
+    }else {
         var date='2016-11-27';
-        // var submit_user=$('#name').text();
+        // if (node_type=='user'){
+        //     date=$('#task_time').val();
+        // }else if (node_type=='org'){
+        //     date=$('#task_time_age').val();
+        // };
         var submit_user='admin';
-        if (recommend=='关注度'){
-            var recommend_url_3='/construction/show_auto_in/?date='+date+'&submit_user='+submit_user+
-                '&node_type='+node_type;
-            $.ajax({
-                url: recommend_url_3,
-                type: 'GET',
-                dataType: 'json',
-                async: true,
-                success:recommend_3
-            });
-        }else if (recommend=='敏感度'){
-            var recommend_url_2='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
-                '&node_type='+node_type;
-            $.ajax({
-                url: recommend_url_2,
-                type: 'GET',
-                dataType: 'json',
-                async: true,
-                success:recommend_2
-            });
-        }else {
-            var recommend_url_1='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
-                '&node_type='+node_type;
-            $.ajax({
-                url: recommend_url_1,
-                type: 'GET',
-                dataType: 'json',
-                async: true,
-                success:recommend_1
-            });
+        // var submit_user=$('#name').text();
+        if (recommendation_manual=='r'){
+            $('#recommend').empty();
+            if (recommend=='关注度'){
+                var recommend_url_3='/construction/show_auto_in/?date='+date+'&submit_user='+submit_user+
+                    '&node_type='+node_type;
+                $.ajax({
+                    url: recommend_url_3,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    success:recommend_3
+                });
+            }else if (recommend=='敏感度'){
+                var recommend_url_2='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+                    '&node_type='+node_type;
+                $.ajax({
+                    url: recommend_url_2,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    success:recommend_2
+                });
+            }else {
+                if (node_type=='org'){
+                    var recommend_url_4='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+                        '&node_type='+node_type;
+                    $.ajax({
+                        url: recommend_url_4,
+                        type: 'GET',
+                        dataType: 'json',
+                        async: true,
+                        success:recommend_4
+                    });
+                }else {
+                    var recommend_url_5='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
+                        '&node_type='+node_type;
+                    $.ajax({
+                        url: recommend_url_5,
+                        type: 'GET',
+                        dataType: 'json',
+                        async: true,
+                        success:recommend_5
+                    });
+                }
+            }
+        }else if (recommendation_manual=='m'){
+            calculate_rel();
         }
-    }else if (recommendation_manual=='m'){
-        calculate_rel();
     }
-
 })
 
 //创建任务
@@ -690,11 +972,42 @@ function calculate_rel() {
 $('#container .node #node_list .node_join').on('click',function () {
     calculate_rel();
 });
+
+//文件上传
+var updata_file;
+function handleFileSelect(evt){
+    var files = evt;
+    for(var i=0,f;f=files[i];i++){
+        var reader = new FileReader();
+        reader.onload = function (oFREvent) {
+            var a = oFREvent.target.result;
+            $.ajax({
+                type:"POST",
+                url:"/construction/read_file/",
+                dataType: "json",
+                async:false,
+                data:{new_words:a},
+                success: function(data){
+                    if( data ){
+                        updata_file=[];
+                        var data=data;
+                        updata_file=data;
+                        window.setTimeout(function () {
+                            alert('上传成功。');
+                        },500);
+                    }
+                }
+            });
+        };
+        reader.readAsText(f,'GB2312');
+    }
+};
+
 function sure_task() {
     // var date=$('#task_time').val();
     var date='2016-11-27';
-    // var submit_user=$('#name').text();
-    var submit_user='admin';
+    var submit_user=$('#name').text();
+    // var submit_user='admin';
     var status,user_rel=[];
     if($('#box1').is(':checked')) { status=1; };
     if($('#box2').is(':checked')) { status=2; };
@@ -709,8 +1022,12 @@ function sure_task() {
         n_t=1;
     }
     if (recommendation_manual=='m'){
-        var input_data;
-        var updata=$('#container .node .attributes .manual .task_users').val().split(" ");
+        var input_data,updata;
+        if (recommend_style=='upload'){
+            updata=updata_file;
+        }else {
+            updata=$('#container .node .attributes .manual .task_users').val().split(" ");
+        }
         input_data={
             'date':date,'upload_data':updata,'node_type':n_t,'user':submit_user,'compute_status':status,
             'relation_string':user_rel_list,'recommend_style':recommend_style,'operation_type':'submit'
@@ -741,10 +1058,23 @@ function sure_task() {
 }
 //创建成功与失败
 function fail_or_success(data) {
-    if (data==1){
-        $('#fail_success #prompt').text('创建成功');
+    var data=eval(data);
+    if (data.length>=0){
+        if (data[0]==1){
+            $('#fail_success #prompt').text('创建成功！'+'您成功创建'+data[3].length+'个节点。');
+        }else {
+            if (data[1]=='invalid user info'){
+                $('#fail_success #prompt').text('创建失败,您输入的用户无效。');
+            }else if (data[1]=='all user in'){
+                $('#fail_success #prompt').text('创建失败,您输入的用户已经入库。');
+            }
+        }
     }else {
-        $('#fail_success #prompt').text('创建失败');
+        if (data==1){
+            $('#fail_success #prompt').text('创建成功');
+        }else {
+            $('#fail_success #prompt').text('创建失败');
+        }
     }
     $('#fail_success').modal('show');
     task_renew();
@@ -768,7 +1098,6 @@ function task_renew() {
     });
     function task_list(data) {
         var data = eval(data);
-        console.log(data)
         $('#count').bootstrapTable('load', data);
         $('#count').bootstrapTable({
             data:data,

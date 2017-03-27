@@ -197,7 +197,7 @@ def user_search_sth(en_name,fields_list):
         }
     }
     try:
-        name_results = es_user_portrait.search(index=portrait_name, doc_type=portrait_type, \
+        name_results = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields=fields_list)['hits']['hits'][0]['fields']
     except:
         name_dict = {}
@@ -223,7 +223,7 @@ def user_name_search(en_name):
         name_results = es_user_portrait.search(index=portrait_name, doc_type=portrait_type, \
                 body=query_body, fields=['uname'])['hits']['hits'][0]['fields']
     except:
-        return ''
+        return en_name
     for k,v in name_results.iteritems():
         ch_name = v[0]
     # print ch_name.encode('utf-8')
