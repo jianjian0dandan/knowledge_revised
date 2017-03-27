@@ -21,21 +21,21 @@ def get_mappings(index_name):
                 }
             },
             'mappings':{
-                group_type:{
+                special_event_type:{
                     'properties':{
                         'user':{
                             'type': 'string',
                             'index': 'not_analyzed'
                             },
-                        'group_name':{
+                        'topic_name':{
                             'type': 'string',
                             'index': 'not_analyzed'
                             },
-                        'people':{
+                        'event':{
                             'type': 'string',
                             'analyzer': 'my_analyzer'
                             },
-                        'people_count':{
+                        'event_count':{
                             'type': 'long'
                             },
                         'create_ts':{
@@ -45,6 +45,14 @@ def get_mappings(index_name):
                             'type': 'long'
                             },
                         'label':{
+                            'type': 'string',
+                            'analyzer': 'my_analyzer'
+                            },
+                        'wiki_link':{
+                            'type': 'string',
+                            'analyzer': 'my_analyzer'
+                            },
+                        'file_link':{
                             'type': 'string',
                             'analyzer': 'my_analyzer'
                             },
@@ -61,5 +69,5 @@ def get_mappings(index_name):
         es.indices.create(index=index_name, body=index_info, ignore=400)
 
 if __name__=='__main__':
-    get_mappings(group_name)
+    get_mappings(special_event_name)
     #es.indices.put_mapping(index='flow_text_2013-09-05', doc_type="text", body={"properties":{"comment":{"type": "long"}, "retweeted":{"type":"long"}}})

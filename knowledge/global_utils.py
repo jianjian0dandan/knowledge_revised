@@ -259,7 +259,7 @@ def deal_event_tag(tag ,submit_user):
     # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
     # return result
     # tag = tag_value
-    print tag,'=============!!==='
+    # print tag,'=============!!==='
     tag_list = tag.split('&')
     left_tag = []
     keep_tag = []
@@ -306,9 +306,44 @@ def event_detail_search(eid_list, submit_user):
         result.append(event)
     return result
 
+def get_group(group_name, submit_user):
+    if group_name == '': 
+        theme_detail = es_group.search(index=group_name, doc_type=group_type,\
+            body={'query':{'term':{'user':submit_user}}})['hits']['hits']
+    else:
+        query_body = {
+            "query":{
+                'bool':{
+                    'must':[
+                        {'match':   {"user":submit_user}},         
+                        {'match':   {"topic_name":group_name}},         
+                    ]
+
+                }
+
+            },
+            'size':100
+        }
+        theme_detail = es_group.search(index=group_name, doc_type=group_type,\
+            body=query_body)['hits']['hits']
+    theme_result = []
+    for i in theme_detail:
+        topic_id = i['_id']
+        theme_name = i['_source']['group_name']
+        contain_event = i['_source']['people_count']
+        auto_label = i['_source']['label'].split('&')[:5]
+        try:
+            work_tag = i['_source']['k_label'].split('&')
+        # work_tag = deal_event_tag(work_tag, submit_user)[0]
+        except:
+            work_tag = []
+        submit_ts = ts2date(i['_source']['create_ts'])
+        theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
+    return theme_result
+
 def get_theme(theme_name, submit_user):
     if theme_name == '': 
-        theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
+        theme_detail = es_special_event.search(index=special_event_name, doc_type=special_event_type,\
             body={'query':{'term':{'user':submit_user}}})['hits']['hits']
     else:
         query_body = {
