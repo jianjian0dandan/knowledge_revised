@@ -12,7 +12,7 @@ import csv
 from  knowledge.global_utils import get_group
 from utils import search_related_u_card, create_node_and_rel, create_group_relation, del_u_group_rel,\
      add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
-     compare_group_keywords, compare_group_k_label
+     compare_group_keywords, compare_group_k_label, group_geo_vary
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -182,3 +182,10 @@ def detail_group_basic():  #群体基本信息
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     detail_t = get_group(g_name, submit_user)
     return json.dumps(detail_t)
+
+# @mod.route('/group_basic/')
+# def detail_group_basic():  #群体基本信息
+#     g_name = request.args.get('g_name', u'美选群体')
+#     submit_user = request.args.get('submit_user', u'admin@qq.com')
+#     detail_t = group_geo_vary(g_name, submit_user)
+#     return json.dumps(detail_t)
