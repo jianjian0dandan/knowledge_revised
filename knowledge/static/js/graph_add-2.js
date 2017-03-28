@@ -5,18 +5,21 @@ function event_type_2(value) {
         $('.event .manual').show();
         $('.event .manual-1').show();
         $('.event .manual-2').hide();
+        $('.event .manual-2-2').hide();
         recommend_style='submit';
         tt=1;
     }else if (value==3){
         $('.event .manual').hide();
         $('.event .manual-1').hide();
         $('.event .manual-2').show();
+        $('.event .manual-2-2').show();
         recommend_style='upload';
         tt=1;
     }else {
         $('.event .manual').hide();
         $('.event .manual-1').hide();
         $('.event .manual-2').hide();
+        $('.event .manual-2-2').hide();
         recommend_style='recommend';
     }
 }
@@ -575,22 +578,25 @@ function sure_task_event() {
     var event_rel_list=event_rel.join('&');
     var input_data ;
     if (tt=1){
-
         if (recommend_style=='upload'){
+            // input_data={
+                // 'submit_ts': timestamp, 'immediate_compute':status,'event_type':event_type,
+                // 'relation_compute': event_rel_list, 'upload_data':updata_file_event,
+                // 'submit_user':submit_user, 'recommend_style':recommend_style, 'compute_status':0
+            // };
             input_data={
-                'submit_ts': timestamp, 'immediate_compute':status,'event_type':event_type,
-                'relation_compute': event_rel_list, 'upload_data':updata_file_event,
-                'submit_user':submit_user, 'recommend_style':recommend_style, 'compute_status':0
-            };
+                'submit_ts': timestamp, 'immediate_compute':status, 'relation_compute': event_rel_list,
+                'upload_data':updata_file_event, 'submit_user':submit_user,'recommend_style':recommend_style, 'compute_status':0,
+                'start_ts':Date.parse(new Date(start_2))/1000, 'end_ts':Date.parse(new Date(end_2))/1000,
+            }
         }else {
             input_data = {
-                'submit_ts':timestamp, 'name':name, 'relation_compute': event_rel_list,
+                'submit_ts':timestamp, 'name':eventName, 'relation_compute': event_rel_list,
                 'immediate_compute':status, 'keywords':key_words, 'start_ts':Date.parse(new Date(start))/1000,
                 'end_ts':Date.parse(new Date(end))/1000, 'event_type':event_type, 'recommend_style':recommend_style,
-                'compute_status':0, 'submit_user':submit_user,
+                'compute_status':0, 'submit_user':submit_user,'event_ts':Date.parse(new Date())/1000,
             };
         }
-        console.log(input_data)
     }else {
         input_data = {
             'submit_ts':timestamp, 'relation_compute': event_rel_list,
@@ -599,7 +605,13 @@ function sure_task_event() {
             'submit_user':submit_user,'event_ts':Number(time)
         }
     }
-    var join_url = '/construction/submit_event/';
+    var join_url;
+    if (recommend_style=='upload'){
+        join_url = '/construction/submit_event_file/';
+    }else {
+        join_url = '/construction/submit_event/';
+    }
+
     $.ajax({
         type:'POST',
         url: join_url,
@@ -613,6 +625,7 @@ function sure_task_event() {
 //创建成功与失败
 function yes_no(data) {
     var data=eval(data);
+    console.log(data)
     if (data==0){
         $('#fail_success #prompt').text('创建失败,该事件已经入库。');
     }else {
@@ -655,11 +668,14 @@ function event_task_renew() {
             columns: [
                 {
                     title: "事件名称",//标题
-                    field: "en_name",//键名
+                    field: "name",//键名
                     sortable: true,//是否可排序
                     order: "desc",//默认排序方式
                     align: "center",//水平
                     valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        return value.replace(/&/,' ');
+                    },
                 },
                 {
                     title: "添加方式",//标题
@@ -765,7 +781,7 @@ function handleFileSelect_event(evt){
             var a = oFREvent.target.result;
             $.ajax({
                 type:"POST",
-                url:"/construction/submit_event_file/",
+                url:"/construction/read_file/",
                 dataType: "json",
                 async:false,
                 data:{new_words:a},
@@ -785,19 +801,49 @@ function handleFileSelect_event(evt){
     }
 };
 
-var key_words,start,end;
+var key_words,start,end,start_2,end_2;
 var eventName;
 $('.add_sure').on('click',function () {
     if (node_type == 'event') {
         if (tt==1){
             if (recommend_style=='submit'){
+                eventName=$('.node .event .event_name').val();
                 key_words=$('.node .attributes .event .event_key').val();
-                if (key_words==''){
-                    alert('请输入关键词。(不能为空)');
+                if (eventName==''){
+                    alert('请输入事件名称。(不能为空)');
                 }else {
-                    start=$('.event .start').val();
-                    end=$('.event .end').val();
-                    if (start>end){
+                    if (key_words==''){
+                        alert('请输入关键词。(不能为空)');
+                    }else {
+                        start=$('.event .start').val();
+                        end=$('.event .end').val();
+                        if (start>end){
+                            alert('请检查时间，开始时间不能大于结束时间');
+                        }else {
+                            $('#relation_event .rel_list_event').empty();
+                            $('#relation_event .rel_list_event').append(
+                                '<label class="checkbox-inline">'+
+                                '   <input type="checkbox" value="contain" checked> 主题关联'+
+                                '</label>'+
+                                '<label class="checkbox-inline">'+
+                                '   <input type="checkbox" value="discuss" checked> 参与讨论'+
+                                '</label>'+
+                                '<label class="checkbox-inline">'+
+                                '   <input type="checkbox" value="join" checked> 参与事件'+
+                                '</label>'
+                            );
+                            $('#relation_event').modal('show');
+                        }
+                    }
+                }
+            }else if(recommend_style=='upload'){
+                eventName=$('.node .event .event_name-2').val();
+                start_2=$('.start-2').val();
+                end_2=$('.end-2').val();
+                if (eventName==''){
+                    alert('请输入事件名称。(不能为空)');
+                }else {
+                    if (start_2>end_2){
                         alert('请检查时间，开始时间不能大于结束时间');
                     }else {
                         $('#relation_event .rel_list_event').empty();
@@ -814,22 +860,9 @@ $('.add_sure').on('click',function () {
                         );
                         $('#relation_event').modal('show');
                     }
+
                 }
-            }else if(recommend_style=='upload'){
-                eventName=$('.node .event .event_name-2').val();
-                $('#relation_event .rel_list_event').empty();
-                $('#relation_event .rel_list_event').append(
-                    '<label class="checkbox-inline">'+
-                    '   <input type="checkbox" value="contain" checked> 主题关联'+
-                    '</label>'+
-                    '<label class="checkbox-inline">'+
-                    '   <input type="checkbox" value="discuss" checked> 参与讨论'+
-                    '</label>'+
-                    '<label class="checkbox-inline">'+
-                    '   <input type="checkbox" value="join" checked> 参与事件'+
-                    '</label>'
-                );
-                $('#relation_event').modal('show');
+
             }
 
         }
