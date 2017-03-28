@@ -11,7 +11,8 @@ from datetime import datetime
 import csv
 from  knowledge.global_utils import get_group
 from utils import search_related_u_card, create_node_and_rel, create_group_relation, del_u_group_rel,\
-     add_group_k_label, add_group_file_link, query_detail_group
+     add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
+     compare_group_keywords, compare_group_k_label
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -131,46 +132,53 @@ def group_edit_file():  #群体编辑-添加资源文档链接
     flag = add_group_file_link(g_name, file_name, operation)
     return json.dumps(flag)
 
-@mod.route('/get_difference_user/')  #对比,关联事件
-def ajax_get_difference():
-    submit_user = request.args.get('submit_user', 'admin@qq.com')
-    g_name1 = request.args.get('g_name1', u'房价')  # uid,event_id
-    g_name1 = g_name1 + '_' + submit_user
-    g_name2 = request.args.get('g_name2', u'美国大选')  # uid,event_id
-    g_name2 = g_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'diff')   #all, diff same
-    result = compare_group(g_name1, g_name2, submit_user, flag)
-    return json.dumps(result)
-
 @mod.route('/get_difference_user/')  #对比,包含人物
 def ajax_get_difference_user():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    g_name1 = request.args.get('g_name1', u'房价')  # uid,event_id
+    g_name1 = request.args.get('g_name1', u'美选群体')  # uid,event_id
     g_name1 = g_name1 + '_' + submit_user
-    g_name2 = request.args.get('g_name2', u'美国大选')  # uid,event_id
+    g_name2 = request.args.get('g_name2', u'政治群体')  # uid,event_id
     g_name2 = g_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'diff')   #all, diff same
+    flag = request.args.get('flag', 'same')   #all, diff same
     result = compare_group_user(g_name1, g_name2, submit_user, flag)
+    return json.dumps(result)
+
+@mod.route('/get_difference_event/')  #对比,关联事件
+def ajax_get_difference():
+    submit_user = request.args.get('submit_user', 'admin@qq.com')
+    g_name1 = request.args.get('g_name1', u'美选群体')  # uid,event_id
+    g_name1 = g_name1 + '_' + submit_user
+    g_name2 = request.args.get('g_name2', u'政治群体')  # uid,event_id
+    g_name2 = g_name2 + '_' + submit_user
+    flag = request.args.get('flag', 'all')   #all, diff same
+    result = compare_group_event(g_name1, g_name2, submit_user, flag)
     return json.dumps(result)
 
 @mod.route('/get_difference_keywords/')  #对比,自动标签
 def ajax_get_difference_keywords():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    g_name1 = request.args.get('g_name1', u'房价')  # uid,event_id
+    g_name1 = request.args.get('g_name1', u'美选群体')  # uid,event_id
     g_name1 = g_name1 + '_' + submit_user
-    g_name2 = request.args.get('g_name2', u'美国大选')  # uid,event_id
+    g_name2 = request.args.get('g_name2', u'政治群体')  # uid,event_id
     g_name2 = g_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'same')   #all, diff same
+    flag = request.args.get('flag', 'all')   #all, diff same
     result = compare_group_keywords(g_name1, g_name2, submit_user, flag)
     return json.dumps(result)
 
 @mod.route('/get_difference_k_label/')  #对比,业务标签
 def ajax_get_difference_k_label():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    g_name1 = request.args.get('g_name1', u'房价')  # uid,event_id
+    g_name1 = request.args.get('g_name1', u'美选群体')  # uid,event_id
     g_name1 = g_name1 + '_' + submit_user
-    g_name2 = request.args.get('g_name2', u'美国大选')  # uid,event_id
+    g_name2 = request.args.get('g_name2', u'政治群体')  # uid,event_id
     g_name2 = g_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'same')   #all, diff same
+    flag = request.args.get('flag', 'diff')   #all, diff same
     result = compare_group_k_label(g_name1, g_name2, submit_user, flag)
     return json.dumps(result)
+
+@mod.route('/group_basic/')
+def detail_group_basic():  #群体基本信息
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    detail_t = get_group(g_name, submit_user)
+    return json.dumps(detail_t)

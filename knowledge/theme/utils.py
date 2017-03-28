@@ -30,7 +30,7 @@ from knowledge.global_utils import es_user_profile, portrait_index_name, portrai
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2date
-from knowledge.global_utils import event_detail_search, user_name_search
+from knowledge.global_utils import event_detail_search, user_name_search, user_detail_search
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import special_event_name, special_event_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
@@ -361,9 +361,9 @@ def add_theme_file_link(theme_name, file_name,operation):
 
 def compare_theme(theme_name1, theme_name2, submit_user, flag):
     if flag == 'all':
-        theme1 = query_detail_theme(theme_name1, submit_user)
-        theme2 = query_detail_theme(theme_name2, submit_user)
-        return [theme1, theme2]
+        detail_result1 = query_detail_theme(theme_name1, submit_user)
+        detail_result2 = query_detail_theme(theme_name2, submit_user)
+        return {'detail_result1':detail_result1,'detail_result2':detail_result2}
     else:
         topic_id1 = p.get_pinyin(theme_name1)
         eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['event'])
@@ -383,7 +383,7 @@ def compare_theme(theme_name1, theme_name2, submit_user, flag):
             diff_e2 = [i for i in diff_e2]
             detail_result1 = event_detail_search(diff_e1,submit_user)
             detail_result2 = event_detail_search(diff_e2,submit_user)
-        return [detail_result1, detail_result2]
+        return {'detail_result1':detail_result1,'detail_result2':detail_result2}
 
 def compare_theme_user(theme_name1, theme_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(theme_name1)
@@ -410,27 +410,27 @@ def compare_theme_user(theme_name1, theme_name2, submit_user, flag):
                 end_id = dict(i['s1'])
                 uid_list1.append(end_id['uid'])
         uid_list.append(uid_list1)
-    return uid_list
+    # return uid_list
     ##对于实际的人怎么处理？
     if flag == 'all':
-        uid_list1 = [i for i in set(uid_list1)]
-        uid_list2 = [i for i in set(uid_list2)]
-        detail_result1 = related_user_search(uid_list1,submit_user)
-        detail_result2 = related_user_search(uid_list2,submit_user)
+        uid_list1 = [i for i in set(uid_list[0])]
+        uid_list2 = [i for i in set(uid_list[1])]
+        detail_result1 = user_detail_search(uid_list1,submit_user)
+        detail_result2 = user_detail_search(uid_list2,submit_user)
 
     if flag == 'same':
-        same_u = set(uid_list1)&set(uid_list2)
+        same_u = set(uid_list[0])&set(uid_list[1])
         same_u = [i for i in same_u]
-        detail_result1 = related_user_search(same_u,submit_user)
-        detail_result2 = related_user_search(same_u,submit_user)
+        detail_result1 = user_detail_search(same_u,submit_user)
+        detail_result2 = user_detail_search(same_u,submit_user)
 
     if flag == 'diff':
-        diff_u1 = set(uid_list1) - (set(uid_list1)&set(uid_list2))
+        diff_u1 = set(uid_list[0]) - (set(uid_list[0])&set(uid_list[1]))
         diff_u1 = [i for i in diff_u1]
-        diff_u2 = set(uid_list2) - (set(uid_list1)&set(uid_list2))
+        diff_u2 = set(uid_list[1]) - (set(uid_list[0])&set(uid_list[1]))
         diff_u2 = [i for i in diff_u2]
-        detail_result1 = related_user_search(diff_u1,submit_user)
-        detail_result2 = related_user_search(diff_u2,submit_user)
+        detail_result1 = user_detail_search(diff_u1,submit_user)
+        detail_result2 = user_detail_search(diff_u2,submit_user)
     return {'detail_result1':detail_result1,'detail_result2':detail_result2}
 
 def compare_theme_keywords(theme_name1, theme_name2, submit_user, flag):
