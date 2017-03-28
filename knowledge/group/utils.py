@@ -30,7 +30,7 @@ from knowledge.global_utils import es_user_profile, portrait_index_name, portrai
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2date
-from knowledge.global_utils import event_detail_search, user_name_search
+from knowledge.global_utils import event_detail_search, user_name_search, user_detail_search
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import special_event_name, special_event_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
@@ -285,6 +285,131 @@ def query_detail_group(g_name, submit_user):
     except:
         return 0
     uid_list = uid_string['fields']['people'][0].split('&')
-    # result = user_detail_search(uid_list, submit_user) #后面加！！
-    result = uid_list
+    # result = uid_list
+    result = user_detail_search(uid_list, submit_user) #后面加！！
     return result
+
+def compare_group_user(g_name1, g_name2, submit_user, flag):
+    if flag == 'all':
+        detail_result1 = query_detail_group(g_name1, submit_user)
+        detail_result2 = query_detail_group(g_name2, submit_user)
+        return {'detail_result1':detail_result1,'detail_result2':detail_result2}
+    else:
+        topic_id1 = p.get_pinyin(g_name1)
+        eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['people'])
+        event_list1 = eid_string1['fields']['people'][0].split('&')
+        topic_id2 = p.get_pinyin(g_name2)
+        eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['people'])
+        event_list2 = eid_string2['fields']['people'][0].split('&')
+        if flag == 'same':
+            same_e = set(event_list1)&set(event_list2)
+            same_e = [i for i in same_e]
+            detail_result1 = user_detail_search(same_e,submit_user)
+            detail_result2 = user_detail_search(same_e,submit_user)
+        if flag == 'diff':
+            diff_e1 = set(event_list1) - (set(event_list1)&set(event_list2))
+            diff_e1 = [i for i in diff_e1]
+            diff_e2 = set(event_list2) - (set(event_list1)&set(event_list2))
+            diff_e2 = [i for i in diff_e2]
+            detail_result1 = user_detail_search(diff_e1,submit_user)
+            detail_result2 = user_detail_search(diff_e2,submit_user)
+        return {'detail_result1':detail_result1,'detail_result2':detail_result2}
+
+def compare_group_event(g_name1, g_name2, submit_user, flag):
+    group_id1 = p.get_pinyin(g_name1)
+    uid_string1 = es_group.get(index=group_name, doc_type=group_type, id=group_id1,  fields=['people'])
+    uid_list1 = uid_string1['fields']['people'][0].split('&')
+
+    group_id2 = p.get_pinyin(g_name2)
+    uid_string2 = es_group.get(index=group_name, doc_type=group_type, id=group_id2,  fields=['people'])
+    uid_list2 = uid_string2['fields']['people'][0].split('&')
+    
+    uid_list_all = [uid_list1, uid_list2]
+    event_list = []
+    for user_result in uid_list_all:
+        event_list1 = []
+        print user_result
+        for user in user_result:
+            user_value = user
+            c_string = 'START s0 = node:node_index(uid="'+str(user_value)+'") '
+            c_string += 'MATCH (s0)-[r]-(s1:Event) return s1 LIMIT 50'
+            print c_string
+            result = graph.run(c_string)
+            for i in list(result):
+                end_id = dict(i['s1'])
+                event_list1.append(end_id['event_id'])
+        event_list.append(event_list1)
+    if flag == 'all':
+        event_list1 = [i for i in set(event_list[0])]
+        event_list2 = [i for i in set(event_list[1])]
+        detail_result1 = event_detail_search(event_list1,submit_user)
+        detail_result2 = event_detail_search(event_list2,submit_user)
+
+    if flag == 'same':
+        same_u = set(event_list[0])&set(event_list[1])
+        same_u = [i for i in same_u]
+        detail_result1 = event_detail_search(same_u,submit_user)
+        detail_result2 = event_detail_search(same_u,submit_user)
+
+    if flag == 'diff':
+        diff_u1 = set(event_list[0]) - (set(event_list[0])&set(event_list[1]))
+        diff_u1 = [i for i in diff_u1]
+        diff_u2 = set(event_list[1]) - (set(event_list[0])&set(event_list[1]))
+        diff_u2 = [i for i in diff_u2]
+        detail_result1 = event_detail_search(diff_u1,submit_user)
+        detail_result2 = event_detail_search(diff_u2,submit_user)
+    return {'detail_result1':detail_result1,'detail_result2':detail_result2}
+
+def compare_group_keywords(g_name1, g_name2, submit_user, flag):
+    topic_id1 = p.get_pinyin(g_name1)
+    eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['label'])
+    label_list1 = eid_string1['fields']['label'][0].split('&')
+    
+    topic_id2 = p.get_pinyin(g_name2)
+    eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['label'])
+    label_list2 = eid_string2['fields']['label'][0].split('&')
+    if flag == 'all':
+        new_label_list1 = [i for i in set(label_list1)]
+        new_label_list2 = [i for i in set(label_list2)]
+
+    if flag == 'same':
+        same_u = set(label_list1)&set(label_list2)
+        same_u = [i for i in same_u]
+        new_label_list1 = same_u
+        new_label_list2 = same_u
+
+    if flag == 'diff':
+        diff_u1 = set(label_list1) - (set(label_list1)&set(label_list2))
+        new_label_list1 = [i for i in diff_u1]
+
+        diff_u2 = set(label_list2) - (set(label_list1)&set(label_list2))
+        new_label_list2 = [i for i in diff_u2]
+
+    return {'detail_result1':new_label_list1,'detail_result2':new_label_list2}
+
+def compare_group_k_label(g_name1, g_name2, submit_user, flag):
+    topic_id1 = p.get_pinyin(g_name1)
+    eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['k_label'])
+    label_list1 = eid_string1['fields']['k_label'][0].split('&')
+    
+    topic_id2 = p.get_pinyin(g_name2)
+    eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['k_label'])
+    label_list2 = eid_string2['fields']['k_label'][0].split('&')
+    if flag == 'all':
+        new_label_list1 = [i for i in set(label_list1)]
+        new_label_list2 = [i for i in set(label_list2)]
+
+    if flag == 'same':
+        same_u = set(label_list1)&set(label_list2)
+        same_u = [i for i in same_u]
+        new_label_list1 = same_u
+        new_label_list2 = same_u
+
+    if flag == 'diff':
+        diff_u1 = set(label_list1) - (set(label_list1)&set(label_list2))
+        new_label_list1 = [i for i in diff_u1]
+
+        diff_u2 = set(label_list2) - (set(label_list1)&set(label_list2))
+        new_label_list2 = [i for i in diff_u2]
+
+    return {'detail_result1':new_label_list1,'detail_result2':new_label_list2}

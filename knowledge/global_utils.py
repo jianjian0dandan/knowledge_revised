@@ -306,8 +306,43 @@ def event_detail_search(eid_list, submit_user):
         result.append(event)
     return result
 
-def get_group(group_name, submit_user):
-    if group_name == '': 
+def user_detail_search(uid_list,submit_user):
+    if not uid_list:
+        return []
+    fields_list = p_column
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    # try:
+    uid_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+            body={'ids':uid_list}, fields=fields_list)['docs']
+    result = []
+    for i in uid_result:
+        event = []
+        if i['found'] == False:
+            event.append(i['_id'])
+            continue
+        i_fields = i['fields']
+        for j in fields_list:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_event_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
+
+def get_group(g_name, submit_user):
+    if g_name == '': 
         theme_detail = es_group.search(index=group_name, doc_type=group_type,\
             body={'query':{'term':{'user':submit_user}}})['hits']['hits']
     else:
@@ -316,7 +351,7 @@ def get_group(group_name, submit_user):
                 'bool':{
                     'must':[
                         {'match':   {"user":submit_user}},         
-                        {'match':   {"topic_name":group_name}},         
+                        {'match':   {"group_name":g_name}},         
                     ]
 
                 }

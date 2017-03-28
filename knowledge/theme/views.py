@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 
 from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect, make_response, g
 from flask.ext.security import login_required
@@ -110,14 +110,14 @@ def theme_edit_file():  #专题编辑-添加资源文档链接
 @mod.route('/create_new_relation/')#添加到新专题
 def create_new_relation():
     node_key1 = request.args.get('node_key1', 'event_id')  # uid,event_id
-    node1_id = request.args.get('node1_id', 'te-lang-pu-1480176000,xi-la-li-1480176000')
+    node1_id = request.args.get('node1_id', 'te-lang-pu-1480176000,lu-han-1480176000')
     if node1_id == '':
     	return 'must add event'
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'event_index')  # node_index event_index
     rel = request.args.get('rel', 'special_event')
     node_key2 = request.args.get('node_key2', 'event')  # event,uid
-    node2_name = request.args.get('node2_id', u'美国大选')
+    node2_name = request.args.get('node2_id', u'政治专题')
     submit_user = request.args.get('submit_user', 'admin@qq.com')
     node2_id = node2_name + '_' + submit_user
     node2_index_name = request.args.get('node2_index_name', 'special_event_index')
@@ -146,29 +146,29 @@ def create_relation():
 @mod.route('/get_difference_event/')  #对比,包含事件
 def ajax_get_difference():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    theme_name1 = request.args.get('theme_name1', u'房价')  # uid,event_id
+    theme_name1 = request.args.get('theme_name1', u'政治专题')  # uid,event_id
     theme_name1 = theme_name1 + '_' + submit_user
     theme_name2 = request.args.get('theme_name2', u'美国大选')  # uid,event_id
     theme_name2 = theme_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'diff')   #all, diff same
+    flag = request.args.get('flag', 'all')   #all, diff same
     result = compare_theme(theme_name1, theme_name2, submit_user, flag)
     return json.dumps(result)
 
 @mod.route('/get_difference_user/')  #对比,关联人物
 def ajax_get_difference_user():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    theme_name1 = request.args.get('theme_name1', u'房价')  # uid,event_id
+    theme_name1 = request.args.get('theme_name1', u'政治专题')  # uid,event_id
     theme_name1 = theme_name1 + '_' + submit_user
     theme_name2 = request.args.get('theme_name2', u'美国大选')  # uid,event_id
     theme_name2 = theme_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'diff')   #all, diff same
+    flag = request.args.get('flag', 'same')   #all, diff same
     result = compare_theme_user(theme_name1, theme_name2, submit_user, flag)
     return json.dumps(result)
 
 @mod.route('/get_difference_keywords/')  #对比,自动标签
 def ajax_get_difference_keywords():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    theme_name1 = request.args.get('theme_name1', u'房价')  # uid,event_id
+    theme_name1 = request.args.get('theme_name1', u'政治专题')  # uid,event_id
     theme_name1 = theme_name1 + '_' + submit_user
     theme_name2 = request.args.get('theme_name2', u'美国大选')  # uid,event_id
     theme_name2 = theme_name2 + '_' + submit_user
@@ -179,7 +179,7 @@ def ajax_get_difference_keywords():
 @mod.route('/get_difference_k_label/')  #对比,业务标签
 def ajax_get_difference_k_label():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
-    theme_name1 = request.args.get('theme_name1', u'房价')  # uid,event_id
+    theme_name1 = request.args.get('theme_name1', u'政治专题')  # uid,event_id
     theme_name1 = theme_name1 + '_' + submit_user
     theme_name2 = request.args.get('theme_name2', u'美国大选')  # uid,event_id
     theme_name2 = theme_name2 + '_' + submit_user
