@@ -27,6 +27,7 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
@@ -671,7 +672,7 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, no
         print "create success"
     return True
 
-def search_event(item, field):
+def search_event(item, field, submit_user):
     query_body = {
         "query":{
             'bool':{
@@ -685,30 +686,32 @@ def search_event(item, field):
         },
         'size':10
     }
-    only_eid = []
-    event_id_list = []
-    u_nodes_list = {}
-    e_nodes_list = {}
-    event_relation =[]
-    # field=['name','en_name']
+    result = []
     try:
-        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
-                body=query_body, fields=field)['hits']['hits']  
+        event_result = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+                body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
     except:
         return 'does not exist'
-    for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
+    for i in event_result:
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_editor_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-        event_id_list.append(field_list)
-    return event_id_list
-
-def search_event_time_limit(item, field, start_ts, end_ts):
+def search_event_time_limit(item, field, start_ts, end_ts, submit_user):
     query_body = {
         "query":{
             "bool":{
@@ -719,33 +722,43 @@ def search_event_time_limit(item, field, start_ts, end_ts):
                             "lte": end_ts
                         }
                     }}
+                ],
+                'should':[
+                    {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
             }
         }
     }
-    only_eid = []
-    event_id_list = []
-    u_nodes_list = {}
     e_nodes_list = {}
-    event_relation =[]
+    # event_relation =[]
+    result = []
     try:
-        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+        event_result = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
                 body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
     except:
         return 'does not exist'
-    for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
+    for i in event_result:
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_editor_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-        event_id_list.append(field_list)
-    return event_id_list
-
-def search_user(item, field):
+def search_user(item, field, submit_user):
     query_body = {
         "query":{
             'bool':{
@@ -760,88 +773,106 @@ def search_user(item, field):
     }
     only_uid = []
     user_uid_list = []
-    u_nodes_list = {}
 
     try:
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
-
+    result = []
     for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
-        user_uid_list.append(field_list)
-    return user_uid_list
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords_string':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'function_mark':
+                tag = deal_editor_tag(i_fields[j][0], editor)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-def search_user_time_limit(item, field, start_ts, end_ts):
+def search_user_time_limit(item, field, start_ts, end_ts, editor):
     query_body = {
         "query":{
             # "uid":uid_list #-------------------!!!!!
             "bool":{
                 "must":[
                     {"range":{
-                        "create_time":{
-                            "gte": former_ts,
-                            "lte": current_ts
+                        "submit_ts":{
+                            "gte": start_ts,
+                            "lte": end_ts
+                             }
                         }
-                    }}
+                    }
+                ],
+                'should':[
+                    {"wildcard":{'uid':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'uname':'*'+str(item.encode('utf-8'))+'*'}}
                 ]
             }
         }
     }
-    only_uid = []
-    user_uid_list = []
-    u_nodes_list = {}
-
     try:
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
-
+    
+    result = []
     for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
-        user_uid_list.append(field_list)
-    return user_uid_list
+        event = []
+        # if i['found'] == False:
+        #     event.append(i['_id'])
+        #     continue
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords_string':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'function_mark':
+                tag = deal_editor_tag(i_fields[j][0], editor)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
 def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
+        field = p_column
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         node_result = search_user_time_limit(item, field, start_ts, end_ts, editor)
     if node_type == 'Event':
         # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-        field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-         'weibo_counts', 'keywords', 'work_tag','compute_status']
+        field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
         node_result = search_event_time_limit(item, field, start_ts, end_ts, editor)
     return node_result
 
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'uname', 'topic_string', 'domain', 'function_description']
+        field = p_column
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         index_n = node_index_name
         index_key = people_primary
         node_key = group_node
-        node_result = search_user(item, field)[0]
-        tag = deal_user_tag(item, submit_user)[0]
+        node_result = search_user(item, field, '')[0]
+        tag = deal_user_tag(item, submit_user, '')[0]
         node_result.append(tag)
 
     if node_type == 'Event':
-        field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
-              'start_ts', 'end_ts','description', 'related_docs']
+        field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
         node_result = search_event(item, field, submit_user)[0]
         tag = deal_event_tag(item, submit_user)[0]
         node_result.append(tag)
@@ -894,6 +925,17 @@ def deal_event_tag(item ,submit_user):
             left_tag.append(i)
     return [keep_tag, left_tag]
 
-
+def deal_editor_tag(tag ,submit_user):
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
 
 

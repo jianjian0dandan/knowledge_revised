@@ -502,3 +502,31 @@ def group_geo_vary(g_name, submit_user):
     return  {'main_start_geo':main_start_geo, 'main_end_geo': main_end_geo, \
         'vary_detail_geo': vary_detail_geo, 'activity_geo_vary':activity_geo_vary,\
         'main_activity_geo':main_activity_geo, 'activity_geo_distribution_date':activity_geo_distribution_date}
+
+#show group user geo track
+#input: uid
+#output: results [geo1,geo2,..]
+def get_group_user_track(uid):
+    results = []
+    #step1:get user_portrait activity_geo_dict
+    try:
+        portrait_result = es.get(index=portrait_index_name, doc_type=portrait_index_type,\
+                id=uid, _source=False, fields=['activity_geo_dict'])
+    except:
+        portrait_result = {}
+    if portrait_result == {}:
+        return 'uid is not in user_portrait'
+    activity_geo_dict = json.loads(portrait_result['fields']['activity_geo_dict'][0])
+    now_date_ts = datetime2ts(ts2datetime(int(time.time())))
+    start_ts = now_date_ts - DAY * len(activity_geo_dict)
+    #step2: iter date to get month track
+    for geo_item in activity_geo_dict:
+        iter_date = ts2datetime(start_ts)
+        sort_day_dict = sorted(geo_item.items(), key=lambda x:x[1], reverse=True)
+        if sort_day_dict:
+            results.append([iter_date, sort_day_dict[0][0]])
+        else:
+            results.append([iter_date, ''])
+        start_ts = start_ts + DAY
+
+    return results

@@ -250,10 +250,10 @@ def ajax_relation_edit_search():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field)
+        result = search_user(item, field, '')
     if node_type == 'Event':
         field = ['en_name', 'name']
-        result = search_event(item, field)
+        result = search_event(item, field, '')
     return json.dumps(result)
 
 #关系编辑，先查询已有关系
@@ -291,8 +291,8 @@ def ajax_node_edit():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
     editor = request.args.get('submit_user', 'admin@qq.com')  #admin
-    start_ts = request.args.get('start_ts', '')  # 1482126030
-    end_ts = request.args.get('end_ts', '')  # 1482126490
+    start_ts = request.args.get('start_ts', '')  # 1504195000
+    end_ts = request.args.get('end_ts', '')  # 1504195300
     if start_ts and end_ts:
         node_result = search_node_time_limit(node_type, item, start_ts, end_ts, editor)
     else:
@@ -301,8 +301,7 @@ def ajax_node_edit():
             node_result = search_user(item, field, editor)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-            field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-             'weibo_counts', 'keywords', 'work_tag','compute_status']
+            field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
             node_result = search_event(item, field, editor)
     return json.dumps(node_result)
 
