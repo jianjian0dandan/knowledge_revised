@@ -611,11 +611,11 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
             relation_name = dict(item)['r']['name']
             relaiton_name_list = relation_name.split(',')
             for i_name in relaiton_name_list:
-                relation_ch = relation_ch+ '-' +i_name
-            relation = relation +'&' + relation_name
-        rel_list.append(relation_ch)
-    # for i in rel_list:
-
+                relation_ch2 = relation_ch+ '-' +i_name
+                relation = relation +'&' + relation_name
+                rel_list.append(relation_ch2)
+        else:
+            rel_list.append(relation_ch)
     return rel_list
 
 def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
@@ -745,7 +745,7 @@ def search_event_time_limit(item, field, start_ts, end_ts):
         event_id_list.append(field_list)
     return event_id_list
 
-def search_user(item,field):
+def search_user(item, field):
     query_body = {
         "query":{
             'bool':{

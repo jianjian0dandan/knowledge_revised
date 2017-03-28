@@ -59,7 +59,7 @@ topic_list = [u'文体类_娱乐', u'科技类', u'经济类', u'教育类', u'�
 
 relation_dict ={'join': u'参与事件','discuss': u'参与讨论','other_relationship': u'其他关系',\
                 'contain': u'主题关联','event_other': u'其他关系',\
-                'friend': u'交互','relative': u'亲属关系''leader': u'上下级关系','colleague': u'自述关联',\
+                'friend': u'交互','relative': u'亲属关系','leader': u'上下级关系','colleague': u'自述关联',\
                 'ip_relation': u'IP关联','user_tag': u'其他关系',}
 
 # Relationship: User,Organization-Event

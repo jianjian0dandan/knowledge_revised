@@ -7,7 +7,6 @@ function two_type(value) {
     end_type=value;
 };
 
-
 //类似百度搜索功能
 var one_value='',two_value='',search_data_url;
 $('.manone').bind('input propertychange', function() {
@@ -40,6 +39,11 @@ function search_data(look) {
     if (start_type=='Event'||end_type=='Event'){
         $.each(data_result,function (index,item) {
             data.push(item[1]+'<span class="_id" style="display:none;">'+item[0]+'</span>');
+            if (start_type=='Event'){
+                uid_1_name=item[1];
+            }else {
+                uid_2_name=item[1];
+            }
         })
     }else {
         $.each(data_result,function (index,item) {
@@ -48,6 +52,7 @@ function search_data(look) {
             }else {
                 data.push(item[1]+'('+item[0]+')'+'<span class="_id" style="display:none;">'+item[0]+'</span>');
             }
+
         })
     }
 }
@@ -56,7 +61,7 @@ var in_class;
 function class_name(input_class) {
     in_class=$(input_class).attr('class');
 }
-var uid_1,uid_2;
+var uid_1,uid_2,uid_1_name,uid_2_name;
 
 $(document).ready(function(){
     $('.manone').attr('disabled',false);
@@ -176,6 +181,8 @@ function getCon(obj){
         $('#container .rel_attributes .one .manone').val(value);
         $('.append-1').hide().html('');
         uid_1=$(obj).find('._id').text();
+        console.log($(obj))
+        uid_1_name=$(obj).find('._id').text();
         $('.manone').attr('disabled',true);
     }else {
         $('#container .rel_attributes .two .mantwo').val(value);
@@ -189,6 +196,7 @@ function getCon(obj){
 //---类似百度搜索功能----完---
 
 $('#container .rel_submit').on('click',function () {
+    console.log(uid_1_name,uid_2_name)
     var name_type_1,name_type_2,name_index_1,name_index_2;
     var input_data=[];
     if (start_type=='User'||end_type=='User'){
@@ -240,6 +248,7 @@ var rel_table={
 };
 function relation_add(data) {
     var data=eval(data);
+    console.log(data)
     rel_list(data);
 }
 function rel_list(data) {
@@ -271,7 +280,7 @@ function rel_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return uid_1;
+                    return uid_1_name;
                 }
             },
             {
@@ -282,7 +291,7 @@ function rel_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return uid_2;
+                    return uid_2_name;
                 },
             },
             {
@@ -293,11 +302,7 @@ function rel_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    var rel='';
-                    for (var a=0;a<row.length;a++){
-                        rel += rel_table[row[a]]+' ';
-                    }
-                    return rel;
+                    return row;
                 },
             },
             {

@@ -252,7 +252,7 @@ def ajax_relation_edit_search():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'name']  
+        field = ['en_name', 'name']
         result = search_event(item, field)
     return json.dumps(result)
 
