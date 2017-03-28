@@ -183,9 +183,10 @@ def detail_group_basic():  #群体基本信息
     detail_t = get_group(g_name, submit_user)
     return json.dumps(detail_t)
 
-# @mod.route('/group_basic/')
-# def detail_group_basic():  #群体基本信息
-#     g_name = request.args.get('g_name', u'美选群体')
-#     submit_user = request.args.get('submit_user', u'admin@qq.com')
-#     detail_t = group_geo_vary(g_name, submit_user)
-#     return json.dumps(detail_t)
+@mod.route('/group_geo/')
+def detail_group_geo():  #群体地理位置信息
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_geo_vary(g_name, submit_user)
+    return json.dumps(detail_t)
