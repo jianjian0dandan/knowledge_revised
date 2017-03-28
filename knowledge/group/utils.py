@@ -413,3 +413,64 @@ def compare_group_k_label(g_name1, g_name2, submit_user, flag):
         new_label_list2 = [i for i in diff_u2]
 
     return {'detail_result1':new_label_list1,'detail_result2':new_label_list2}
+
+
+def group_geo_vary(g_name, submit_user):
+    try:
+        iter_user_dict_list = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+            body={'ids':iter_uid_list})['docs']
+    except:
+        iter_user_dict_list = []
+
+    for user_dict in iter_user_dict_list:
+        #attr8: activity_geo_dict---distribution by date
+        user_activity_geo = {}
+        activity_geo_dict_list = json.loads(source['activity_geo_dict'])
+        activity_geo_date_count = len(activity_geo_dict_list)
+        iter_ts = now_date_ts - activity_geo_date_count * DAY
+        user_date_main_list = []
+        for i in range(0, activity_geo_date_count):
+            date_item = activity_geo_dict_list[i]
+            if iter_ts in activity_geo_distribution_date:
+                activity_geo_distribution_date[iter_ts] = union_dict_list([activity_geo_distribution_date[iter_ts], date_item])
+            else:
+                activity_geo_distribution_date[iter_ts] = date_item
+            #use to get activity_geo vary
+            sort_date_item = sorted(date_item.items(), key=lambda x:x[1], reverse=True)
+            if date_item != {}:
+                main_date_city = sort_date_item[0][0]
+                try:
+                    last_user_date_main_item = user_date_main_list[-1][0]
+                except:
+                    last_user_date_main_item = ''
+                if main_date_city != last_user_date_main_item:
+                    user_date_main_list.append([main_date_city, iter_ts])
+
+            iter_ts += DAY
+        #attr8: activity_geo_dict---location vary
+        if len(user_date_main_list) > 1:
+            for i in range(1, len(user_date_main_list)):
+                vary_city = [geo_ts_item[0] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                vary_ts = [geo_ts_item[1] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                vary_item = '&'.join(vary_city)
+                #vary_item = '&'.join(user_date_main_list[i-1:i+1])
+                #get activity geo vary for vary table and map
+                try:
+                    activity_geo_vary[vary_item] += 1
+                except:
+                    activity_geo_vary[vary_item] = 1
+                #get main start geo
+                try:
+                    main_start_geo[vary_city[0]] += 1
+                except:
+                    main_start_geo[vary_city[0]] = 1
+                #get main end geo
+                try:
+                    main_end_geo[vary_city[1]] += 1
+                except:
+                    main_end_geo[vary_city[1]] = 1
+                #get vary detail geo
+                try:
+                    vary_detail_geo[vary_item].append([uid, vary_ts[0], vary_ts[1]])
+                except:
+                    vary_detail_geo[vary_item] = [[uid, vary_ts[0], vary_ts[1]]]
