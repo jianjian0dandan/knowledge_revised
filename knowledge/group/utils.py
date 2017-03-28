@@ -62,6 +62,7 @@ def search_related_u_card(item, submit_user, g_name):
                             fields=['people'])
         uid_list = []
         uid_list = user_list_string['fields']['people'][0].split('&')
+        print uid_list,'==========='
     else:
         uid_list = []
 
@@ -119,12 +120,12 @@ def get_special_labels(node1_list):
     labels = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':node1_list},\
                                 fields=['keywords_string'], _source=False)['docs']
     result_label = []
-    theme_label = []
+    group_label = []
     keywords_dict = {}
     for i in labels:
-        theme_label.extend(i['fields']['keywords_string'][0].split('&'))
-    for i in set(theme_label):
-        keywords_dict[i] = theme_label.count(i)
+        group_label.extend(i['fields']['keywords_string'][0].split('&'))
+    for i in set(group_label):
+        keywords_dict[i] = group_label.count(i)
     sorted_keywords = sorted(keywords_dict.iteritems(), key=lambda x:x[1], reverse=True)
     # print sorted_keywords
     result_label = [i[0] for i in sorted_keywords[:100]]
@@ -155,13 +156,13 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
         group_dict['people_count'] = len(node1_list)
         group_dict['create_ts'] = int(time.time())
         group_dict['user'] = submit_user
-        group_dict['k_label'] = k_label
+        group_dict['k_label'] = '&'.join(k_label.split(','))
         group_id = p.get_pinyin(node2_id)
         labels = get_special_labels(node1_list)
         group_dict['label'] = labels
         wiki_link = getUrlByKeyWordList(labels)
         group_dict['wiki_link'] = json.dumps(wiki_link)
-        es_group.delete(index=group_name, doc_type=group_type, id='mei-xuan-qun-ti-_admin@qq.com')
+        # es_group.delete(index=group_name, doc_type=group_type, id='mei-xuan-qun-ti-_admin@qq.com')
         es_group.index(index=group_name, doc_type=group_type, id=group_id, body=group_dict)
         new_group = Node(group_node, group=group_id)
         graph.create(new_group)
@@ -234,3 +235,56 @@ def del_u_group_rel(g_name, uid):
         es_group.update(index=group_name,doc_type=group_type,id=en_name,\
             body={'doc':{'people':uid_string, 'people_count':len(new_uid_list)}}) 
     return '1'
+
+def add_group_k_label(g_name, k_label,operation):
+    new_label = k_label.split('&')
+    en_name = p.get_pinyin(g_name)
+    print en_name
+    group_label = es_group.get(index=group_name, doc_type=group_type, id=en_name,\
+            fields=['k_label'])
+    print group_label,'------------'
+    try:
+        group_label_list = group_label['fields']['k_label'][0].split('&')
+    except:
+        group_label_list = []
+    if operation == 'add':
+        group_label_list.extend(new_label)
+    elif operation == 'del':
+        group_label_list = set(group_label_list) - set(new_label)
+    group_label_list = [i for i in set(group_label_list)]
+    group_label_string = '&'.join(group_label_list)
+    es_group.update(index=group_name,doc_type=group_type, id=en_name,\
+            body={'doc':{'k_label':group_label_string}})
+    return 1
+
+def add_group_file_link(g_name, file_name,operation):
+    new_label = file_name.split('+')
+    en_name = p.get_pinyin(g_name)
+    print en_name
+    group_label = es_group.get(index=group_name, doc_type=group_type, id=en_name,\
+            fields=['file_link'])
+    print group_label,'------------'
+    try:
+        group_label_list = group_label['fields']['file_link'][0].split('+')
+    except:
+        group_label_list = []
+    if operation == 'add':
+        group_label_list.extend(new_label)
+    elif operation == 'del':
+        group_label_list = set(group_label_list) - set(new_label)
+    group_label_list = [i for i in set(group_label_list)]
+    group_label_string = '+'.join(group_label_list)
+    es_group.update(index=group_name,doc_type=group_type, id=en_name,\
+            body={'doc':{'file_link':group_label_string}})
+    return 1
+
+def query_detail_group(g_name, submit_user):
+    group_id = p.get_pinyin(g_name)
+    try:
+        uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
+    except:
+        return 0
+    uid_list = uid_string['fields']['people'][0].split('&')
+    # result = user_detail_search(uid_list, submit_user) #后面加！！
+    result = uid_list
+    return result
