@@ -30,7 +30,8 @@ from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
-from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
+                other_rel, event_other, user_tag, organization_tag
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
@@ -527,13 +528,19 @@ def submit_event_file(input_data):
     recommend_style = input_data['recommend_style']
     compute_status = input_data['compute_status']
     file_data = input_data['upload_data']
+    start_ts = input_data['start_ts']
+    end_ts = input_data['end_ts']
     result_flag = False
     valid_event = 0
     total_event = len(file_data)
-    for event in file_data:
-        if not event.has_key('event_ts'):
-            event['event_ts'] = int(time.time())
+    for line in file_data:
+        event = {}
+        keywords = line.strip('\r')
+        event['keywords'] = keywords
+        event['event_ts'] = int(time.time())
         event['submit_ts'] = submit_ts
+        event['start_ts'] = start_ts
+        event['end_ts'] = end_ts
         event['relation_compute'] = relation_compute
         event['immediate_compute'] = immediate_compute
         event['submit_user'] = submit_user
@@ -581,7 +588,7 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r]->(end_node) RETURN r" % (
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r]-(end_node) RETURN r" % (
     node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id)
     # return c_string
     print c_string
@@ -589,10 +596,14 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
     # print result
     rel_list = []
     for item in result:
-        rel_list.append(item)
+        relation = dict(item)['r'].type()
+        if relation in [other_rel, event_other, organization_tag, user_tag]:
+            relation_name = dict(item)['r']['name']
+            relation = relation +'&' + relation_name
+        rel_list.append(relation)
     return rel_list
 
-def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
@@ -604,21 +615,45 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
-    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
-    # return c_string
+    # c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
+    # node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    # # return c_string
 
-    result = graph.run(c_string)
-    # print result
-    rel_list = []
-    for item in result:
-        rel_list.append(item)
-    # print rel_list
-    if rel in rel_list:
-        return 'has relation already'
-    rel = Relationship(node1, rel, node2)
-    graph.create(rel)
-    print "create success"
+    # result = graph.run(c_string)
+    # # print result
+    # rel_list = []
+    # for item in result:
+    #     rel_list.append(item)
+    # # print rel_list
+    # if rel in rel_list:
+    #     return 'has relation already'
+    rel = rel_union.split(',')[0]
+    if rel in [other_rel, event_other, organization_tag, user_tag]:
+        rel_name = rel_union.split(',')[1]
+        c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
+                    MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        result = graph.run(c_string)
+        exist_relation = []
+        for i in result:
+            dict_i = dict(i)
+            exist_relation = dict_i['r.name'].split(',')
+        if exist_relation:
+            del_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') \
+                   MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+            result = graph.run(del_string)
+        exist_relation.append(rel_name)
+        exist_relation = [i for i in set(exist_relation)]
+        add_relation_string = ','.join(exist_relation)
+        c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
+                create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
+                node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
+        result = graph.run(c_string)
+    else:
+        rel = Relationship(node1, rel, node2)
+        graph.create(rel)
+        print "create success"
     return True
 
 def search_event(item, field):
