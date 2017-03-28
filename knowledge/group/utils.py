@@ -411,18 +411,38 @@ def compare_group_k_label(g_name1, g_name2, submit_user, flag):
 
         diff_u2 = set(label_list2) - (set(label_list1)&set(label_list2))
         new_label_list2 = [i for i in diff_u2]
-
     return {'detail_result1':new_label_list1,'detail_result2':new_label_list2}
 
+def union_dict_list(objs):
+    _keys = set(sum([obj.keys() for obj in objs], []))
+    _total = {}
+    for _key in _keys:
+        _total[_key] = sum([int(obj.get(_key, 0)) for obj in objs])
+
+    return _total
 
 def group_geo_vary(g_name, submit_user):
-    try:
-        iter_user_dict_list = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, \
-            body={'ids':iter_uid_list})['docs']
+    group_id = p.get_pinyin(g_name)
+    uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
+    uid_list = uid_string['fields']['people'][0].split('&')
+    activity_geo_vary={}
+    main_start_geo = {}
+    main_end_geo = {}
+    vary_detail_geo  = {}
+    activity_geo_distribution_date = {}
+    if RUN_TYPE == 1:
+        now_ts = int(time.time())
+    else:
+        now_ts = datetime2ts(RUN_TEST_TIME)
+    now_date_ts = datetime2ts(ts2datetime(now_ts))
+    try: 
+        iter_user_dict_list = es.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+            body={'ids':uid_list})['docs']
     except:
         iter_user_dict_list = []
-
     for user_dict in iter_user_dict_list:
+        uid = user_dict['_id']
+        source = user_dict['_source']
         #attr8: activity_geo_dict---distribution by date
         user_activity_geo = {}
         activity_geo_dict_list = json.loads(source['activity_geo_dict'])
@@ -474,3 +494,11 @@ def group_geo_vary(g_name, submit_user):
                     vary_detail_geo[vary_item].append([uid, vary_ts[0], vary_ts[1]])
                 except:
                     vary_detail_geo[vary_item] = [[uid, vary_ts[0], vary_ts[1]]]
+    all_activity_geo = union_dict_list(activity_geo_distribution_date.values())
+    sort_all_activity_geo = sorted(all_activity_geo.items(), key=lambda x:x[1], reverse=True)
+    main_activity_geo = sort_all_activity_geo[0][0]
+
+
+    return  {'main_start_geo':main_start_geo, 'main_end_geo': main_end_geo, \
+        'vary_detail_geo': vary_detail_geo, 'activity_geo_vary':activity_geo_vary,\
+        'main_activity_geo':main_activity_geo, 'activity_geo_distribution_date':activity_geo_distribution_date}
