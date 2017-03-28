@@ -31,7 +31,7 @@ from knowledge.global_utils import es_bci_history, sensitive_index_name, sensiti
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
-                other_rel, event_other, user_tag, organization_tag
+                other_rel, event_other, user_tag, organization_tag, relation_dict
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
@@ -476,10 +476,11 @@ def recommentation_in_auto(date, submit_user, node_type):
     return final_result
 
 def submit_event(input_data):
-    print input_data
+    print input_data,'555555555555555'
     if not input_data.has_key('name'):
-        name_s = input_data['keywords'].split('&')[3]
-        name_string = ''.join(name_s)
+        name_s = input_data['keywords'].split('&')[:3]
+        print name_s,'==='
+        name_string = '&'.join(name_s)
         input_data['name'] = name_string
     if input_data.has_key('mid'):
         # event_id = mid
@@ -534,8 +535,14 @@ def submit_event_file(input_data):
     valid_event = 0
     total_event = len(file_data)
     for line in file_data:
+        print line
         event = {}
-        keywords = line.strip('\r')
+        try:
+            keywords = line.strip('\r')
+        except:
+            keywords = line
+        if keywords == '':
+            return 'not null'
         event['keywords'] = keywords
         event['event_ts'] = int(time.time())
         event['submit_ts'] = submit_ts
@@ -547,13 +554,15 @@ def submit_event_file(input_data):
         event['recommend_style'] = recommend_style
         event['compute_status'] = compute_status
         result = submit_event(event)
-        if result == True:
+        print result,'ppppppppppppppppppppppp'
+        if result == '1':
             valid_event += 1
     if valid_event == total_event:
         result_flag = True
     return result_flag, valid_event
 
 def relation_add(input_data):
+    # print input_data, type(input_data),'------------'
     result_detail = [False]
     rel_num = 0
     for i in input_data:
@@ -597,10 +606,16 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
     rel_list = []
     for item in result:
         relation = dict(item)['r'].type()
+        relation_ch = relation_dict[relation]
         if relation in [other_rel, event_other, organization_tag, user_tag]:
             relation_name = dict(item)['r']['name']
-            relation = relation +'&' + relation_name
-        rel_list.append(relation)
+            relaiton_name_list = relation_name.split(',')
+            for i_name in relaiton_name_list:
+                relation_ch2 = relation_ch+ '-' +i_name
+                relation = relation +'&' + relation_name
+                rel_list.append(relation_ch2)
+        else:
+            rel_list.append(relation_ch)
     return rel_list
 
 def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
@@ -675,9 +690,10 @@ def search_event(item, field):
     u_nodes_list = {}
     e_nodes_list = {}
     event_relation =[]
+    # field=['name','en_name']
     try:
         name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
-                body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
+                body=query_body, fields=field)['hits']['hits']  
     except:
         return 'does not exist'
     for i in name_results:
@@ -729,7 +745,7 @@ def search_event_time_limit(item, field, start_ts, end_ts):
         event_id_list.append(field_list)
     return event_id_list
 
-def search_user(item,field):
+def search_user(item, field):
     query_body = {
         "query":{
             'bool':{
@@ -826,7 +842,7 @@ def show_node_detail(node_type, item, submit_user):
     if node_type == 'Event':
         field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
               'start_ts', 'end_ts','description', 'related_docs']
-        node_result = search_event(item, field)[0]
+        node_result = search_event(item, field, submit_user)[0]
         tag = deal_event_tag(item, submit_user)[0]
         node_result.append(tag)
         index_n = event_index_name

@@ -41,7 +41,7 @@ def construction_main():#导航页
 def construction_graph_add():#图谱添加
     return render_template('construction/graph_add.html')
 
-@mod.route('/graph_modify')
+@mod.route('/graph_modify/')
 @login_required
 def construction_graph_modify():#图谱编辑
     return render_template('construction/graph_modify.html')
@@ -203,10 +203,12 @@ def ajax_event_update():
 def ajax_submit_identify_file():
     results = 0 # mark fail
     input_data = request.get_json() #文件至少有keywords。
-    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
+    # input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss',
+    # 'upload_data':[], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
+    print results,'===============00000000000'
     return json.dumps(results)  # True, submit_num
 
 #事件任务状态
@@ -236,8 +238,8 @@ def ajax_search_node():
 def ajax_relation_add():
     input_data = dict()
     input_data = request.get_json()
-    input_data = [['uid', '2635695961', 'node_index', u'other_relationship,测试2', 'event_id',   \
-                 'xi-la-li-1480176000', 'event_index']]  #other_relationship,测试   join
+    # input_data = [['uid', '2635695961', 'node_index', u'other_relationship,测试2', 'event_id',   \
+    #              'xi-la-li-1480176000', 'event_index']]  #other_relationship,测试   join
     result = relation_add(input_data)
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 
@@ -250,7 +252,7 @@ def ajax_relation_edit_search():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'name']  
+        field = ['en_name', 'name']
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -288,7 +290,7 @@ def create_relation():
 def ajax_node_edit():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
-    editor = request.args.get('submit_user', 'admin')  #admin
+    editor = request.args.get('submit_user', 'admin@qq.com')  #admin
     start_ts = request.args.get('start_ts', '')  # 1482126030
     end_ts = request.args.get('end_ts', '')  # 1482126490
     if start_ts and end_ts:

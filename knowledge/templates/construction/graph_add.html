@@ -6,6 +6,26 @@
     .table>thead:first-child>tr:first-child>th {
         width: 18%;
     }
+     .item{
+        padding:3px 5px;
+        cursor:pointer;
+    }
+    .addbg{
+        background: rgba(144, 144, 144, 0.62);
+    }
+    .append-1,.append-2 {
+        border:1px solid #ccced0;
+        border-top:0;
+        display: none;
+        position: absolute;
+        top: 27px;
+        left: 3px;
+        width: 164px;
+        padding: 5px;
+        z-index: 20;
+        background-color: rgb(243, 244, 245);
+    }
+
 </style>
 {% endblock %}
 
@@ -76,7 +96,7 @@
                     <span>事件名称</span> <input type="text" class="event_name"/>
                     <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用'&'隔开"/>
                     <span>事件类型</span>
-                    <select id="event_lx" onchange="event_lx(this.value)">
+                    <select id="event_lx-1" onchange="event_lx(this.value)">
                         <option value="1">1</option>
                     </select>
                 </div>
@@ -109,9 +129,41 @@
                     </div>
                 </div>
                 <div class="manual-2" style="display: none;margin-top: 5px;">
-                    <span>事件名称</span> <input type="text" class="event_name-2"/>
+                    <!--<span>事件名称</span> <input type="text" class="event_name-2"/>-->
                     <span>上传文件</span>
                     <input type="file" class="text" multiple onchange="handleFileSelect_event(this.files)"  style="display: inline-block;padding: 0;">
+                    <span>事件类型</span>
+                    <select id="event_lx-2" onchange="event_lx(this.value)">
+                        <option value="1">1</option>
+                    </select>
+                </div>
+                <div class="manual-2-2" style="display: none;margin-top: -15px;">
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;margin-right: 5px">时间范围:</span>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">从</span>
+                    <div style="display: inline-block;width: 200px;margin: 20px 0 0 0;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker2'>
+                                <input type='text' class="form-control start-2" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">到</span>
+                    <div style="display: inline-block;width: 200px;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker3'>
+                                <input type='text' class="form-control end-2" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--机构-->
@@ -212,63 +264,75 @@
         </div>
     </div>
 
+    <!--关系添加-->
 
     <div class="relation" style="display: none;margin-left: 7px;">
         <div class="rel_manual">
-            <div class="checkbox manual-1">
-                <label>
-                    <input type="checkbox" style="margin-left: -3%"/> 手动输入
-                </label>
-            </div>
-            <div class="manual-2">
+            <!--<div class="checkbox manual-1">-->
+                <!--<label>-->
+                    <!--<input class="ma_up" type="checkbox" style="margin-left: -3%"/> 手动输入-->
+                <!--</label>-->
+            <!--</div>-->
+            <div class="manual-2" style="margin-top: 20px;">
                 <div class="one">
                     <span>节点一</span>
-                    <input type="text" class="manone"/>
-                    <select class="one-type">
-                        <option value="" disabled selected>请选择节点类型</option>
-                        <option value="人物">人物</option>
-                        <option value="事件">事件</option>
+                    <select class="one-type" onchange="one_type(this.value)">
+                        <!--<option value="" disabled selected>请选择节点类型</option>-->
+                        <option value="User">人物</option>
+                        <option value="Org">机构</option>
+                        <option value="Event">事件</option>
                     </select>
+                    <div style="position: relative;top:-2px;display: inline-block;">
+                        <input type="text" class="manone" placeholder="请您先选择节点类型"
+                               onKeyup='getContent(this);' onfocus="class_name(this)" style="padding:2px 8px;"/>
+                        <div class='append-1'></div>
+                    </div>
                 </div>
                 <div class="two">
                     <span>节点二</span>
-                    <input type="text" class="mantwo"/>
-                    <select class="two-type">
-                        <option value="" disabled selected>请选择节点类型</option>
-                        <option value="人物">人物</option>
-                        <option value="事件">事件</option>
+                    <select class="two-type" onchange="two_type(this.value)">
+                        <option value="User">人物</option>
+                        <option value="Org">机构</option>
+                        <option value="Event">事件</option>
                     </select>
+                    <div style="position: relative;top:-2px;display: inline-block;">
+                        <input type="text" class="mantwo" placeholder="请您先选择节点类型"
+                               onKeyup='getContent(this);' onfocus="class_name(this)" style="padding:2px 8px;"/>
+                        <div class='append-2'></div>
+                    </div>
                 </div>
                 <div class="three">
                     <span>关系类型</span>
-                    <select id='three-type'>
-                        <option value="" disabled selected>请选择关系类型</option>
-                        <option value="好友">好友</option>
-                        <option value="同事">同事</option>
-                        <option value="亲属">亲属</option>
-                        <option value="其他">其他</option>
+                    <select id='three-type' onchange="three_type(this.value)">
+                        <option value="friend">交互</option>
+                        <option value="relative">亲属</option>
+                        <option value="leader">上下级关系</option>
+                        <option value="colleague">自述关联</option>
+                        <option value="ip_relation">IP关联</option>
+                        <option value="user_tag">其他关系</option>
                     </select>
+                    <input type="text" class="other_value" style="display:none;margin: 0;padding:1px 8px;" placeholder="请输入您想添加的关系"/>
                 </div>
             </div>
             <div class="add_plus">
                 <b class="icon icon-plus"></b>
             </div>
         </div>
-        <div class="uploading">
+        <div class="uploading" style="display: none;">
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" style="margin-left: -3%;"/> 上传文件:
+                    <input class="ma_up" type="checkbox" style="margin-left: -3%;"/> 上传文件:
                 </label>
                 <div class="form-group filem" style="display: inline-block">
                     <input type="file" id="relationFile" style="padding: 0;"
                            multiple onchange="relationFileSelect(this.files)"/>
                 </div>
                 <button class="upload-1" style="display: inline-block">上&nbsp;传</button>
-                <button class="upload-2">确&nbsp;定</button>
             </div>
-
         </div>
+        <button class="upload-2" style="float: right;margin-right:100px;">确&nbsp;定</button>
     </div>
+    <!--关系添加---------完---->
 </div>
 
 <!--关系模态框-->
@@ -363,6 +427,7 @@
 {% block my_js %}
 <script src="/static/js/graph_add-1.js"></script>
 <script src="/static/js/graph_add-2.js"></script>
+<script src="/static/js/graph_add-3.js"></script>
 <script>
     $('#datetimepicker6').datetimepicker();
     $('#datetimepicker7').datetimepicker();
@@ -371,6 +436,14 @@
     });
     $("#datetimepicker7").on("dp.change",function (e) {
         $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+    });
+    $('#datetimepicker2').datetimepicker();
+    $('#datetimepicker3').datetimepicker();
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").minDate(e.date);
+    });
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").maxDate(e.date);
     });
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {

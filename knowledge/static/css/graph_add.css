@@ -147,7 +147,7 @@ body {
     border: 1px solid silver;
     padding: 0.4% 1%;
 }
-#container .relation .uploading .upload-1,#container .relation .uploading .upload-2{
+#container .relation .uploading .upload-1,#container .relation .upload-2{
     padding: 0.4% 1%;
     color: white;
     margin-left:4%;
@@ -157,6 +157,6 @@ body {
     cursor: pointer;
 }
 #container .relation .uploading .upload-1:hover,
-#container .relation .uploading .upload-2:hover {
+#container .relation .upload-2:hover {
     background-color: #176de2;
 }
