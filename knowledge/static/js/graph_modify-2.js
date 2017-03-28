@@ -1,57 +1,13 @@
 //关系选择
-var start_type='User',end_type='User',rel_type='friend';
+var start_type='User',end_type='User';
 function one_type(value) {
     start_type=value;
-    rel();
 };
 function two_type(value) {
     end_type=value;
-    rel();
 };
-var other;
-function three_type(value) {
-    if (value=='other_relation'||value=='event_other'
-        ||value=='organization_tag'||value=='user_tag'){
-        $('.other_value').show();
-        other=0;
-        rel_type=value;
-    }else {
-        rel_type=value;
-        $('.other_value').hide();
-    }
-};
-function rel() {
-    $('#three-type').empty();
-    if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Event')||
-        (((end_type=='User')||(end_type=='Org'))&&start_type=='Event')){
-        $('#three-type').append(
-            '<option value="join">参与事件</option>'+
-            '<option value="discuss">参与舆论</option>'+
-            '<option value="other_relation">其他关系</option>'
-        );
-    }else if (start_type=='Event'&&end_type=='Event'){
-        $('#three-type').append(
-            '<option value="contain">主题关联</option>'+
-            '<option value="event_other">其他关系</option>'
-        );
-    }else if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Org')||
-        (((end_type=='User')||(end_type=='Org'))&&start_type=='Org')){
-        $('#three-type').append(
-            '<option value="friend">交互</option>'+
-            '<option value="colleague">业务关联</option>'+
-            '<option value="organization_tag">其他关系</option>'
-        );
-    } else if (start_type=='User'&&end_type=='User'){
-        $('#three-type').append(
-            '<option value="friend">交互</option>'+
-            '<option value="relative">亲属</option>'+
-            '<option value="leader">上下级关系</option>'+
-            '<option value="colleague">自述关联</option>'+
-            '<option value="ip_relation">IP关联</option>'+
-            '<option value="user_tag">其他关系</option>'
-        );
-    }
-}
+
+
 //类似百度搜索功能
 var one_value='',two_value='',search_data_url;
 $('.manone').bind('input propertychange', function() {
@@ -123,12 +79,12 @@ $(document).ready(function(){
                 if(jQuery.trim($('.append-1').html())==''){
                     return;
                 }
-                $('#container .relation .rel_manual .one .manone').blur();
+                $('#container .rel_attributes .one .manone').blur();
             }else {
                 if(jQuery.trim($('.append-2').html())==''){
                     return;
                 }
-                $('#container .relation .rel_manual .two .mantwo').blur();
+                $('#container .rel_attributes .two .mantwo').blur();
             }
             if($('.item').hasClass('addbg')){
                 moveNext();
@@ -141,9 +97,9 @@ $(document).ready(function(){
     });
     var movePrev = function(){
         if (in_class=='manone'){
-            $('#container .relation .rel_manual .one .manone').blur();
+            $('#container .rel_attributes .one .manone').blur();
         }else {
-            $('#container .relation .rel_manual .two .mantwo').blur();
+            $('#container .rel_attributes .two .mantwo').blur();
         }
         var index = $('.addbg').prevAll().length;
         if(index == 0){
@@ -162,17 +118,17 @@ $(document).ready(function(){
     };
     var dojob = function(){
         if (in_class=='manone'){
-            $('#container .relation .rel_manual .one .manone').blur();
+            $('#container .rel_attributes .one .manone').blur();
             var value = $('.addbg').text();
             uid_1=$('.addbg').children('._id').text();
-            $('#container .relation .rel_manual .one .manone').val(value);
+            $('#container .rel_attributes .one .manone').val(value);
             $('.append-1').hide().html('');
             $('.manone').attr('disabled',true);
         }else {
-            $('#container .relation .rel_manual .two .mantwo').blur();
+            $('#container .rel_attributes .two .mantwo').blur();
             var value = $('.addbg').text();
             uid_2=$('.addbg').children('._id').text();
-            $('#container .relation .rel_manual .two .mantwo').val(value);
+            $('#container .rel_attributes .two .mantwo').val(value);
             $('.append-2').hide().html('');
             $('.mantwo').attr('disabled',true);
         }
@@ -217,12 +173,12 @@ function getFocus(obj){
 function getCon(obj){
     var value = $(obj).text();
     if (in_class=='manone'){
-        $('#container .relation .rel_manual .one .manone').val(value);
+        $('#container .rel_attributes .one .manone').val(value);
         $('.append-1').hide().html('');
         uid_1=$(obj).find('._id').text();
         $('.manone').attr('disabled',true);
     }else {
-        $('#container .relation .rel_manual .two .mantwo').val(value);
+        $('#container .rel_attributes .two .mantwo').val(value);
         $('.append-2').hide().html('');
         uid_2=$(obj).find('._id').text();
         $('.mantwo').attr('disabled',true);
@@ -232,14 +188,7 @@ function getCon(obj){
 
 //---类似百度搜索功能----完---
 
-//关系文件上传
-
-//------
-
-if($('input.ma_up:checkbox').attr("checked")==true) {
-
-}
-$('#container .relation .upload-2').on('click',function () {
+$('#container .rel_submit').on('click',function () {
     var name_type_1,name_type_2,name_index_1,name_index_2;
     var input_data=[];
     if (start_type=='User'||end_type=='User'){
@@ -258,26 +207,11 @@ $('#container .relation .upload-2').on('click',function () {
         name_type_2='event_id';
         name_index_2='event_index';
     }
-    if (other==0){
-        var other_value=$('.three .other_value').val();
-        if (other_value==''){
-            alert('请输入您想要添加的关系。(不能为空)');
-        }else {
-            rel_type+=','+other_value;
-            input_data.push([
-                name_type_1, uid_1, name_index_1,
-                rel_type,
-                name_type_2, uid_2, name_index_2
-            ]);
-        }
-    }else {
-        input_data.push([
-            name_type_1, uid_1, name_index_1,
-            rel_type,
-            name_type_2, uid_2, name_index_2
-        ]);
-    }
-    var input_url='/construction/relation_add/';
+    input_data.push([
+        name_type_1, uid_1, name_index_1,
+        name_type_2, uid_2, name_index_2
+    ]);
+    var input_url='/construction/relation_show_edit/';
     $.ajax({
         type:'POST',
         url: input_url,
@@ -286,15 +220,115 @@ $('#container .relation .upload-2').on('click',function () {
         dataType: "json",
         success: relation_add
     });
+    console.log(input_data)
 })
+var rel_table={
+    "join":"参与事件",
+    "discuss":"参与舆论",
+    "other_relation":"其他关系",
+    "contain":"主题关联",
+    "event_other":"其他关系",
+    "friend":"交互",
+    "colleague":"业务关联",
+    "organization_tag":"其他关系",
+    "friend":"交互",
+    "relative":"亲属",
+    "leader":"上下级关系",
+    "colleague":"自述关联",
+    "ip_relation":"IP关联",
+    "user_tag":"其他关系",
+};
 function relation_add(data) {
     var data=eval(data);
-    console.log(data)
-    if (data[0]==true){
-        alert('关系添加成功。');
-    }else {
-        alert('关系添加失败。');
-    }
+    rel_list(data);
 }
+function rel_list(data) {
+    var data = eval(data);
+    $('#rel_list').bootstrapTable('load', data);
+    $('#rel_list').bootstrapTable({
+        data:data,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 5,//单页记录数
+        pageList: [5, 20, 40, 80],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: true,//刷新按钮
+        showColumns: true,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:true,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "节点1",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return uid_1;
+                }
+            },
+            {
+                title: "节点2",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return uid_2;
+                },
+            },
+            {
+                title: "关系",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    var rel='';
+                    for (var a=0;a<row.length;a++){
+                        rel += rel_table[row[a]]+' ';
+                    }
+                    return rel;
+                },
+            },
+            {
+                title: "编辑",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return '编辑';
+                },
+            },
+            {
+                title: "删除",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return '删除';
+                },
+            },
 
-
+        ],
+        // onClickRow: function (row, tr) {
+        //     if ($(tr.context).index()==2) {
+        //         del_eventuid=row[0];
+        //         $('#del_ject').modal("show");
+        //     }
+        // }
+    });
+};

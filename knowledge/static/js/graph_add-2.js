@@ -5,18 +5,21 @@ function event_type_2(value) {
         $('.event .manual').show();
         $('.event .manual-1').show();
         $('.event .manual-2').hide();
+        $('.event .manual-2-2').hide();
         recommend_style='submit';
         tt=1;
     }else if (value==3){
         $('.event .manual').hide();
         $('.event .manual-1').hide();
         $('.event .manual-2').show();
+        $('.event .manual-2-2').show();
         recommend_style='upload';
         tt=1;
     }else {
         $('.event .manual').hide();
         $('.event .manual-1').hide();
         $('.event .manual-2').hide();
+        $('.event .manual-2-2').hide();
         recommend_style='recommend';
     }
 }
@@ -576,11 +579,16 @@ function sure_task_event() {
     var input_data ;
     if (tt=1){
         if (recommend_style=='upload'){
+            // input_data={
+                // 'submit_ts': timestamp, 'immediate_compute':status,'event_type':event_type,
+                // 'relation_compute': event_rel_list, 'upload_data':updata_file_event,
+                // 'submit_user':submit_user, 'recommend_style':recommend_style, 'compute_status':0
+            // };
             input_data={
-                'submit_ts': timestamp, 'immediate_compute':status,'event_type':event_type,
-                'relation_compute': event_rel_list, 'upload_data':updata_file_event,
-                'submit_user':submit_user, 'recommend_style':recommend_style, 'compute_status':0
-            };
+                'submit_ts': timestamp, 'immediate_compute':status, 'relation_compute': event_rel_list,
+                'upload_data':updata_file_event, 'submit_user':submit_user,'recommend_style':recommend_style, 'compute_status':0,
+                'start_ts':Date.parse(new Date(start_2))/1000, 'end_ts':Date.parse(new Date(end_2))/1000,
+            }
         }else {
             input_data = {
                 'submit_ts':timestamp, 'name':eventName, 'relation_compute': event_rel_list,
@@ -597,7 +605,13 @@ function sure_task_event() {
             'submit_user':submit_user,'event_ts':Number(time)
         }
     }
-    var join_url = '/construction/submit_event/';
+    var join_url;
+    if (recommend_style=='upload'){
+        join_url = '/construction/submit_event_file/';
+    }else {
+        join_url = '/construction/submit_event/';
+    }
+
     $.ajax({
         type:'POST',
         url: join_url,
@@ -611,6 +625,7 @@ function sure_task_event() {
 //创建成功与失败
 function yes_no(data) {
     var data=eval(data);
+    console.log(data)
     if (data==0){
         $('#fail_success #prompt').text('创建失败,该事件已经入库。');
     }else {
@@ -766,7 +781,7 @@ function handleFileSelect_event(evt){
             var a = oFREvent.target.result;
             $.ajax({
                 type:"POST",
-                url:"/construction/submit_event_file/",
+                url:"/construction/read_file/",
                 dataType: "json",
                 async:false,
                 data:{new_words:a},
@@ -786,7 +801,7 @@ function handleFileSelect_event(evt){
     }
 };
 
-var key_words,start,end;
+var key_words,start,end,start_2,end_2;
 var eventName;
 $('.add_sure').on('click',function () {
     if (node_type == 'event') {
@@ -823,22 +838,29 @@ $('.add_sure').on('click',function () {
                 }
             }else if(recommend_style=='upload'){
                 eventName=$('.node .event .event_name-2').val();
+                start_2=$('.start-2').val();
+                end_2=$('.end-2').val();
                 if (eventName==''){
                     alert('请输入事件名称。(不能为空)');
                 }else {
-                    $('#relation_event .rel_list_event').empty();
-                    $('#relation_event .rel_list_event').append(
-                        '<label class="checkbox-inline">'+
-                        '   <input type="checkbox" value="contain" checked> 主题关联'+
-                        '</label>'+
-                        '<label class="checkbox-inline">'+
-                        '   <input type="checkbox" value="discuss" checked> 参与讨论'+
-                        '</label>'+
-                        '<label class="checkbox-inline">'+
-                        '   <input type="checkbox" value="join" checked> 参与事件'+
-                        '</label>'
-                    );
-                    $('#relation_event').modal('show');
+                    if (start_2>end_2){
+                        alert('请检查时间，开始时间不能大于结束时间');
+                    }else {
+                        $('#relation_event .rel_list_event').empty();
+                        $('#relation_event .rel_list_event').append(
+                            '<label class="checkbox-inline">'+
+                            '   <input type="checkbox" value="contain" checked> 主题关联'+
+                            '</label>'+
+                            '<label class="checkbox-inline">'+
+                            '   <input type="checkbox" value="discuss" checked> 参与讨论'+
+                            '</label>'+
+                            '<label class="checkbox-inline">'+
+                            '   <input type="checkbox" value="join" checked> 参与事件'+
+                            '</label>'
+                        );
+                        $('#relation_event').modal('show');
+                    }
+
                 }
 
             }

@@ -96,7 +96,7 @@
                     <span>事件名称</span> <input type="text" class="event_name"/>
                     <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用'&'隔开"/>
                     <span>事件类型</span>
-                    <select id="event_lx" onchange="event_lx(this.value)">
+                    <select id="event_lx-1" onchange="event_lx(this.value)">
                         <option value="1">1</option>
                     </select>
                 </div>
@@ -129,9 +129,41 @@
                     </div>
                 </div>
                 <div class="manual-2" style="display: none;margin-top: 5px;">
-                    <span>事件名称</span> <input type="text" class="event_name-2"/>
+                    <!--<span>事件名称</span> <input type="text" class="event_name-2"/>-->
                     <span>上传文件</span>
                     <input type="file" class="text" multiple onchange="handleFileSelect_event(this.files)"  style="display: inline-block;padding: 0;">
+                    <span>事件类型</span>
+                    <select id="event_lx-2" onchange="event_lx(this.value)">
+                        <option value="1">1</option>
+                    </select>
+                </div>
+                <div class="manual-2-2" style="display: none;margin-top: -15px;">
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;margin-right: 5px">时间范围:</span>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">从</span>
+                    <div style="display: inline-block;width: 200px;margin: 20px 0 0 0;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker2'>
+                                <input type='text' class="form-control start-2" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                    <span style="display: inline-block;position: relative;top: -7px;
+            font-size: 14px;">到</span>
+                    <div style="display: inline-block;width: 200px;">
+                        <div class="form-group" style="margin: 0">
+                            <div class='input-group date' id='datetimepicker3'>
+                                <input type='text' class="form-control end-2" style="height: 28px"/>
+                                <span class="input-group-addon">
+                            <span class="icon icon-calendar"></span>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--机构-->
@@ -404,6 +436,14 @@
     });
     $("#datetimepicker7").on("dp.change",function (e) {
         $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+    });
+    $('#datetimepicker2').datetimepicker();
+    $('#datetimepicker3').datetimepicker();
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").minDate(e.date);
+    });
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").maxDate(e.date);
     });
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {

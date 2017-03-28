@@ -3,13 +3,32 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/graph_modify.css">
 <style>
-
+    .item{
+        padding:3px 5px;
+        cursor:pointer;
+    }
+    .addbg{
+        background: rgba(144, 144, 144, 0.62);
+    }
+    .append-1,.append-2 {
+        border:1px solid #ccced0;
+        border-top:0;
+        display: none;
+        position: absolute;
+        top: 27px;
+        left: 3px;
+        width: 164px;
+        padding: 5px;
+        z-index: 20;
+        background-color: rgb(243, 244, 245);
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
+    <h1 class="graph_modify" style="color: white;font-weight: 900;">图谱编辑</h1>
     <div class="edit">
         <label class="radio-inline">
             <input type="radio" name="complie" id="node" value="1" checked> 节点编辑
@@ -24,8 +43,9 @@
             <span>节点名称</span><input type="text" class="node_name">
             <span>节点类型</span>
             <select id="node_type" onchange="type(this.value)">
-                <option value="人物">人物</option>
-                <option value="事件">事件</option>
+                <option value="User">人物</option>
+                <option value="Org">机构</option>
+                <option value="Event">事件</option>
             </select>
             <div style="display: inline">
                 <!--<span>入库日期</span><input type="text" class="warehousing">-->
@@ -38,26 +58,38 @@
 
     <!--关系编辑-->
     <div class="rel" style="display: none;">
-        <div class="rel_attributes" style="margin-top: 3%">
-            <div>
-                <span>节点1</span><input type="text" class="node_1_name">
-                <select id="rel_type-1" onchange="type_1(this.value)">
-                    <option value="人物">人物</option>
-                    <option value="事件">事件</option>
+        <div class="rel_attributes">
+            <div class="one">
+                <span>节点一</span>
+                <select class="one-type" onchange="one_type(this.value)">
+                    <!--<option value="" disabled selected>请选择节点类型</option>-->
+                    <option value="User">人物</option>
+                    <option value="Org">机构</option>
+                    <option value="Event">事件</option>
                 </select>
+                <div style="position: relative;top:-2px;display: inline-block;">
+                    <input type="text" class="manone" placeholder="请您先选择节点类型"
+                           onKeyup='getContent(this);' onfocus="class_name(this)" style="padding:2px 8px;"/>
+                    <div class='append-1'></div>
+                </div>
             </div>
-            <div>
-                <span>节点2</span><input type="text" class="node_2_name">
-                <select id="rel_type-2" onchange="type_2(this.value)">
-                    <option value="人物">人物</option>
-                    <option value="事件">事件</option>
+            <div class="two">
+                <span>节点二</span>
+                <select class="two-type" onchange="two_type(this.value)">
+                    <option value="User">人物</option>
+                    <option value="Org">机构</option>
+                    <option value="Event">事件</option>
                 </select>
+                <div style="position: relative;top:-2px;display: inline-block;">
+                    <input type="text" class="mantwo" placeholder="请您先选择节点类型"
+                           onKeyup='getContent(this);' onfocus="class_name(this)" style="padding:2px 8px;"/>
+                    <div class='append-2'></div>
+                </div>
             </div>
-
-            <div>
-                <!--<span>入库日期</span><input type="text" class="warehousing">-->
-                <button class="rel_submit">确 定</button>
-            </div>
+        </div>
+        <div>
+            <!--<span>入库日期</span><input type="text" class="warehousing">-->
+            <button class="rel_submit">确 定</button>
         </div>
         <div id="rel_list" style="width: 100%"></div>
     </div>
@@ -68,6 +100,7 @@
 
 {% block my_js %}
 <script src="/static/js/graph_modify-1.js"></script>
+<script src="/static/js/graph_modify-2.js"></script>
 <script>
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {
