@@ -203,9 +203,7 @@ def ajax_event_update():
 def ajax_submit_identify_file():
     results = 0 # mark fail
     input_data = request.get_json() #文件至少有keywords。
-    input_data1 = { 'keywords':u'1两会&方案', 'event_type':u'经济', 'event_ts':1480175030}
-    input_data2 = { 'keywords':u'1北京&房价&政策', 'event_type':u'经济'}
-    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
+    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
@@ -229,7 +227,7 @@ def ajax_search_node():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'name']  #改成name
+        field = ['en_name', 'name']  
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -238,8 +236,8 @@ def ajax_search_node():
 def ajax_relation_add():
     input_data = dict()
     input_data = request.get_json()
-    input_data = [['uid', '1581366400', 'node_index', 'join', 'event', \
-                 'min-jin-dang-yi-yuan-cheng-yao-qing-da-lai-dui-kang-da-lu-1482126431', 'event_index']]
+    input_data = [['uid', '2635695961', 'node_index', u'other_relationship,测试2', 'event_id',   \
+                 'xi-la-li-1480176000', 'event_index']]  #other_relationship,测试   join
     result = relation_add(input_data)
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 
@@ -252,7 +250,7 @@ def ajax_relation_edit_search():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'name']  #改成name
+        field = ['en_name', 'name']  
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -260,11 +258,11 @@ def ajax_relation_edit_search():
 @mod.route('/relation_show_edit/', methods=['GET', 'POST'])
 def ajax_relation_show_edit():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
-    node1_id = request.args.get('node1_id', '1497035431')
+    node1_id = request.args.get('node1_id', '2635695961')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     # rel = request.args.get('rel', '')
-    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
-    node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
+    node_key2 = request.args.get('node_key2', 'event_id')  # event_id,uid
+    node2_id = request.args.get('node2_id', 'xi-la-li-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
     flag = show_relation(node_key1, node1_id, node1_index_name,  \
                                    node_key2, node2_id, node2_index_name)
