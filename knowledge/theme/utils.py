@@ -18,6 +18,7 @@ from py2neo.ext.batman import ManualIndexWriteBatch
 from py2neo.ogm import GraphObject, Property
 from py2neo import Node, Relationship
 from elasticsearch import Elasticsearch
+from knowledge.index.GetUrl import getUrlByKeyWordList
 # from update_activeness_record import update_record_index
 from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
@@ -29,20 +30,35 @@ from knowledge.global_utils import es_user_profile, portrait_index_name, portrai
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2date
-from knowledge.global_utils import event_detail_search
+from knowledge.global_utils import event_detail_search, user_name_search
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import special_event_name, special_event_type
-from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
+                            event_node, event_primary, event_index_name, org_primary, people_node, org_node, event_node
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
 
+def deal_user_tag(tag):
+    # tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    # print tag,'======!!=========='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
+
 def deal_event_tag(tag ,submit_user):
     # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
     # return result
     # tag = tag_value
-    print tag,'=============!!==='
+    # print tag,'=============!!==='
     tag_list = tag.split('&')
     left_tag = []
     keep_tag = []
@@ -56,6 +72,7 @@ def deal_event_tag(tag ,submit_user):
 
 def search_related_e_card(item, submit_user, theme_name):
     if theme_name:
+        theme_name = theme_name + '_' + submit_user
         theme_name_pinyin = p.get_pinyin(theme_name)
         event_list_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=theme_name_pinyin,\
                             fields=['event'])
@@ -92,7 +109,6 @@ def search_related_e_card(item, submit_user, theme_name):
     search_eid = []
     result = []
     for i in event_result:
-        event = []
         i_fields = i['fields']
         search_eid.append(i_fields['en_name'][0])
     show_id_set = set(search_eid) - set(eid_list)
@@ -102,6 +118,7 @@ def search_related_e_card(item, submit_user, theme_name):
     event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
                 body={'ids':show_id}, fields=fields_list)['docs']
     for i in event_result:
+        event = []
         i_fields = i['fields']
         for j in fields_list:
             if not i_fields.has_key(j):
@@ -207,7 +224,9 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
         topic_id = p.get_pinyin(node2_id)
         labels = get_special_labels(node1_list)
         theme_dict['label'] = labels
-        es_event.delete(index=special_event_name, doc_type=special_event_type, id='mei-guo-da-xuan-_admin@qq.com')
+        wiki_link = getUrlByKeyWordList(labels)
+        theme_dict['wiki_link'] = json.dumps(wiki_link)
+        # es_event.delete(index=special_event_name, doc_type=special_event_type, id='mei-guo-da-xuan-_admin@qq.com')
         es_event.index(index=special_event_name, doc_type=special_event_type, id=topic_id, body=theme_dict)
         new_theme = Node(special_event_node, event=topic_id)
         graph.create(new_theme)
@@ -258,23 +277,23 @@ def query_detail_theme(theme_name, submit_user):
 #         result.append(event)
 #     return result
 
-def get_theme_all(submit_user):
-    theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
-            body={'query':{'term':{'user':submit_user}}})['hits']['hits']
-    theme_result = []
-    for i in theme_detail:
-        topic_id = i['_id']
-        theme_name = i['_source']['topic_name']
-        contain_event = i['_source']['event_count']
-        auto_label = i['_source']['label'].split('&')[:5]
-        try:
-            work_tag = i['_source']['k_label'].split('&')
-        # work_tag = deal_event_tag(work_tag, submit_user)[0]
-        except:
-            work_tag = []
-        submit_ts = ts2date(i['_source']['create_ts'])
-        theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
-    return theme_result
+# def get_theme_all(submit_user):
+#     theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
+#             body={'query':{'term':{'user':submit_user}}})['hits']['hits']
+#     theme_result = []
+#     for i in theme_detail:
+#         topic_id = i['_id']
+#         theme_name = i['_source']['topic_name']
+#         contain_event = i['_source']['event_count']
+#         auto_label = i['_source']['label'].split('&')[:5]
+#         try:
+#             work_tag = i['_source']['k_label'].split('&')
+#         # work_tag = deal_event_tag(work_tag, submit_user)[0]
+#         except:
+#             work_tag = []
+#         submit_ts = ts2date(i['_source']['create_ts'])
+#         theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
+#     return theme_result
 
 def del_e_theme_rel(theme_name, event_id):
     en_name = p.get_pinyin(theme_name)
@@ -305,10 +324,10 @@ def add_theme_k_label(theme_name, k_label,operation):
     theme_label = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
             fields=['k_label'])
     print theme_label,'------------'
-    # try:
-    theme_label_list = theme_label['fields']['k_label'][0].split('&')
-    # except:
-    #     theme_label_list = []
+    try:
+        theme_label_list = theme_label['fields']['k_label'][0].split('&')
+    except:
+        theme_label_list = []
     if operation == 'add':
         theme_label_list.extend(new_label)
     elif operation == 'del':
@@ -317,6 +336,27 @@ def add_theme_k_label(theme_name, k_label,operation):
     theme_label_string = '&'.join(theme_label_list)
     es_event.update(index=special_event_name,doc_type=special_event_type,id=en_name,\
             body={'doc':{'k_label':theme_label_string}})
+    return True
+
+def add_theme_file_link(theme_name, file_name,operation):
+    new_label = file_name.split('+')
+    en_name = p.get_pinyin(theme_name)
+    print en_name
+    theme_label = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
+            fields=['file_link'])
+    print theme_label,'------------'
+    try:
+        theme_label_list = theme_label['fields']['file_link'][0].split('+')
+    except:
+        theme_label_list = []
+    if operation == 'add':
+        theme_label_list.extend(new_label)
+    elif operation == 'del':
+        theme_label_list = set(theme_label_list) - set(new_label)
+    theme_label_list = [i for i in set(theme_label_list)]
+    theme_label_string = '+'.join(theme_label_list)
+    es_event.update(index=special_event_name,doc_type=special_event_type,id=en_name,\
+            body={'doc':{'file_link':theme_label_string}})
     return True
 
 def compare_theme(theme_name1, theme_name2, submit_user, flag):
@@ -540,4 +580,271 @@ def get_theme_net(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
+    event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+                body={'ids':event_list}, fields=['en_name', 'name'])['docs']
+    event_name_dict = {}
+    for i in event_result:
+        event_en_name = i['fields']['en_name'][0]
+        event_name = i['fields']['name'][0]
+        event_name_dict[event_en_name] = event_name
+    event_graph_id = []
+    for i in event_list:
+        a = graph.run('start n=node:'+event_index_name+'("'+event_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            event_graph_id.append(str(dict(j)['id(n)']))
+    # print event_graph_id
+    event_id_string = ','.join(event_graph_id)
+    query = 'start d=node('+event_id_string+'),e=node('+event_id_string+') match (d)-[r]->(e) return d,type(r),e'
+    result = graph.run(query)
+    exist_relation = []
+    exist_relation_string = []
+    for i in result:
+        # print i
+        dict_i = dict(i)
+        start_id = dict_i['d']['event_id']
+        end_id = dict_i['e']['event_id']
+        exist_relation.append([event_name_dict[start_id], dict_i['type(r)'], \
+                    event_name_dict[end_id]])
+        # print exist_relation
+        relation_string = start_id+'-'+end_id
+        exist_relation_string.append(relation_string)
+    set_exist_relation = set(exist_relation_string)
+    relation_set_count = len(list(set_exist_relation))
+    node_count = len(event_list)
+    total_count = node_count*(node_count-1)/2
+    relation_degree = float(relation_set_count)/total_count
+    conclusion = u'联系紧密'##未定义！！
+    return {'relation_table':exist_relation, 'relation_count':relation_set_count,\
+        'conclusion':conclusion, 'relation_degree':relation_degree}
+
+def get_theme_keywords(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+                body={'ids':event_list}, fields=['keywords_list', 'hashtag_dict'])['docs']
+    keywords_dict = {}
+    hash_dict = {}
+    for i in event_result:
+        i_keywords = json.loads(i['fields']['keywords_list'][0])
+        i_hashtag = json.loads(i['fields']['hashtag_dict'][0])
+        for key in i_keywords:
+            # print key,'====='
+            try:
+                keywords_dict[key[0]] += key[1]
+            except:
+                keywords_dict[key[0]] = key[1]
+        for k,v in i_hashtag.iteritems():
+            try:
+                hash_dict[k] += v
+            except:
+                hash_dict[k] = v
+    sorted_keywords_dict = sorted(keywords_dict.iteritems(), key=lambda x:x[1], reverse=True)[:100]
+    try:
+        max_keywords_value = sorted_keywords_dict[0][1]
+    except:
+        max_keywords_value = 1.0
+    normal_keywords_list = []
+    for words in sorted_keywords_dict:
+        normal_keywords_list.append([words[0], float(words[1])/max_keywords_value])
+    
+    sorted_hash_dict = sorted(hash_dict.iteritems(), key=lambda x:x[1], reverse=True)[:100]
+    try:
+        max_hash_value = sorted_hash_dict[0][1]
+    except:
+        max_hash_value = 1.0
+    normal_hash_list = []
+    for words in sorted_hash_dict:
+        normal_hash_list.append([words[0], float(words[1])/max_hash_value])
+    return {'keywords':normal_keywords_list, 'hashtag':normal_hash_list}
+
+def get_theme_user_rank(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    user_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+                body={'ids':event_list}, fields=['user_results','name'])['docs']
+    user_influence ={}
+    for i in user_result:
+        event_name = i['fields']['name'][0]
+        user_dict = json.loads(i['fields']['user_results'][0])
+        for k,v in user_dict.iteritems():
+            if user_influence.has_key(k):
+                continue
+            user_influence[k] = {}
+            user_influence[k]['id']= k
+            user_influence[k]['name']= user_name_search(k)
+
+    for i in user_result:
+        event_name = i['fields']['name'][0]
+        user_dict = json.loads(i['fields']['user_results'][0])
+        for k,v in user_dict.iteritems():
+            try:
+                user_influence[k]['related_event'].append(event_name)
+            except:
+                user_influence[k]['related_event'] = []
+                user_influence[k]['related_event'].append(event_name)
+            try:
+                user_influence[k]['influ'] += v['influ']
+            except:
+                user_influence[k]['influ'] = v['influ']
+    user_influence_list= []
+    for k,v in user_influence.iteritems():
+        user_influence_list.append(v)
+    sorted_user_influ = sorted(user_influence_list, key=lambda x:x['influ'], reverse=True) 
+    max_importance = sorted_user_influ[0]['influ']
+    for i in sorted_user_influ:
+        i['influ'] = float(i['influ'])/max_importance
+    return sorted_user_influ
+
+def get_theme_user_tag(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    user_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
+                body={'ids':event_list}, fields=['user_results','name'])['docs']
+    user_list =[]
+    for i in user_result:
+        event_name = i['fields']['name'][0]
+        user_dict = json.loads(i['fields']['user_results'][0])
+        for k,v in user_dict.iteritems():
+            user_list.append(k)
+    user_list_set = [i for i in set(user_list)]
+
+    tag_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+            body={'ids':user_list_set}, fields=['function_mark', 'keywords'])['docs']
+    keywords_dict = {}
+    mark_dict = {}
+    print len(tag_result)
+    for i in tag_result:
+        i_keywords = json.loads(i['fields']['keywords'][0])
+        try:
+            i_mark = i['fields']['function_mark'][0]
+        except:
+            i_mark = ''
+        for key in i_keywords:
+            try:
+                keywords_dict[key[0]] += key[1]
+            except:
+                keywords_dict[key[0]] = key[1]
+        if i_mark:
+            user_mark = deal_user_tag(i_mark)[0]
+            for mark in user_mark:
+                try:
+                    mark_dict[mark] += 1
+                except:
+                    mark_dict[mark] = 1
+    sorted_keywords_dict = sorted(keywords_dict.iteritems(), key=lambda x:x[1], reverse=True)[:100]
+    sorted_mark_dict = sorted(mark_dict.iteritems(), key=lambda x:x[1], reverse=True)[:100]
+    
+    try:
+        max_keywords_value = sorted_keywords_dict[0][1]
+    except:
+        max_keywords_value = 1.0
+    normal_keywords_list = []
+    for words in sorted_keywords_dict:
+        normal_keywords_list.append([words[0], float(words[1])/max_keywords_value])
+
+    try:
+        max_mark_value = sorted_mark_dict[0][1]
+    except:
+        max_mark_value = 1.0
+    normal_mark_list = []
+    for words in sorted_mark_dict:
+        normal_mark_list.append([words[0], float(words[1])/max_mark_value])
+
+    return {'keywords':normal_keywords_list, 'mark':normal_mark_list}
+
+def get_theme_related(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    try:
+        file_link = eid_string['fields']['file_link'][0].split('+')
+    except:
+        file_link = []
+    final_file = []
+    for i in file_link:
+        final_file.append(i.split(','))
+    try:
+        final_wiki = json.loads(eid_string['fields']['wiki_link'][0])
+    except:
+        final_wiki = []
+    event_graph_id = []
+    for i in event_list:
+        a = graph.run('start n=node:'+event_index_name+'("'+event_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            event_graph_id.append(str(dict(j)['id(n)']))
+    print event_graph_id
+    event_id_string = ','.join(event_graph_id)
+    query = 'start d=node('+event_id_string+') match (d)-[r]-(e) return labels(e), e'
+    result = graph.run(query)
+    node_dict = {}
+    for i in result:
+        dict_i = dict(i)
+        node_type = dict_i['labels(e)'][0]
+
+        if node_type == people_node:
+            node_id = dict_i['e']['uid']
+            try:
+                node_dict['user'].append(node_id)
+            except:
+                node_dict['user'] = []
+                node_dict['user'].append(node_id)
+        elif node_type == org_node:
+            node_id = dict_i['e']['org_id']
+            try:
+                node_dict['org'].append(node_id)
+            except:
+                node_dict['org'] = []
+                node_dict['org'].append(node_id)
+
+        elif node_type == event_node:
+            node_id = dict_i['e']['event_id']
+            if node_id in event_graph_id:
+                continue
+            try:
+                node_dict['event'].append(node_id)
+            except:
+                node_dict['event'] = []
+                node_dict['event'].append(node_id)
+    uid_list = [i for i in set(node_dict['user'])]
+    org_list = [i for i in set(node_dict['org'])]
+    event_list = [i for i in set(node_dict['event'])]
+    user_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uname', 'uid'])['docs']
+    org_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':org_list}, fields=['uname', 'uid'])['docs']
+    event_result = es_event.mget(index=event_analysis_name,doc_type=event_text_type, body={'ids':event_list}, fields=['en_name', 'name'])['docs']
+    final_user = []
+    for i in user_result:
+        if i['found'] == True:
+            if i['fields']['uname'][0] == '':
+                uname_s = i['fields']['uid'][0]
+            else:
+                uname_s = i['fields']['uname'][0]
+            final_user.append([i['fields']['uid'][0], uname_s])
+        else:
+            final_user.append([i['_id'],i['_id']])
+
+    final_org = []
+    for i in org_result:
+        if i['found'] == True:
+            if i['fields']['uname'][0] == '':
+                uname_s = i['fields']['uid'][0]
+            else:
+                uname_s = i['fields']['uname'][0]
+            final_org.append([i['fields']['uid'][0], uname_s])
+        else:
+            final_org.append([i['_id'],i['_id']])
+
+    final_event = []
+    for i in event_result:
+        if i['found'] == True:
+            final_org.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+        else:
+            final_org.append([i['_id'],i['_id']])
+    return [final_user, final_org, final_event, final_file, final_wiki]
+
+
+
+
 
