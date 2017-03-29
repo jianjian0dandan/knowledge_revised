@@ -23,19 +23,12 @@ def myfocus():#导航页
 @login_required
 def myfocus_topic():#我的专题
 
-    submit_user = g.user.email
-    result = get_theme('',submit_user)
-    
-    return render_template('sysadmin/myfocus_topic.html',result = result)
+    return render_template('sysadmin/myfocus_topic.html')
 
 @mod.route('/group/')
 @login_required
 def myfocus_group():#我的群体
-
-    submit_user = g.user.email
-    result = get_group('',submit_user)
-    
-    return render_template('sysadmin/myfocus_group.html',result = result)
+    return render_template('sysadmin/myfocus_group.html')
 
 @mod.route('/focus/')
 @login_required
@@ -48,3 +41,37 @@ def myfocus_focus():#我的关注
     result = {'people':people_result,'event':event_result,'org':org_result}
     
     return render_template('sysadmin/myfocus_focus.html',result = result)
+
+@mod.route('/topic/get_data')
+def myfocus_topic_get_data():#我的专题
+
+    submit_user = g.user.email
+    result = get_theme('',submit_user)
+    topic_list=[]
+    for item in result:
+        topic_dic={}
+        topic_dic["name"] = item[1]
+        topic_dic["count"] = item[2]
+        topic_dic["auto_label"] = item[3]
+        topic_dic["buss_label"] = item[4]
+        topic_dic["time"] = item[5]
+        topic_list.append(topic_dic)
+
+    return json.dumps(topic_list)
+
+@mod.route('/group/get_data')
+def myfocus_group_get_data():#我的专题
+
+    submit_user = g.user.email
+    result = get_theme('',submit_user)
+    group_list=[]
+    for item in result:
+        group_dic={}
+        group_dic["name"] = item[1]
+        group_dic["count"] = item[2]
+        group_dic["auto_label"] = item[3]
+        group_dic["buss_label"] = item[4]
+        group_dic["time"] = item[5]
+        group_list.append(group_dic)
+
+    return json.dumps(group_list)
