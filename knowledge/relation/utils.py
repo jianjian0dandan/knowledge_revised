@@ -10,7 +10,7 @@ import datetime
 import math,re
 import json
 import redis
-import math
+import math,os
 from xpinyin import Pinyin
 from py2neo.ext.batman import ManualIndexManager
 from py2neo.ext.batman import ManualIndexWriteBatch
@@ -963,6 +963,15 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
             }
     result = es_sim.index(index=sim_name,doc_type=sim_type,id=node_id,body=info)
     if result['created']==True:
+        os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' > sim.log&')
         return 'yes'
     else:
         return 'no'
+
+def get_sim():
+    result = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}}})
+    return result
+
+def get_sim_by_id(node_type,node_id):
+    result = es_sim.get(index=sim_name,doc_type=sim_type,id=node_id)['_source']
+    #人-人    事-事    专题-事   群体-
