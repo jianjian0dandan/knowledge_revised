@@ -33,11 +33,11 @@ def relation_index():#导航页
 def relation_search():#图谱搜索
     return render_template('relation/search.html')
 
-# @mod.route('/search_result/')
-# @login_required
-# def relation_search_result():#图谱搜索结果
-	
-#     return render_template('relation/search_result.html')
+@mod.route('/search_result/')
+@login_required
+def relation_search_result():#图谱搜索结果
+    key_words = request.args.get('key_words','')
+    return render_template('relation/search_result.html',key_words=key_words)
 
 @mod.route('/similarity/')
 @login_required

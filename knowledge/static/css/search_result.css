@@ -2,18 +2,46 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 3508px;
+        /*height: 3508px;*/
+        margin: 0 auto;
     }
 }
 /*内容样式*/
 body {
+    /*width: 100%;*/
+    /*min-width: 1349px;*/
+    /*min-height: 3508px;*/
+    /*background: url("/static/images/search_result.png") no-repeat;*/
     width: 100%;
+    margin: 0;
     min-width: 1349px;
-    min-height: 3508px;
-    background: url("/static/images/search_result.png") no-repeat;
+    /*min-height: 820px;*/
+    background-color:#e6e9eb;
 }
 #container {
-    width: 88%;
-    margin: 0 auto;
-    padding: 5.5% 0 0 0;
+    width: 80%;
+    margin: 60px auto 0;
+    padding: 80px 0 0 0;
+    position: relative;
+    background:#f3f4f5;
+}
+#container .result {
+    position: absolute;
+    top: 0;
+    left: -14px;
+    width: 225px;
+    height:78px;
+    line-height: 70px;
+    background: url("/static/images/result_tit.png") no-repeat;
+    background-size: 100% 100%;
+}
+h3 {
+    width: 241px;
+    height: 49px;
+    line-height: 49px;
+    padding: 0 0 0 60px;
+    color: white;
+    font-weight: 900;
+    background: url("/static/images/small_tit.png") no-repeat;
+    background-size: 241px 49px;
 }

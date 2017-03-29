@@ -10,36 +10,47 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight: 900;padding-left: 2%;">探索结果</h3>
-
-    <div class="related_network" style="margin-top:8.5%;">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关网络</h3>
-        <div id="network" style="width: 80%;margin: 5% auto;"></div>
+    <h1 class="result" style="color: white;font-weight: 900;padding-left:38px;">探索结果</h1>
+    <div class="related_network" style="margin-top: 80px;">
+        <h3>相关网络</h3>
+        <div class="network" style="width: 70%;margin: 0 auto;">
+            <div id="network"></div>
+        </div>
     </div>
 
-    <div class="related_person" style="margin-top:8.5%;">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关人物</h3>
-        <div id="person" style="width: 80%;margin: 5% auto;"></div>
+    <div class="related_person">
+        <h3>相关人物</h3>
+        <div class="person" style="width: 70%;margin: 0 auto;">
+            <div id="person"></div>
+        </div>
     </div>
 
     <div class="related_agencies">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关机构</h3>
-        <div id="agencies" style="width: 100%;margin: 5% auto;"></div>
+        <h3>相关机构</h3>
+        <div class="agencies" style="width: 70%;margin: 0 auto;">
+            <div id="agencies"></div>
+        </div>
     </div>
 
     <div class="related_events">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关事件</h3>
-        <div id="events" style="width: 100%;margin: 5% auto;"></div>
+        <h3>相关事件</h3>
+        <div class="events" style="width: 70%;margin: 0 auto;">
+            <div id="events"></div>
+        </div>
     </div>
 
     <div class="related_organization">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关组织</h3>
-        <div id="organization" style="width: 100%;margin: 5% auto;"></div>
+        <h3>相关组织</h3>
+        <div class="organization" style="width: 70%;margin: 0 auto;">
+            <div id="organization"></div>
+        </div>
     </div>
 
     <div class="related_subject">
-        <h3 style="color: white;font-weight: 900;padding-left:3%;">相关专题</h3>
-        <div id="subject" style="width: 100%;margin: 5% auto;"></div>
+        <h3>相关专题</h3>
+        <div class="subject" style="width: 70%;margin: 0 auto;">
+            <div id="subject"></div>
+        </div>
     </div>
 
 
@@ -49,9 +60,12 @@
 
 <!------JS-------->
 {% block my_js %}
-<script src="/static/js/search_result-1.js"></script>
-<script>
 
+<script>
+    var submit_user=$('#name').text();
+    var key_words='{{key_words}}'.replace(/^,+/,"").replace(/,+$/,"").replace(/,/g,'&');
 </script>
+<script src="/static/js/search_result-1.js"></script>
+
 {% endblock %}
 

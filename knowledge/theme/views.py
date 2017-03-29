@@ -39,8 +39,9 @@ def theme_modify():#编辑专题
 @mod.route('/compare/')
 @login_required
 def theme_compare():#专题对比
-
-    return render_template('theme/theme_compare.html')
+    theme_name1 = request.args.get('theme_name1','')
+    theme_name2 = request.args.get('theme_name2','')
+    return render_template('theme/theme_compare.html',theme_name1=theme_name1,theme_name2=theme_name2)
 
 @mod.route('/result/')
 @login_required
