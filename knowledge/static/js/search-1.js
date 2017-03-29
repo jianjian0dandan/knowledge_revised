@@ -72,14 +72,17 @@ var no_ids=1;
 $.each($("#container .start .options input"),function (index,item) {
     $(item).on('click',function () {
         if ($(this).val()==1){
+            ids=[];
             // ids=$('.start .options-1-value').val().split(',');
             no_ids=1;
         }else if ($(this).val()==2){
+            ids=[];
             //上传文件
             alert('文件中的内容请用逗号隔开(英文)隔开');
             ids=files_data;
             no_ids=2;
         }else if ($(this).val()==3){
+            ids=[];
             // 属性搜索
             //与或非
             no_ids=3;
@@ -191,13 +194,16 @@ var end_no_ids=1;
 $.each($("#container .end .options-3 input"),function (index,item) {
     $(item).on('click',function () {
         if ($(this).val()==1){
+            end_ids=[];
             // end_ids=$('.end .options-1-value').val().split(',');
             end_no_ids=1;
         }else if ($(this).val()==2){
+            end_ids=[];
             alert('文件中的内容请用逗号隔开(英文)隔开');
             end_no_ids=2;
             end_ids=end_files_data;
         }else if ($(this).val()==3){
+            end_ids=[];
             end_no_ids=3;
             end_yhf_value=$('.end .options-3_down').val();
         }
@@ -278,6 +284,7 @@ function rel_value() {
 //高级搜索开始
 var input_data;
 $('#sure_advan').on('click',function () {
+
     //开始节点数据整理
     if (no_ids==1||no_ids==2){
         if (no_ids==1){
@@ -326,7 +333,6 @@ $('#sure_advan').on('click',function () {
     }else if ($('.start .options-1-value').val()==''||$('.end .options-1-value').val()==''){
         alert('请输入起始节点/终止节点的值。(不能为空)');
     }else if (no_ids==2||end_no_ids==2){
-        console.log(ids)
         if (ids==''||end_ids==''){
             alert('您还没有上传文件。(不能为空)');
         }
@@ -356,6 +362,7 @@ $('#sure_advan').on('click',function () {
             }
         }
         relation=[];
+        console.log(ids)
         console.log(input_data)
 
         var advanced_search_url = '/relation/search_result/';

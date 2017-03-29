@@ -36,10 +36,13 @@ body {
 /*包含事件*/
 #container .include {
     width:100%;
-    margin-top: 8%;
+    margin-top: 90px;
+    position: relative;
 }
 #container .include .edit {
-    float: right;
+    position: absolute;
+    top:0;
+    right: 0;
 }
 #container .include .edit input {
     position: relative;
@@ -53,17 +56,22 @@ body {
     width: 100%;
     height: 340px;
 }
-#container .include #theme-1,#container .include #theme-2 {
+#container .include .theme_list .list-1,#container .include .theme_list .list-2 {
     width: 45%;
     float: left;
+    margin-top: 30px;
+    margin-left: 35px;
 }
 /*关联人物*/
 #container .link_user {
     width:100%;
-    margin-top:6%;
+    margin-top: 60px;
+    position: relative;
 }
 #container .link_user .edit-user {
-    float: right;
+    position: absolute;
+    top:0;
+    right: 0;
 }
 #container .link_user .edit-user input {
     position: relative;
@@ -77,17 +85,22 @@ body {
     width: 100%;
     height: 340px;
 }
-#container .link_user #list-1-user,#container .link_user #list-2-user {
+#container .link_user .user_list .list-1-user,#container .link_user .user_list .list-2-user {
     width: 45%;
     float: left;
+    margin-top: 30px;
+    margin-left: 35px;
 }
 /*自动标签*/
 #container .key_words {
     width:100%;
-    margin-top:6%;
+    margin-top:50px;
+    position: relative;
 }
 #container .key_words .edit-words {
-    float: right;
+    position: absolute;
+    top:0;
+    right: 0;
 }
 #container .key_words .edit-words input {
     position: relative;
@@ -101,20 +114,48 @@ body {
     width: 100%;
     height: 340px;
 }
-#container .key_words #list-1-words,#container .key_words #list-2-words {
+#container .key_words .words_list .list-1-words,#container .key_words .words_list .list-2-words {
     width: 45%;
     float: left;
+    margin-top: 30px;
+    margin-left: 35px;
+}
+#container .key_words .words_list .list-1-words #list-1-words,
+#container .key_words .words_list .list-2-words #list-2-words{
+    width: 100%;
+    height: 300px;
 }
 /*标签*/
 #container .tags {
     width:100%;
     margin-top:6%;
+    position: relative;
+}
+#container .tags .edit-tags {
+    position: absolute;
+    top:0;
+    right: 0;
+}
+#container .tags .edit-tags input {
+    position: relative;
+    top: 3px;
+}
+#container .tags .edit-tags label {
+    color: #272727;
+    font-size: 14px;
 }
 #container .tags .tags_list {
     width: 100%;
     height: 340px;
 }
-#container .tags #list-1-tags,#container .tags #list-2-tags {
+#container .tags .tags_list .list-1-tags,#container .tags .tags_list .list-2-tags {
     width: 45%;
     float: left;
+    margin-top: 30px;
+    margin-left: 35px;
+}
+#container .tags .tags_list .list-1-tags #list-1-tags,
+#container .tags .tags_list .list-2-tags #list-2-tags{
+    width: 100%;
+    height: 300px;
 }

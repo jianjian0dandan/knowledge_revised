@@ -10,8 +10,8 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 class="result" style="color: white;font-weight: 900;padding-left:38px;">探索结果</h1>
-    <div class="related_network" style="margin-top: 80px;">
+    <h1 class="result" style="color: white;font-weight: 900;padding-left:38px;margin-bottom: 80px;">探索结果</h1>
+    <div class="related_network">
         <h3>相关网络</h3>
         <div class="network" style="width: 70%;margin: 0 auto;">
             <div id="network"></div>
@@ -64,6 +64,7 @@
 <script>
     var submit_user=$('#name').text();
     var key_words='{{key_words}}'.replace(/^,+/,"").replace(/,+$/,"").replace(/,/g,'&');
+//    var simple_advanced='{{simple_advanced}}';
 </script>
 <script src="/static/js/search_result-1.js"></script>
 

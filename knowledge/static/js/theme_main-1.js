@@ -133,15 +133,18 @@ function theme_overview(data) {
 
         ],
         onCheck:function (row) {
-
-            theme_diff.push(row[0]);
+            theme_diff.push(row[1]);
+        },
+        onUncheck:function (row) {
+            theme_diff.removeByValue(row[1]);
+        },
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].innerText=='查看专题') {
+                // window.open(+row[1]);
+            }else if ($element[0].innerText=='编辑专题') {
+                // window.open(+row[1]);
+            }
         }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
     });
 };
 
@@ -151,7 +154,17 @@ $('#container .group_operating .operating .compared').on('click',function () {
     if (theme_diff.length==2){
         window.open('/theme/compare/?theme_name1='+theme_diff[0]+'&theme_name2='+theme_diff[1]);
     }else {
-        alert('请您注意选择的专题，只能选择2个。')
+        alert('请您注意选择的专题，您只能选择2个。(请检查您勾选的专题)')
     }
 });
+
+//删除指定项
+Array.prototype.removeByValue = function(val) {
+    for(var i=0; i<this.length; i++) {
+        if(this[i] == val) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+};
 
