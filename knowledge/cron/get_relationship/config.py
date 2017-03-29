@@ -151,9 +151,9 @@ peo_list = [-1,0,200,220,400]
 org_list = [1,2,3,4,5,6,7,8]
 
 #人物相似度
-peo_sta = 0.3
+person_sta = 0.3
 eve_sta = 0.3
-com_sta = 3
+com_sta = 2
 
 #事件相似度
 com_sta_eve = 2

@@ -9,7 +9,12 @@ $.ajax({
 function result(data) {
     var data=eval(data);
     console.log(data);
-    // network();
+    // if (simple_advanced=='a'){
+    //     network(data.n_nodes);
+    //     $('.related_network').show();
+    // }else {
+    //     $('.related_network').hide();
+    // }
     person(data.p_nodes);
     agencies(data.o_nodes);
     events(data.e_nodes);

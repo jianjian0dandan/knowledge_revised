@@ -1,0 +1,33 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱-我的图谱-我的关注</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/theme_main.css">
+<link rel="stylesheet" href="/static/css/a-btn.css">
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-table.min.css">
+<link rel="stylesheet" type="text/css" href="/static/info_consume/css/bootstrap.min.css">
+<style>
+
+</style>
+<script type="text/javascript"></script>
+<script src="/static/js/sysadmin_mytopic.js"></script>
+{% endblock %}
+
+
+{% block main %}
+<div id="container">
+    <h3 style="color: white;font-weight:800;padding-top: 0.5%">我的关注</h3>
+    <div class="group_operating" style="height: 1000px;margin-top: 10%;">
+      <div id="table-user-contain">
+      	<table id="table-user" style="z-index:100;" class="table table-hover dropdown" data-page-list = "[10, 25, 50, 100, 200]">    		
+      	</table>
+      </div>
+    </div> 	 	
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+
+<script>
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "public_nav.html" %}
+{% block title %}<title>知识图谱 - 我的图谱</title>{% endblock %}
+{% block my_css %}
+<link rel="stylesheet" href="/static/css/theme_main.css">
+<link rel="stylesheet" href="/static/css/a-btn.css">
+<style>
+
+</style>
+{% endblock %}
+
+
+{% block main %}
+<div id="container">
+    <h3 style="color: white;font-weight:800;padding-top: 0.5%">我的图谱</h3>
+    <div class="group_operating" style="margin-top: 10%;">
+       	<div class="button-wrapper" style="margin-left: 10%;float: left">
+			<a href="/sysadmin/topic" class="a-btn" style="height: 261px;width: 220px;">
+				<span>
+					<img src="/static/images/sysadmin_topic.png" width="160xp" height="160px">
+				</span>
+				<span class="a-btn-text" style="margin-top: 45px !important;">我的专题</span> 
+			</a>
+		</div>
+       	<div class="button-wrapper" style="margin-left: 5%;float: left;">
+			<a href="/sysadmin/group" class="a-btn" style="height: 261px;width: 220px;">
+				<span>
+					<img src="/static/images/sysadmin_group.png" width="170xp" height="170px">
+				</span>
+				<span class="a-btn-text" style="margin-top: 35px !important;">我的群体</span> 
+			</a>
+		</div>
+       	<div class="button-wrapper" style="margin-left: 5%;float: left;">
+			<a href="/sysadmin/focus" class="a-btn" style="height: 261px;width: 220px;">
+				<span>
+					<img src="/static/images/sysadmin_focus.png" width="190xp" height="190px">
+				</span>
+				<span class="a-btn-text">我的关注</span> 
+			</a>
+		</div>		
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block my_js %}
+
+<script>
+</script>
+{% endblock %}
