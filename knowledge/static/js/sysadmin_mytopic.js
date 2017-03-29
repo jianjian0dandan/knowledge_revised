@@ -1,145 +1,101 @@
-function fans() {
-    this.ajax_method = 'GET';
-}
-fans.prototype= {
-    call_request:function(url,callback) {
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'json',
-            async: true,
-            success:callback,
-        });
-    },
-}
-function friendfans(data) {
-     //console.log("outdata="+data);
-     $('#table-user').bootstrapTable({
-       //url: influ_url,
-       data:data,
-       search: false,//是否搜索
-       pagination: true,//是否分页
-       pageSize: 20,//单页记录数
-       pageList: [5, 10, 20, 50],//分页步进值
-       sidePagination: "client",//服务端分页
-       searchAlign: "left",
-       searchOnEnterKey: false,//回车搜索
-       showRefresh: true,//刷新按钮
-       showColumns: true,//列选择按钮
-       buttonsAlign: "left",//按钮对齐方式
-       locale: "zh-CN",//中文支持
-       detailView: false,
-       showToggle:true,
-       sortName:'count',
-       sortOrder:"desc",
-       columns: [  
-         {
-             title: "全选",
-             field: "select",
-             checkbox: true,
-             align: "center",//水平
-             valign: "middle"//垂直
-         },
-         {
-             title: "头像",
-             field: "photo_url",
-             sortable: true,
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value) {
-               var photo_url = value;
-               if(value=="unknown"||value==""||value==null){
-                 photo_url = "http://tva1.sinaimg.cn/default/images/default_avatar_male_50.gif";
-               }
-               return '<img  src="'+photo_url+'" class="img-rounded" style="width: 30px;height: 30px;}" >';
-             }
-         },
-         {
-             title: "昵称",
-             field: "uname",
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value,row) { 
-               if(value=="unknown"||value==""||value==null){
-                 value = "未知";
-                 return value
-               }else{
-               var e = '<a class="user_view" data-toggle="tooltip" title="看看TA是谁？" data-placement="right" href="/index/viewinformation/?uid='+row.uid+' "target="_blank">'+value+'</a>';   ///index/viewinformation/?uid=\''+row.uid+'\'
-                return e;
-              }
-            }
-         },
-         {
-             title: "用户ID",
-             field: "uid",
-             align: "center",//水平
-             valign: "middle",//垂直
-             visible:false
-         },
-         {
-             title: "好友数",                        
-             field: "friendsnum",
-             sortable: true,
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value) {
-                if(value=="unknown"||value==""||value==null){
-                 value = "未知";
-               }
-                return value;
-             }
-         },
-         {
-             title: "粉丝数",                        
-             field: "fansnum",
-             sortable: true,
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value) {
-                if(value=="unknown"||value==""||value==null){
-                 value = "未知";
-               }
-                return value;
-             }
-         },
-         {
-             title: "微博数",                        
-             field: "weibo_count",
-             sortable: true,
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value) {
-                if(value=="unknown"||value==""||value==null){
-                 value = "未知";
-               }
-                return value;
-             }
-         },
-         {
-             title: "交互次数",                        
-             field: "count",
-             sortable: true,
-             align: "center",//水平
-             valign: "middle",//垂直
-             formatter: function (value) {
-                if(value=="unknown"||value==""||value==null){
-                 value = "未知";
-               }
-                return value;
-             }
-
-        }]
-     });
-}
-
-var fans=new fans();
-function nums() {
-    var url = '/info_person_social/get_fans/?uid='+uid;
-    fans.call_request(url,friendfans);
-}
-
-$('#fan_btn').click(function(){
-    nums();
-    console.log("点击加载");
+var url = '/sysadmin/topic/get_data';
+$.ajax({
+    url: url,
+    type: 'GET',
+    dataType:'json',
+    async:true,
+    success:draw_table
 });
 
+    function draw_table(data){
+        console.log(data);
+        data=eval(data);
+        $('#sysadmin_topic_table').bootstrapTable('load',data)
+        $('#sysadmin_topic_table').bootstrapTable({
+            data:data,
+            search: true,//是否搜索
+            pagination: true,//是否分页
+            pageSize: 5,//单页记录数
+            pageList: [5, 20, 40, 80],//分页步进值
+            sidePagination: "client",//服务端分页
+            searchAlign: "left",
+            searchOnEnterKey: true,//回车搜索
+            showRefresh: true,//刷新按钮
+            showColumns: true,//列选择按钮
+            buttonsAlign: "right",//按钮对齐方式
+            locale: "zh-CN",//中文支持
+            detailView: false,
+            showToggle:true,
+            sortName:'bci',
+            sortOrder:"desc",
+            columns: [
+            {
+                title: "专题名称",//标题
+                field: "name",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                visible:true,
+            },
+            {
+                title: "事件数量",//标题
+                field: "count",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+            },
+            {
+                title: "创建时间",//标题
+                field: "time",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+            },
+            {
+                title: "自动标签",//标题
+                field: "auto_label",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (value.length==0)
+                        return '暂无';
+                    else
+                        return value;
+                },
+            },
+            {
+                title: "业务标签",//标题
+                field: "buss_label",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (value.length==0)
+                        return '暂无';
+                    else
+                        return value;
+                },
+            },
+            {
+                title: "专题查看",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value) {
+                    var addr = '<a href="#"><span style="text-decoration:underline;font-weight:bold;">查看圈子</span></a>'
+                    return addr;
+                },
+            }
+            ]
+        });
+        $('#table-user-contain').css("display","block");
+        $('#table-user-contain').css("margin-right","10px");
+    }
