@@ -677,6 +677,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
     try:
         result = es.get(index=es_index,doc_type=es_type,fields=column,id=node_id)
         f_result = {}
+        f_result['id']=node_id
         for k,v in result['fields'].iteritems():
             f_result[k] = v[0]
         f_result[tag] = deal_event_tag(f_result[tag],submit_user)[0]
@@ -907,6 +908,7 @@ def simple_search(keywords_list,submit_user):
             if result:
                 for j in result:
                     f_result = {}
+                    f_result['id']=j['_id']
                     for k,v in j['fields'].iteritems():
                         f_result[k] = v[0]
                     try:
@@ -954,3 +956,13 @@ def simple_search(keywords_list,submit_user):
     #         }
     #     }
     # }
+
+def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
+    info = {'submit_user':submit_user,'submit_ts':int(submit_ts),'node_name':node_name,\
+            'node_type':node_type,'node_id':node_id,'compute_status':0
+            }
+    result = es_sim.index(index=sim_name,doc_type=sim_type,id=node_id,body=info)
+    if result['created']==True:
+        return 'yes'
+    else:
+        return 'no'

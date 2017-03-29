@@ -50,6 +50,8 @@ es_km_user_portrait = Elasticsearch(km_user_portrait_host,timeout=600)
 # km event 
 es_event = Elasticsearch(event_host, timeout=600)
 
+es_sim = Elasticsearch(event_host, timeout=600)
+
 es_group = Elasticsearch(event_host, timeout=600)
 es_special_event = Elasticsearch(event_host, timeout=600)
 # The process state is stored
