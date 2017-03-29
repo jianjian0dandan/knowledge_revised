@@ -648,10 +648,10 @@ def get_user_info(uid_list,uname):
     '''
 
 # 获取最大值
-def get_max_index(term):
+def get_max_index_peo(term):
     query_body = {
         'query':{
-            'match_all':{}
+            'terms':{'verify_type':peo_list}
         },
         'size':1,
         'sort':[{term: {'order': 'desc'}}]
@@ -666,10 +666,30 @@ def get_max_index(term):
     return iter_max
 
 
-def normal_index(index, max_index):
-    normal_value = math.log((index / max_index) * 9 + 1, 10) * 100
-    return normal_value
+# 获取最大值
+def get_max_index_org(term):
+    query_body = {
+        'query':{
+            'terms':{'verify_type':org_list}
+        },
+        'size':1,
+        'sort':[{term: {'order': 'desc'}}]
+        }
+    try:
+        iter_max_value = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type, \
+                        body=query_body)['hits']['hits']
+    except Exception, e:
+        raise e
+    iter_max = iter_max_value[0]['_source'][term]
 
+    return iter_max
+
+def normal_index(index, max_index):
+    try:
+        normal_value = math.log((index / max_index) * 9 + 1, 10) * 100
+        return normal_value
+    except:
+        return index
 def get_org_info(uid_list,uname):
     pass
 

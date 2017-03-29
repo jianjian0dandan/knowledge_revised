@@ -524,21 +524,21 @@ def deal_user_tag(item ,submit_user):
             left_tag.append(i)
     return [keep_tag, left_tag]
 
-def deal_event_tag(item ,submit_user):
-    tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
-    # return result
-    # tag = tag_value
-    print tag,'=============!!==='
-    tag_list = tag.split('&')
-    left_tag = []
-    keep_tag = []
-    for i in tag_list:
-        user_tag = i.split('_')
-        if user_tag[0] == submit_user:
-            keep_tag.append(user_tag[1])
-        else:
-            left_tag.append(i)
-    return [keep_tag, left_tag]
+# def deal_event_tag(item ,submit_user):
+#     tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+#     # return result
+#     # tag = tag_value
+#     print tag,'=============!!==='
+#     tag_list = tag.split('&')
+#     left_tag = []
+#     keep_tag = []
+#     for i in tag_list:
+#         user_tag = i.split('_')
+#         if user_tag[0] == submit_user:
+#             keep_tag.append(user_tag[1])
+#         else:
+#             left_tag.append(i)
+#     return [keep_tag, left_tag]
 
 
 def search_data(input_data):
@@ -607,23 +607,26 @@ def get_info_by_query(query,submit_user):
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
 
     # print '?????',graph_result
-    max_influence =  get_max_index('influence')
-    max_activeness = get_max_index('activeness')
-    max_sensitive = get_max_index('sensitive')
-    print max_influence,max_activeness,max_sensitive
+    max_influence_peo =  get_max_index_peo('influence')
+    max_activeness_peo = get_max_index_peo('activeness')
+    max_sensitive_peo = get_max_index_peo('sensitive')
+    max_influence_org =  get_max_index_org('influence')
+    max_activeness_org = get_max_index_org('activeness')
+    max_sensitive_org = get_max_index_org('sensitive')
+    # print max_influence,max_activeness,max_sensitive
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     for i in node_list:
         if i[0] == people_primary:
             tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence)
-            tem['activeness'] = normal_index(tem['activeness'],max_influence)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            tem['influence'] = normal_index(tem['influence'],max_influence_peo)
+            tem['activeness'] = normal_index(tem['activeness'],max_activeness_peo)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_peo)
             table_result['p_nodes'].append(tem)
         elif i[0] == org_primary:
             tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence)
-            tem['activeness'] = normal_index(tem['activeness'],max_influence)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            tem['influence'] = normal_index(tem['influence'],max_influence_org)
+            tem['activeness'] = normal_index(tem['activeness'],max_activeness_org)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_org)
             table_result['o_nodes'].append(tem)
         elif i[0] == event_primary:
             table_result['e_nodes'].append(i[1])
@@ -631,7 +634,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-
+    print graph_result,table_result
     return {'graph_result':graph_result,'table_result':table_result}
 
 
@@ -811,6 +814,12 @@ def simple_search(keywords_list,submit_user):
     chinese = re.compile(u"[\u4e00-\u9fa5]+")
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+    max_influence_peo =  get_max_index_peo('influence')
+    max_activeness_peo = get_max_index_peo('activeness')
+    max_sensitive_peo = get_max_index_peo('sensitive')
+    max_influence_org =  get_max_index_org('influence')
+    max_activeness_org = get_max_index_org('activeness')
+    max_sensitive_org = get_max_index_org('sensitive')
     for key in keywords_list:
         print key
         '''
@@ -876,23 +885,11 @@ def simple_search(keywords_list,submit_user):
                 'query':{
                     'bool':{
                         'should':[
-                            {'term':{'uid':key}},
-                            {'term':{'en_name':key}},
-                            {'term':{'group_name':key}},
-                            {'term':{'topic_name':key}},
-                            {'wildcard':{'uname':'*'+key+'*'}},
-                            {'wildcard':{'description':'*'+key+'*'}},
-                            {'wildcard':{'function_mark':'*'+key+'*'}},
-                            {'wildcard':{'keywords':'*'+key+'*'}},
-                            {'wildcard':{'hashtag':'*'+key+'*'}},
-                            {'wildcard':{'location':'*'+key+'*'}},
-                            {'wildcard':{'name':'*'+key+'*'}},
-                            {'wildcard':{'work_tag':'*'+key+'*'}},
-                            {'wildcard':{'topic_name':'*'+key+'*'}},
-                            {'wildcard':{'k_label':'*'+key+'*'}},
-                            {'wildcard':{'label':'*'+key+'*'}},
-                            {'wildcard':{'event':'*'+key+'*'}},
-                            {'wildcard':{'group_name':'*'+key+'*'}},
+                            {'query_string':{
+                                'fields':['uid','en_name','group_name','topic_name','uname','description','function_mark','keywords','hashtag','location','name','work_tag','k_label','label','event'],
+                                'query':key
+                                }
+                            }
                         ],
                         'minimum_should_match':1
                     }
@@ -905,11 +902,10 @@ def simple_search(keywords_list,submit_user):
             else:
                 pass
             print query_body
+            print es_list[i],es_index_list[i],es_type_list[i]
             result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
             if result:
                 for j in result:
-                    print j
-                    print '======================='
                     f_result = {}
                     for k,v in j['fields'].iteritems():
                         f_result[k] = v[0]
@@ -917,5 +913,44 @@ def simple_search(keywords_list,submit_user):
                         f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
                     except KeyError:
                         pass
+                    if i == 0:
+                        f_result['influence'] = normal_index(f_result['influence'],max_influence_peo)
+                        f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_peo)
+                        f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive_peo)
+                    elif i == 1:
+                        f_result['influence'] = normal_index(f_result['influence'],max_influence_org)
+                        f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_org)
+                        f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive_org)
+                    else:
+                        pass
                     table_result[nodes_list[i]].append(f_result)
+            else:
+                continue
     return table_result
+
+    # query_body = {
+    #     'query':{
+    #         'bool':{
+    #             'should':[
+    #                 {'term':{'uid':key}},
+    #                 {'term':{'en_name':key}},
+    #                 {'term':{'group_name':key}},
+    #                 {'term':{'topic_name':key}},
+    #                 {'wildcard':{'uname':'*'+key+'*'}},
+    #                 {'wildcard':{'description':'*'+key+'*'}},
+    #                 {'wildcard':{'function_mark':'*'+key+'*'}},
+    #                 {'wildcard':{'keywords':'*'+key+'*'}},
+    #                 {'wildcard':{'hashtag':'*'+key+'*'}},
+    #                 {'wildcard':{'location':'*'+key+'*'}},
+    #                 {'wildcard':{'name':'*'+key+'*'}},
+    #                 {'wildcard':{'work_tag':'*'+key+'*'}},
+    #                 {'wildcard':{'topic_name':'*'+key+'*'}},
+    #                 {'wildcard':{'k_label':'*'+key+'*'}},
+    #                 {'wildcard':{'label':'*'+key+'*'}},
+    #                 {'wildcard':{'event':'*'+key+'*'}},
+    #                 {'wildcard':{'group_name':'*'+key+'*'}},
+    #             ],
+    #             'minimum_should_match':1
+    #         }
+    #     }
+    # }
