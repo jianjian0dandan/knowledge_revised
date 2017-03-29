@@ -20,7 +20,7 @@
     <h1 class="search_add" style="color: white;font-weight: 900;">探索页面</h1>
     <div class="look">
         <div class="search">
-            <input type="text" class="find"/>
+            <input type="text" class="find" placeholder="多个关键词请用逗号(英文)分开"/>
             <button class="sure">确定</button>
         </div>
         <a class="advanced">高级搜索</a>
@@ -52,8 +52,8 @@
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
                 <div class="options-2-value" style="display: none;">
-                    <input type="file" class="files" style="padding: 0;"/>
-                    <button type="button" class="upload" onchange="start_handleFileSelect(this.files)">上传</button>
+                    <input type="file" class="files" onchange="start_handleFileSelect(this.files)" style="padding: 0;"/>
+                    <!--<button type="button" class="upload" >上传</button>-->
                 </div>
                 <div class="options-3-value" style="display: none;">
                     <select onchange="s_yhf(this.value)">
@@ -100,8 +100,8 @@
                 </div>
                 <input type="text" class="options-1-value" placeholder="节点（多个节点用空格隔开）">
                 <div class="options-2-value" style="display: none;">
-                    <input type="file" class="files" style="padding: 0;"/>
-                    <button type="button" class="upload" onchange="end_handleFileSelect(this.files)">上传</button>
+                    <input type="file" class="files" onchange="end_handleFileSelect(this.files)" style="padding: 0;"/>
+                    <!--<button type="button" class="upload" >上传</button>-->
                 </div>
                 <div class="options-3-value" style="display: none;">
                     <select onchange="e_yhf(this.value)">
@@ -174,8 +174,8 @@
 
 <!------JS-------->
 {% block my_js %}
-<script src="/static/js/search-1.js"></script>
 <script>
+    var submit_user=$('#name').text();
     $('.rel-2-value').on('click',function () {
         $('#relation').modal('show');
     });
@@ -197,10 +197,7 @@
     });
 
 
-    
-    
-    
-    
+
     //高级搜索出现与隐藏
     var s=1;
     $('#container .look .advanced').on('click',function () {
@@ -252,14 +249,23 @@
     });
 
     //简单搜索
+
+    //对字符串扩展
+//    String.prototype.ResetBlank=function(){
+//        var regEx = /\s+/g;
+//        return this.replace(regEx, ' ');
+//    };
+    var simple_advanced;
     $('#container .search .sure').on('click',function () {
         var key_words=$('#container .search .find').val();
         if (key_words==''){
             alert('请输入您想查询的内容。(不能为空)');
         }else {
-            window.open('/relation/search_result/?key_words='+key_words);
+            simple_advanced='s';
+            window.open('/relation/search_result/?result='+key_words+'&simple_advanced='+simple_advanced);
         }
     })
 </script>
+<script src="/static/js/search-1.js"></script>
 {% endblock %}
 

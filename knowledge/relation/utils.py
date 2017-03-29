@@ -607,23 +607,26 @@ def get_info_by_query(query,submit_user):
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
 
     # print '?????',graph_result
-    max_influence =  get_max_index('influence')
-    max_activeness = get_max_index('activeness')
-    max_sensitive = get_max_index('sensitive')
-    print max_influence,max_activeness,max_sensitive
+    max_influence_peo =  get_max_index_peo('influence')
+    max_activeness_peo = get_max_index_peo('activeness')
+    max_sensitive_peo = get_max_index_peo('sensitive')
+    max_influence_org =  get_max_index_org('influence')
+    max_activeness_org = get_max_index_org('activeness')
+    max_sensitive_org = get_max_index_org('sensitive')
+    # print max_influence,max_activeness,max_sensitive
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     for i in node_list:
         if i[0] == people_primary:
             tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence)
-            tem['activeness'] = normal_index(tem['activeness'],max_influence)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            tem['influence'] = normal_index(tem['influence'],max_influence_peo)
+            tem['activeness'] = normal_index(tem['activeness'],max_activeness_peo)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_peo)
             table_result['p_nodes'].append(tem)
         elif i[0] == org_primary:
             tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence)
-            tem['activeness'] = normal_index(tem['activeness'],max_influence)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_influence)
+            tem['influence'] = normal_index(tem['influence'],max_influence_org)
+            tem['activeness'] = normal_index(tem['activeness'],max_activeness_org)
+            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_org)
             table_result['o_nodes'].append(tem)
         elif i[0] == event_primary:
             table_result['e_nodes'].append(i[1])
@@ -631,7 +634,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-
+    print graph_result,table_result
     return {'graph_result':graph_result,'table_result':table_result}
 
 
@@ -811,6 +814,12 @@ def simple_search(keywords_list,submit_user):
     chinese = re.compile(u"[\u4e00-\u9fa5]+")
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+    max_influence_peo =  get_max_index_peo('influence')
+    max_activeness_peo = get_max_index_peo('activeness')
+    max_sensitive_peo = get_max_index_peo('sensitive')
+    max_influence_org =  get_max_index_org('influence')
+    max_activeness_org = get_max_index_org('activeness')
+    max_sensitive_org = get_max_index_org('sensitive')
     for key in keywords_list:
         print key
         '''
@@ -895,18 +904,24 @@ def simple_search(keywords_list,submit_user):
             print query_body
             print es_list[i],es_index_list[i],es_type_list[i]
             result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
-            print result
             if result:
                 for j in result:
-                    print j
-                    print '======================='
                     f_result = {}
                     for k,v in j['fields'].iteritems():
                         f_result[k] = v[0]
                     try:
                         f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
                     except KeyError:
-                        print '22222222222222222'
+                        pass
+                    if i == 0:
+                        f_result['influence'] = normal_index(f_result['influence'],max_influence_peo)
+                        f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_peo)
+                        f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive_peo)
+                    elif i == 1:
+                        f_result['influence'] = normal_index(f_result['influence'],max_influence_org)
+                        f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_org)
+                        f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive_org)
+                    else:
                         pass
                     table_result[nodes_list[i]].append(f_result)
             else:

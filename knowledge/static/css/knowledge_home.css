@@ -1,10 +1,18 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        height: 1005px;
+        /*margin: 0 auto;*/
+    }
+}
 /*内容样式*/
 body {
     width: 100%;
-    /*max-width: 1349px;*/
+    max-width: 1349px;
     min-width: 1349px;
     min-height: 1005px;
-    /*max-height: 1005px;*/
+    max-height: 1005px;
     background: url("/static/images/body.png") no-repeat;
 }
 #container {
@@ -195,12 +203,5 @@ body {
 #container #my_hot .my_focus .focus_details .details-2 span {
     width: 80px;
 }
-/*屏幕大小*/
-@media screen and (min-width: 1366px) {
-    body {
-        width: 1349px;
-        height: 1005px;
-        margin: 0 auto;
-    }
-}
+
 

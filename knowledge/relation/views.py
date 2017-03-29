@@ -36,8 +36,8 @@ def relation_search():#图谱搜索
 @mod.route('/search_result/')
 @login_required
 def relation_search_result():#图谱搜索结果
-
-    return render_template('relation/search_result.html')
+    key_words = request.args.get('key_words','')
+    return render_template('relation/search_result.html',key_words=key_words)
 
 @mod.route('/similarity/')
 @login_required
@@ -51,8 +51,9 @@ def relation_similarity_result():#相似计算
 
     return render_template('relation/similarity_result.html')
 
-@mod.route('/submit_task/',methods=['GET', 'POST'])
-def ajax_submit_task():
+@mod.route('/search_result/',methods=['GET', 'POST'])
+@login_required
+def relation_search_result():
     input_data = dict()
     # input_data = request.get_json()
     input_data = {
@@ -99,7 +100,8 @@ def ajax_submit_task():
         'short_path':True#True
     }
     result = search_data(input_data)
-    return json.dumps(result)
+    return render_template('relation/search_result.html',result=result)
+    # return json.dumps(result)
 
 
 @mod.route('/simple_result/')
