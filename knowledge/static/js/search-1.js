@@ -358,23 +358,21 @@ $('#sure_advan').on('click',function () {
         relation=[];
         console.log(input_data)
 
-        // var advanced_search_url = '/relation/submit_task/';
-        // $.ajax({
-        //     type:'POST',
-        //     url: advanced_search_url,
-        //     contentType:"application/json",
-        //     data: JSON.stringify(input_data),
-        //     dataType: "json",
-        //     success: advanced_search
-        // });
+        var advanced_search_url = '/relation/search_result/';
+        $.ajax({
+            type:'POST',
+            url: advanced_search_url,
+            contentType:"application/json",
+            data: JSON.stringify(input_data),
+            dataType: "json",
+            success: advanced_search
+        });
     }
 })
-
 function advanced_search(data) {
-    var data=eval(data);
-    search_to_result(data);
+    alert('正在加载中。。。。。');
 }
-advanced_search(2222);
+
 
 
 // {

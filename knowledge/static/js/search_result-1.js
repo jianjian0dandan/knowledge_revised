@@ -1,4 +1,4 @@
-var result_url='/relation/simple_result/?submit_user='+submit_user+'&key_words='+key_words;
+var result_url='/relation/simple_result/?submit_user='+submit_user+'&result='+key_words;
 $.ajax({
     url: result_url,
     type: 'GET',

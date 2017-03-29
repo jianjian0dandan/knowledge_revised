@@ -261,7 +261,8 @@
         if (key_words==''){
             alert('请输入您想查询的内容。(不能为空)');
         }else {
-            window.open('/relation/search_result/?key_words='+key_words);
+            simple_advanced='s';
+            window.open('/relation/search_result/?result='+key_words+'&simple_advanced='+simple_advanced);
         }
     })
 </script>
