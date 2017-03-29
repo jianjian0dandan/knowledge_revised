@@ -105,10 +105,11 @@ def ajax_submit_task():
 @mod.route('/simple_result/')
 def simple_result():
 	keywords = request.args.get('keywords', '')
-	keywords = keywords.split('&') 
+	keywords = keywords.split(',') 
 	submit_user = request.args.get('submit_user', '')
-	keywords = ['2635695961','2121667213']
+	# keywords = ['2635695961','2121667213']
 	submit_user = 'admin'
+	print keywords
 	result = simple_search(keywords,submit_user)
 	return json.dumps(result)
 #start d=node(533),e=node(522) match p=allShortestPaths( d-[r:discuss|:join*0..15]-e ) return p limit 10

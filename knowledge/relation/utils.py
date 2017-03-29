@@ -524,21 +524,21 @@ def deal_user_tag(item ,submit_user):
             left_tag.append(i)
     return [keep_tag, left_tag]
 
-def deal_event_tag(item ,submit_user):
-    tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
-    # return result
-    # tag = tag_value
-    print tag,'=============!!==='
-    tag_list = tag.split('&')
-    left_tag = []
-    keep_tag = []
-    for i in tag_list:
-        user_tag = i.split('_')
-        if user_tag[0] == submit_user:
-            keep_tag.append(user_tag[1])
-        else:
-            left_tag.append(i)
-    return [keep_tag, left_tag]
+# def deal_event_tag(item ,submit_user):
+#     tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+#     # return result
+#     # tag = tag_value
+#     print tag,'=============!!==='
+#     tag_list = tag.split('&')
+#     left_tag = []
+#     keep_tag = []
+#     for i in tag_list:
+#         user_tag = i.split('_')
+#         if user_tag[0] == submit_user:
+#             keep_tag.append(user_tag[1])
+#         else:
+#             left_tag.append(i)
+#     return [keep_tag, left_tag]
 
 
 def search_data(input_data):
@@ -876,23 +876,11 @@ def simple_search(keywords_list,submit_user):
                 'query':{
                     'bool':{
                         'should':[
-                            {'term':{'uid':key}},
-                            {'term':{'en_name':key}},
-                            {'term':{'group_name':key}},
-                            {'term':{'topic_name':key}},
-                            {'wildcard':{'uname':'*'+key+'*'}},
-                            {'wildcard':{'description':'*'+key+'*'}},
-                            {'wildcard':{'function_mark':'*'+key+'*'}},
-                            {'wildcard':{'keywords':'*'+key+'*'}},
-                            {'wildcard':{'hashtag':'*'+key+'*'}},
-                            {'wildcard':{'location':'*'+key+'*'}},
-                            {'wildcard':{'name':'*'+key+'*'}},
-                            {'wildcard':{'work_tag':'*'+key+'*'}},
-                            {'wildcard':{'topic_name':'*'+key+'*'}},
-                            {'wildcard':{'k_label':'*'+key+'*'}},
-                            {'wildcard':{'label':'*'+key+'*'}},
-                            {'wildcard':{'event':'*'+key+'*'}},
-                            {'wildcard':{'group_name':'*'+key+'*'}},
+                            {'query_string':{
+                                'fields':['uid','en_name','group_name','topic_name','uname','description','function_mark','keywords','hashtag','location','name','work_tag','k_label','label','event'],
+                                'query':key
+                                }
+                            }
                         ],
                         'minimum_should_match':1
                     }
@@ -905,7 +893,9 @@ def simple_search(keywords_list,submit_user):
             else:
                 pass
             print query_body
+            print es_list[i],es_index_list[i],es_type_list[i]
             result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+            print result
             if result:
                 for j in result:
                     print j
@@ -916,6 +906,36 @@ def simple_search(keywords_list,submit_user):
                     try:
                         f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
                     except KeyError:
+                        print '22222222222222222'
                         pass
                     table_result[nodes_list[i]].append(f_result)
+            else:
+                continue
     return table_result
+
+    # query_body = {
+    #     'query':{
+    #         'bool':{
+    #             'should':[
+    #                 {'term':{'uid':key}},
+    #                 {'term':{'en_name':key}},
+    #                 {'term':{'group_name':key}},
+    #                 {'term':{'topic_name':key}},
+    #                 {'wildcard':{'uname':'*'+key+'*'}},
+    #                 {'wildcard':{'description':'*'+key+'*'}},
+    #                 {'wildcard':{'function_mark':'*'+key+'*'}},
+    #                 {'wildcard':{'keywords':'*'+key+'*'}},
+    #                 {'wildcard':{'hashtag':'*'+key+'*'}},
+    #                 {'wildcard':{'location':'*'+key+'*'}},
+    #                 {'wildcard':{'name':'*'+key+'*'}},
+    #                 {'wildcard':{'work_tag':'*'+key+'*'}},
+    #                 {'wildcard':{'topic_name':'*'+key+'*'}},
+    #                 {'wildcard':{'k_label':'*'+key+'*'}},
+    #                 {'wildcard':{'label':'*'+key+'*'}},
+    #                 {'wildcard':{'event':'*'+key+'*'}},
+    #                 {'wildcard':{'group_name':'*'+key+'*'}},
+    #             ],
+    #             'minimum_should_match':1
+    #         }
+    #     }
+    # }
