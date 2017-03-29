@@ -241,6 +241,10 @@ group_type = 'group'
 special_event_name = 'speicial_event'
 special_event_type = 'event'
 
+sim_name = 'similarity'
+sim_type = 'sim'
+
+
 # retweet&comment for test
 retweet_comment_es_host = ['219.224.134.216:9201']
 retweet_comment_port = "9201"
