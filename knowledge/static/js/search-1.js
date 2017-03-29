@@ -89,8 +89,8 @@ function start_handleFileSelect(evt){
     }
 };
 
-
 // 属性搜索
+
 //与或非
 var yhf,yhf_key;
 function s_yhf(value) {
@@ -308,4 +308,21 @@ $('#sure_advan').on('click',function () {
             'short_path':short_path,
         }
     }
+    var advanced_search_url = '';
+    $.ajax({
+        type:'POST',
+        url: advanced_search_url,
+        contentType:"application/json",
+        data: JSON.stringify(input_data),
+        dataType: "json",
+        success: advanced_search
+    });
 })
+function advanced_search(data) {
+    var data=eval(data);
+    if (data==1){
+
+    }else {
+
+    }
+}

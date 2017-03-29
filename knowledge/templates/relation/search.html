@@ -176,6 +176,7 @@
 {% block my_js %}
 <script src="/static/js/search-1.js"></script>
 <script>
+    var submit_user=$('#name').text();
     $('.rel-2-value').on('click',function () {
         $('#relation').modal('show');
     });
@@ -197,10 +198,7 @@
     });
 
 
-    
-    
-    
-    
+
     //高级搜索出现与隐藏
     var s=1;
     $('#container .look .advanced').on('click',function () {
@@ -257,7 +255,7 @@
         if (key_words==''){
             alert('请输入您想查询的内容。(不能为空)');
         }else {
-            window.open('/relation/search_result/?key_words='+key_words);
+            window.open('/relation/search_result/?submit_user'+submit_user+'&key_words='+key_words);
         }
     })
 </script>

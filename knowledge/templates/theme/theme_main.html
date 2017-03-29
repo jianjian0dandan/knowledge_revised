@@ -3,7 +3,9 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/theme_main.css">
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 13%;
+    }
 </style>
 {% endblock %}
 
@@ -16,14 +18,17 @@
             <a href="###" class="new_build">专题新建</a>
             <a href="###" class="compared">专题对比</a>
         </div>
-        <div id="group_list"></div>
+        <div class="theme_content">
+            <div id="theme_list"></div>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 
 {% block my_js %}
-
 <script>
+    var submit_user=$('#name').text();
 </script>
+<script src="/static/js/theme_main-1.js"></script>
 {% endblock %}
