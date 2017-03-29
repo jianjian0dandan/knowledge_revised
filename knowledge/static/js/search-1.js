@@ -52,47 +52,10 @@ function start(value) {
     }
 }
 //开始节点选择的输入方式
-var ids=[];
-$.each($("#container .start .options input"),function (index,item) {
-    $(item).on('click',function () {
-        if ($(this).val()==1){
-            ids.push($('.start .options-1-value').val());
-        }else if ($(this).val()==2){
-
-        }else if ($(this).val()==3){
-
-        }
-    })
-});
-//--------文件传输--
-function start_handleFileSelect(evt){
-    var files = evt;
-    for(var i=0,f;f=files[i];i++){
-        var reader = new FileReader();
-        reader.onload = function (oFREvent) {
-            var a = oFREvent.target.result;
-            $.ajax({
-                type:"POST",
-                url:"",
-                dataType: "json",
-                async:false,
-                data:{new_words:a},
-                success: function(data){
-                    if( data ){
-                        var data=data;
-                        console.log(data);
-                    }
-                }
-            });
-        };
-        reader.readAsText(f,'GB2312');
-    }
-};
-
+var ids=[],
 // 属性搜索
-
 //与或非
-var yhf,yhf_key;
+yhf,yhf_key,yhf_value;
 function s_yhf(value) {
     if (value=='y'){
         yhf='must';
@@ -105,9 +68,53 @@ function s_yhf(value) {
 function tag_start(value) {
     yhf_key=value;
 }
-var yhf_value=$('.start .options-2_down').val();
+var no_ids=1;
+$.each($("#container .start .options input"),function (index,item) {
+    $(item).on('click',function () {
+        if ($(this).val()==1){
+            // ids=$('.start .options-1-value').val().split(',');
+            no_ids=1;
+        }else if ($(this).val()==2){
+            //上传文件
+            alert('文件中的内容请用逗号隔开(英文)隔开');
+            ids=files_data;
+            no_ids=2;
+        }else if ($(this).val()==3){
+            // 属性搜索
+            //与或非
+            no_ids=3;
+            yhf_value=$('.start .options-2_down').val();
+        }
+    })
+});
+//--------文件传输----函数--
+var files_data;
+function start_handleFileSelect(evt){
+    var files = evt;
+    for(var i=0,f;f=files[i];i++){
+        var reader = new FileReader();
+        reader.onload = function (oFREvent) {
+            var a = oFREvent.target.result;
+            files_data=a.split(',');
+            window.setTimeout(function () {
+                alert('上传成功');
+            },500);
+        };
+        reader.readAsText(f,'GB2312');
+    }
+};
+
+// //开始节点数据整理
+var starts_nodes=[];
+
 //--------------====起始节点------完---------
 
+// if (no_ids==1){
+//     ids=$('.start .options-1-value').val().split(',');
+// }
+// if (end_ids==1){
+//     end_ids=$('.end .options-1-value').val().split(',');
+// }
 
 //--------------====终止节点-------开始============
 var end_type='User';
@@ -164,47 +171,10 @@ function end(value) {
 }
 //终止节点选择的输入方式
 var end_ids=[];
-$.each($("#container .end .options-3 input"),function (index,item) {
-    $(item).on('click',function () {
-        if ($(this).val()==1){
-            ids.push($('.end .options-1-value').val());
-        }else if ($(this).val()==2){
-
-        }else if ($(this).val()==3){
-
-        }
-    })
-});
-
-//文件传输
-function end_handleFileSelect(evt){
-    var files = evt;
-    for(var i=0,f;f=files[i];i++){
-        var reader = new FileReader();
-        reader.onload = function (oFREvent) {
-            var a = oFREvent.target.result;
-            $.ajax({
-                type:"POST",
-                url:"",
-                dataType: "json",
-                async:false,
-                data:{new_words:a},
-                success: function(data){
-                    if( data ){
-                        var data=data;
-                        console.log(data);
-                    }
-                }
-            });
-        };
-        reader.readAsText(f,'GB2312');
-    }
-};
-
-
 // 属性搜索
 //与或非
-var end_yhf,end_yhf_key;
+var end_yhf,end_yhf_key,end_yhf_value;
+
 function e_yhf(value) {
     if (value=='y'){
         end_yhf='must';
@@ -217,15 +187,53 @@ function e_yhf(value) {
 function tag_end(value) {
     end_yhf_key=value;
 }
-var end_yhf_value=$('.end .options-3_down').val();
-//--------------====终止节点================完-------
+var end_no_ids=1;
+$.each($("#container .end .options-3 input"),function (index,item) {
+    $(item).on('click',function () {
+        if ($(this).val()==1){
+            // end_ids=$('.end .options-1-value').val().split(',');
+            end_no_ids=1;
+        }else if ($(this).val()==2){
+            alert('文件中的内容请用逗号隔开(英文)隔开');
+            end_no_ids=2;
+            end_ids=end_files_data;
+        }else if ($(this).val()==3){
+            end_no_ids=3;
+            end_yhf_value=$('.end .options-3_down').val();
+        }
+    })
+});
 
+//文件传输
+var end_files_data;
+function end_handleFileSelect(evt){
+    var files = evt;
+    for(var i=0,f;f=files[i];i++){
+        var reader = new FileReader();
+        reader.onload = function (oFREvent) {
+            var a = oFREvent.target.result;
+            end_files_data=a.split(',');
+            window.setTimeout(function () {
+                alert('上传成功');
+            },500);
+        };
+        reader.readAsText(f,'GB2312');
+    }
+};
+
+var end_nodes=[];
+
+//--------------====终止节点================完-------
 
 
 //----------关系添加----------
 
 var relation=[];
-relation.push($('.advan-2 .rel-1-value').val());
+if ($('.advan-2 .rel-1-value').val()==''){
+    null;
+}else {
+    relation.push($('.advan-2 .rel-1-value').val());
+}
 function show_rel() {
     $('#relation #rel_value_list').empty();
     if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Event')||
@@ -265,64 +273,114 @@ function rel_value() {
 }
 //----------关系添加-----完-----
 
-//--------其他信息----
-var step=$('.advan-4 .other .jump').val();
-var limit=$('.advan-4 .other .datanums').val();
-var short_path='False';
-if ($("[name=short]:checkbox").prop("checked")=='true'){
-    short_path='True';
-};
-//--------其他信息----完
+
 
 //高级搜索开始
 var input_data;
 $('#sure_advan').on('click',function () {
-    if (short_path=='True'){
-        //此处要对起始节点进行判断，只能输入一个节点
-        if(!(ids.length==1&&end_ids.length==1)){
-            alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+    //开始节点数据整理
+    if (no_ids==1||no_ids==2){
+        if (no_ids==1){
+            ids.push($('.start .options-1-value').val());
         }
+        starts_nodes.push(
+            {
+                'node_type':start_type,
+                'ids':ids,
+            }
+        )
     }else {
-        input_data={
-            'start_nodes':[
-                {
-                    'node_type':start_type,
-                    'ids':ids,
-                    'conditions':{
-                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
-                    }
+        starts_nodes.push(
+            {
+                'node_type':start_type,
+                'conditions':{
+                    yhf:[{'wildcard':{yhf_key:yhf_value}}],
                 }
-            ],
-            'end_nodes':[
-                {
-                    'node_type':start_type,
-                    'ids':ids,
-                    'conditions':{
-                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
-                    }
-                }
-            ],
-            'relation':relation,
-            'step':step,
-            'limit':limit,
-            'short_path':short_path,
-        }
+            }
+        )
     }
-    var advanced_search_url = '';
-    $.ajax({
-        type:'POST',
-        url: advanced_search_url,
-        contentType:"application/json",
-        data: JSON.stringify(input_data),
-        dataType: "json",
-        success: advanced_search
-    });
+    //结束节点数据整理
+    if (end_no_ids==1||end_no_ids==2){
+        if (end_no_ids==1){
+            end_ids.push($('.end .options-1-value').val());
+        }
+        end_nodes.push(
+            {
+                'node_type':end_type,
+                'ids':end_ids,
+            }
+        )
+    }else {
+        end_nodes.push(
+            {
+                'node_type':end_type,
+                'conditions':{
+                    end_yhf:[{'wildcard':{end_yhf_key:end_yhf_value}}],
+                }
+            }
+        )
+    }
+
+    if (yhf_value==''||end_yhf_value){
+        alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
+    }else if ($('.start .options-1-value').val()==''||$('.end .options-1-value').val()==''){
+        alert('请输入起始节点/终止节点的值。(不能为空)');
+    }else if (no_ids==2||end_no_ids==2){
+        console.log(ids)
+        if (ids==''||end_ids==''){
+            alert('您还没有上传文件。(不能为空)');
+        }
+    } else {
+        //--------其他信息----
+        var step=$('.advan-4 .other .jump').val();
+        var limit=$('.advan-4 .other .datanums').val();
+        var short_path='False';
+        if ($("[name=short]:checkbox").prop("checked")=='true'){
+            short_path='True';
+        };
+//--------其他信息----完
+        if (short_path=='True'){
+            //此处要对起始节点进行判断，只能输入一个节点
+            if(!(ids.length==1&&end_ids.length==1)){
+                alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+            }
+        }else {
+            input_data={
+                'start_nodes':starts_nodes,
+                'end_nodes':end_nodes,
+                'relation':relation,
+                'step':step,
+                'limit':limit,
+                'submit_user':submit_user,
+                'short_path':short_path,
+            }
+        }
+        relation=[];
+        console.log(input_data)
+
+        // var advanced_search_url = '/relation/submit_task/';
+        // $.ajax({
+        //     type:'POST',
+        //     url: advanced_search_url,
+        //     contentType:"application/json",
+        //     data: JSON.stringify(input_data),
+        //     dataType: "json",
+        //     success: advanced_search
+        // });
+    }
 })
+
 function advanced_search(data) {
     var data=eval(data);
-    if (data==1){
-
-    }else {
-
-    }
+    search_to_result(data);
 }
+advanced_search(2222);
+
+
+// {
+//     'node_type':start_type,
+//     'ids':ids,
+//     'conditions':{
+//     yhf:[{'wildcard':{yhf_key:yhf_value}}],
+// }
+// }

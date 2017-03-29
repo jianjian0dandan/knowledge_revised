@@ -36,8 +36,8 @@ def relation_search():#图谱搜索
 @mod.route('/search_result/')
 @login_required
 def relation_search_result():#图谱搜索结果
-
-    return render_template('relation/search_result.html')
+    key_words = request.args.get('key_words','')
+    return render_template('relation/search_result.html',key_words=key_words)
 
 @mod.route('/similarity/')
 @login_required
@@ -107,7 +107,7 @@ def simple_result():
 	keywords = request.args.get('keywords', '')
 	keywords = keywords.split('&') 
 	submit_user = request.args.get('submit_user', '')
-	keywords = ['2635695961','2121667213']
+	# keywords = ['2635695961','2121667213']
 	submit_user = 'admin'
 	result = simple_search(keywords,submit_user)
 	return json.dumps(result)
