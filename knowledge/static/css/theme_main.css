@@ -11,25 +11,29 @@ body {
     min-width: 1349px;
     min-height: 920px;
     background: url("/static/images/xxx_main.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container {
     width: 70%;
-    margin: 10.5% auto 0;
+    margin: 120px auto 0;
 }
 #container .group_operating {
     width: 100%;
-    margin: 5% auto 0;
+    margin: 100px auto 0;
     position: relative;
 }
 #container .group_operating .operating {
     position: absolute;
     right: 0;
-    top:0;
+    top: -40px;
+}
+#container .group_operating .theme_content {
+    margin-top: 30px;
 }
 #container .group_operating a {
     font-size: 12px;
 }
-#container .group_operating #group_list {
+#container .group_operating #theme_list {
     width: 100%;
 }
 

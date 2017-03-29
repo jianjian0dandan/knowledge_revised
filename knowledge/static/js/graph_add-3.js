@@ -236,56 +236,62 @@ function getCon(obj){
 
 //------
 
-if($('input.ma_up:checkbox').attr("checked")==true) {
+// if($('input.ma_up:checkbox').attr("checked")==true) {
+//
+// }
 
-}
 $('#container .relation .upload-2').on('click',function () {
-    var name_type_1,name_type_2,name_index_1,name_index_2;
-    var input_data=[];
-    if (start_type=='User'||end_type=='User'){
-        name_type_1='uid';
-        name_index_1='node_index';
-        name_type_2='uid';
-        name_index_2='node_index';
-    }else if(start_type=='Org'||end_type=='Org') {
-        name_type_1='org_id';
-        name_index_1='org_index';
-        name_type_2='org_id';
-        name_index_2='org_index';
-    }else if(start_type=='Event'||end_type=='Event') {
-        name_type_1='event_id';
-        name_index_1='event_index';
-        name_type_2='event_id';
-        name_index_2='event_index';
-    }
-    if (other==0){
-        var other_value=$('.three .other_value').val();
-        if (other_value==''){
-            alert('请输入您想要添加的关系。(不能为空)');
+    if (one_value==''||two_value==''){
+        alert('请输入节点。(不能为空)');
+    }else {
+        var name_type_1,name_type_2,name_index_1,name_index_2;
+        var input_data=[];
+        if (start_type=='User'||end_type=='User'){
+            name_type_1='uid';
+            name_index_1='node_index';
+            name_type_2='uid';
+            name_index_2='node_index';
+        }else if(start_type=='Org'||end_type=='Org') {
+            name_type_1='org_id';
+            name_index_1='org_index';
+            name_type_2='org_id';
+            name_index_2='org_index';
+        }else if(start_type=='Event'||end_type=='Event') {
+            name_type_1='event_id';
+            name_index_1='event_index';
+            name_type_2='event_id';
+            name_index_2='event_index';
+        }
+        if (other==0){
+            var other_value=$('.three .other_value').val();
+            if (other_value==''){
+                alert('请输入您想要添加的关系。(不能为空)');
+            }else {
+                rel_type+=','+other_value;
+                input_data.push([
+                    name_type_1, uid_1, name_index_1,
+                    rel_type,
+                    name_type_2, uid_2, name_index_2
+                ]);
+            }
         }else {
-            rel_type+=','+other_value;
             input_data.push([
                 name_type_1, uid_1, name_index_1,
                 rel_type,
                 name_type_2, uid_2, name_index_2
             ]);
         }
-    }else {
-        input_data.push([
-            name_type_1, uid_1, name_index_1,
-            rel_type,
-            name_type_2, uid_2, name_index_2
-        ]);
+        var input_url='/construction/relation_add/';
+        $.ajax({
+            type:'POST',
+            url: input_url,
+            contentType:"application/json",
+            data: JSON.stringify(input_data),
+            dataType: "json",
+            success: relation_add
+        });
     }
-    var input_url='/construction/relation_add/';
-    $.ajax({
-        type:'POST',
-        url: input_url,
-        contentType:"application/json",
-        data: JSON.stringify(input_data),
-        dataType: "json",
-        success: relation_add
-    });
+
 })
 function relation_add(data) {
     var data=eval(data);

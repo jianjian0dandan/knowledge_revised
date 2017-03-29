@@ -1,31 +1,32 @@
-
-//相关网络
-var network_url='';
+var result_url='/relation/simple_result/?submit_user='+submit_user+'&key_words='+key_words;
 $.ajax({
-    url: network_url,
+    url: result_url,
     type: 'GET',
     dataType: 'json',
     async: true,
-    success:network
+    success:result
 });
+function result(data) {
+    var data=eval(data);
+    console.log(data);
+    // network();
+    person(data.p_nodes);
+    agencies(data.o_nodes);
+    events(data.e_nodes);
+    organization(data.o_nodes);
+    subject(data.t_nodes);
+}
+//相关网络
 function network() {
 
 }
 
 //相关人物
-var person_url='';
-$.ajax({
-    url: person_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:person
-});
-function person(data) {
-    var data = eval(data);
-    $('#person').bootstrapTable('load', data);
+function person(p_data) {
+    var p_data = eval(p_data);
+    $('#person').bootstrapTable('load', p_data);
     $('#person').bootstrapTable({
-        data:data,
+        data:p_data,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -43,82 +44,116 @@ function person(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "人物头像",//标题
-                field: "",//键名
+                title: "用户ID",//标题
+                field: "uid",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return index+1;
-                }
             },
             {
                 title: "人物昵称",//标题
-                field: "",//键名
+                field: "uname",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (value==''||value=='unknown'){
+                        return row.uid;
+                    }else {
+                        return row.uname;
+                    }
                 }
             },
             {
-                title: "粉丝数",//标题
-                field: "",//键名
+                title: "注册地",//标题
+                field: "location",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
-                },
-            },
-            {
-                title: "关注数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                },
-            },
-            {
-                title: "微博数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
+                    if (value==''||value=='unknown'){
+                        return '未知';
+                    }else {
+                        return row.location;
+                    }
                 },
             },
             {
                 title: "影响力",//标题
-                field: "",//键名
+                field: "influence",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    return value.toFixed(2);
                 },
             },
             {
-                title: "相似节点",//标题
-                field: "",//键名
+                title: "活跃度",//标题
+                field: "activeness",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    return value.toFixed(2);
                 },
             },
+            {
+                title: "敏感度",//标题
+                field: "sensitive",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return value.toFixed(2);
+                },
+            },
+            {
+                title: "自动标签",//标题
+                field: "keywords_string",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (value==''){
+                        return '暂无';
+                    }else {
+                        var key='';
+                        var words=value.split('&');
+                        for (var k=0;k<5;k++){
+                            key+=words[k]+' ';
+                        }
+                        return key;
+                    }
+                },
+            },
+            // {
+            //     title: "业务标签",//标题
+            //     field: "function_mark",//键名
+            //     sortable: true,//是否可排序
+            //     order: "desc",//默认排序方式
+            //     align: "center",//水平
+            //     valign: "middle",//垂直
+            //     formatter: function (value, row, index) {
+            //         if (value==''){
+            //             return '暂无';
+            //         }else {
+            //             var mark='';
+            //             var tag=value.split('&');
+            //             for (var k=0;k<5;k++){
+            //                 mark+=tag[k]+' ';
+            //             }
+            //             return mark;
+            //         }
+            //     },
+            // },
         ],
         // onClickRow: function (row, tr) {
         //     if ($(tr.context).index()==2) {
@@ -130,14 +165,6 @@ function person(data) {
 };
 
 //相关机构
-var agencies_url='';
-$.ajax({
-    url: agencies_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:agencies
-});
 function agencies(data) {
     var data = eval(data);
     $('#agencies').bootstrapTable('load', data);
@@ -247,19 +274,11 @@ function agencies(data) {
 };
 
 //相关事件
-var events_url='';
-$.ajax({
-    url: events_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:events
-});
-function events(data) {
-    var data = eval(data);
-    $('#events').bootstrapTable('load', data);
+function events(e_data) {
+    var e_data = eval(e_data);
+    $('#events').bootstrapTable('load', e_data);
     $('#events').bootstrapTable({
-        data:data,
+        data:e_data,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -283,12 +302,9 @@ function events(data) {
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return index+1;
-                }
             },
             {
-                title: "事件关键词",//标题
+                title: "事件类型",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -299,7 +315,7 @@ function events(data) {
                 }
             },
             {
-                title: "业务标签",//标题
+                title: "发生时间",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -309,6 +325,18 @@ function events(data) {
 
                 },
             },
+            {
+                title: "发生地点",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+
+                },
+            },
+
             {
                 title: "参与人数",//标题
                 field: "",//键名
@@ -321,7 +349,7 @@ function events(data) {
                 },
             },
             {
-                title: "微博数",//标题
+                title: "微博数量",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -332,7 +360,18 @@ function events(data) {
                 },
             },
             {
-                title: "相似度",//标题
+                title: "自动标签",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+
+                },
+            },
+            {
+                title: "业务标签",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -353,14 +392,6 @@ function events(data) {
 };
 
 //相关组织
-var organization_url='';
-$.ajax({
-    url: organization_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:organization
-});
 function organization(data) {
     var data = eval(data);
     $('#organization').bootstrapTable('load', data);
@@ -459,14 +490,6 @@ function organization(data) {
 };
 
 //相关专题
-var subject_url='';
-$.ajax({
-    url: subject_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:subject
-});
 function subject(data) {
     var data = eval(data);
     $('#subject').bootstrapTable('load', data);
