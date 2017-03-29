@@ -12,7 +12,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import search_data,simple_search
+from utils import search_data,simple_search,compute_fun
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 test_time = datetime2ts(RUN_TEST_TIME)
@@ -36,8 +36,8 @@ def relation_search():#图谱搜索
 @mod.route('/search_result/')
 @login_required
 def relation_search_result():#图谱搜索结果
-    key_words = request.args.get('key_words','')
-    return render_template('relation/search_result.html',key_words=key_words)
+    result = request.args.get('result', '')
+    return render_template('relation/search_result.html',result=result)
 
 @mod.route('/similarity/')
 @login_required
@@ -48,12 +48,13 @@ def relation_similarity():#相似计算
 @mod.route('/similarity_result/')
 @login_required
 def relation_similarity_result():#相似计算
+    node_id = request.args.get('node_id', '')
+    # result = sim_result(node_id)
+    return render_template('relation/similarity_result.html',node_id=node_id)
 
-    return render_template('relation/similarity_result.html')
-
-@mod.route('/search_result/',methods=['GET', 'POST'])
+@mod.route('/submit_task/',methods=['GET', 'POST'])
 @login_required
-def relation_search_result():
+def submit_task_function():
     input_data = dict()
     # input_data = request.get_json()
     input_data = {
@@ -99,8 +100,9 @@ def relation_search_result():
         'submit_user':'admin',
         'short_path':True#True
     }
-    result = search_data(input_data)
-    return render_template('relation/search_result.html',result=result)
+    result = json.dumps(search_data(input_data))
+    # print type(result)
+    return redirect(url_for('.relation_search_result',result=result))
     # return json.dumps(result)
 
 
@@ -114,4 +116,15 @@ def simple_result():
 	print keywords
 	result = simple_search(keywords,submit_user)
 	return json.dumps(result)
-#start d=node(533),e=node(522) match p=allShortestPaths( d-[r:discuss|:join*0..15]-e ) return p limit 10
+	#start d=node(533),e=node(522) match p=allShortestPaths( d-[r:discuss|:join*0..15]-e ) return p limit 10
+
+@mod.route('/compute_sim/')
+def compute_sim():
+	submit_user = request.args.get('submit_user', '')
+	submit_ts = request.args.get('submit_ts', '')
+	node_name = request.args.get('node_name', '')
+	node_type = request.args.get('node_type', '')
+	node_id = request.args.get('node_id', '')
+	result = compute_fun(submit_user,submit_ts,node_name,node_type,node_id)
+	return result
+
