@@ -27,10 +27,12 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
-from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
+                other_rel, event_other, user_tag, organization_tag, relation_dict
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
@@ -60,7 +62,7 @@ def identify_in(data, uid_list):
             compute_status = '2'
         relation_list = relation_string.split(',')
         r.hset(compute_hash_name, uid, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
-    return True
+    return 1
 
 #submit new task and identify the task name unique in es-group_result and save it to redis list
 def submit_task(input_data):
@@ -87,45 +89,53 @@ def submit_task(input_data):
         r.lpush(group_analysis_queue_name, json.dumps(input_data))
     return status
 
-
-
 # identify in by upload file to admin user
 # input_data = {'date':'2013-09-01', 'upload_data':[], 'user':submit_user}
 def submit_identify_in_uid(input_data):
-    date = input_data['date']
+    print input_data,'00000000000'
+    in_date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
     compute_status = input_data['compute_status'] 
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
     node_type = input_data['node_type']
-    hashname_submit = 'submit_recomment_' + date
-    hashname_influence = 'recomment_' + date + '_influence'
-    hashname_sensitive = 'recomment_' + date + '_sensitive'
+    hashname_submit = 'submit_recomment_' + in_date
+    hashname_influence = 'recomment_' + in_date + '_influence'
+    hashname_sensitive = 'recomment_' + in_date + '_sensitive'
     compute_hash_name = 'compute'
     # submit_user_recomment = 'recomment_' + submit_user + '_' + str(date)
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     upload_data = input_data['upload_data']
-    if recommend_style == 'upload':
-        line_list = upload_data.split('\n')
-    if recommend_style == 'write':
-        line_list = upload_data.split(',')
     uid_list = []
     invalid_uid_list = []
-    for line in line_list:
-        uid = line.split('\r')[0]
-        #if len(uid)==10:
-        #    uid_list.append(uid)
-        if uid != '':
-            uid_list.append(uid)
-    if len(invalid_uid_list)!=0:
-        return False, 'invalid user info', invalid_uid_list
+    if recommend_style == 'upload':
+        line_list = upload_data
+        # print line_list,'====8888===='
+        for line in line_list:
+            uid = line.strip('\r')
+            # print len(str(uid)),'!!!0000000000999999999999'
+            if len(str(uid))==10:
+               uid_list.append(uid)
+            else:
+                invalid_uid_list.append(uid)
+    if recommend_style == 'write':
+        line_list = upload_data
+        # print line_list,'====8888===='
+        for line in line_list:
+            uid = line
+            if len(str(uid))==10:
+               uid_list.append(uid)
+            else:
+                invalid_uid_list.append(uid)
+    if len(invalid_uid_list) != 0:
+        return 0, 'invalid user info', invalid_uid_list
     #identify the uid is not exist in user_portrait and compute
     #step1: filter in user_portrait
     new_uid_list = []
     have_in_uid_list = []
     try:
-        exist_portrait_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={'ids':uid_list}, _source=False)['docs']
+        exist_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, _source=False)['docs']
     except:
         exist_portrait_result = []
     if exist_portrait_result:
@@ -144,25 +154,25 @@ def submit_identify_in_uid(input_data):
     print 'new_uid_set:', new_uid_set 
     print 'in_uid_set:', in_uid_set
     if len(in_uid_set)==0:
-        return False, 'all user in'
+        return 0, 'all user in'
     #identify the final add user
     final_submit_user_list = []
     for in_item in in_uid_set:
-        if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashname_submit, in_item))
-            recommentor_list = tmp['operation'].split('&')
-            recommentor_list.append(str(submit_user))
-            new_list = list(set(recommentor_list))
-            tmp['operation'] = '&'.join(new_list)
-        else:
-            tmp = {'system':'0', 'operation':submit_user}
+        # if in_item in auto_recomment_set:
+        #     tmp = json.loads(r.hget(hashname_submit, in_item))
+        #     recommentor_list = tmp['operation'].split('&')
+        #     recommentor_list.append(str(submit_user))
+        #     new_list = list(set(recommentor_list))
+        #     tmp['operation'] = '&'.join(new_list)
+        # else:
+        #     tmp = {'system':'0', 'operation':submit_user}
         if operation_type == 'submit':
             relation_list = relation_string.split(',')
             r.hset(compute_hash_name, in_item, json.dumps([in_date, compute_status, node_type, relation_list, submit_user, recommend_style]))
-            r.hset(hashname_submit, in_item, json.dumps(tmp))
+            # r.hset(hashname_submit, in_item, json.dumps(tmp))
             # r.hset(submit_user_recomment, in_item, '0')
         final_submit_user_list.append(in_item)
-    return True, invalid_uid_list, have_in_uid_list, final_submit_user_list
+    return 1, invalid_uid_list, have_in_uid_list, final_submit_user_list
 
 def get_final_submit_user_info(uid_list):
     final_results = []
@@ -229,15 +239,15 @@ def get_final_submit_user_info(uid_list):
 def submit_identify_in(input_data):
     result_mark = False
     result_mark = submit_identify_in_uid(input_data)
-
-    if len(result_mark) == 4:
-        final_submit_user_list = result_mark[-1]
-        if final_submit_user_list:
-            final_submit_user_info = get_final_submit_user_info(final_submit_user_list)
-        else:
-            final_submit_user_info = []
-        result_mark = list(result_mark)[:3]
-        result_mark.append(final_submit_user_info)
+    print result_mark,'====333333333333333============'
+    # if len(result_mark) == 4:
+    #     final_submit_user_list = result_mark[-1]
+    #     if final_submit_user_list:
+    #         final_submit_user_info = get_final_submit_user_info(final_submit_user_list)
+    #     else:
+    #         final_submit_user_listuser_info = []
+    #     result_mark = list(result_mark)[:3]
+    #     result_mark.append(final_submit_user_info)
     return result_mark
 
 # show recommentation in uid
@@ -467,9 +477,12 @@ def recommentation_in_auto(date, submit_user, node_type):
     return final_result
 
 def submit_event(input_data):
+    print input_data,'555555555555555'
     if not input_data.has_key('name'):
-        input_data['name'] = input_data['keywords']
-
+        name_s = input_data['keywords'].split('&')[:3]
+        print name_s,'==='
+        name_string = '&'.join(name_s)
+        input_data['name'] = name_string
     if input_data.has_key('mid'):
         # event_id = mid
         input_data['en_name'] = input_data['mid']
@@ -491,12 +504,12 @@ def submit_event(input_data):
     # result = es_event.delete(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])
     try:
         result = es_event.get(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'])['_source']
-        return 'already in'
+        return '0'
     except:
         es_event.index(index=event_task_name, doc_type=event_task_type, id=input_data['en_name'], body=input_data)
         if input_data['immediate_compute'] == '1':
             os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
-    return True
+    return '1'
 
 def update_event(event_id):
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
@@ -505,7 +518,7 @@ def update_event(event_id):
     if result['end_ts'] < now_ts:
         es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
 
-    os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py %s &" % event_id)
+    os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
 
 
@@ -517,26 +530,40 @@ def submit_event_file(input_data):
     recommend_style = input_data['recommend_style']
     compute_status = input_data['compute_status']
     file_data = input_data['upload_data']
+    start_ts = input_data['start_ts']
+    end_ts = input_data['end_ts']
     result_flag = False
     valid_event = 0
     total_event = len(file_data)
-    for event in file_data:
-        if not event.has_key('event_ts'):
-            event['event_ts'] = int(time.time())
+    for line in file_data:
+        print line
+        event = {}
+        try:
+            keywords = line.strip('\r')
+        except:
+            keywords = line
+        if keywords == '':
+            return 'not null'
+        event['keywords'] = keywords
+        event['event_ts'] = int(time.time())
         event['submit_ts'] = submit_ts
+        event['start_ts'] = start_ts
+        event['end_ts'] = end_ts
         event['relation_compute'] = relation_compute
         event['immediate_compute'] = immediate_compute
         event['submit_user'] = submit_user
         event['recommend_style'] = recommend_style
         event['compute_status'] = compute_status
         result = submit_event(event)
-        if result == True:
+        print result,'ppppppppppppppppppppppp'
+        if result == '1':
             valid_event += 1
     if valid_event == total_event:
         result_flag = True
     return result_flag, valid_event
 
 def relation_add(input_data):
+    # print input_data, type(input_data),'------------'
     result_detail = [False]
     rel_num = 0
     for i in input_data:
@@ -571,7 +598,7 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r]->(end_node) RETURN r" % (
+    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r]-(end_node) RETURN r" % (
     node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id)
     # return c_string
     print c_string
@@ -579,10 +606,20 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
     # print result
     rel_list = []
     for item in result:
-        rel_list.append(item)
+        relation = dict(item)['r'].type()
+        relation_ch = relation_dict[relation]
+        if relation in [other_rel, event_other, organization_tag, user_tag]:
+            relation_name = dict(item)['r']['name']
+            relaiton_name_list = relation_name.split(',')
+            for i_name in relaiton_name_list:
+                relation_ch2 = relation_ch+ '-' +i_name
+                relation = relation +'&' + relation_name
+                rel_list.append(relation_ch2)
+        else:
+            rel_list.append(relation_ch)
     return rel_list
 
-def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key2, node2_id, node2_index_name):
+def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
@@ -594,24 +631,48 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
-    node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
-    # return c_string
+    # c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
+    # node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+    # # return c_string
 
-    result = graph.run(c_string)
-    # print result
-    rel_list = []
-    for item in result:
-        rel_list.append(item)
-    # print rel_list
-    if rel in rel_list:
-        return 'has relation already'
-    rel = Relationship(node1, rel, node2)
-    graph.create(rel)
-    print "create success"
+    # result = graph.run(c_string)
+    # # print result
+    # rel_list = []
+    # for item in result:
+    #     rel_list.append(item)
+    # # print rel_list
+    # if rel in rel_list:
+    #     return 'has relation already'
+    rel = rel_union.split(',')[0]
+    if rel in [other_rel, event_other, organization_tag, user_tag]:
+        rel_name = rel_union.split(',')[1]
+        c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
+                    MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        result = graph.run(c_string)
+        exist_relation = []
+        for i in result:
+            dict_i = dict(i)
+            exist_relation = dict_i['r.name'].split(',')
+        if exist_relation:
+            del_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') \
+                   MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+            result = graph.run(del_string)
+        exist_relation.append(rel_name)
+        exist_relation = [i for i in set(exist_relation)]
+        add_relation_string = ','.join(exist_relation)
+        c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
+                create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
+                node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
+        result = graph.run(c_string)
+    else:
+        rel = Relationship(node1, rel, node2)
+        graph.create(rel)
+        print "create success"
     return True
 
-def search_event(item, field):
+def search_event(item, field, submit_user):
     query_body = {
         "query":{
             'bool':{
@@ -625,29 +686,32 @@ def search_event(item, field):
         },
         'size':10
     }
-    only_eid = []
-    event_id_list = []
-    u_nodes_list = {}
-    e_nodes_list = {}
-    event_relation =[]
+    result = []
     try:
-        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+        event_result = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
                 body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
     except:
         return 'does not exist'
-    for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
+    for i in event_result:
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_editor_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-        event_id_list.append(field_list)
-    return event_id_list
-
-def search_event_time_limit(item, field, start_ts, end_ts):
+def search_event_time_limit(item, field, start_ts, end_ts, submit_user):
     query_body = {
         "query":{
             "bool":{
@@ -658,33 +722,43 @@ def search_event_time_limit(item, field, start_ts, end_ts):
                             "lte": end_ts
                         }
                     }}
+                ],
+                'should':[
+                    {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
             }
         }
     }
-    only_eid = []
-    event_id_list = []
-    u_nodes_list = {}
     e_nodes_list = {}
-    event_relation =[]
+    # event_relation =[]
+    result = []
     try:
-        name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
+        event_result = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
                 body=query_body, fields=field)['hits']['hits']  #fields=['name','en_name']
     except:
         return 'does not exist'
-    for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
+    for i in event_result:
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_editor_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-        event_id_list.append(field_list)
-    return event_id_list
-
-def search_user(item,field):
+def search_user(item, field, submit_user):
     query_body = {
         "query":{
             'bool':{
@@ -699,89 +773,107 @@ def search_user(item,field):
     }
     only_uid = []
     user_uid_list = []
-    u_nodes_list = {}
 
     try:
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
-
+    result = []
     for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
-        user_uid_list.append(field_list)
-    return user_uid_list
+        event = []
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords_string':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'function_mark':
+                tag = deal_editor_tag(i_fields[j][0], editor)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
-def search_user_time_limit(item, field, start_ts, end_ts):
+def search_user_time_limit(item, field, start_ts, end_ts, editor):
     query_body = {
         "query":{
             # "uid":uid_list #-------------------!!!!!
             "bool":{
                 "must":[
                     {"range":{
-                        "create_time":{
-                            "gte": former_ts,
-                            "lte": current_ts
+                        "submit_ts":{
+                            "gte": start_ts,
+                            "lte": end_ts
+                             }
                         }
-                    }}
+                    }
+                ],
+                'should':[
+                    {"wildcard":{'uid':'*'+str(item.encode('utf-8'))+'*'}},            
+                    {"wildcard":{'uname':'*'+str(item.encode('utf-8'))+'*'}}
                 ]
             }
         }
     }
-    only_uid = []
-    user_uid_list = []
-    u_nodes_list = {}
-
     try:
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
-
+    
+    result = []
     for i in name_results:
-        field_list = []
-        for key in field:
-            try:
-                key1 = i['fields'][key][0]
-            except:
-                key1 = ''
-            field_list.append(key1)
-        user_uid_list.append(field_list)
-    return user_uid_list
+        event = []
+        # if i['found'] == False:
+        #     event.append(i['_id'])
+        #     continue
+        i_fields = i['fields']
+        for j in field:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords_string':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'function_mark':
+                tag = deal_editor_tag(i_fields[j][0], editor)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
 
 def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string']
+        field = p_column
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         node_result = search_user_time_limit(item, field, start_ts, end_ts, editor)
     if node_type == 'Event':
         # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-        field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-         'weibo_counts', 'keywords', 'work_tag','compute_status']
+        field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
         node_result = search_event_time_limit(item, field, start_ts, end_ts, editor)
     return node_result
 
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
-        field = ['uid', 'uname', 'topic_string', 'domain', 'function_description']
+        field = p_column
         # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
         index_n = node_index_name
         index_key = people_primary
         node_key = group_node
-        node_result = search_user(item, field)[0]
-        tag = deal_user_tag(item, submit_user)[0]
+        node_result = search_user(item, field, '')[0]
+        tag = deal_user_tag(item, submit_user, '')[0]
         node_result.append(tag)
 
     if node_type == 'Event':
-        field = ['en_name', 'name', 'real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
-              'start_ts', 'end_ts','description', 'related_docs']
-        node_result = search_event(item, field)[0]
+        field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
+        node_result = search_event(item, field, submit_user)[0]
         tag = deal_event_tag(item, submit_user)[0]
         node_result.append(tag)
         index_n = event_index_name
@@ -833,6 +925,17 @@ def deal_event_tag(item ,submit_user):
             left_tag.append(i)
     return [keep_tag, left_tag]
 
-
+def deal_editor_tag(tag ,submit_user):
+    print tag,'=============!!==='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
 
 

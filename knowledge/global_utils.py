@@ -197,7 +197,7 @@ def user_search_sth(en_name,fields_list):
         }
     }
     try:
-        name_results = es_user_portrait.search(index=portrait_name, doc_type=portrait_type, \
+        name_results = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields=fields_list)['hits']['hits'][0]['fields']
     except:
         name_dict = {}
@@ -223,7 +223,7 @@ def user_name_search(en_name):
         name_results = es_user_portrait.search(index=portrait_name, doc_type=portrait_type, \
                 body=query_body, fields=['uname'])['hits']['hits'][0]['fields']
     except:
-        return ''
+        return en_name
     for k,v in name_results.iteritems():
         ch_name = v[0]
     # print ch_name.encode('utf-8')
@@ -259,7 +259,7 @@ def deal_event_tag(tag ,submit_user):
     # tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
     # return result
     # tag = tag_value
-    print tag,'=============!!==='
+    # print tag,'=============!!==='
     tag_list = tag.split('&')
     left_tag = []
     keep_tag = []
@@ -306,9 +306,79 @@ def event_detail_search(eid_list, submit_user):
         result.append(event)
     return result
 
+def user_detail_search(uid_list,submit_user):
+    if not uid_list:
+        return []
+    fields_list = p_column
+    only_eid = []
+    event_id_list = []
+    u_nodes_list = {}
+    e_nodes_list = {}
+    event_relation =[]
+    # try:
+    uid_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+            body={'ids':uid_list}, fields=fields_list)['docs']
+    result = []
+    for i in uid_result:
+        event = []
+        if i['found'] == False:
+            event.append(i['_id'])
+            continue
+        i_fields = i['fields']
+        for j in fields_list:
+            if not i_fields.has_key(j):
+                event.append('')
+                continue
+            if j == 'keywords':
+                keywords = i_fields[j][0].split('&')
+                keywords = keywords[:5]
+                event.append(keywords)
+            elif j == 'work_tag':
+                tag = deal_event_tag(i_fields[j][0], submit_user)[0]
+                event.append(tag)
+            else:
+                event.append(i_fields[j][0])
+        result.append(event)
+    return result
+
+def get_group(g_name, submit_user):
+    if g_name == '': 
+        theme_detail = es_group.search(index=group_name, doc_type=group_type,\
+            body={'query':{'term':{'user':submit_user}}})['hits']['hits']
+    else:
+        query_body = {
+            "query":{
+                'bool':{
+                    'must':[
+                        {'match':   {"user":submit_user}},         
+                        {'match':   {"group_name":g_name}},         
+                    ]
+
+                }
+
+            },
+            'size':100
+        }
+        theme_detail = es_group.search(index=group_name, doc_type=group_type,\
+            body=query_body)['hits']['hits']
+    theme_result = []
+    for i in theme_detail:
+        topic_id = i['_id']
+        theme_name = i['_source']['group_name']
+        contain_event = i['_source']['people_count']
+        auto_label = i['_source']['label'].split('&')[:5]
+        try:
+            work_tag = i['_source']['k_label'].split('&')
+        # work_tag = deal_event_tag(work_tag, submit_user)[0]
+        except:
+            work_tag = []
+        submit_ts = ts2date(i['_source']['create_ts'])
+        theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
+    return theme_result
+
 def get_theme(theme_name, submit_user):
     if theme_name == '': 
-        theme_detail = es_event.search(index=special_event_name, doc_type=special_event_type,\
+        theme_detail = es_special_event.search(index=special_event_name, doc_type=special_event_type,\
             body={'query':{'term':{'user':submit_user}}})['hits']['hits']
     else:
         query_body = {

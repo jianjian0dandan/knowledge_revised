@@ -17,7 +17,7 @@ from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_ty
 from knowledge.global_config import event_task_name, event_task_type 
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
-                  deal_user_tag, create_node_or_node_rel, show_relation, update_event
+                  deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -41,7 +41,7 @@ def construction_main():#导航页
 def construction_graph_add():#图谱添加
     return render_template('construction/graph_add.html')
 
-@mod.route('/graph_modify')
+@mod.route('/graph_modify/')
 @login_required
 def construction_graph_modify():#图谱编辑
     return render_template('construction/graph_modify.html')
@@ -100,7 +100,7 @@ def ajax_admin_identify_in():
             data.append([date, uid, status, relation_string, recommend_style, submit_user,node_type])
         results = identify_in(data,uid_list)
     else:
-        results = None
+        results = 0
     return json.dumps(results)
 
 # 立即更新人或机构
@@ -115,15 +115,18 @@ def ajax_update_user():
     relation_string = request.args.get('user_rel', 'friend') # split by ,
     relation_list = relation_string.split(',')
     r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
-    return json.dumps(True)
+    return json.dumps(1)
+
 
 
 #上传文件方式人物入库
-@mod.route('/submit_identify_in/', methods=['GET', 'POST'])
+@mod.route('/submit_identify_in/', methods=['POST', 'GET' ])
 def ajax_submit_identify_in():
     results = 0 # mark fail
     input_data = request.get_json()
+    # print type(input_data),'=======!!!'
     #input_data={'date': 2016-03-13, 'upload_data':[],'node_type':'1/2', 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'upload/write', 'type':'uid', 'operation_type': 'show'/'submit'} 
+    # input_data={'date': '2016-03-13', 'upload_data':[2674977220, 1895944731],'node_type':'0', 'user':'admin@qq.com','compute_status':0,'relation_string':'friend', 'recommend_style':'write',  'operation_type': 'submit'} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
@@ -135,14 +138,17 @@ def ajax_show_user_task_status():
     node_type = request.args.get('node_type', '0') # '0':user  '1'：org
     compute_name = 'compute'
     result = r.hgetall(compute_name)
-    result_dict = {}
+    # return json.dumps(result)
+    result_list = []
     for k,v in result.iteritems():
         detail = json.loads(v)
         if detail[2] == node_type:
-            result_dict[k] = detail
+            kv_list = [k]
+            kv_list.extend(detail)
+            result_list.append(kv_list)
         else:
             continue
-    return json.dumps(result_dict)
+    return json.dumps(result_list)
 
 # # submit group analysis task and save to redis as lists
 # # submit group task: task name should be unique
@@ -175,12 +181,13 @@ def ajax_show_user_task_status():
 def ajax_submit_event():
     input_data = dict()
     input_data = request.get_json()
+    print input_data 
     # input_data = { 'submit_ts':'date', 'name':u'名&字', 'relation_list': 'join&discuss',\
     #            'cal_style':'cal_style', 'keywords':'keywords', 'start_ts':'start_ts', 'end_ts':'end_ts', 
     #            'event_type':'event_type', 'recommend_style':'recommend_style', 'status':0, 'submit_user':'admin','mid':'mid'}
-    input_data = {'submit_ts':'date', 'relation_compute': 'join&discuss',\
-               'immediate_compute':'1', 'keywords':u'希拉里',
-               'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
+    # input_data = {'submit_ts':'date', 'relation_compute': 'join&discuss',\
+    #            'immediate_compute':'1', 'keywords':u'希拉里',
+    #            'event_type':u'政治', 'recommend_style':'submit', 'compute_status':0, 'submit_user':'admin','event_ts':1480176000}
     result = submit_event(input_data)
     return json.dumps(result)
 
@@ -196,12 +203,12 @@ def ajax_event_update():
 def ajax_submit_identify_file():
     results = 0 # mark fail
     input_data = request.get_json() #文件至少有keywords。
-    input_data1 = { 'keywords':u'1两会&方案', 'event_type':u'经济', 'event_ts':1480175030}
-    input_data2 = { 'keywords':u'1北京&房价&政策', 'event_type':u'经济'}
-    input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss', 'upload_data':[input_data1,input_data2], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
+    # input_data={'submit_ts': '1480175030', 'immediate_compute':'1', 'relation_compute': 'join&discuss',
+    # 'upload_data':[], 'submit_user':'admin','recommend_style':'file', 'compute_status':0} 
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
+    print results,'===============00000000000'
     return json.dumps(results)  # True, submit_num
 
 #事件任务状态
@@ -222,7 +229,7 @@ def ajax_search_node():
         field = ['uid', 'uname']
         result = search_user(item, field)
     if node_type == 'Event':
-        field = ['en_name', 'name']  #改成name
+        field = ['en_name', 'name']  
         result = search_event(item, field)
     return json.dumps(result)
 
@@ -231,8 +238,8 @@ def ajax_search_node():
 def ajax_relation_add():
     input_data = dict()
     input_data = request.get_json()
-    input_data = [['uid', '1581366400', 'node_index', 'join', 'event', \
-                 'min-jin-dang-yi-yuan-cheng-yao-qing-da-lai-dui-kang-da-lu-1482126431', 'event_index']]
+    # input_data = [['uid', '2635695961', 'node_index', u'other_relationship,测试2', 'event_id',   \
+    #              'xi-la-li-1480176000', 'event_index']]  #other_relationship,测试   join
     result = relation_add(input_data)
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 
@@ -243,21 +250,21 @@ def ajax_relation_edit_search():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field)
+        result = search_user(item, field, '')
     if node_type == 'Event':
-        field = ['en_name', 'name']  #改成name
-        result = search_event(item, field)
+        field = ['en_name', 'name']
+        result = search_event(item, field, '')
     return json.dumps(result)
 
 #关系编辑，先查询已有关系
 @mod.route('/relation_show_edit/', methods=['GET', 'POST'])
 def ajax_relation_show_edit():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
-    node1_id = request.args.get('node1_id', '1497035431')
+    node1_id = request.args.get('node1_id', '2635695961')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     # rel = request.args.get('rel', '')
-    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
-    node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
+    node_key2 = request.args.get('node_key2', 'event_id')  # event_id,uid
+    node2_id = request.args.get('node2_id', 'xi-la-li-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
     flag = show_relation(node_key1, node1_id, node1_index_name,  \
                                    node_key2, node2_id, node2_index_name)
@@ -283,9 +290,9 @@ def create_relation():
 def ajax_node_edit():
     node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
-    editor = request.args.get('submit_user', 'admin')  #admin
-    start_ts = request.args.get('start_ts', '')  # 1482126030
-    end_ts = request.args.get('end_ts', '')  # 1482126490
+    editor = request.args.get('submit_user', 'admin@qq.com')  #admin
+    start_ts = request.args.get('start_ts', '')  # 1504195000
+    end_ts = request.args.get('end_ts', '')  # 1504195300
     if start_ts and end_ts:
         node_result = search_node_time_limit(node_type, item, start_ts, end_ts, editor)
     else:
@@ -294,8 +301,7 @@ def ajax_node_edit():
             node_result = search_user(item, field, editor)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-            field = ['en_name','name', 'category', 'submit_ts', 'real_geo', 'uid_counts',\
-             'weibo_counts', 'keywords', 'work_tag','compute_status']
+            field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
             node_result = search_event(item, field, editor)
     return json.dumps(node_result)
 

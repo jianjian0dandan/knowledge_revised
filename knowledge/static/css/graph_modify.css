@@ -2,20 +2,35 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 970px;
+        /*height: 970px;*/
     }
 }
 /*内容样式*/
 body {
     width: 100%;
     min-width: 1349px;
-    min-height: 970px;
-    background: url("/static/images/graph_modify.png") no-repeat;
+    /*min-height: 970px;*/
+    background: url("/static/images/graph_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container {
-    width: 60%;
-    padding: 2% 5%;
-    margin: 12% auto 0;
+    position: relative;
+    width: 70%;
+    padding:110px 50px 90px 100px;
+    margin:110px auto 100px;
+    background: #f3f4f5;
+    box-shadow: 2px 1px 1px #ccced0;
+}
+#container .graph_modify {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 225px;
+    height:78px;
+    line-height: 70px;
+    text-align: center;
+    background: url("/static/images/xxx_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container .edit input {
     position: relative;
@@ -35,7 +50,7 @@ body {
     border: 1px solid silver;
     margin: 1% 2% 1% 1%;
 }
-#container .attributes .submit,#container .rel_attributes .rel_submit {
+#container .attributes .submit,#container .rel .rel_submit {
     padding: 0.3% 2%;
     color: white;
     margin-right:18%;
@@ -46,7 +61,13 @@ body {
     cursor: pointer;
     float: right;
 }
-#container .attributes .submit:hover,#container .rel_attributes .rel_submit:hover {
+#container .attributes .submit:hover,#container .rel .rel_submit:hover {
     background-color: #176de2;
+}
+#container .rel .rel_attributes {
+    margin-top: 20px;
+}
+.add_minus,.add_plus {
+    cursor: pointer;
 }
 
