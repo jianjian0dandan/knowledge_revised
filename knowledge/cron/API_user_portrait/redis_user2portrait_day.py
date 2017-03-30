@@ -2,13 +2,13 @@
 import sys
 import time
 import json
-from wei_api import read_flow_text, read_flow_text_sentiment
+from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user as r
+from global_utils import R_RECOMMENTATION as r
 from global_utils import r_user_hash_name
-from time_utils import ts2date
+from time_utils import ts2date, datetime2ts
 from parameter import WEIBO_API_INPUT_TYPE
 
 def scan_compute_redis():
@@ -20,7 +20,7 @@ def scan_compute_redis():
     verify_mark_dict = dict()
     relation_mark_dict = dict()
     submit_user_dict = dict()
-    submit_ts_dict = dict
+    submit_ts_dict = dict()
     count = 0
     for uid in results:
         user_list = json.loads(results[uid])
@@ -59,7 +59,7 @@ def scan_compute_redis():
                 change_mapping_dict = dict()
                 change_user_list = set(iter_user_list) - set(user_keywords_dict.keys())
                 for change_user in change_user_list:
-                    change_mapping_dict[change_user] = json.dumps([in_date, '2', verify_mark_dict[change_user], relation_mark_dict[change_user]，, submit_user_dict[change_user], submit_ts_dict[change_user]])
+                    change_mapping_dict[change_user] = json.dumps([in_date, '2', verify_mark_dict[change_user], relation_mark_dict[change_user], submit_user_dict[change_user], submit_ts_dict[change_user]])
                 r.hmset(r_user_hash_name, change_mapping_dict)
 
             iter_user_list = []
@@ -119,10 +119,10 @@ if __name__=='__main__':
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/redis_user2portrait_day.py&start&' + str(log_time_ts)
     
-    try:
-        scan_compute_redis()
-    except Exception, e:
-        print e, '&error&', ts2date(time.time())
+    #try:
+    scan_compute_redis()
+    #except Exception, e:
+    #    print e, '&error&', ts2date(time.time())
 
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/redis_user2portrait_day.py&end&' + str(log_time_ts)
