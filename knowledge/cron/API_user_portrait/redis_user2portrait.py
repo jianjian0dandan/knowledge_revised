@@ -6,7 +6,7 @@ from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user as r
+from global_utils import R_RECOMMENTATION as r
 from global_utils import r_user_hash_name
 from time_utils import ts2date, datetime2ts
 from parameter import WEIBO_API_INPUT_TYPE
@@ -14,10 +14,10 @@ from parameter import WEIBO_API_INPUT_TYPE
 def scan_compute_redis():
     task_mark = 'user'
     hash_name = r_user_hash_name
-    #results = r.hgetall(hash_name)
+    results = r.hgetall(hash_name)
     #test
-    relation_list = ['friend', 'colleague', 'ip_relation']
-    results = {'2117306420':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin']), '5779325975':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin'])}
+    #relation_list = ['friend', 'colleague', 'ip_relation']
+    #results = {'2117306420':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin']), '5779325975':json.dumps(['2017-09-01', '1', '0', relation_list, 'admin'])}
     iter_user_list = []
     mapping_dict = dict()
     verify_mark_dict = dict()
@@ -28,7 +28,7 @@ def scan_compute_redis():
     for uid in results:
         user_list = json.loads(results[uid])
         in_date = user_list[0]
-        status = user_list[1]
+        status = str(user_list[1])
         verify_mark = user_list[2]
         relation_list = user_list[3]
         submit_user = user_list[4]

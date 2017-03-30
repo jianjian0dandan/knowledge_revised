@@ -2,13 +2,13 @@
 import sys
 import time
 import json
-from wei_api import read_flow_text, read_flow_text_sentiment
+from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user_update as r
-from global_utils import r_user_update_long_hash_name
-
+from global_utils import R_RECOMMENTATION as r
+from global_utils import r_user_update_long_hash_name as r_user_update_hash_name
+from parameter import WEIBO_API_INPUT_TYPE
 
 def scan_compute_redis_v2():
     task_type = 'user'
@@ -36,7 +36,7 @@ def scan_compute_redis_v2():
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
             iter_user_list = []
             relation_mark_dict = dict()
@@ -46,7 +46,7 @@ def scan_compute_redis_v2():
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
 
 '''
