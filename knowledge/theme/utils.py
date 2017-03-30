@@ -34,7 +34,8 @@ from knowledge.global_utils import event_detail_search, user_name_search, user_d
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import special_event_name, special_event_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
-                            event_node, event_primary, event_index_name, org_primary, people_node, org_node, event_node
+                            event_node, event_primary, event_index_name, org_primary, people_node, org_node, event_node,\
+                            relation_dict
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
@@ -603,7 +604,7 @@ def get_theme_net(theme_name, submit_user):
         dict_i = dict(i)
         start_id = dict_i['d']['event_id']
         end_id = dict_i['e']['event_id']
-        exist_relation.append([event_name_dict[start_id], dict_i['type(r)'], \
+        exist_relation.append([event_name_dict[start_id], relation_dict[dict_i['type(r)']], \
                     event_name_dict[end_id]])
         # print exist_relation
         relation_string = start_id+'-'+end_id
@@ -808,12 +809,21 @@ def get_theme_related(theme_name, submit_user):
             except:
                 node_dict['event'] = []
                 node_dict['event'].append(node_id)
-    uid_list = [i for i in set(node_dict['user'])]
-    org_list = [i for i in set(node_dict['org'])]
-    event_list = [i for i in set(node_dict['event'])]
-    user_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uname', 'uid'])['docs']
-    org_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':org_list}, fields=['uname', 'uid'])['docs']
-    event_result = es_event.mget(index=event_analysis_name,doc_type=event_text_type, body={'ids':event_list}, fields=['en_name', 'name'])['docs']
+    try:
+        uid_list = [i for i in set(node_dict['user'])]
+        user_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uname', 'uid'])['docs']
+    except:
+        user_result = []
+    try:
+        org_list = [i for i in set(node_dict['org'])]
+        org_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':org_list}, fields=['uname', 'uid'])['docs']
+    except:
+        org_result = []
+    try:
+        event_list = [i for i in set(node_dict['event'])]
+        event_result = es_event.mget(index=event_analysis_name,doc_type=event_text_type, body={'ids':event_list}, fields=['en_name', 'name'])['docs']
+    except:
+        event_result = []
     final_user = []
     for i in user_result:
         if i['found'] == True:
@@ -839,11 +849,11 @@ def get_theme_related(theme_name, submit_user):
     final_event = []
     for i in event_result:
         if i['found'] == True:
-            final_org.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+            final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
         else:
-            final_org.append([i['_id'],i['_id']])
-    return [final_user, final_org, final_event, final_file, final_wiki]
-
+            final_event.append([i['_id'],i['_id']])
+    return {'final_user':final_user, 'final_org':final_org, 'final_event':final_event, \
+            'final_file':final_file, 'final_wiki':final_wiki}
 
 
 

@@ -12,7 +12,8 @@ import csv
 from  knowledge.global_utils import get_group
 from utils import search_related_u_card, create_node_and_rel, create_group_relation, del_u_group_rel,\
      add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
-     compare_group_keywords, compare_group_k_label, group_geo_vary
+     compare_group_keywords, compare_group_k_label, group_geo_vary, get_group_user_track, group_event_rank,\
+     group_user_rank, group_user_keyowrds, group_related,group_user_tag
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -82,7 +83,7 @@ def create_new_relation():
 @mod.route('/create_relation/')#添加到已有群体
 def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
-    node1_id = request.args.get('node1_id', '1974576991,1895431523')
+    node1_id = request.args.get('node1_id', '1663072851')
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
@@ -118,7 +119,7 @@ def group_add_tag():  #群体编辑-添加标签,删除标签
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     k_label = request.args.get('k_label', u'11月9号')
-    operation = request.args.get('operation', 'del') #add del
+    operation = request.args.get('operation', 'add') #add del
     flag = add_group_k_label(g_name, k_label, operation)
     return json.dumps(flag)
 
@@ -172,7 +173,7 @@ def ajax_get_difference_k_label():
     g_name1 = g_name1 + '_' + submit_user
     g_name2 = request.args.get('g_name2', u'政治群体')  # uid,event_id
     g_name2 = g_name2 + '_' + submit_user
-    flag = request.args.get('flag', 'diff')   #all, diff same
+    flag = request.args.get('flag', 'all')   #all, diff same
     result = compare_group_k_label(g_name1, g_name2, submit_user, flag)
     return json.dumps(result)
 
@@ -189,4 +190,52 @@ def detail_group_geo():  #群体地理位置信息
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     detail_t = group_geo_vary(g_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/group_user_geo/')
+def group_user_geo():  #群体中个人的地理位置信息
+    uid = request.args.get('uid', u'2971183691')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    # g_name = g_name + '_' + submit_user
+    detail_t = get_group_user_track(uid)
+    return json.dumps(detail_t)
+
+@mod.route('/group_user_rank/')
+def ajax_group_user_rank():  #群体用户联系
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_user_rank(g_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/group_event_rank/')
+def ajax_group_event_rank():  #群体关联事件排名
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_event_rank(g_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/group_user_keyowrds/')
+def ajax_group_user_keywords():  #群体用户的关键词和话题
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_user_keyowrds(g_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/group_user_tag/')
+def ajax_group_user_tag():  #群体用户关联事件的自动标签和业务标签
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_user_tag(g_name, submit_user)
+    return json.dumps(detail_t)
+
+@mod.route('/group_related/')
+def ajax_group_related():  #群体关联信息
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = group_related(g_name, submit_user)
     return json.dumps(detail_t)

@@ -87,9 +87,9 @@ def ajax_show_auto_in():
 def ajax_admin_identify_in():
     results = 0
     date = request.args.get('date', '2016-11-27') # date = '2016-11-27'
-    uid_string = request.args.get('uid_list', '2298607941,5993847641')
+    uid_string = request.args.get('uid_list', '1895944731,3811990435')
     uid_list = uid_string.split(',')
-    relation_string = request.args.get('user_rel', 'friend') # split by ,
+    relation_string = request.args.get('user_rel', 'friend,discuss') # split by ,
     status = request.args.get('status', '1') # 1 compute right now; 2 appointment
     recommend_style = request.args.get('recommend_style', 'influence')  #influence sensitive auto 
     node_type = request.args.get('node_type', '0') # '0':user  '1'：org
@@ -238,8 +238,8 @@ def ajax_search_node():
 def ajax_relation_add():
     input_data = dict()
     input_data = request.get_json()
-    # input_data = [['uid', '2635695961', 'node_index', u'other_relationship,测试2', 'event_id',   \
-    #              'xi-la-li-1480176000', 'event_index']]  #other_relationship,测试   join
+    input_data = [['uid', '5848882336', 'node_index', u'relative', 'uid',   \
+                 '1799791715', 'node_index']]  #other_relationship,测试   join
     result = relation_add(input_data)
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 
