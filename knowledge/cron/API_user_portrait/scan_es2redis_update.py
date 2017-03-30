@@ -11,7 +11,7 @@ from elasticsearch.helpers import scan
 reload(sys)
 sys.path.append('../../')
 from global_utils import es_user_portrait, portrait_index_name, portrait_index_type
-from global_utils import r_user_update as r
+from global_utils import R_RECOMMENTATION as r
 from global_utils import r_user_update_long_hash_name
 from global_config import ALL_PERSON_RELATION_LIST, ALL_VERIFIED_RELATION_LIST
 
@@ -42,8 +42,8 @@ def scan_es2redis():
         except StopIteration:
             print 'all done'
             break
-        except Exception, r:
-            raise r
+        except Exception, e:
+            raise e
             break
 
     print 'count:', count
@@ -53,10 +53,10 @@ if __name__ == '__main__':
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/scan_es2redis_update.py&start&' + str(log_time_ts)
     
-    try:
-        scan_es2redis()
-    except Exception, e:
-        print e, '&error&', ts2date(time.time())
+    #try:
+    scan_es2redis()
+    #except Exception, e:
+    #print e, '&error&', ts2date(time.time())
 
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/scan_es2redis_update.py&end&' + str(log_time_ts)
