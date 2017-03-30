@@ -221,7 +221,7 @@ def ajax_theme_net():  #专题网络分析
     return json.dumps(detail_t)
 
 @mod.route('/theme_analysis_keywords/')
-def ajax_theme_keywords():  #专题包含事件的自动标签
+def ajax_theme_keywords():  #专题包含事件的自动标签、关键词
     theme_name = request.args.get('theme_name', u'美国大选')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     theme_name = theme_name + '_' + submit_user
