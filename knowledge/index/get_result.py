@@ -115,7 +115,7 @@ def get_event(name,count):#获取我关注的事件
         for infor in infors:
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -124,7 +124,7 @@ def get_event(name,count):#获取我关注的事件
                 break
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = eventid_name(uid_list,result)
@@ -140,7 +140,7 @@ def get_org(name,count):#获取我关注的机构
         for infor in infors:
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -149,7 +149,7 @@ def get_org(name,count):#获取我关注的机构
                 break
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':''}
+            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
