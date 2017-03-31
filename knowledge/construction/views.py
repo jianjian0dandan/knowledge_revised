@@ -227,10 +227,10 @@ def ajax_search_node():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field)
+        result = search_user(item, field,'')
     if node_type == 'Event':
         field = ['en_name', 'name']  
-        result = search_event(item, field)
+        result = search_event(item, field,'')
     return json.dumps(result)
 
 #添加关系,上传文件
