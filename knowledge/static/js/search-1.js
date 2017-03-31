@@ -52,7 +52,7 @@ function start(value) {
     }
 }
 //开始节点选择的输入方式
-var ids=[],
+var ids=[],ids_files,
 // 属性搜索
 //与或非
 yhf,yhf_key,yhf_value;
@@ -76,10 +76,9 @@ $.each($("#container .start .options input"),function (index,item) {
             // ids=$('.start .options-1-value').val().split(',');
             no_ids=1;
         }else if ($(this).val()==2){
-            ids=[];
             //上传文件
             alert('文件中的内容请用逗号隔开(英文)隔开');
-            ids=files_data;
+            // ids=files_data;
             no_ids=2;
         }else if ($(this).val()==3){
             ids=[];
@@ -91,14 +90,14 @@ $.each($("#container .start .options input"),function (index,item) {
     })
 });
 //--------文件传输----函数--
-var files_data;
+// var files_data;
 function start_handleFileSelect(evt){
     var files = evt;
     for(var i=0,f;f=files[i];i++){
         var reader = new FileReader();
         reader.onload = function (oFREvent) {
             var a = oFREvent.target.result;
-            files_data=a.split(',');
+            ids_files=a.split(',');
             window.setTimeout(function () {
                 alert('上传成功');
             },500);
@@ -173,7 +172,7 @@ function end(value) {
     }
 }
 //终止节点选择的输入方式
-var end_ids=[];
+var end_ids=[],end_ids_files;
 // 属性搜索
 //与或非
 var end_yhf,end_yhf_key,end_yhf_value;
@@ -198,10 +197,10 @@ $.each($("#container .end .options-3 input"),function (index,item) {
             // end_ids=$('.end .options-1-value').val().split(',');
             end_no_ids=1;
         }else if ($(this).val()==2){
-            end_ids=[];
+            // end_ids=[];
             alert('文件中的内容请用逗号隔开(英文)隔开');
             end_no_ids=2;
-            end_ids=end_files_data;
+            // end_ids=end_files_data;
         }else if ($(this).val()==3){
             end_ids=[];
             end_no_ids=3;
@@ -211,14 +210,14 @@ $.each($("#container .end .options-3 input"),function (index,item) {
 });
 
 //文件传输
-var end_files_data;
+var end_ids_files;
 function end_handleFileSelect(evt){
     var files = evt;
     for(var i=0,f;f=files[i];i++){
         var reader = new FileReader();
         reader.onload = function (oFREvent) {
             var a = oFREvent.target.result;
-            end_files_data=a.split(',');
+            end_ids_files=a.split(',');
             window.setTimeout(function () {
                 alert('上传成功');
             },500);
@@ -286,95 +285,120 @@ var input_data;
 $('#sure_advan').on('click',function () {
 
     //开始节点数据整理
-    if (no_ids==1||no_ids==2){
-        if (no_ids==1){
+    if (no_ids==1){
+        if ($('.start .options-1-value').val()==''){
+            alert('请输入起始节点节点的值。(不能为空)');
+        }else {
             ids.push($('.start .options-1-value').val());
-        }
-        starts_nodes.push(
-            {
-                'node_type':start_type,
-                'ids':ids,
-            }
-        )
-    }else {
-        starts_nodes.push(
-            {
-                'node_type':start_type,
-                'conditions':{
-                    yhf:[{'wildcard':{yhf_key:yhf_value}}],
+            starts_nodes.push(
+                {
+                    'node_type':start_type,
+                    'ids':ids,
                 }
-            }
-        )
+            )
+        };
+    }else if (no_ids==2){
+        if (ids_files!=='undefined'){
+            alert('您还没有上传文件。(不能为空)');
+        }else {
+            starts_nodes.push(
+                {
+                    'node_type':start_type,
+                    'ids':ids_files,
+                }
+            )
+        };
+    }else {
+        if (yhf_value==''){
+            alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
+        }else {
+            starts_nodes.push(
+                {
+                    'node_type':start_type,
+                    'conditions':{
+                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
+                    }
+                }
+            )
+        }
     }
     //结束节点数据整理
-    if (end_no_ids==1||end_no_ids==2){
-        if (end_no_ids==1){
-            end_ids.push($('.end .options-1-value').val());
-        }
-        end_nodes.push(
-            {
-                'node_type':end_type,
-                'ids':end_ids,
-            }
-        )
-    }else {
-        end_nodes.push(
-            {
-                'node_type':end_type,
-                'conditions':{
-                    end_yhf:[{'wildcard':{end_yhf_key:end_yhf_value}}],
-                }
-            }
-        )
-    }
-
-    if (yhf_value==''||end_yhf_value){
-        alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
-    }else if ($('.start .options-1-value').val()==''||$('.end .options-1-value').val()==''){
-        alert('请输入起始节点/终止节点的值。(不能为空)');
-    }else if (no_ids==2||end_no_ids==2){
-        if (ids==''||end_ids==''){
-            alert('您还没有上传文件。(不能为空)');
-        }
-    } else {
-        //--------其他信息----
-        var step=$('.advan-4 .other .jump').val();
-        var limit=$('.advan-4 .other .datanums').val();
-        var short_path='False';
-        if ($("[name=short]:checkbox").prop("checked")=='true'){
-            short_path='True';
-        };
-//--------其他信息----完
-        if (short_path=='True'){
-            //此处要对起始节点进行判断，只能输入一个节点
-            if(!(ids.length==1&&end_ids.length==1)){
-                alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
-            }
+    if (end_no_ids==1){
+        if ($('.end .options-1-value').val()==''){
+            alert('请输入终止节点的值。(不能为空)');
         }else {
-            input_data={
-                'start_nodes':starts_nodes,
-                'end_nodes':end_nodes,
-                'relation':relation,
-                'step':step,
-                'limit':limit,
-                'submit_user':submit_user,
-                'short_path':short_path,
-            }
+            end_ids.push($('.end .options-1-value').val());
+            end_nodes.push(
+                {
+                    'node_type':end_type,
+                    'ids':end_ids,
+                }
+            )
         }
-        relation=[];
-        console.log(ids)
-        console.log(input_data)
+    }else if (end_no_ids==2){
+        console.log(end_ids_files)
+        if (end_ids_files!=='undefined'){
+            alert('您还没有上传文件。(不能为空)');
+        }else {
+            end_nodes.push(
+                {
+                    'node_type':end_type,
+                    'ids':end_ids_files,
+                }
+            )
+        };
 
-        var advanced_search_url = '/relation/search_result/';
-        $.ajax({
-            type:'POST',
-            url: advanced_search_url,
-            contentType:"application/json",
-            data: JSON.stringify(input_data),
-            dataType: "json",
-            success: advanced_search
-        });
+    }else {
+        if (end_yhf_value==''){
+            alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
+        }else {
+            end_nodes.push(
+                {
+                    'node_type':end_type,
+                    'conditions':{
+                        end_yhf:[{'wildcard':{end_yhf_key:end_yhf_value}}],
+                    }
+                }
+            )
+        }
     }
+
+    //--------其他信息----
+    var step=$('.advan-4 .other .jump').val();
+    var limit=$('.advan-4 .other .datanums').val();
+    var short_path='False';
+    if ($("[name=short]:checkbox").prop("checked")=='true'){
+        short_path='True';
+    };
+//--------其他信息----完
+    if (short_path=='True'){
+        //此处要对起始节点进行判断，只能输入一个节点
+        if(!(ids.length==1&&end_ids.length==1)){
+            alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+        }
+    }else {
+        input_data={
+            'start_nodes':starts_nodes,
+            'end_nodes':end_nodes,
+            'relation':relation,
+            'step':step,
+            'limit':limit,
+            'submit_user':submit_user,
+            'short_path':short_path,
+        }
+    }
+    relation=[];
+    // console.log(ids)
+    console.log(input_data)
+    // var advanced_search_url = '/relation/search_result/';
+    // $.ajax({
+    //     type:'POST',
+    //     url: advanced_search_url,
+    //     contentType:"application/json",
+    //     data: JSON.stringify(input_data),
+    //     dataType: "json",
+    //     success: advanced_search
+    // });
 })
 function advanced_search(data) {
     alert('正在加载中。。。。。');

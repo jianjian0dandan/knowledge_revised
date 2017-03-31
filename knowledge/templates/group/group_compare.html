@@ -1,81 +1,124 @@
 {% extends "public_nav.html" %}
 {% block title %}<title>知识图谱 - 群体对比</title>{% endblock %}
 {% block my_css %}
-<link rel="stylesheet" href="/static/css/theme_compare.css">
+<link rel="stylesheet" href="/static/css/group_compare.css">
 <style>
-
+    .fixed-table-container thead th .sortable {
+        padding-right: 11px;
+    }
+    .fixed-table-pagination .pagination-info,
+    .fixed-table-pagination .page-list {
+        display: none;
+    }
 </style>
 {% endblock %}
 
-<!-------主要内容------->
+<!--主要内容-->
 {% block main %}
 <div id="container">
     <h1 style="font-weight:800;font-size: 38px">群体对比</h1>
-    <div class="two_theme" style="margin-top: 2%;text-align: center;">
-        <h2><span class="theme-1">群体1</span></h2>
-        <h2><span class="theme-2">群体2</span></h2>
+    <div class="two_group" style="margin-top: 20px;text-align: center;">
+        <h2><span class="group-1"></span></h2>
+        <h2><span class="group-2"></span></h2>
     </div>
-    <div class="link_user">
+    <div class="include">
+        <h3>包含人物</h3>
+        <p class="line"></p>
         <div class="edit-user">
             <label class="radio-inline">
-                <input type="radio" name="complie" id="all_user" value="" checked> 全部人物
+                <input type="radio" name="user" id="all_user" value="all" checked> 全部人物
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="same_user" value=""> 相同人物
+                <input type="radio" name="user" id="same_user" value="same"> 相同人物
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="different_user" value=""> 不同人物
+                <input type="radio" name="user" id="different_user" value="diff"> 不同人物
             </label>
         </div>
         <div class="user_list">
-            <div id="list-1-user"></div>
-            <div id="list-2-user"></div>
+            <div class="list-1-user">
+                <div id="list-1-user"></div>
+            </div>
+            <div class="list-2-user">
+                <div id="list-2-user"></div>
+            </div>
         </div>
     </div>
-    <div class="include">
+    <div class="link_event">
+        <h3>包含事件</h3>
+        <p class="line"></p>
         <div class="edit">
             <label class="radio-inline">
-                <input type="radio" name="complie" id="all" value="" checked> 全部事件
+                <input type="radio" name="event" id="all_event" value="all" checked> 全部事件
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="same" value=""> 相同事件
+                <input type="radio" name="event" id="same_event" value="same"> 相同事件
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="different" value=""> 不同事件
+                <input type="radio" name="event" id="different_event" value="diff"> 不同事件
             </label>
         </div>
-        <div class="theme_list">
-            <div id="list-1"></div>
-            <div id="list-2"></div>
+        <div class="event_list">
+            <div class="list-1">
+                <div id="list-1"></div>
+            </div>
+            <div class="list-2">
+                <div id="list-2"></div>
+            </div>
         </div>
     </div>
     <div class="key_words">
+        <h3>自动标签</h3>
+        <p class="line"></p>
         <div class="edit-words">
             <label class="radio-inline">
-                <input type="radio" name="complie" id="all_words" value="" checked> 全部标签
+                <input type="radio" name="key" id="all_words" value="all" checked> 全部标签
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="same_words" value=""> 相同标签
+                <input type="radio" name="key" id="same_words" value="same"> 相同标签
             </label>
             &nbsp;
             <label class="radio-inline">
-                <input type="radio" name="complie" id="different_words" value=""> 不同标签
+                <input type="radio" name="key" id="different_words" value="diff"> 不同标签
             </label>
         </div>
         <div class="words_list">
-            <div id="list-1-words"></div>
-            <div id="list-2-words"></div>
+            <div class="list-1-words">
+                <div id="list-1-words"></div>
+            </div>
+            <div class="list-2-words">
+                <div id="list-2-words"></div>
+            </div>
         </div>
     </div>
     <div class="tags">
+        <h3>业务标签</h3>
+        <p class="line"></p>
+        <div class="edit-tag">
+            <label class="radio-inline">
+                <input type="radio" name="tag" id="all_tag" value="all" checked> 全部标签
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="tag" id="same_tag" value="same"> 相同标签
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="tag" id="different_tag" value="diff"> 不同标签
+            </label>
+        </div>
         <div class="tags_list">
-            <div id="list-1-tags"></div>
-            <div id="list-2-tags"></div>
+            <div class="list-1-tags">
+                <div id="list-1-tags"></div>
+            </div>
+            <div class="list-2-tags">
+                <div id="list-2-tags"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -83,7 +126,13 @@
 
 
 {% block my_js %}
-
 <script>
+    var submit_user=$('#name').text();
+    var group_1='{{group_name1}}';
+    var group_2='{{group_name2}}';
+    $('#container .two_group h2 .group-1').text(group_1);
+    $('#container .two_group h2 .group-2').text(group_2);
 </script>
+<script src="/static/js/echarts-2/build/dist/echarts.js"></script>
+<script src="/static/js/group_compare-1.js"></script>
 {% endblock %}

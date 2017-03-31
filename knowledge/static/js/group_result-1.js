@@ -1,16 +1,16 @@
-//包含事件
-var things_url='/theme/theme_detail/?theme_name='+theme_name+'&submit_user='+submit_user;
+//包含人物
+var include_user_url='/group/group_detail/?g_name='+group_name+'&submit_user='+submit_user;
 $.ajax({
-    url: things_url,
+    url: include_user_url,
     type: 'GET',
     dataType: 'json',
     async: true,
-    success:things
+    success:include_user
 });
-function things(data) {
+function include_user(data) {
     var data = eval(data);
-    $('#things').bootstrapTable('load', data);
-    $('#things').bootstrapTable({
+    $('#person').bootstrapTable('load', data);
+    $('#person').bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
@@ -29,18 +29,33 @@ function things(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "事件名称",//标题
+                title: "用户ID",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1];
+                    return row[0];
                 }
             },
             {
-                title: "事件类型",//标题
+                title: "昵称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[1];
+                    }
+                }
+            },
+            {
+                title: "注册地",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -48,14 +63,14 @@ function things(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
-                        return '暂无';
+                        return row[1];
                     }else {
                         return row[2];
                     }
-                }
+                },
             },
             {
-                title: "发生时间",//标题
+                title: "影响力",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -63,14 +78,14 @@ function things(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[3];
+                        return row[3].toFixed(2);
                     }
                 },
             },
             {
-                title: "发生地点",//标题
+                title: "活跃度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -78,14 +93,14 @@ function things(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[4];
+                        return row[4].toFixed(2);
                     }
                 },
             },
             {
-                title: "参与人数",//标题
+                title: "敏感度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -93,24 +108,9 @@ function things(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[5];
-                    }
-                },
-            },
-            {
-                title: "微博数量",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[6];
+                        return row[5].toFixed(2);
                     }
                 },
             },
@@ -122,14 +122,10 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''){
+                    if (row[6]=='unknown'||row[6]==''){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
-                        }
-                        return key;
+                        return row[6].toString().split('&').slice(0,5);
                     }
                 },
             },
@@ -141,15 +137,20 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[8].length==0||row[8]==''){
+                    if (row[7]=='unknown'||row[7]==''){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
-                        }
-                        return tag;
+                        return row[7].toString().split('&').slice(0,5);
                     }
+                    // if (row[8].length==0||row[8]==''){
+                    //     return '暂无';
+                    // }else {
+                    //     var tag='';
+                    //     for (var k=0;k<row[8].length;k++){
+                    //         tag+=row[8][k]+' ';
+                    //     }
+                    //     return tag;
+                    // }
                 },
             },
         ],
@@ -162,90 +163,8 @@ function things(data) {
     });
 };
 
-//时间分析--鱼骨图
-var fish_url='/theme/theme_analysis_flow/?theme_name='+theme_name+'&submit_user='+submit_user;
-$.ajax({
-    url: fish_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:fish
-});
-var finshdata = [];
-function fish(data) {
-    var data=eval(data);
-    $.each(data,function (index,item) {
-        finshdata.push(
-            {'事件ID':item[0],'微博内容':item[1],'时间':item[2]}
-        );
-    })
-    $(".fishBone").fishBone(finshdata);
-}
-
-
-//地域分析
-var place_url='/theme/theme_analysis_geo/?theme_name='+theme_name+'&submit_user='+submit_user;
-$.ajax({
-    url: place_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:place
-});
-function place(data) {
-    var data=eval(data);
-    var place_x=[],place_series=[],legends=[];
-    $.each(data.top_city,function (index,item) {
-        place_x.push(item);
-    })
-    for (var key in data.event_city){
-        legends.push(key);
-        place_series.push(
-            {
-                name: key,
-                type: 'bar',
-                stack: '数量',
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'insideRight'
-                    }
-                },
-                data: data.event_city[key]
-            }
-        )
-    }
-    var myChart = echarts.init(document.getElementById('area'));
-    var option = {
-        tooltip : {
-            trigger: 'axis',
-            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-            }
-        },
-        legend: {
-            data: legends
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        xAxis:  {
-            type: 'category',
-            data: place_x
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: place_series
-    };
-    myChart.setOption(option);
-}
-
 //网络分析
-var network_url='/theme/theme_analysis_net/?theme_name='+theme_name+'&submit_user='+submit_user;
+var network_url='/group/group_user_rank/?g_name='+group_name+'&submit_user='+submit_user;
 $.ajax({
     url: network_url,
     type: 'GET',
@@ -294,7 +213,7 @@ function network(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "事件名称",//标题
+                title: "UID",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -305,18 +224,22 @@ function network(data) {
                 }
             },
             {
-                title: "关系",//标题
+                title: "昵称",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1];
+                    if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        return row[0];
+                    }else {
+                        return row[1];
+                    }
                 }
             },
             {
-                title: "事件名称",//标题
+                title: "关系",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -325,6 +248,32 @@ function network(data) {
                 formatter: function (value, row, index) {
                     return row[2];
                 },
+            },
+            {
+                title: "UID",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[3];
+                }
+            },
+            {
+                title: "昵称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
+                        return row[3];
+                    }else {
+                        return row[4];
+                    }
+                }
             },
         ],
         // onClickRow: function (row, tr) {
@@ -354,7 +303,7 @@ require.config({
     }
 });
 //----自动标签
-var key_tag_url='/theme/theme_analysis_keywords/?theme_name='+theme_name+'&submit_user='+submit_user;
+var key_tag_url='/group/group_user_keyowrds/?g_name='+group_name+'&submit_user='+submit_user;
 $.ajax({
     url: key_tag_url,
     type: 'GET',
@@ -463,11 +412,11 @@ function key_tag(data) {
             });
         }
     );
-}
+};
 
 
-//============人物分析
-var character_url='/theme/theme_analysis_user_rank/?theme_name='+theme_name+'&submit_user='+submit_user;
+//============事件分析
+var character_url='/group/group_event_rank/?g_name='+group_name+'&submit_user='+submit_user;
 $.ajax({
     url: character_url,
     type: 'GET',
@@ -497,7 +446,7 @@ function character(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "UID",//标题
+                title: "事件名称",//标题
                 field: "id",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -505,7 +454,7 @@ function character(data) {
                 valign: "middle",//垂直
             },
             {
-                title: "人物名",//标题
+                title: "关联人数",//标题
                 field: "name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -535,7 +484,7 @@ function character(data) {
                 },
             },
             {
-                title: "参与事件数量",//标题
+                title: "关联用户",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -549,25 +498,7 @@ function character(data) {
                     }
                 },
             },
-            {
-                title: "参与事件",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row.related_event==''||row.related_event=='NULL'){
-                        return '暂无事件';
-                    }else {
-                        var event='';
-                        for (var e=0;e<row.related_event.length;e++){
-                            event+='<span>'+row.related_event[e]+'</span> ';
-                        }
-                        return event;
-                    }
-                },
-            },
+
         ],
         // onClickRow: function (row, tr) {
         //     if ($(tr.context).index()==2) {
@@ -577,8 +508,9 @@ function character(data) {
         // }
     });
 };
+
 //----人物自动标签
-var user_tag_url='/theme/theme_analysis_user_tag/?theme_name='+theme_name+'&submit_user='+submit_user;
+var user_tag_url='/group/group_user_tag/?g_name='+group_name+'&submit_user='+submit_user;
 $.ajax({
     url: user_tag_url,
     type: 'GET',
@@ -687,5 +619,4 @@ require(
         });
     }
 );
-
 
