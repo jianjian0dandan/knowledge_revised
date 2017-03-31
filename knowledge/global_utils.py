@@ -65,7 +65,7 @@ r = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
 # user portrait interface: push user into redis list
 r_user = redis.StrictRedis(host=redis_host, port=redis_port, db=10)
-r_user_hash_name = 'user2portrait'
+r_user_hash_name = 'compute'
 r_user_update_hash_name = 'user_update'
 r_user_update_long_hash_name = 'user_update_long'
 
@@ -228,6 +228,8 @@ def user_name_search(en_name):
         return en_name
     for k,v in name_results.iteritems():
         ch_name = v[0]
+        if ch_name == '':
+            ch_name = en_name
     # print ch_name.encode('utf-8')
     return ch_name
 
@@ -308,7 +310,27 @@ def event_detail_search(eid_list, submit_user):
         result.append(event)
     return result
 
+def get_evaluate_max():
+    max_result = {}
+    evaluate_index = ['importance', 'influence', 'activeness', 'sensitive']
+    for evaluate in evaluate_index:
+        query_body = {
+            'query':{
+                'match_all':{}
+                },
+            'size': 1,
+            'sort': [{evaluate: {'order': 'desc'}}]
+            }
+        try:
+            result = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type, body=query_body)['hits']['hits']
+        except Exception, e:
+            raise e
+        max_evaluate = result[0]['_source'][evaluate]
+        max_result[evaluate] = max_evaluate
+    return max_result
+
 def user_detail_search(uid_list,submit_user):
+    evaluate_max = get_evaluate_max()
     if not uid_list:
         return []
     fields_list = p_column
@@ -335,9 +357,11 @@ def user_detail_search(uid_list,submit_user):
                 keywords = i_fields[j][0].split('&')
                 keywords = keywords[:5]
                 event.append(keywords)
-            elif j == 'work_tag':
-                tag = deal_event_tag(i_fields[j][0], submit_user)[0]
+            elif j == 'function_mark':
+                tag = deal_user_tag(i_fields[j][0], submit_user)[0]
                 event.append(tag)
+            elif j in ['influence', 'sensitive', 'activeness']:
+                event.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
             else:
                 event.append(i_fields[j][0])
         result.append(event)

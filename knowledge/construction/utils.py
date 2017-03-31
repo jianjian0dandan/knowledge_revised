@@ -758,7 +758,27 @@ def search_event_time_limit(item, field, start_ts, end_ts, submit_user):
         result.append(event)
     return result
 
+def get_evaluate_max():
+    max_result = {}
+    evaluate_index = ['importance', 'influence', 'activeness', 'sensitive']
+    for evaluate in evaluate_index:
+        query_body = {
+            'query':{
+                'match_all':{}
+                },
+            'size': 1,
+            'sort': [{evaluate: {'order': 'desc'}}]
+            }
+        try:
+            result = es.search(index=portrait_index_name, doc_type=portrait_index_type, body=query_body)['hits']['hits']
+        except Exception, e:
+            raise e
+        max_evaluate = result[0]['_source'][evaluate]
+        max_result[evaluate] = max_evaluate
+    return max_result
+
 def search_user(item, field, submit_user):
+    evaluate_max = get_evaluate_max()
     query_body = {
         "query":{
             'bool':{
@@ -782,18 +802,23 @@ def search_user(item, field, submit_user):
     result = []
     for i in name_results:
         event = []
+        if i['found'] == False:
+            event.append(i['_id'])
+            continue
         i_fields = i['fields']
-        for j in field:
+        for j in fields_list:
             if not i_fields.has_key(j):
                 event.append('')
                 continue
-            if j == 'keywords_string':
+            if j == 'keywords':
                 keywords = i_fields[j][0].split('&')
                 keywords = keywords[:5]
-                event.append(keywords)
+                user.append(keywords)
             elif j == 'function_mark':
-                tag = deal_editor_tag(i_fields[j][0], editor)[0]
-                event.append(tag)
+                tag = deal_user_tag(i_fields[j][0], submit_user)[0]
+                user.append(tag)
+            elif j in ['influence', 'sensitive', 'activeness']:
+                user.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
             else:
                 event.append(i_fields[j][0])
         result.append(event)

@@ -5,27 +5,30 @@ use to update by add task from user
 import sys
 import time
 import json
-from wei_api import read_flow_text, read_flow_text_sentiment
+from weibo_api import read_flow_text, read_flow_text_sentiment
 from cron_text_attribute import test_cron_text_attribute_v2
 reload(sys)
 sys.path.append('../../')
-from global_utils import r_user_update as r
-from global_utils import r_user_update_hash_name
+from global_utils import R_RECOMMENTATION as r
+from global_utils import r_user_update_long_hash_name as r_user_update_hash_name
 from global_config import ALL_PERSON_RELATION_LIST, ALL_VERIFIED_RELATION_LIST
-
+from parameter import WEIBO_API_INPUT_TYPE
 
 def scan_compute_redis_v2():
     task_type = 'user'
     bulk_action = []
     count = 0
     iter_user_list = []
-    verified_type_dict = dict()
+    verified_mark_dict = dict()
     relation_mark_dict = dict()
     submit_user_dict = dict()
     submit_ts_dict = dict()
     while True:
         r_user_item = r.rpop(r_user_update_hash_name)
+        #print 'r_user_item:', r_user_item
         if r_user_item:
+            #print 'r_user_item:', r_user_item
+            r_user_item = json.loads(r_user_item)
             uid = r_user_item[0]
             relation_mark = r_user_item[1]
             iter_user_list.append(uid)
@@ -39,17 +42,17 @@ def scan_compute_redis_v2():
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
             else:
                 user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
+            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
             iter_user_list = []
             relation_mark_dict = dict()
 
     if iter_user_list != []:
         if WEIBO_API_INPUT_TYPE == 0:
-                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
-            else:
-                user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
-            compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, verified_mark_dict, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
+            user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text_sentiment(iter_user_list)
+        else:
+            user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts = read_flow_text(iter_user_list)
+        compute_status = test_cron_text_attribute_v2(user_keywords_dict, user_weibo_dict, online_pattern_dict, character_start_ts, relation_mark_dict, task_type, submit_user_dict, submit_ts_dict)
 
 
 '''
@@ -145,10 +148,10 @@ if __name__=='__main__':
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/redis_user2update.py&start&' + str(log_time_ts)
     
-    try:
-        scan_compute_redis_v2()
-    except Exception, e:
-        print e, '&error&', ts2date(time.time())
+    #try:
+    scan_compute_redis_v2()
+    #except Exception, e:
+    #    print e, '&error&', ts2date(time.time())
 
     log_time_ts = int(time.time())
     print 'cron/API_user_portrait/redis_user2update.py&end&' + str(log_time_ts)
