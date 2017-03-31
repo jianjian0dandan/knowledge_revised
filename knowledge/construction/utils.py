@@ -801,24 +801,25 @@ def search_user(item, field, submit_user):
         return 'does not exist'
     result = []
     for i in name_results:
+        print i
         event = []
-        if i['found'] == False:
-            event.append(i['_id'])
-            continue
+        # if i['found'] == False:
+        #     event.append(i['_id'])
+        #     continue
         i_fields = i['fields']
-        for j in fields_list:
+        for j in field:
             if not i_fields.has_key(j):
                 event.append('')
                 continue
             if j == 'keywords':
                 keywords = i_fields[j][0].split('&')
                 keywords = keywords[:5]
-                user.append(keywords)
+                event.append(keywords)
             elif j == 'function_mark':
                 tag = deal_user_tag(i_fields[j][0], submit_user)[0]
-                user.append(tag)
+                event.append(tag)
             elif j in ['influence', 'sensitive', 'activeness']:
-                user.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
+                event.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
             else:
                 event.append(i_fields[j][0])
         result.append(event)
@@ -888,12 +889,12 @@ def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
         field = p_column
-        # field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'user_tag']
+        field = ['uid', 'uname','domain', 'topic_string', "function_description"]
         index_n = node_index_name
         index_key = people_primary
         node_key = group_node
         node_result = search_user(item, field, '')[0]
-        tag = deal_user_tag(item, submit_user, '')[0]
+        tag = deal_user_tag(item, submit_user )[0]
         node_result.append(tag)
 
     if node_type == 'Event':
@@ -919,7 +920,10 @@ def edit_node():
     pass
 
 def deal_user_tag(item ,submit_user):
-    tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    try:
+        tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    except:
+        return ['','']
     # return result
     # tag = tag_value
     print tag,'======!!=========='
