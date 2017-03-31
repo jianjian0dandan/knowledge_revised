@@ -46,8 +46,8 @@ def theme_compare():#专题对比
 @mod.route('/result/')
 @login_required
 def theme_result():#专题查看
-
-    return render_template('theme/theme_result.html')
+    theme_name = request.args.get('theme_name','')
+    return render_template('theme/theme_result.html',theme_name=theme_name)
 
 @mod.route('/theme_overview/')
 def ajax_event_overview():  #专题总览

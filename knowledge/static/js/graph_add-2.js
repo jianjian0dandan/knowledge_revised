@@ -28,8 +28,9 @@ function event_type_2(value) {
 function getLocalTime(nS) {
     return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
 };
-// var timestamp = Date.parse(new Date());
-var timestamp = 1479571200,mid,key_string,time;
+var timestamp = Date.parse(new Date()),
+// var timestamp = 1479571200,
+    mid,key_string,time;
 function weibo_content() {
     function place() {
         //this.ajax_method='GET'; // body...

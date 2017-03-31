@@ -25,7 +25,6 @@ $.fn.fishBone = function(data) {
         var item = $(".fishBone .bd .item");
         var marginleft = parseInt(item.css('margin-left'))
         var item_w = item.width() + marginleft;
-
         //显示区域
         var bd_w = $(".fishBone .bd").width();
         //能显示的个数 取整
