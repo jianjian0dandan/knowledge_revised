@@ -103,7 +103,7 @@
                 <span>人物排名</span>
                 <div id="ranking" style="width: 100%;"></div>
             </div>
-            <div class="character-2" style="width: 100%;text-align: center;margin-top: 2%;">
+            <div class="character-2" style="width: 100%;text-align: center;margin-top: 30px;">
                 <div class="character_left">
                     <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
                     <span>人物自动标签</span>
@@ -119,59 +119,63 @@
     </div>
 
     <div id="content_right">
-        <div class="link_user" style="padding-top:2%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联人物</h3>
-            <div class="users" style="text-align: center;margin-top: 50px;">
-                <a href="###">王二麻子</a>
-                <a href="###">李思</a>
-                <a href="###">张三</a>
-                <a href="###">乌鸡</a>
+        <div class="link_user">
+            <h3>关联人物</h3>
+            <div class="users" style="text-align: center;margin: 20px 0;">
+
             </div>
-            <button class="user_more">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_event" style="padding-top:10.3%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联事件</h3>
-            <div class="events" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_event" style="margin: 10px 0;">
+            <h3>关联事件</h3>
+            <div class="events" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="event_more">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_agency" style="padding-top:18%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联机构</h3>
-            <div class="agencys" style="text-align: center;margin-top: 50px;">
-                <a href="###">美国CIA</a>
-                <a href="###">俄罗斯KGB</a>
-                <a href="###">以色列Mossad</a>
-                <a href="###">英国MI6</a>
+        <div class="link_agency" style="margin: 10px 0;">
+            <h3>关联机构</h3>
+            <div class="agencys" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="agency_more">+查看更多</button>
+            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_knowledge" style="padding-top:28%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联知识</h3>
-            <div class="knowledge" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_knowledge" style="margin: 10px 0;">
+            <h3>关联知识</h3>
+            <div class="knowledge" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="knowledge_more">+查看更多</button>
+            <button class="knowledge_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_resources" style="padding-top:41%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联资源</h3>
-            <div class="resources" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_resources" style="margin: 10px 0;">
+            <h3>关联资源</h3>
+            <div class="resources" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="resources_more">+查看更多</button>
+            <button class="resources_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
 
     </div>
 
+</div>
+<!--关联-->
+
+<div class="modal fade" id="link" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title tit_h4" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body" id="link_content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -221,7 +225,7 @@
 
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 <script src="/static/js/theme_result-1.js"></script>
-
+<script src="/static/js/theme_result-2.js"></script>
 
 {% endblock %}
 

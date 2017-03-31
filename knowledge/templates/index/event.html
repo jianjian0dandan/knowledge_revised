@@ -149,7 +149,9 @@
 <script src="/static/js/wordcloud.js"></script>
 <script src="/static/js/event-1.js"></script>
 <script>
-
+    $('#event_content #content_left .basic .basic-1 .edit').on('click',function () {
+        window.open('/theme/modify/?theme_name='+$('.event_name').text());
+    })
 
 </script>
 {% endblock %}
