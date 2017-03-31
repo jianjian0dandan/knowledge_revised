@@ -8,6 +8,8 @@ import csv
 import time
 from elasticsearch import Elasticsearch
 sys.path.append('../../')
+sys.path.append('./knowledge')
+sys.path.append('./knowledge/cron')
 from parameter import r_path as abs_path
 from global_utils import *
 

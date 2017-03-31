@@ -10,7 +10,7 @@ import heapq
 from config import *
 from elasticsearch.helpers import scan
 sys.path.append('../manage_neo4j/')
-from neo4j_relation import *
+from manage_neo4j.neo4j_relation import *
 
 def search_es_by_name(dict_name,dict_value,s_uid,flag):#根据对应的属性查询es_user_portrait
 

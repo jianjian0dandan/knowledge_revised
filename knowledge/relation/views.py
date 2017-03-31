@@ -12,7 +12,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import search_data,simple_search,compute_fun
+from utils import search_data,simple_search,compute_fun,get_sim
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 test_time = datetime2ts(RUN_TEST_TIME)
@@ -127,4 +127,9 @@ def compute_sim():
 	node_id = request.args.get('node_id', '')
 	result = compute_fun(submit_user,submit_ts,node_name,node_type,node_id)
 	return result
+
+@mod.route('/all_sim/')
+def all_sim():
+    result = get_sim()
+    return json.dumps(result)
 

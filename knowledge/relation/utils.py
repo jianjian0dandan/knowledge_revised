@@ -962,15 +962,23 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
             'node_type':node_type,'node_id':node_id,'compute_status':0
             }
     result = es_sim.index(index=sim_name,doc_type=sim_type,id=node_id,body=info)
+    # os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
+
     if result['created']==True:
-        os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' > sim.log&')
+        os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
         return 'yes'
     else:
         return 'no'
 
 def get_sim():
-    result = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}}})
-    return result
+    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}}})['hits']['hits']
+    result = []
+    if results:
+        for i in results:
+            result.append(i['_source'])
+        return result
+    else:
+        return ''
 
 def get_sim_by_id(node_type,node_id):
     result = es_sim.get(index=sim_name,doc_type=sim_type,id=node_id)['_source']
