@@ -196,39 +196,41 @@ function getCon(obj){
 //---类似百度搜索功能----完---
 
 $('#container .rel_submit').on('click',function () {
-    console.log(uid_1_name,uid_2_name)
-    var name_type_1,name_type_2,name_index_1,name_index_2;
-    var input_data=[];
-    if (start_type=='User'||end_type=='User'){
-        name_type_1='uid';
-        name_index_1='node_index';
-        name_type_2='uid';
-        name_index_2='node_index';
-    }else if(start_type=='Org'||end_type=='Org') {
-        name_type_1='org_id';
-        name_index_1='org_index';
-        name_type_2='org_id';
-        name_index_2='org_index';
-    }else if(start_type=='Event'||end_type=='Event') {
-        name_type_1='event_id';
-        name_index_1='event_index';
-        name_type_2='event_id';
-        name_index_2='event_index';
+    if (one_value==''||two_value==''){
+        alert('请输入节点。(不能为空)');
+    }else {
+        var name_type_1,name_type_2,name_index_1,name_index_2;
+        var input_data=[];
+        if (start_type=='User'||end_type=='User'){
+            name_type_1='uid';
+            name_index_1='node_index';
+            name_type_2='uid';
+            name_index_2='node_index';
+        }else if(start_type=='Org'||end_type=='Org') {
+            name_type_1='org_id';
+            name_index_1='org_index';
+            name_type_2='org_id';
+            name_index_2='org_index';
+        }else if(start_type=='Event'||end_type=='Event') {
+            name_type_1='event_id';
+            name_index_1='event_index';
+            name_type_2='event_id';
+            name_index_2='event_index';
+        }
+        input_data.push([
+            name_type_1, uid_1, name_index_1,
+            name_type_2, uid_2, name_index_2
+        ]);
+        var input_url='/construction/relation_show_edit/';
+        $.ajax({
+            type:'POST',
+            url: input_url,
+            contentType:"application/json",
+            data: JSON.stringify(input_data),
+            dataType: "json",
+            success: relation_add
+        });
     }
-    input_data.push([
-        name_type_1, uid_1, name_index_1,
-        name_type_2, uid_2, name_index_2
-    ]);
-    var input_url='/construction/relation_show_edit/';
-    $.ajax({
-        type:'POST',
-        url: input_url,
-        contentType:"application/json",
-        data: JSON.stringify(input_data),
-        dataType: "json",
-        success: relation_add
-    });
-    console.log(input_data)
 })
 var rel_table={
     "join":"参与事件",
@@ -248,7 +250,6 @@ var rel_table={
 };
 function relation_add(data) {
     var data=eval(data);
-    console.log(data)
     rel_list(data);
 }
 function rel_list(data) {

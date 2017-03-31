@@ -10,13 +10,13 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight:800;padding-top: 0.5%">新建专题</h3>
-    <div class="new_property" style="margin-top:5%;padding-left: 22%">
+    <h3 class="tit">新建专题</h3>
+    <div class="new_property" style="margin-top:20px;padding-left: 20px;">
         <div>
             <b>新建专题名称</b><input type="text" class="theme_name" placeholder="请输入专题名称">
         </div>
         <div>
-            <b>业务标签</b><input type="text" class="theme_tag" placeholder="多个标签用空格分开">
+            <b>业务标签</b><input type="text" class="theme_tag" placeholder="多个标签用逗号隔开">
         </div>
         <div>
             <b>添加事件</b>
@@ -33,7 +33,9 @@
 
 
 {% block my_js %}
-
 <script>
+    var submit_user=$('#name').text();
+
 </script>
+<script src="/static/js/theme_add-1.js"></script>
 {% endblock %}
