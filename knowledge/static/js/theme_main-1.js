@@ -140,7 +140,7 @@ function theme_overview(data) {
         },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='查看专题') {
-                // window.open(+row[1]);
+                window.open('/theme/result/?theme_name='+row[1]);
             }else if ($element[0].innerText=='编辑专题') {
                 // window.open(+row[1]);
             }
@@ -150,7 +150,6 @@ function theme_overview(data) {
 
 var theme_diff=[];
 $('#container .group_operating .operating .compared').on('click',function () {
-    console.log(theme_diff)
     if (theme_diff.length==2){
         window.open('/theme/compare/?theme_name1='+theme_diff[0]+'&theme_name2='+theme_diff[1]);
     }else {
