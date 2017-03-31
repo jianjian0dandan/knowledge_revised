@@ -1,5 +1,5 @@
 //包含事件
-var things_url='';
+var things_url='/theme/theme_detail/?theme_name='+theme_name+'&submit_user='+submit_user;
 $.ajax({
     url: things_url,
     type: 'GET',
@@ -19,12 +19,12 @@ function things(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -36,18 +36,22 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return index+1;
+                    return row[1];
                 }
             },
             {
-                title: "时间类型",//标题
+                title: "事件类型",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[2];
+                    }
                 }
             },
             {
@@ -58,7 +62,11 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[3];
+                    }
                 },
             },
             {
@@ -69,7 +77,11 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[4];
+                    }
                 },
             },
             {
@@ -80,7 +92,11 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[5];
+                    }
                 },
             },
             {
@@ -91,7 +107,11 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[6];
+                    }
                 },
             },
             {
@@ -102,18 +122,34 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[7].length==0||row[7]==''){
+                        return '暂无';
+                    }else {
+                        var key='';
+                        for (var k=0;k<row[7].length;k++){
+                            key+=row[7][k]+' ';
+                        }
+                        return key;
+                    }
                 },
             },
             {
-                title: "业务标记",//标题
+                title: "业务标签",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[8].length==0||row[8]==''){
+                        return '暂无';
+                    }else {
+                        var tag='';
+                        for (var k=0;k<row[8].length;k++){
+                            tag+=row[8][k]+' ';
+                        }
+                        return tag;
+                    }
                 },
             },
         ],
@@ -127,119 +163,89 @@ function things(data) {
 };
 
 //时间分析--鱼骨图
-finshdata = [
-    {'审理时间':'2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-12-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-    {'审理时间': '2014-15-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号'},
-    {'审理时间': '2014-18-20 至 2014-12-20','承办庭室':'XXXX','承办法官':'XXX','承办法院':'XXXXXXX法院','案件状态':'XX','案号':'(XXXX)XXXXXX第XXXX号(当前案件)'},
-];
-$(".fishBone").fishBone(finshdata);
+var fish_url='/theme/theme_analysis_flow/?theme_name='+theme_name+'&submit_user='+submit_user;
+$.ajax({
+    url: fish_url,
+    type: 'GET',
+    dataType: 'json',
+    async: true,
+    success:fish
+});
+var finshdata = [];
+function fish(data) {
+    var data=eval(data);
+    $.each(data,function (index,item) {
+        finshdata.push(
+            {'事件ID':item[0],'微博内容':item[1],'时间':item[2]}
+        );
+    })
+    $(".fishBone").fishBone(finshdata);
+}
+
 
 //地域分析
-var myChart = echarts.init(document.getElementById('area'));
-var option = {
-    tooltip : {
-        trigger: 'axis',
-        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-        }
-    },
-    legend: {
-        data: ['直接访问', '邮件营销','联盟广告','视频广告','搜索引擎']
-    },
-    grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-    },
-    xAxis:  {
-        type: 'category',
-        data: ['周一','周二','周三','周四','周五','周六','周日']
-
-    },
-    yAxis: {
-        type: 'value'
-    },
-    series: [
-        {
-            name: '直接访问',
-            type: 'bar',
-            stack: '总量',
-            label: {
-                normal: {
-                    show: true,
-                    position: 'insideRight'
-                }
-            },
-            data: [320, 302, 301, 334, 390, 330, 320]
+var place_url='/theme/theme_analysis_geo/?theme_name='+theme_name+'&submit_user='+submit_user;
+$.ajax({
+    url: place_url,
+    type: 'GET',
+    dataType: 'json',
+    async: true,
+    success:place
+});
+function place(data) {
+    var data=eval(data);
+    var place_x=[],place_series=[],legends=[];
+    $.each(data.top_city,function (index,item) {
+        place_x.push(item);
+    })
+    for (var key in data.event_city){
+        legends.push(key);
+        place_series.push(
+            {
+                name: key,
+                type: 'bar',
+                stack: '数量',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideRight'
+                    }
+                },
+                data: data.event_city[key]
+            }
+        )
+    }
+    var myChart = echarts.init(document.getElementById('area'));
+    var option = {
+        tooltip : {
+            trigger: 'axis',
+            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
         },
-        {
-            name: '邮件营销',
-            type: 'bar',
-            stack: '总量',
-            label: {
-                normal: {
-                    show: true,
-                    position: 'insideRight'
-                }
-            },
-            data: [120, 132, 101, 134, 90, 230, 210]
+        legend: {
+            data: legends
         },
-        {
-            name: '联盟广告',
-            type: 'bar',
-            stack: '总量',
-            label: {
-                normal: {
-                    show: true,
-                    position: 'insideRight'
-                }
-            },
-            data: [220, 182, 191, 234, 290, 330, 310]
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
         },
-        {
-            name: '视频广告',
-            type: 'bar',
-            stack: '总量',
-            label: {
-                normal: {
-                    show: true,
-                    position: 'insideRight'
-                }
-            },
-            data: [150, 212, 201, 154, 190, 330, 410]
+        xAxis:  {
+            type: 'category',
+            data: place_x
         },
-        {
-            name: '搜索引擎',
-            type: 'bar',
-            stack: '总量',
-            label: {
-                normal: {
-                    show: true,
-                    position: 'insideRight'
-                }
-            },
-            data: [820, 832, 901, 934, 1290, 1330, 1320]
-        }
-    ]
-};
-myChart.setOption(option);
+        yAxis: {
+            type: 'value'
+        },
+        series: place_series
+    };
+    myChart.setOption(option);
+}
 
 //网络分析
-var network_url='';
+var network_url='/theme/theme_analysis_net/?theme_name='+theme_name+'&submit_user='+submit_user;
 $.ajax({
     url: network_url,
     type: 'GET',
@@ -247,11 +253,30 @@ $.ajax({
     async: true,
     success:network
 });
+var rel_table={
+    "join":"参与事件",
+    "discuss":"参与舆论",
+    "other_relation":"其他关系",
+    "contain":"主题关联",
+    "event_other":"其他关系",
+    "friend":"交互",
+    "colleague":"业务关联",
+    "organization_tag":"其他关系",
+    "friend":"交互",
+    "relative":"亲属",
+    "leader":"上下级关系",
+    "colleague":"自述关联",
+    "ip_relation":"IP关联",
+    "user_tag":"其他关系",
+};
 function network(data) {
     var data = eval(data);
-    $('#network_list').bootstrapTable('load', data);
+    $('#container #content_left .network_analysis .net_detail .detail-1 .det-1').text(data.relation_count);
+    $('#container #content_left .network_analysis .net_detail .detail-1 .det-2').text(data.relation_degree.toFixed(2));
+    $('#container #content_left .network_analysis .net_detail .detail-1 .det-3').text(data.conclusion);
+    $('#network_list').bootstrapTable('load', data.relation_table);
     $('#network_list').bootstrapTable({
-        data:data,
+        data:data.relation_table,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -276,7 +301,7 @@ function network(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return index+1;
+                    return row[0];
                 }
             },
             {
@@ -287,7 +312,8 @@ function network(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    console.log(rel_table[row[1]])
+                    return rel_table[row[1]];
                 }
             },
             {
@@ -298,7 +324,7 @@ function network(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    return row[2];
                 },
             },
         ],

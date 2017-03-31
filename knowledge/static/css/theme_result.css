@@ -2,35 +2,59 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 3108px;
+        /*height: 3108px;*/
+        margin: 0 auto;
     }
 }
 /*内容样式*/
 body {
+    /*width: 100%;*/
+    /*min-width: 1349px;*/
+    /*min-height: 3108px;*/
+    /*background: url("/static/images/xxx_result.png") no-repeat;*/
     width: 100%;
+    margin: 0;
     min-width: 1349px;
-    min-height: 3108px;
-    background: url("/static/images/xxx_result.png") no-repeat;
+    /*min-height: 820px;*/
+    background-color:#e6e9eb;
 }
 #container {
     width: 100%;
-    padding: 5.3% 0 0 0;
+    padding: 40px 0 0 0;
 }
 #container #content_left {
-    width: 59%;
+    width: 850px;
+    padding: 30px;
     float: left;
-    margin-left: 9%;
+    margin-left:100px;
+    background:#f3f4f5;
+}
+#container #content_left h3 {
+    width: 241px;
+    height: 49px;
+    line-height: 49px;
+    padding: 0 0 0 60px;
+    margin-left: -30px;
+    color: white;
+    font-weight: 900;
+    background: url("/static/images/small_tit.png") no-repeat;
+    background-size: 241px 49px;
 }
 /*基本信息*/
 #container #content_left .basic .basic-1 {
-    padding: 2% 0 0 5%;
+    padding: 20px 0 0 50px;
     position: relative;
 }
 #container #content_left .basic .basic-1 .map_area dl {
     position: absolute;
-    top: -3%;
+    width: 79px;
+    height: 106px;
+    padding: 20px 0 0 6px;
+    top: -38px;
     text-align: center;
     cursor: pointer;
+    background: url("/static/images/e_p.png") no-repeat;
+    background-size:79px 106px;
 }
 #container #content_left .basic .basic-1 .map_area dd {
     color: white;
@@ -46,7 +70,7 @@ body {
 }
 #container #content_left .basic .basic-2 .information {
     width: 90%;
-    margin:5% 0 0 5.5%;
+    margin:50px 0 0 45px;
     position: relative;
 }
 #container #content_left .basic .basic-2 .information .tag_2,
@@ -60,7 +84,7 @@ body {
 #container #content_left .basic .basic-2 p span {
     color: #676767;
     display: inline-block;
-    width: 13%;
+    width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -69,7 +93,7 @@ body {
     width: 95%;
     padding: 2px 20px;
     font-size: 12px;
-    margin-bottom:1%;
+    margin-bottom: 10px;
 }
 #container #content_left .basic .basic-2 .information a {
     float: right;
@@ -78,17 +102,16 @@ body {
 /*包含事件*/
 #container #content_left .include {
     width: 100%;
-    margin-top: 5.5%;
 }
 /*时空分析*/
 #container #content_left .space_analysis {
     width: 100%;
-    margin-top: 40.5%;
+    /*margin-top: 40.5%;*/
 }
 #container #content_left .space_analysis .time,
 #container #content_left .space_analysis .place {
     width: 80%;
-    margin: 4% auto 0;
+    margin: 40px auto 0;
 }
 #container #content_left .space_analysis .time span ,
 #container #content_left .space_analysis .place span {
@@ -99,16 +122,15 @@ body {
 /*网络分析*/
 #container #content_left .network_analysis {
     width: 100%;
-    margin-top:2%;
 }
 #container #content_left .network_analysis .net_detail {
     width: 80%;
-    margin: 2% auto;
+    margin: 40px auto 0;
 }
 #container #content_left .network_analysis .net_detail .detail-1 {
     width: 80%;
-    padding: 0.5% 0;
-    margin-top:5%;
+    padding:5px 0;
+    margin:5px auto 0;
     text-align: center;
     background-color: #fff;
 }
