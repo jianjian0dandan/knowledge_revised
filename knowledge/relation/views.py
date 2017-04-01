@@ -37,7 +37,10 @@ def relation_search():#图谱搜索
 @login_required
 def relation_search_result():#图谱搜索结果
     result = request.args.get('result', '')
-    return render_template('relation/search_result.html',result=result)
+    simple_advanced = request.args.get('simple_advanced', '')
+    starts_nodes = request.args.get('starts_nodes', '')
+    return render_template('relation/search_result.html',
+    	result=result,simple_advanced=simple_advanced,starts_nodes=starts_nodes)
 
 @mod.route('/similarity/')
 @login_required
@@ -102,7 +105,8 @@ def submit_task_function():
     }
     result = json.dumps(search_data(input_data))
     # print type(result)
-    return redirect(url_for('.relation_search_result',result=result))
+    # return redirect(url_for('.relation_search_result',result=result))
+    return result
     # return json.dumps(result)
 
 
