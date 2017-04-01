@@ -85,7 +85,7 @@ $.each($("#container .start .options input"),function (index,item) {
             // 属性搜索
             //与或非
             no_ids=3;
-            yhf_value=$('.start .options-2_down').val();
+
         }
     })
 });
@@ -204,7 +204,6 @@ $.each($("#container .end .options-3 input"),function (index,item) {
         }else if ($(this).val()==3){
             end_ids=[];
             end_no_ids=3;
-            end_yhf_value=$('.end .options-3_down').val();
         }
     })
 });
@@ -282,7 +281,15 @@ function rel_value() {
 
 //高级搜索开始
 var input_data;
+var short_path='False';
 $('#sure_advan').on('click',function () {
+    simple_advanced='a';
+    //--------其他信息----
+    var step=$('.advan-4 .other .jump').val();
+    var limit=$('.advan-4 .other .datanums').val();
+    if ($("[name=short]:checkbox").prop("checked")=='true'){
+        short_path='True';
+    };
 
     //开始节点数据整理
     if (no_ids==1){
@@ -297,8 +304,9 @@ $('#sure_advan').on('click',function () {
                 }
             )
         };
+
     }else if (no_ids==2){
-        if (ids_files!=='undefined'){
+        if (ids_files=='undefined'){
             alert('您还没有上传文件。(不能为空)');
         }else {
             starts_nodes.push(
@@ -308,10 +316,11 @@ $('#sure_advan').on('click',function () {
                 }
             )
         };
-    }else {
+    }else if (no_ids==3){
         if (yhf_value==''){
-            alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
+            alert('请输入起始节点中属性搜索中的值。(不能为空)');
         }else {
+            yhf_value=$('.start .options-2_down').val();
             starts_nodes.push(
                 {
                     'node_type':start_type,
@@ -336,8 +345,7 @@ $('#sure_advan').on('click',function () {
             )
         }
     }else if (end_no_ids==2){
-        console.log(end_ids_files)
-        if (end_ids_files!=='undefined'){
+        if (end_ids_files=='undefined'){
             alert('您还没有上传文件。(不能为空)');
         }else {
             end_nodes.push(
@@ -348,10 +356,11 @@ $('#sure_advan').on('click',function () {
             )
         };
 
-    }else {
+    }else if (end_no_ids==3) {
         if (end_yhf_value==''){
             alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
         }else {
+            end_yhf_value=$('.end .options-3_down').val();
             end_nodes.push(
                 {
                     'node_type':end_type,
@@ -363,14 +372,7 @@ $('#sure_advan').on('click',function () {
         }
     }
 
-    //--------其他信息----
-    var step=$('.advan-4 .other .jump').val();
-    var limit=$('.advan-4 .other .datanums').val();
-    var short_path='False';
-    if ($("[name=short]:checkbox").prop("checked")=='true'){
-        short_path='True';
-    };
-//--------其他信息----完
+    //--------其他信息----完
     if (short_path=='True'){
         //此处要对起始节点进行判断，只能输入一个节点
         if(!(ids.length==1&&end_ids.length==1)){
@@ -385,25 +387,15 @@ $('#sure_advan').on('click',function () {
             'limit':limit,
             'submit_user':submit_user,
             'short_path':short_path,
-        }
+        };
+        input_data=JSON.stringify(input_data);
+        localStorage.setItem('temp',input_data);
+        window.open('/relation/search_result/?simple_advanced='+simple_advanced);
     }
-    relation=[];
-    // console.log(ids)
-    console.log(input_data)
-    // var advanced_search_url = '/relation/search_result/';
-    // $.ajax({
-    //     type:'POST',
-    //     url: advanced_search_url,
-    //     contentType:"application/json",
-    //     data: JSON.stringify(input_data),
-    //     dataType: "json",
-    //     success: advanced_search
-    // });
-})
-function advanced_search(data) {
-    alert('正在加载中。。。。。');
-}
-
+    ids=[],end_ids=[],ids_files=[],end_ids_files=[],relation=[],
+        starts_nodes=[],end_nodes=[];
+    // console.log(input_data)
+});
 
 
 // {

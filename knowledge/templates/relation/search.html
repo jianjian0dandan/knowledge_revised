@@ -1,5 +1,5 @@
 {% extends "public_nav.html" %}
-{% block title %}<title>知识图谱 - 探索结果</title>{% endblock %}
+{% block title %}<title>知识图谱 - 探索</title>{% endblock %}
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/search.css">
 <style>
@@ -181,7 +181,6 @@
     });
     //开始节点和终止节点的增加与减少
     $('.advan-1 .start_plus').on('click',function () {
-        console.log($('.advan-1 .start_plus'))
         var copy_start='';
         for (var s=0;s<$(this).parent('.advan-1 .start').length;s++){
             copy_start+=$(this).parent('.advan-1 .start')[s].outerHTML;
@@ -262,8 +261,8 @@
             alert('请输入您想查询的内容。(不能为空)');
         }else {
             simple_advanced='s';
-            window.open('/relation/search_result/?result='+key_words);
-//            window.open('/relation/search_result/?result='+key_words+'&simple_advanced='+simple_advanced);
+//            window.open('/relation/search_result/?result='+key_words);
+            window.open('/relation/search_result/?result='+key_words+'&simple_advanced='+simple_advanced);
         }
     })
 </script>

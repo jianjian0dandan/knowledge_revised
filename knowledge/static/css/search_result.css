@@ -20,15 +20,15 @@ body {
 }
 #container {
     width: 80%;
-    margin: 60px auto 0;
-    padding: 80px 0 0 0;
+    margin: 60px auto 50px;
+    padding: 120px 0 30px 20px;
     position: relative;
     background:#f3f4f5;
 }
 #container .result {
     position: absolute;
     top: 0;
-    left: -14px;
+    /*left: -14px;*/
     width: 225px;
     height:78px;
     line-height: 70px;
@@ -38,8 +38,9 @@ body {
 h3 {
     width: 241px;
     height: 49px;
-    line-height: 49px;
-    padding: 0 0 0 60px;
+    margin-left: -30px;
+    line-height: 44px;
+    text-align: center;
     color: white;
     font-weight: 900;
     background: url("/static/images/small_tit.png") no-repeat;
