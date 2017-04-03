@@ -12,7 +12,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import search_data,simple_search,compute_fun,get_sim
+from utils import search_data,simple_search,compute_fun,get_sim,get_sim_by_id
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 test_time = datetime2ts(RUN_TEST_TIME)
@@ -64,7 +64,7 @@ def submit_task_function():
         'start_nodes':[
             {
                 'node_type':'User',
-                'ids':[2772291221,1470809487]
+                'ids':[2772291221,1470809487,5014862797]
                 # 'conditions':[
                 #     {'must':{'keywords':'kkk'}},
                 #     {'should':{'hashtag':'ddd'}}
@@ -135,5 +135,14 @@ def compute_sim():
 @mod.route('/all_sim/')
 def all_sim():
     result = get_sim()
+    return json.dumps(result)
+
+
+@mod.route('/check_sim_nodes/')
+def check_sim_nodes():
+    node_type = request.args.get('node_type', '')
+    node_id = request.args.get('node_id', '')
+    submit_user = request.args.get('submit_user', '')
+    result = get_sim_by_id(node_type,node_id,submit_user)
     return json.dumps(result)
 

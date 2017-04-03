@@ -50,6 +50,9 @@ group_index_name = "group_index" # primary: group, rel: group
 wiki_index_name = "wiki_citiao"
 wiki_type_name = "wiki_result"
 
+key_type_dict = {people_node:people_primary,org_node:org_primary,event_node:event_primary,\
+                special_event_node:special_event_primary,group_node:group_primary}
+
 domain_list = [u'高校', u'境内机构', u'境外机构', u'媒体', u'境外媒体', u'民间组织', u'法律机构及人士', \
         u'政府机构及人士', u'媒体人士', u'活跃人士', u'草根', u'其他', u'商业人士']
 topic_list = [u'文体类_娱乐', u'科技类', u'经济类', u'教育类', u'民生类_环保', \
@@ -317,5 +320,5 @@ TOPIC_ABS_PATH = "/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge
 
 DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
 
-peo_list = [-1,0,200,220,400]
+peo_list = [-1,0,200,220,400,'']
 org_list = [1,2,3,4,5,6,7,8]
