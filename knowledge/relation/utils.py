@@ -605,37 +605,36 @@ def get_info_by_query(query,submit_user):
             if this_relation not in graph_result:
                 graph_result.append(this_relation)
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
-
+        print '???????????/',len(node_list)
     # print '?????',graph_result
-    max_influence_peo =  get_max_index_peo('influence')
-    max_activeness_peo = get_max_index_peo('activeness')
-    max_sensitive_peo = get_max_index_peo('sensitive')
-    max_influence_org =  get_max_index_org('influence')
-    max_activeness_org = get_max_index_org('activeness')
-    max_sensitive_org = get_max_index_org('sensitive')
+    # max_influence_peo =  get_max_index_peo('influence')
+    # max_activeness_peo = get_max_index_peo('activeness')
+    # max_sensitive_peo = get_max_index_peo('sensitive')
+    # max_influence_org =  get_max_index_org('influence')
+    # max_activeness_org = get_max_index_org('activeness')
+    # max_sensitive_org = get_max_index_org('sensitive')
     # print max_influence,max_activeness,max_sensitive
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     for i in node_list:
         if i[0] == people_primary:
-            tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence_peo)
-            tem['activeness'] = normal_index(tem['activeness'],max_activeness_peo)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_peo)
-            table_result['p_nodes'].append(tem)
+            table_result['p_nodes'].append(i[1])
         elif i[0] == org_primary:
-            tem = i[1]
-            tem['influence'] = normal_index(tem['influence'],max_influence_org)
-            tem['activeness'] = normal_index(tem['activeness'],max_activeness_org)
-            tem['sensitive'] = normal_index(tem['sensitive'],max_sensitive_org)
-            table_result['o_nodes'].append(tem)
+            table_result['o_nodes'].append(i[1])
         elif i[0] == event_primary:
             table_result['e_nodes'].append(i[1])
         elif i[0] == special_event_primary:
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    print graph_result,table_result
+    # print graph_result,table_result
     return {'graph_result':graph_result,'table_result':table_result}
+
+def get_sim_status(node_type,node_id):
+    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'term':{'node_type':node_type},'term':{'node_id':node_id}}})['hits']['hits']
+    if results:
+        return results[0]['_source']['compute_status']
+    else:
+        return 'not exist'
 
 
 def get_es_by_id(primary_key,node_id,submit_user):
@@ -646,6 +645,10 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = p_column
         name = 'uname'
         tag = 'function_mark'
+        max_influence =  get_max_index_peo('influence')
+        max_activeness = get_max_index_peo('activeness')
+        max_sensitive = get_max_index_peo('sensitive')
+        node_type = people_node
     elif primary_key == org_primary:
         es = es_user_portrait
         es_index = portrait_index_name
@@ -653,6 +656,10 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = o_column
         name = 'uname'
         tag = 'function_mark'
+        max_influence_org =  get_max_index_org('influence')
+        max_activeness_org = get_max_index_org('activeness')
+        max_sensitive_org = get_max_index_org('sensitive')
+        node_type = org_node
     elif primary_key == event_primary:
         es = es_event
         es_index = event_analysis_name
@@ -660,6 +667,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = e_column
         name = 'name'
         tag = 'work_tag'
+        node_type = event_node
     elif primary_key == special_event_primary:
         es = es_special_event
         es_index = special_event_name
@@ -667,6 +675,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = s_column
         name = 'topic_name'
         tag = 'label'
+        node_type = special_event_node
     else:
         es = es_group
         es_index = group_name
@@ -674,67 +683,27 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = g_column
         name = 'group_name'
         tag = 'label'
+        node_type = group_node
     try:
         result = es.get(index=es_index,doc_type=es_type,fields=column,id=node_id)
         f_result = {}
         f_result['id']=node_id
         for k,v in result['fields'].iteritems():
             f_result[k] = v[0]
-        f_result[tag] = deal_event_tag(f_result[tag],submit_user)[0]
+        if primary_key == people_primary or primary_key == org_primary:
+            f_result['influence'] = normal_index(f_result['influence'],max_influence)
+            f_result['activeness'] = normal_index(f_result['activeness'],max_activeness)
+            f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive)
+        try: 
+            f_result[tag] = deal_event_tag(f_result[tag],submit_user)[0]
+        except:
+            f_result[tag] = ''
+        f_result['sim'] = get_sim_status(node_type,node_id)
         return [[primary_key,f_result],result['fields'][name]]
     except:#人造节点
-        # return None
         return [0,node_id]
 
 
-
-def get_es_by_id_multi(primary_key,node_id):
-    people_node = []
-    org_node = []
-    event_node = []
-    special_event_node = []
-    group_node = []
-    if primary_key == people_primary:
-        people_node.append(node_id)
-    elif primary_key == org_primary:
-        org_node.append(node_id)
-    elif primary_key == event_primary:
-        es = es_event
-        es_index = event_analysis_name
-        es_type = event_type
-        event_node.append(node_id)
-    elif primary_key == special_event_primary:
-        es = es_special_event
-        es_index = special_event_name
-        es_type = special_event_type
-        special_event_node.append(node_id)
-    else:
-        es = es_group
-        es_index = group_name
-        es_type = group_type
-        group_node.append(node_id)
-    if people_node:
-        people_result = []
-        es = es_user_portrait
-        es_index = portrait_index_name
-        es_type = portrait_index_type
-        result = get_user_info(people_node)
-
-        # p_result = es.mget(index=es_index,doc_type=es_type,fields=p_column,body={'ids':people_node})['docs']
-        # for i in p_result:
-        #     if i['found'] == True:
-        #         people_result.append(i['_source'])
-    elif org_node:
-        org_result = []
-        es = es_user_portrait
-        es_index = portrait_index_name
-        es_type = portrait_index_type
-        result = get_user_info(org_node)
-
-
-    #去对应es里找，然后返回相应的属性   5个表
-
-    
 def get_node_id(start_node):
     input_id = []
     for node in start_node:
@@ -815,6 +784,7 @@ def simple_search(keywords_list,submit_user):
     chinese = re.compile(u"[\u4e00-\u9fa5]+")
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+    node_type_list = [people_node,org_node,event_node,special_event_node,group_node]
     max_influence_peo =  get_max_index_peo('influence')
     max_activeness_peo = get_max_index_peo('activeness')
     max_sensitive_peo = get_max_index_peo('sensitive')
@@ -823,63 +793,6 @@ def simple_search(keywords_list,submit_user):
     max_sensitive_org = get_max_index_org('sensitive')
     for key in keywords_list:
         print key
-        '''
-        if len(chinese.findall(key)) == 0: #可能是id
-            for i in range(len(es_list)):
-                if column_list[i] == p_column:
-                    query_body = {
-                        'query':{
-                            'bool':{
-                                'must':[
-                                    {'term':{'uid':key}},
-                                    {'terms':{'verify_type':peo_list}}
-                                ]
-                            }
-                        }
-                    }
-                    result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
-                    if result:
-                        f_result = {}
-                        print result
-                        for k,v in result[0]['fields'].iteritems():
-                            f_result[k] = v[0]
-                        try:
-                            f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
-                        except KeyError:
-                            pass
-                        table_result['p_nodes'].append(f_result)
-                elif column_list[i] == o_column:
-                    query_body = {
-                        'query':{
-                            'bool':{
-                                'must':[
-                                    {'term':{'uid':key}},
-                                    {'terms':{'verify_type':org_list}}
-                                ]
-                            }
-                        }
-                    }
-                    result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
-                    if result:
-                        f_result = {}
-                        for k,v in result[0]['fields'].iteritems():
-                            f_result[k] = v[0]
-                        try:
-                            f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
-                        except KeyError:
-                            pass
-                        table_result['o_nodes'].append(f_result)
-                else:
-                    try:
-                        result = es_list[i].get(index=es_index_list[i],doc_type=es_type_list[i],id=key,fields=column_list[i])
-                        f_result = {}
-                        for k,v in result['fields'].iteritems():
-                            f_result[k] = v[0]
-                        f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
-                        table_result[node_list[i]].append(f_result)
-                    except :
-                        continue
-        '''
 
         for i in range(len(es_list)):
             query_body = {
@@ -925,10 +838,69 @@ def simple_search(keywords_list,submit_user):
                         f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive_org)
                     else:
                         pass
+                    f_result['sim'] = get_sim_status(node_type_list[i],j['_id'])
                     table_result[nodes_list[i]].append(f_result)
             else:
                 continue
     return table_result
+
+    '''
+    if len(chinese.findall(key)) == 0: #可能是id
+        for i in range(len(es_list)):
+            if column_list[i] == p_column:
+                query_body = {
+                    'query':{
+                        'bool':{
+                            'must':[
+                                {'term':{'uid':key}},
+                                {'terms':{'verify_type':peo_list}}
+                            ]
+                        }
+                    }
+                }
+                result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+                if result:
+                    f_result = {}
+                    print result
+                    for k,v in result[0]['fields'].iteritems():
+                        f_result[k] = v[0]
+                    try:
+                        f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                    except KeyError:
+                        pass
+                    table_result['p_nodes'].append(f_result)
+            elif column_list[i] == o_column:
+                query_body = {
+                    'query':{
+                        'bool':{
+                            'must':[
+                                {'term':{'uid':key}},
+                                {'terms':{'verify_type':org_list}}
+                            ]
+                        }
+                    }
+                }
+                result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+                if result:
+                    f_result = {}
+                    for k,v in result[0]['fields'].iteritems():
+                        f_result[k] = v[0]
+                    try:
+                        f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                    except KeyError:
+                        pass
+                    table_result['o_nodes'].append(f_result)
+            else:
+                try:
+                    result = es_list[i].get(index=es_index_list[i],doc_type=es_type_list[i],id=key,fields=column_list[i])
+                    f_result = {}
+                    for k,v in result['fields'].iteritems():
+                        f_result[k] = v[0]
+                    f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
+                    table_result[node_list[i]].append(f_result)
+                except :
+                    continue
+    '''
 
     # query_body = {
     #     'query':{
@@ -980,6 +952,68 @@ def get_sim():
     else:
         return ''
 
-def get_sim_by_id(node_type,node_id):
-    result = es_sim.get(index=sim_name,doc_type=sim_type,id=node_id)['_source']
-    #人-人    事-事    专题-事   群体-
+def get_sim_by_id(node_type,node_id,submit_user):
+    try:
+        result = es_sim.get(index=sim_name,doc_type=sim_type,id=node_id)['_source']
+        #人-人    事-事    专题-事   群体-
+        related_ids = result['related_id'].split('&')
+        table = []
+
+        if node_type == people_node or node_type == org_node or node_type == event_node:
+            for node_id in related_ids:
+                info,name = get_es_by_id(key_type_dict[node_type],node_id,submit_user)
+                if info and info not in table:
+                    table.append(info)
+            return {node_type:table}
+        elif node_type == special_event_node:#专题里面的是相似事件
+            for node_id in related_ids:
+                info,name = get_es_by_id(event_primary,node_id,submit_user)
+                if info and info not in table:
+                    table.append(info)
+            return {event_node:table}
+        else:#群体，里面可能有人或者机构
+            results = {people_node:[],org_node:[]}
+            for i in [people_node,org_node]:
+                if i == people_node:
+                    node_list = peo_list
+                    column = p_column
+                    tag = 'function_mark'
+                    max_influence =  get_max_index_peo('influence')
+                    max_activeness = get_max_index_peo('activeness')
+                    max_sensitive = get_max_index_peo('sensitive')
+                else:
+                    node_list = org_list
+                    column = o_column
+                    tag = 'function_mark'
+                    max_influence_org =  get_max_index_org('influence')
+                    max_activeness_org = get_max_index_org('activeness')
+                    max_sensitive_org = get_max_index_org('sensitive')
+                query_body = {
+                    'query':{
+                        'bool':{
+                            'must':[
+                                {'terms':{'uid':related_ids}},  #一个话题，不同情绪下给定时间里按关键词聚合
+                                {'terms':{'verify_type':node_list}}
+                            ]
+                        }
+                    }
+                }
+                nodes = es_user_portrait.search(index=portrait_name,doc_type=portrait_type,body=query_body,fields=column)['hits']['hits']
+                for node in nodes:
+                    f_result = {}
+                    for k,v in node['fields'].iteritems():
+                        f_result[k] = v[0]
+                    f_result['influence'] = normal_index(f_result['influence'],max_influence)
+                    f_result['activeness'] = normal_index(f_result['activeness'],max_activeness)
+                    f_result['sensitive'] = normal_index(f_result['sensitive'],max_sensitive)
+                    try: 
+                        f_result[tag] = deal_event_tag(f_result[tag],submit_user)[0]
+                    except:
+                        f_result[tag] = ''
+                    f_result['sim'] = get_sim_status(i,node['_id'])
+                    results[i].append(f_result)
+            return results
+
+
+    except:
+        return 'not exist'
