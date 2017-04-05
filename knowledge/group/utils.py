@@ -711,6 +711,7 @@ def group_related(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people', 'file_link', 'wiki_link'])
     uid_list = uid_string['fields']['people'][0].split('&')
+    origin_list = []
 
     try:
         file_link = uid_string['fields']['file_link'][0].split('+')
@@ -778,6 +779,8 @@ def group_related(g_name, submit_user):
         event_result = []
     final_user = []
     for i in user_result:
+        if i['_id'] in origin_list:
+            continue
         if i['found'] == True:
             if i['fields']['uname'][0] == '':
                 uname_s = i['fields']['uid'][0]
