@@ -760,6 +760,7 @@ def get_theme_related(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
     event_list = eid_string['fields']['event'][0].split('&')
+    origin_event = event_list
     try:
         file_link = eid_string['fields']['file_link'][0].split('+')
     except:
@@ -848,10 +849,14 @@ def get_theme_related(theme_name, submit_user):
 
     final_event = []
     for i in event_result:
+        if i['_id'] in origin_event:
+            continue
         if i['found'] == True:
             final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
         else:
             final_event.append([i['_id'],i['_id']])
+    # final_event2 = set(final_event) - set(origin_event)
+    # final_event = [i for i in final_event2]
     return {'final_user':final_user, 'final_org':final_org, 'final_event':final_event, \
             'final_file':final_file, 'final_wiki':final_wiki}
 
