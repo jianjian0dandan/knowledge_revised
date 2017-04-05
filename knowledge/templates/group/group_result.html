@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="/static/css/group_result.css">
 
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 1%;
+    }
 </style>
 {% endblock %}
 
@@ -15,9 +17,9 @@
     <div id="content_left">
         <div class="basic" style="padding-bottom:1%">
             <div class="basic-1">
-                <h1 class="user_name" style="font-weight:900;display:inline-block;">无忧无虑的大鹅</h1>
+                <h1 class="user_name" style="font-weight:900;display:inline-block;"></h1>
                 <div class="map_area">
-                    <dl id="map" style="right: 9.3%;">
+                    <dl id="map" style="right:11.3%;">
                         <dt><img src="/static/images/earth.png"></dt>
                         <dd>地图链接</dd>
                     </dl>
@@ -30,50 +32,50 @@
             <div class="basic-2">
                 <div class="information">
                     <p class="in_one">
-                        <span>包含人物数量</span> <span class="nums crude">29213</span>
-                        <span>创建时间</span><span class="time crude">2017-11-22</span>
+                        <span>包含事件数量</span> <span class="nums crude"></span>
+                        <span>创建时间</span><span class="time crude" style="width: 140px;"></span>
                     </p>
                     <p class="in_two">
                         <span>自动标签：</span>
-                        <span class="tag_2 crude">静安寺of骄傲if极爱哦哈市反对欧ifiOS阿飞盎司附近搜啊</span>
+                        <span class="tag_2 crude"></span>
                         <a class="more_2">更多</a>
                     </p>
                     <p class="in_three">
                         <span>业务标签：</span>
-                        <span class="tag_3 crude">咖啡机哦万的是否可骄傲好无恶覅实际上空间撒放回去哦IE</span>
+                        <span class="tag_3 crude"></span>
                         <a class="more_3">更多</a>
                     </p>
                     <p class="in_four">
                         <span>创建人</span> <span class="name crude">admin</span>
-                        <a href="###">相似群体计算</a>
+                        <a href="###">相似专题计算</a>
                     </p>
                 </div>
             </div>
         </div>
         <div class="include">
             <h3 style="color: white;font-weight: 900">包含人物</h3>
-            <div id="things" style="width: 100%;margin-top: 3%"></div>
+            <div id="person" style="width: 100%;"></div>
         </div>
-        <div class="space_analysis">
-            <h3 style="color: white;font-weight: 900">时空分析</h3>
-            <div class="time">
-                <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                <span>地理位置分布</span>
-                <div class="fishBone"></div>
-            </div>
-            <div class="place">
-                <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                <span>位置转移模式</span>
-                <div id="area" style="width: 100%;height: 300px;"></div>
-            </div>
-        </div>
+        <!--<div class="space_analysis">-->
+            <!--<h3 style="color: white;font-weight: 900">时空分析</h3>-->
+            <!--<div class="time">-->
+                <!--<span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>-->
+                <!--<span>时间分析</span>-->
+                <!--<div class="fishBone"></div>-->
+            <!--</div>-->
+            <!--<div class="place">-->
+                <!--<span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>-->
+                <!--<span>地域分析</span>-->
+                <!--<div id="area" style="width: 100%;height: 300px;"></div>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="network_analysis">
-            <h3 style="color: white;font-weight: 900">网络分析</h3>
+            <h3 style="color: white;font-weight: 900;padding:0; ">网络分析</h3>
             <div class="net_detail">
                 <div class="detail-1">
-                    <img src="/static/images/structure.png"/> <span>内部关联事件</span><span class="det-1">50</span>
-                    <img src="/static/images/top.png"/> <span>内部关联度</span><span class="det-2">0.6</span>
-                    <img src="/static/images/note.png"/> <span>该专题内部事件联系</span><span class="det-3">紧密</span>
+                    <img src="/static/images/structure.png"/> <span>内部关联事件</span><span class="det-1"></span>
+                    <img src="/static/images/top.png"/> <span>内部关联度</span><span class="det-2"></span>
+                    <img src="/static/images/note.png"/> <span>该专题内部事件联系</span><span class="det-3"></span>
                 </div>
                 <div id="network_list" style="width: 100%"></div>
             </div>
@@ -83,12 +85,12 @@
             <div style="width: 100%;text-align: center;margin-top: 2%;">
                 <div class="topic_left">
                     <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                    <span>事件自动标签</span>
+                    <span>人物自动标签</span>
                     <div id="tag_left"></div>
                 </div>
                 <div class="topic_right">
                     <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                    <span>事件微话题</span>
+                    <span>人物微话题</span>
                     <div id="tag_right"></div>
                 </div>
             </div>
@@ -101,15 +103,15 @@
                 <span>事件排名</span>
                 <div id="ranking" style="width: 100%;"></div>
             </div>
-            <div class="character-2" style="width: 100%;text-align: center;margin-top: 2%;">
+            <div class="character-2" style="width: 100%;text-align: center;margin-top: 30px;">
                 <div class="character_left">
                     <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                    <span>人物自动标签</span>
+                    <span>事件自动标签</span>
                     <div id="label_left"></div>
                 </div>
                 <div class="character_right">
                     <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
-                    <span>人物业务标签</span>
+                    <span>事件业务标签</span>
                     <div id="label_right"></div>
                 </div>
             </div>
@@ -117,72 +119,107 @@
     </div>
 
     <div id="content_right">
-        <div class="link_user" style="padding-top:2%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联人物</h3>
-            <div class="users" style="text-align: center;margin-top: 50px;">
-                <a href="###">王二麻子</a>
-                <a href="###">李思</a>
-                <a href="###">张三</a>
-                <a href="###">乌鸡</a>
+        <div class="link_user">
+            <h3>关联人物</h3>
+            <div class="users" style="text-align: center;margin: 20px 0;">
+
             </div>
-            <button class="user_more">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_event" style="padding-top:10.3%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联事件</h3>
-            <div class="events" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_event" style="margin: 10px 0;">
+            <h3>关联事件</h3>
+            <div class="events" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="event_more">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_agency" style="padding-top:18%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联机构</h3>
-            <div class="agencys" style="text-align: center;margin-top: 50px;">
-                <a href="###">美国CIA</a>
-                <a href="###">俄罗斯KGB</a>
-                <a href="###">以色列Mossad</a>
-                <a href="###">英国MI6</a>
+        <div class="link_agency" style="margin: 10px 0;">
+            <h3>关联机构</h3>
+            <div class="agencys" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="agency_more">+查看更多</button>
+            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_knowledge" style="padding-top:28%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联知识</h3>
-            <div class="knowledge" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_knowledge" style="margin: 10px 0;">
+            <h3>关联知识</h3>
+            <div class="knowledge" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="knowledge_more">+查看更多</button>
+            <button class="knowledge_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
-        <div class="link_resources" style="padding-top:41%;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联资源</h3>
-            <div class="resources" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
+        <div class="link_resources" style="margin: 10px 0;">
+            <h3>关联资源</h3>
+            <div class="resources" style="text-align: center;margin:20px 0;">
+
             </div>
-            <button class="resources_more">+查看更多</button>
+            <button class="resources_more" type="button" data-toggle="modal">+查看更多</button>
         </div>
 
     </div>
 
 </div>
+<!--关联-->
+
+<div class="modal fade" id="link" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title tit_h4" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body" id="link_content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 <!------JS-------->
 {% block my_js %}
-
-<script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="/static/js/fishBone.js"></script>
-<script type="text/javascript" src="/static/js/jquery.SuperSlide.2.1.1.js"></script>
-<script src="/static/js/echarts-2/build/dist/echarts.js"></script>
-<script src="/static/js/theme_result-1.js"></script>
 <script>
+    var group_name='{{group_name}}';
+    var submit_user=$('#name').text();
+    $('#container #content_left .basic-1 .user_name').text(group_name);
+    var basic_url='/group/group_basic/?g_name='+group_name+'&submit_user='+submit_user;
+    $.ajax({
+        url: basic_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:basic
+    });
+    function basic(data) {
+        var data=eval(data);
+        $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
+        $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
+        if (data[0][3]==0){
+            $('#container #content_left .basic .basic-2 .information .tag_2').text('暂无数据');
+        }else {
+            var key='';
+            $.each(data[0][3],function (index,item) {
+                key+=item+' ';
+            });
+            $('#container #content_left .basic .basic-2 .information .tag_2').text(key);
+        };
 
+        if (data[0][4]==0){
+            $('#container #content_left .basic .basic-2 .information .tag_3').text('暂无数据');
+        }else {
+            var key='';
+            $.each(data[0][4],function (index,item) {
+                key+=item+' ';
+            });
+            $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
+        };
+    }
 </script>
+<script src="/static/js/echarts-2/build/dist/echarts.js"></script>
+<script src="/static/js/group_result-1.js"></script>
+<script src="/static/js/group_result-2.js"></script>
 {% endblock %}
 

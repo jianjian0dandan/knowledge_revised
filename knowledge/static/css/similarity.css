@@ -2,22 +2,38 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 820px;
     }
 }
 /*内容样式*/
 body {
     width: 100%;
+    margin: 0;
     min-width: 1349px;
-    min-height: 820px;
-    background: url("/static/images/similarity.png") no-repeat;
+    /*min-height: 820px;*/
+    background: url("/static/images/graph_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container {
     width: 80%;
-    padding: 2% 5%;
-    margin: 9% auto 0;
+    padding:45px 80px 100px;
+    margin: 100px auto 100px;
+    position: relative;
+    background: #f3f4f5;
+    box-shadow: 2px 1px 1px #ccced0;
 }
-#container .search {
+#container .tit {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 360px;
+    margin-left: -10px;
+    height:78px;
+    line-height: 70px;
+    text-align: center;
+    background: url("/static/images/xxx_add.png") no-repeat;
+    background-size: 100% 100%;
+}
+#container .search_task {
     width: 80%;
     margin: 7% auto 2%;
     padding: 1% 2%;
@@ -26,18 +42,18 @@ body {
     border: 1px solid #d2d2d2;
     box-shadow: 1px 1px 1px #a2a2a2;
 }
-#container .search input {
+#container .search_task input {
     padding: 0.5% 2%;
     width: 60%;
     background-color: #e3e3f2;
 }
-#container .search .sure {
+#container .search_task .sure {
     margin-left: 5%;
     padding:0.5% 2%;
     color: white;
     background-color: #52bbde;
     box-shadow: 1px 1px 1px #d4d4e9;
 }
-#container .search .sure:hover {
+#container .search_task .sure:hover {
     background-color: #358bde;
 }

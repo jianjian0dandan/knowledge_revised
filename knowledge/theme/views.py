@@ -33,8 +33,8 @@ def theme_add():#新建专题
 @mod.route('/modify/')
 @login_required
 def theme_modify():#编辑专题
-
-    return render_template('theme/theme_modify.html')
+    theme_name = request.args.get('theme_name','')
+    return render_template('theme/theme_modify.html',theme_name=theme_name)
 
 @mod.route('/compare/')
 @login_required

@@ -3,52 +3,78 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/search_result.css">
 <style>
-
+    .link {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+    }
+    #licensing {
+        fill: green;
+    }
+    .link.licensing {
+        stroke: green;
+    }
+    .link.resolved {
+        stroke-dasharray: 0,2 1;
+    }
+    circle {
+        fill: #ccc;
+        stroke: #333;
+        stroke-width: 1.5px;
+    }
+    text {
+        font: 12px '微软雅黑';
+        pointer-events: none;
+        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+    }
+    .linetext {
+        font-size: 12px;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 class="result" style="color: white;font-weight: 900;padding-left:38px;margin-bottom: 80px;">探索结果</h1>
+    <h3 class="result" style="color: white;font-weight: 900;">探索结果</h3>
     <div class="related_network">
         <h3>相关网络</h3>
-        <div class="network" style="width: 70%;margin: 0 auto;">
+        <div class="network" style="width: 90%;margin: 20px auto 0;">
             <div id="network"></div>
         </div>
     </div>
 
     <div class="related_person">
         <h3>相关人物</h3>
-        <div class="person" style="width: 70%;margin: 0 auto;">
+        <div class="person" style="width: 90%;margin: 20px auto 0;">
             <div id="person"></div>
         </div>
     </div>
 
     <div class="related_agencies">
         <h3>相关机构</h3>
-        <div class="agencies" style="width: 70%;margin: 0 auto;">
+        <div class="agencies" style="width: 90%;margin: 20px auto 0;">
             <div id="agencies"></div>
         </div>
     </div>
 
     <div class="related_events">
         <h3>相关事件</h3>
-        <div class="events" style="width: 70%;margin: 0 auto;">
+        <div class="events" style="width: 90%;margin: 20px auto 0;">
             <div id="events"></div>
         </div>
     </div>
 
     <div class="related_organization">
         <h3>相关组织</h3>
-        <div class="organization" style="width: 70%;margin: 0 auto;">
+        <div class="organization" style="width: 90%;margin: 20px auto 0;">
             <div id="organization"></div>
         </div>
     </div>
 
     <div class="related_subject">
         <h3>相关专题</h3>
-        <div class="subject" style="width: 70%;margin: 0 auto;">
+        <div class="subject" style="width: 90%;margin: 20px auto 0;">
             <div id="subject"></div>
         </div>
     </div>
@@ -63,8 +89,13 @@
 
 <script>
     var submit_user=$('#name').text();
-    var key_words='{{key_words}}'.replace(/^,+/,"").replace(/,+$/,"").replace(/,/g,'&');
-//    var simple_advanced='{{simple_advanced}}';
+    var simple_advanced='{{simple_advanced}}';
+    var key_words;
+    if (simple_advanced=='s'){
+        key_words ='{{result}}'.replace(/^,+/,"").replace(/,+$/,"").replace(/,/g,'&');
+    }
+    var input_data=JSON.parse(localStorage.getItem("temp"));
+
 </script>
 <script src="/static/js/search_result-1.js"></script>
 

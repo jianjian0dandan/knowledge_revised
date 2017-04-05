@@ -38,14 +38,15 @@ def group_modify():#编辑群体
 @mod.route('/compare/')
 @login_required
 def group_compare():#群体对比
-
-    return render_template('group/group_compare.html')
+    group_name1 = request.args.get('group_name1','')
+    group_name2 = request.args.get('group_name2','')
+    return render_template('group/group_compare.html',group_name1=group_name1,group_name2=group_name2)
 
 @mod.route('/result/')
 @login_required
 def group_result():#群体查看
-
-    return render_template('group/group_result.html')
+    group_name = request.args.get('group_name','')
+    return render_template('group/group_result.html',group_name=group_name)
 
 @mod.route('/group_overview/')
 def ajax_group_overview():  #群体总览

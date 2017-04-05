@@ -2,20 +2,36 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 920px;
+        /*height: 920px;*/
     }
 }
 /*内容样式*/
 body {
     width: 100%;
     min-width: 1349px;
-    min-height: 920px;
-    background: url("/static/images/xxx_main.png") no-repeat;
+    /*min-height: 970px;*/
+    background: url("/static/images/graph_add.png") no-repeat;
     background-size: 100% 100%;
 }
 #container {
+    position: relative;
     width: 70%;
-    margin: 120px auto 0;
+    padding:50px;
+    margin:110px auto 100px;
+    background: #f3f4f5;
+    box-shadow: 2px 1px 1px #ccced0;
+}
+#container .add {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 225px;
+    height:78px;
+    text-align: center;
+    line-height: 74px;
+    font-size: 32px;
+    background: url("/static/images/result_tit.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container .group_operating {
     width: 100%;

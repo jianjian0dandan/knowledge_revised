@@ -3,26 +3,38 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/theme_modify.css">
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 11%;
+    }
+    .fixed-table-container tbody td .th-inner,
+    .fixed-table-container thead th .th-inner {
+        padding: 5px;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 style="color: white;font-weight:800;padding-top: 0.5%">编辑专题</h1>
-    <div class="theme" style="margin-top: 8%;">
-        <h3 class="theme_name" style="color: white;font-weight:800;padding-top: 0.5%">XX专题</h3>
-        <div id="theme_list"></div>
+    <h1 class="tit" style="color: white;font-weight:800;">编辑专题</h1>
+    <div class="theme">
+        <h3 class="theme_name" style="color: white;font-weight:800;"></h3>
+        <div class="tag">
+            <span >业务标签:</span>
+            <p class="tags" style="display: inline-block"></p>
+        </div>
+        <div class="theme_list" style="width: 84%;margin: 0 auto;">
+            <div id="theme_list"></div>
+        </div>
         <button id="add_thing">添加事件</button>
     </div>
-    <div class="event" style="margin-top: 48%">
-        <h3 style="color: white;font-weight:800;padding-top: 0.5%">添加事件</h3>
+    <div class="event" style="margin-top: 40px;display: none;">
+        <h3 style="color: white;font-weight:800;">添加事件</h3>
         <div class="event-1">
             <span>添加方式</span>
             <select id="add_way" onchange="add_way(this.value)">
-                <option value="1">关联添加</option>
-                <option value="2">手动添加</option>
+                <option value="r">关联添加</option>
+                <option value="m">手动添加</option>
             </select>
             <div class="hands" style="display:none;">
                 <span>输入事件名称或关键词</span>
@@ -30,22 +42,33 @@
                 <button class="sure">确定</button>
             </div>
         </div>
-        <div id="event_list"></div>
+        <div class="event_list" style="width: 84%;margin: 0 auto;">
+            <div id="event_list"></div>
+        </div>
         <button id="add_theme">加入专题</button>
+        <button id="new_theme" style="margin-right:30px;">新建专题</button>
     </div>
 </div>
 {% endblock %}
 
 
 {% block my_js %}
-<!--<script src="/static/js/theme_modify-1.js"></script>-->
+
 <script>
-    function add_way(value) {
-        if (value==2){
-            $('.hands').show();
+    var theme_name="美国大选";
+//    var theme_name="{{theme_name}}";
+    var submit_user=$('#name').text();
+    $('.theme_name').text(theme_name).attr('title',theme_name);
+    var add=1;
+    $('#add_thing').on('click',function () {
+        if (add==1){
+            $('.event').show();
+            add=2;
         }else {
-            $('.hands').hide();
+            $('.event').hide();
+            add=1;
         }
-    }
+    })
 </script>
+<script src="/static/js/theme_modify-1.js"></script>
 {% endblock %}

@@ -1,5 +1,5 @@
 //计算任务
-var calculation_url='';
+var calculation_url='/relation/all_sim/';
 $.ajax({
     url: calculation_url,
     type: 'GET',
@@ -30,65 +30,112 @@ function calculation(data) {
         columns: [
             {
                 title: "节点名称",//标题
-                field: "",//键名
+                field: "node_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return index+1;
+                    if (value==''||value=='unknown'||value=='NULL'){
+                        return row.node_id;
+                    }else {
+                        return row.node_name;
+                    }
                 }
             },
             {
                 title: "节点类型",//标题
-                field: "",//键名
+                field: "node_type",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                }
+                // formatter: function (value, row, index) {
+                //
+                // }
             },
             {
                 title: "提交时间",//标题
-                field: "",//键名
+                field: "submit_ts",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (value==''||value=='unknown'||value=='NULL'){
+                        return '暂无';
+                    }else {
+                        return getLocalTime(row.submit_ts);
+                    }
+                },
+            },
+            {
+                title: "相似节点ID",//标题
+                field: "related_id",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (value==''||value=='unknown'||value=='NULL'){
+                        return '暂无';
+                    }else {
+                        if (value==''||value=='unknown'||value=='NULL'){
+                            return '暂无';
+                        }else {
+                            var key='';
+                            var words=value.split('&');
+                            for (var k=0;k<words.length;k++){
+                                key+=words[k]+' ';
+                            }
+                            return key;
+                        }
+                    }
                 },
             },
             {
                 title: "计算进度",//标题
-                field: "",//键名
+                field: "compute_status",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (value==0){
+                        return '未计算';
+                    }else if (value== -1){
+                        return '正在计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }
                 },
             },
             {
-                title: "操作",//标题
+                title: "查看",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    return '<a>查看</a>';
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].innerText=='查看') {
+                if (row.compute_status==1){
+                    window.open('/relation/similarity_result/?node_id='+row.node_id);
+                }else {
+                    alert('未计算完成。');
+                }
+
+            }
+        }
     });
+};
+
+
+function getLocalTime(nS) {
+    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
 };

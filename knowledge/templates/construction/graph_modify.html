@@ -48,7 +48,7 @@
         <div class="attributes" style="margin-top: 3%">
             <span>节点名称</span><input type="text" class="node_name">
             <span>节点类型</span>
-            <select id="node_type" onchange="type(this.value)">
+            <select id="node_type" onchange="type_node(this.value)">
                 <option value="User">人物</option>
                 <option value="Org">机构</option>
                 <option value="Event">事件</option>
@@ -105,9 +105,8 @@
 
 
 {% block my_js %}
-<script src="/static/js/graph_modify-1.js"></script>
-<script src="/static/js/graph_modify-2.js"></script>
 <script>
+    var submit_user=$('#name').text();
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {
             if ($(this).val()==1){
@@ -121,4 +120,7 @@
     });
 
 </script>
+<script src="/static/js/graph_modify-1.js"></script>
+<script src="/static/js/graph_modify-2.js"></script>
+
 {% endblock %}

@@ -12,7 +12,7 @@ import os
 import time
 from datetime import date
 from datetime import datetime
-from utils import search_data,simple_search,compute_fun
+from utils import search_data,simple_search,compute_fun,get_sim,get_sim_by_id
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 test_time = datetime2ts(RUN_TEST_TIME)
@@ -37,7 +37,10 @@ def relation_search():#图谱搜索
 @login_required
 def relation_search_result():#图谱搜索结果
     result = request.args.get('result', '')
-    return render_template('relation/search_result.html',result=result)
+    simple_advanced = request.args.get('simple_advanced', '')
+    starts_nodes = request.args.get('starts_nodes', '')
+    return render_template('relation/search_result.html',
+    	result=result,simple_advanced=simple_advanced,starts_nodes=starts_nodes)
 
 @mod.route('/similarity/')
 @login_required
@@ -61,7 +64,7 @@ def submit_task_function():
         'start_nodes':[
             {
                 'node_type':'User',
-                'ids':[2772291221,1470809487]
+                'ids':[2772291221,1470809487,5014862797]
                 # 'conditions':[
                 #     {'must':{'keywords':'kkk'}},
                 #     {'should':{'hashtag':'ddd'}}
@@ -102,7 +105,8 @@ def submit_task_function():
     }
     result = json.dumps(search_data(input_data))
     # print type(result)
-    return redirect(url_for('.relation_search_result',result=result))
+    # return redirect(url_for('.relation_search_result',result=result))
+    return result
     # return json.dumps(result)
 
 
@@ -127,4 +131,18 @@ def compute_sim():
 	node_id = request.args.get('node_id', '')
 	result = compute_fun(submit_user,submit_ts,node_name,node_type,node_id)
 	return result
+
+@mod.route('/all_sim/')
+def all_sim():
+    result = get_sim()
+    return json.dumps(result)
+
+
+@mod.route('/check_sim_nodes/')
+def check_sim_nodes():
+    node_type = request.args.get('node_type', '')
+    node_id = request.args.get('node_id', '')
+    submit_user = request.args.get('submit_user', '')
+    result = get_sim_by_id(node_type,node_id,submit_user)
+    return json.dumps(result)
 
