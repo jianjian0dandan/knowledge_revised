@@ -278,5 +278,16 @@ body {
     cursor: pointer;
     margin: 15px 0;
 }
-
+#container #content_left .place .define{
+    padding: 3px 7px;
+    color: white;
+    margin-left: 30px;
+    font-size: 12px;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#container #content_left .place .define:hover {
+    background-color:#176de2;
+}
 

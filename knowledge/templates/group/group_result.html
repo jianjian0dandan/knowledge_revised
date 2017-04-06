@@ -56,19 +56,36 @@
             <h3 style="color: white;font-weight: 900">包含人物</h3>
             <div id="person" style="width: 100%;"></div>
         </div>
-        <!--<div class="space_analysis">-->
-            <!--<h3 style="color: white;font-weight: 900">时空分析</h3>-->
-            <!--<div class="time">-->
-                <!--<span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>-->
-                <!--<span>时间分析</span>-->
-                <!--<div class="fishBone"></div>-->
-            <!--</div>-->
-            <!--<div class="place">-->
-                <!--<span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>-->
-                <!--<span>地域分析</span>-->
-                <!--<div id="area" style="width: 100%;height: 300px;"></div>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="space_analysis">
+            <h3 style="color: white;font-weight: 900">时空分析</h3>
+            <div class="time">
+                <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
+                <span>地理位置分布</span>
+                <div id="distributed" style="width: 100%;height: 400px;"></div>
+            </div>
+            <div class="place">
+                <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
+                <span>位置转移模式</span>
+                <div style="margin: 10px 0;">
+                    <span>选择条件</span>
+                    <select id="condition1" style="padding: 2px 5px;border: 1px solid #9e9e9e;margin: 0 20px;"
+                            onchange="condition1(this.value)">
+                        <option value="1">选择用户</option>
+                        <option value="2">主要出发地</option>
+                        <option value="3">主要目的地</option>
+                    </select>
+                    <select id="condition2" style="padding: 2px 5px;border: 1px solid #9e9e9e;"
+                            onchange="condition2(this.value)">
+
+                    </select>
+                    <button class="define">确定</button>
+                </div>
+                <div id="area" style="width: 100%;height: 300px;"></div>
+                <div class="area_table">
+                    <div id="area_table"></div>
+                </div>
+            </div>
+        </div>
         <div class="network_analysis">
             <h3 style="color: white;font-weight: 900;padding:0; ">网络分析</h3>
             <div class="net_detail">
@@ -217,9 +234,12 @@
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
     }
+
+
 </script>
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 <script src="/static/js/group_result-1.js"></script>
+<script src="/static/js/group_result-3.js"></script>
 <script src="/static/js/group_result-2.js"></script>
 {% endblock %}
 
