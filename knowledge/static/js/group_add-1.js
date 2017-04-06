@@ -1,7 +1,7 @@
 var key;
 $('#container .new_property .pro_sure').on('click',function () {
     key=$('#container .new_property .key_words').val();
-    var search_url='/theme/search_related_event_item/?item='+key+'&submit_user='+submit_user;
+    var search_url='/group/search_related_people_item/?item='+key+'&submit_user='+submit_user;
     $.ajax({
         url: search_url,
         type: 'GET',
@@ -14,7 +14,6 @@ $('#container .new_property .pro_sure').on('click',function () {
 
 function search(data) {
     var data=eval(data);
-    console.log(data);
     $('#special_topic').bootstrapTable('load', data);
     $('#special_topic').bootstrapTable({
         data:data,
@@ -35,18 +34,33 @@ function search(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "事件名称",//标题
+                title: "用户ID",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1];
+                    return row[0];
                 }
             },
             {
-                title: "事件类型",//标题
+                title: "昵称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if(row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        return row[0];
+                    }else {
+                        return row[1];
+                    }
+                }
+            },
+            {
+                title: "注册地",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -58,10 +72,10 @@ function search(data) {
                     }else {
                         return row[2];
                     }
-                }
+                },
             },
             {
-                title: "发生时间",//标题
+                title: "影响力",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -69,14 +83,14 @@ function search(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if(row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[3];
-                    }
+                        return row[3].toFixed(2);
+                    };
                 },
             },
             {
-                title: "发生地点",//标题
+                title: "活跃度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -84,14 +98,14 @@ function search(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if(row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[4];
-                    };
+                        return row[4].toFixed(2);
+                    }
                 },
             },
             {
-                title: "参与人数",//标题
+                title: "敏感度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -99,24 +113,9 @@ function search(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if(row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
-                        return '暂无';
+                        return 0;
                     }else {
-                        return row[5];
-                    }
-                },
-            },
-            {
-                title: "微博数量",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if(row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[6];
+                        return row[5].toFixed(2);
                     }
                 },
             },
@@ -128,14 +127,15 @@ function search(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
+                    if (row[6].length==0||row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[7].length;k++){
-                            tag+=row[7][k]+' ';
+                        var key='';
+                        var words=row[6].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
-                        return tag;
+                        return key;
                     }
                 },
             },
@@ -147,20 +147,21 @@ function search(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[8].length==0||row[8]==''||row[8]=='NULL'||row[8]=='unknown'){
+                    if (row[7].length==0||row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var key='';
+                        var words=row[7].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
-                        return tag;
+                        return key;
                     }
                 },
             },
             //多选框
             {
-                title: "加入专题",//标题
+                title: "加入群体",//标题
                 field: "select",
                 checkbox: true,
                 align: "center",//水平
@@ -169,10 +170,10 @@ function search(data) {
 
         ],
         onCheck:function (row) {
-            theme_list.push(row[0]);
+            groups.push(row[0]);
         },
         onUncheck:function (row) {
-            theme_list.removeByValue(row[0]);
+            groups.removeByValue(row[0]);
         },
         // onClickCell: function (field, value, row, $element) {
         //     if ($element[0].innerText=='查看专题') {
@@ -183,16 +184,16 @@ function search(data) {
         // }
     });
 }
-var theme_list=[];
+var groups=[];
 
 $('.new_build').on('click',function () {
     var name=$('#container .new_property .theme_name').val();
     var tag=$('#container .new_property .theme_tag').val();
     if (name==''){
-        alert('请输入您的专题名称。');
+        alert('请输入您的群体名称。');
     }else {
-        var node_ids=theme_list.join(',');
-        add_url='/theme/create_new_relation/?node1_id='+node_ids+'&node2_id='+name+
+        var node_ids=groups.join(',');
+        add_url='/group/create_new_relation/?node1_id='+node_ids+'&node2_id='+name+
             '&submit_user='+submit_user+'&k_label='+tag;
         $.ajax({
             url: add_url,
@@ -204,10 +205,11 @@ $('.new_build').on('click',function () {
     }
 })
 function add(data) {
-    if (data=='success'){
+    console.log(data)
+    if (data=='1'){
         alert('创建成功。');
-    }else if(data=='theme already exist') {
-        alert('此专题已经存在，请检查您的专题名称。');
+    }else if(data=='group already exist') {
+        alert('此群体已经存在，请检查您的群体名称。');
     }else {
         alert('创建失败。');
     }

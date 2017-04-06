@@ -125,7 +125,7 @@ function calculation(data) {
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='查看') {
                 if (row.compute_status==1){
-                    window.open('/relation/similarity_result/?node_id='+row.node_id);
+                    window.open('/relation/similarity_result/?node_id='+row.node_id+'&node_type='+row.node_type);
                 }else {
                     alert('未计算完成。');
                 }

@@ -142,7 +142,7 @@ function group_overview(data) {
             if ($element[0].innerText=='群体查看') {
                 window.open('/group/result/?group_name='+row[1]);
             }else if ($element[0].innerText=='群体编辑') {
-                // window.open(+row[1]);
+                window.open('/group/modify/?group_name='+row[1]);
             }
         }
     });

@@ -1,6 +1,5 @@
 //--标签
-var tag_url='/theme/theme_analysis_basic/?theme_name='+theme_name
-    +'&submit_user='+submit_user;
+var tag_url='/group/group_basic/?g_name='+theme_name +'&submit_user='+submit_user;
 $.ajax({
     url:tag_url,
     type: 'GET',
@@ -31,7 +30,7 @@ function tag(data) {
         //删除
         $('.tags .del').on('click',function () {
             var k_label=$(this).prev().text();
-            var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
+            var del_or_add_url='/group/group_add_tag/?g_name='+theme_name+'&submit_user='+submit_user+
                 '&k_label='+k_label+'&operation=del';
             $.ajax({
                 url: del_or_add_url,
@@ -52,7 +51,7 @@ function tag(data) {
 //添加-----------标签
 $('.t_sure').on('click',function () {
     var k_label=$('.add_tag').val();
-    var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
+    var del_or_add_url='/group/group_add_tag/?g_name='+theme_name+'&submit_user='+submit_user+
         '&k_label='+k_label+'&operation=add';
     $.ajax({
         url: del_or_add_url,
@@ -95,7 +94,7 @@ function del_or_add(data) {
 //==============================================================================================
 
 //关联资源
-var source_url='/theme/show_theme_file/?theme_name='+theme_name
+var source_url='/group/group_file_link/?g_name='+theme_name
     +'&submit_user='+submit_user;
 $.ajax({
     url:source_url,
@@ -128,7 +127,7 @@ function resources(data) {
         $('.s_del').on('click',function () {
             var label1=$(this).prev().text();
             var label2=$(this).prev().attr('href');
-            var del_or_add_url='/theme/theme_edit_file/?theme_name='+theme_name+'&submit_user='+submit_user+
+            var del_or_add_url='/group/group_edit_file/?g_name='+theme_name+'&submit_user='+submit_user+
                 '&operation=del'+'&file_name='+label1+','+label2;
             $.ajax({
                 url: del_or_add_url,
@@ -168,7 +167,7 @@ $('.s_sure').on('click',function () {
     if (label1==''||label2==''){
         alert('请输入资源的名称或者链接，不能为空。');
     }else {
-        var del_or_add_url='/theme/theme_edit_file/?theme_name='+theme_name+'&submit_user='+submit_user+
+        var del_or_add_url='/group/group_edit_file/?g_name='+theme_name+'&submit_user='+submit_user+
             '&operation=add'+'&file_name='+label1+','+label2;
         $.ajax({
             url: del_or_add_url,
@@ -194,8 +193,9 @@ $('.s_sure').on('click',function () {
 })
 
 //=======================================================================================
-//专题下的事件
-var things_url='/theme/theme_detail/?theme_name='+theme_name+'&submit_user='+submit_user;
+
+//群体下的人物
+var things_url='/group/group_detail/?g_name='+theme_name+'&submit_user='+submit_user;
 $.ajax({
     url: things_url,
     type: 'GET',
@@ -225,58 +225,58 @@ function things(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "事件名称",//标题
+                title: "人物ID",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1];
+                    return row[0];
                 }
             },
             {
-                title: "事件类型",//标题
+                title: "昵称",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'){
-                        return '暂无';
+                    if (row[1]==''||row[1]=='NULL'){
+                        return row[0];
                     }else{
-                        return row[2];
+                        return row[1];
                     }
                 }
             },
             {
-                title: "发生时间",//标题
+                title: "注册地",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[3]==''||row[3]=='NULL'){
-                        return '暂无';
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                        return '未知';
                     }else{
-                        return row[3];
+                        return row[2];
                     }
                 },
             },
             {
-                title: "发生地点",//标题
+                title: "影响力",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[4]==''||row[4]=='NULL'){
-                        return '未知';
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                        return 0;
                     }else{
-                        return row[4];
+                        return row[3].toFixed(2);
                     }
                 },
             },
@@ -288,10 +288,10 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[5]==''||row[5]=='NULL'){
-                        return '暂无';
+                    if (row[4]==''||row[4]=='NULL'){
+                        return 0;
                     }else{
-                        return row[5];
+                        return row[4];
                     }
                 },
             },
@@ -303,10 +303,10 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'){
-                        return '暂无';
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                        return 0;
                     }else{
-                        return row[6];
+                        return row[5];
                     }
                 },
             },
@@ -318,12 +318,13 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''||row[7]=='NULL'){
+                    if (row[6].length==0||row[6]==''||row[6]=='NULL'){
                         return '暂无';
                     }else {
                         var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
+                        var words=row[6].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
                         return key;
                     }
@@ -338,14 +339,15 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[8].length==0||row[8]==''||row[8]=='NULL'){
+                    if (row[7].length==0||row[7]==''||row[7]=='NULL'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var key='';
+                        var words=row[7].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
-                        return tag;
+                        return key;
                     }
                 },
             },
@@ -386,8 +388,8 @@ function things(data) {
 };
 var event_id;
 function del() {
-    var del_url='/theme/del_event_in_theme/?theme_name='+theme_name+'&submit_user='+submit_user+
-        '&event_id='+event_id;
+    var del_url='/group/del_user_in_group/?g_name='+theme_name+'&submit_user='+submit_user+
+        '&uid='+event_id;
     $.ajax({
         url: del_url,
         type: 'GET',
@@ -410,15 +412,15 @@ function del() {
         }
     });
 }
-//专题下----事件
+//群体下----人物
 var way='r';
 function add_way(value) {
     if (value=='r'){
         way='r';
         $('.hands').hide();
         $('.event_list').css({display:'block'});
-        // 专题下--------关联添加
-        var event_list_url='/theme/search_related_event/?theme_name='+theme_name
+        // 群体下--------关联添加
+        var event_list_url='/group/group_event_rank/?g_name='+theme_name
             +'&submit_user='+submit_user;
         $.ajax({
             url:event_list_url,
@@ -429,13 +431,13 @@ function add_way(value) {
         });
     }else {
         way='m';
-        $('.event_list').css({display:'none'});
+        $('.event_list').hide();
         $('.hands').show();
     }
 };
 if (way=='r') {
-    // 专题下--------关联添加
-    var event_list_url='/theme/search_related_event/?theme_name='+theme_name
+    // 群体下--------关联添加
+    var event_list_url='/group/group_event_rank/?g_name='+theme_name
         +'&submit_user='+submit_user;
     $.ajax({
         url:event_list_url,
@@ -451,7 +453,7 @@ $('#container .event .event-1 .sure').on('click',function () {
     if (way=='m'){
         var item=$('#name_or_word').val();
         // 专题下--------手动添加
-        var search_event_url='/theme/search_related_event_item/?theme_name='+theme_name+'&item='+item
+        var search_event_url='/group/search_related_people_item/?g_name='+theme_name+'&item='+item
             +'&submit_user='+submit_user;
         $.ajax({
             url:search_event_url,
@@ -466,7 +468,6 @@ $('#container .event .event-1 .sure').on('click',function () {
 
 function event_list(data) {
     var data = eval(data);
-    console.log(11)
     $('#event_list').bootstrapTable('load', data);
     $('#event_list').bootstrapTable({
         data:data,
@@ -487,58 +488,58 @@ function event_list(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "事件名称",//标题
+                title: "人物ID",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1];
+                    return row[0];
                 }
             },
             {
-                title: "事件类型",//标题
+                title: "昵称",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'){
-                        return '暂无';
+                    if (row[1]==''||row[1]=='NULL'){
+                        return row[0];
                     }else{
-                        return row[2];
+                        return row[1];
                     }
                 }
             },
             {
-                title: "发生时间",//标题
+                title: "注册地",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[3]==''||row[3]=='NULL'){
-                        return '暂无';
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                        return '未知';
                     }else{
-                        return row[3];
+                        return row[2];
                     }
                 },
             },
             {
-                title: "发生地点",//标题
+                title: "影响力",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[4]==''||row[4]=='NULL'){
-                        return '未知';
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                        return 0;
                     }else{
-                        return row[4];
+                        return row[3].toFixed(2);
                     }
                 },
             },
@@ -550,10 +551,10 @@ function event_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[5]==''||row[5]=='NULL'){
-                        return '暂无';
+                    if (row[4]==''||row[4]=='NULL'){
+                        return 0;
                     }else{
-                        return row[5];
+                        return row[4];
                     }
                 },
             },
@@ -565,10 +566,10 @@ function event_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'){
-                        return '暂无';
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                        return 0;
                     }else{
-                        return row[6];
+                        return row[5];
                     }
                 },
             },
@@ -580,12 +581,13 @@ function event_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''||row[7]=='NULL'){
+                    if (row[6].length==0||row[6]==''||row[6]=='NULL'){
                         return '暂无';
                     }else {
                         var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
+                        var words=row[6].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
                         return key;
                     }
@@ -600,20 +602,21 @@ function event_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[8].length==0||row[8]==''||row[8]=='NULL'){
+                    if (row[7].length==0||row[7]==''||row[7]=='NULL'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var key='';
+                        var words=row[7].split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
                         }
-                        return tag;
+                        return key;
                     }
                 },
             },
             //多选框
             {
-                title: "加入专题",//标题
+                title: "加入群体",//标题
                 field: "select",
                 checkbox: true,
                 align: "center",//水平
@@ -634,9 +637,9 @@ var thing_list=[];
 $('#add_theme').on('click',function () {
     var node_ids=thing_list.join(',');
     if(node_ids==''){
-        alert('请检查您要加入的事件。(不能为空)')
+        alert('请检查您要加入的群体。(不能为空)')
     }else {
-        var new_thing_url='/theme/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
+        var new_thing_url='/group/create_new_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
         $.ajax({
             url:new_thing_url,
@@ -649,7 +652,7 @@ $('#add_theme').on('click',function () {
 });
 
 function new_thing(data) {
-    if (data=='success'){
+    if (data=='1'){
         alert('添加成功。');
         $.ajax({
             url: things_url,
@@ -660,7 +663,7 @@ function new_thing(data) {
         });
         if (way=='r') {
             // 专题下--------关联添加
-            var event_list_url='/theme/search_related_event/?theme_name='+theme_name
+            var event_list_url='/group/search_related_people_item/?g_name='+theme_name
                 +'&submit_user='+submit_user;
             $.ajax({
                 url:event_list_url,
@@ -672,7 +675,7 @@ function new_thing(data) {
         }else {
             var item=$('#name_or_word').val();
             // 专题下--------手动添加
-            var search_event_url='/theme/search_related_event_item/?theme_name='+theme_name+'&item='+item
+            var search_event_url='/group/search_related_people_item/?g_name='+theme_name+'&item='+item
                 +'&submit_user='+submit_user;
             $.ajax({
                 url:search_event_url,
@@ -682,8 +685,8 @@ function new_thing(data) {
                 success:event_list
             });
         }
-    }else if(data=='theme already exist') {
-        alert('此事件已经存在，请检查您添加的事件。');
+    }else if(data=='group already exist') {
+        alert('人物已经存在，请检查您添加的人物。');
     }else {
         alert('添加失败。');
     }
