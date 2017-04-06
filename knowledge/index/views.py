@@ -10,7 +10,7 @@ from datetime import date
 from datetime import datetime
 from get_result import *
 from search_protrait import *
-from knowledge.global_utils import graph
+from knowledge.global_utils import graph,es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from GetUrl import getUrlByKeyWord,getUrlByKeyWordList
 mod = Blueprint('index', __name__, url_prefix='/index')
 
@@ -153,8 +153,10 @@ def get_person_atr():#人物属性页面
     ### 人物属性查询函数
     if user_id:
         result_att = search_person_by_id(user_id)
+        doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
     else:
         result_att = {}
+        doc_list = []
 
     ### 获取相关wiki
     try:
@@ -172,6 +174,7 @@ def get_person_atr():#人物属性页面
         relation_dict = {'people':[],'org':[],'event':[]}
     
     relation_dict['wiki'] = wiki_list[0:10]
+    relation_dict['doc'] = doc_list[0:10]
 
     return render_template('index/person.html',result_att = result_att,relation_dict = relation_dict)
 
@@ -184,8 +187,10 @@ def get_event_atr():#事件属性页面
     ### 事件属性查询函数
     if user_id:
         result_att = search_event_by_id(user_id)
+        doc_list = search_related_docs(user_id,es_related_docs,event_docs_name,event_docs_type)#查找关联文档
     else:
         result_att = {}
+        doc_list = []
 
     ### 获取相关wiki
     try:
@@ -196,7 +201,7 @@ def get_event_atr():#事件属性页面
             wiki_list = []
     except KeyError:
         wiki_list = []
-
+    
     ### 获取关联实体
     if user_id:
         relation_dict = search_neo4j_by_uid(user_id,event_index_name,event_primary)
@@ -204,6 +209,7 @@ def get_event_atr():#事件属性页面
         relation_dict = {'people':[],'org':[],'event':[]}
     
     relation_dict['wiki'] = wiki_list[0:10]
+    relation_dict['doc'] = doc_list[0:10]
     
     return render_template('index/event.html',result_att = result_att,relation_dict = relation_dict)
 
@@ -216,8 +222,10 @@ def get_organization():#机构属性页面
     ### 机构属性查询函数
     if user_id:
         result_att = search_org_by_id(user_id)
+        doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
     else:
         result_att = {}
+        doc_list = []
 
     ### 获取相关wiki
     try:
@@ -235,6 +243,7 @@ def get_organization():#机构属性页面
         relation_dict = {'people':[],'org':[],'event':[]}
     
     relation_dict['wiki'] = wiki_list[0:10]
+    relation_dict['doc'] = doc_list[0:10]
     
     return render_template('index/organization.html',result_att = result_att,relation_dict = relation_dict)
 

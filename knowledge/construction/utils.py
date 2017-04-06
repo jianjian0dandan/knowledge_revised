@@ -28,6 +28,7 @@ from knowledge.global_utils import es_recommendation_result, recommendation_inde
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
+from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
@@ -886,6 +887,23 @@ def search_node_time_limit(node_type, item, start_ts, end_ts, editor):
         node_result = search_event_time_limit(item, field, start_ts, end_ts, editor)
     return node_result
 
+def search_user_file(item):
+    try:
+        file_link = es_related_docs.get(index=user_docs_name,doc_type=user_docs_type, id=item)['_source']['related_docs']
+    except:
+        return []
+    print file_link,'============'
+    file_list = file_link.split('+')
+    return file_list
+
+def search_event_file(item):
+    try:
+        file_link = es_related_docs.get(index=event_docs_name,doc_type=event_docs_type, id=item)['_source']['related_docs']
+    except:
+        return []
+    file_list = file_link.split('+')
+    return file_list
+
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
         field = p_column
@@ -896,12 +914,16 @@ def show_node_detail(node_type, item, submit_user):
         node_result = search_user(item, field, '')[0]
         tag = deal_user_tag(item, submit_user )[0]
         node_result.append(tag)
+        file_link = search_user_file(item)
+        node_result.append(file_link)
 
     if node_type == 'Event':
         field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
         node_result = search_event(item, field, submit_user)[0]
         tag = deal_event_tag(item, submit_user)[0]
         node_result.append(tag)
+        file_link = search_event_file(item)
+        node_result.append(file_link)
         index_n = event_index_name
         index_key = 'event'
         node_key = special_event_node

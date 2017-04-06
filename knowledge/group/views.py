@@ -13,7 +13,7 @@ from  knowledge.global_utils import get_group
 from utils import search_related_u_card, create_node_and_rel, create_group_relation, del_u_group_rel,\
      add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
      compare_group_keywords, compare_group_k_label, group_geo_vary, get_group_user_track, group_event_rank,\
-     group_user_rank, group_user_keyowrds, group_related,group_user_tag
+     group_user_rank, group_user_keyowrds, group_related,group_user_tag, show_file_link
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -84,7 +84,7 @@ def create_new_relation():
 @mod.route('/create_relation/')#添加到已有群体
 def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
-    node1_id = request.args.get('node1_id', '1663072851')
+    node1_id = request.args.get('node1_id', '2288486705,5014862797,1653076903')
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
@@ -123,6 +123,14 @@ def group_add_tag():  #群体编辑-添加标签,删除标签
     operation = request.args.get('operation', 'add') #add del
     flag = add_group_k_label(g_name, k_label, operation)
     return json.dumps(flag)
+
+@mod.route('/group_file_link/')
+def ajax_group_file():  #群体展示资源文档链接
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    result = show_file_link(g_name,'')
+    return json.dumps(result)
 
 @mod.route('/group_edit_file/')
 def group_edit_file():  #群体编辑-添加资源文档链接
@@ -187,7 +195,7 @@ def detail_group_basic():  #群体基本信息
 
 @mod.route('/group_geo/')
 def detail_group_geo():  #群体地理位置信息
-    g_name = request.args.get('g_name', u'美选群体')
+    g_name = request.args.get('g_name', u'政治群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     detail_t = group_geo_vary(g_name, submit_user)
