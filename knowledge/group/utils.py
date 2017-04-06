@@ -73,6 +73,27 @@ def get_evaluate_max():
         max_result[evaluate] = max_evaluate
     return max_result
 
+def search_related_u_auto(g_name, submit_user):
+    group_id = p.get_pinyin(g_name)
+    uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id, fields=['people'])
+    uid_list = uid_string['fields']['people'][0].split('&')
+    related_list = []
+    for en_name in uid_list:
+        s_string = 'START s0 = node:node_index(uid="%s") \
+                MATCH (s0)-[r]-(s3:User) return s3' %(en_name)
+        print s_string
+        result = graph.run(s_string)
+        for item in result:
+            item_dict = dict(item)
+            related_list.append(item_dict['s3']['uid'])
+    related_list = set(related_list) - set(uid_list)
+    related_list = [i for i in related_list]
+    result = event_detail_search(related_list, submit_user)
+    return result
+
+
+
+
 def search_related_u_card(item, submit_user, g_name):
     evaluate_max = get_evaluate_max()
     if g_name:
@@ -445,6 +466,74 @@ def union_dict_list(objs):
         _total[_key] = sum([int(obj.get(_key, 0)) for obj in objs])
 
     return _total
+
+def get_vary_detail_info(vary_detail_dict, uid_list):
+    results = {}
+    #get uname
+    try:
+        user_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type,\
+                            body={'ids':uid_list})['docs']
+    except:
+        user_portrait_result = []
+    uname_dict = {}
+    for portrait_item in user_portrait_result:
+        uid = portrait_item['_id']
+        if portrait_item['found']==True:
+            uname = portrait_item['_source']['uname']
+            uname_dict[uid] = uname
+        else:
+            uname_dict[uid] = uid
+
+    #get new vary detail information
+    for vary_pattern in vary_detail_dict:
+        user_info_list = vary_detail_dict[vary_pattern]
+        new_pattern_list = []
+        for user_item in user_info_list:
+            uid = user_item[0]
+            uname= uname_dict[uid]
+            start_date = ts2datetime(int(user_item[1]))
+            end_date = ts2datetime(int(user_item[2]))
+            new_pattern_list.append([uid, uname, start_date, end_date])
+        results[vary_pattern] = new_pattern_list
+
+    return results
+
+def group_map(g_name, submit_user):
+    result = {}
+    group_id = p.get_pinyin(g_name)
+    uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
+    uid_list = uid_string['fields']['people'][0].split('&')
+    # {'main_start_geo':main_start_geo, 'main_end_geo': main_end_geo, \
+    #     'vary_detail_geo': vary_detail_geo, 'activity_geo_vary':activity_geo_vary,\
+    #     'main_activity_geo':main_activity_geo, 'activity_geo_distribution_date':activity_geo_distribution_date}
+
+    source = group_geo_vary(g_name, submit_user)
+    # result['activity_trend'] = source['activity_trend']
+    result['activity_geo_distribution_date'] = source['activity_geo_distribution_date']
+    result['activity_geo_vary'] = source['activity_geo_vary']
+    result['main_activity_geo'] = source['main_activity_geo']
+    try:
+        vary_detail_geo_dict = source['vary_detail_geo']
+    except:
+        vary_detail_geo_dict = {}
+    # uid_list = source['uid_list']
+    if vary_detail_geo_dict != {}:
+        result['vary_detail_geo'] = get_vary_detail_info(vary_detail_geo_dict, uid_list)
+    else:
+        result['vary_detail_geo'] = {}
+
+    try:
+        main_start_geo_dict = source['main_start_geo']
+    except:
+        main_start_geo_dict = {}
+    result['main_start_geo'] = sorted(main_start_geo_dict.items(), key=lambda x:x[1], reverse=True)
+
+    try:
+        main_end_geo_dict = source['main_end_geo']
+    except:
+        main_end_geo_dict = {}
+    result['main_end_geo'] = sorted(main_end_geo_dict.items(), key=lambda x:x[1], reverse=True)
+    return result
 
 def group_geo_vary(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
