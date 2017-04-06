@@ -12,7 +12,7 @@ from datetime import datetime
 from utils import search_related_e_card,  create_node_and_rel, create_rel,query_detail_theme, create_theme_relation,\
                   del_e_theme_rel, add_theme_k_label, add_theme_file_link, compare_theme, compare_theme_user, compare_theme_keywords,\
                   compare_theme_k_label, search_related_event, get_theme_flow, get_theme_geo, get_theme_net,\
-                  get_theme_keywords, get_theme_user_rank, get_theme_user_tag, get_theme_related
+                  get_theme_keywords, get_theme_user_rank, get_theme_user_tag, get_theme_related, show_theme_file_link
 from knowledge.global_utils import get_theme
 p = Pinyin()
 
@@ -98,6 +98,14 @@ def theme_add_tag():  #专题编辑-添加标签,删除标签
     flag = add_theme_k_label(theme_name, k_label, operation)
     return json.dumps(flag)
 
+@mod.route('/show_theme_file/')
+def ajax_theme_file():  #专题编辑-添加资源文档链接
+    theme_name = request.args.get('theme_name', u'美国大选')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name = theme_name + '_' + submit_user
+    result = show_theme_file_link(theme_name, submit_user)
+    return json.dumps(result)
+
 @mod.route('/theme_edit_file/')
 def theme_edit_file():  #专题编辑-添加资源文档链接
     theme_name = request.args.get('theme_name', u'美国大选')
@@ -118,11 +126,11 @@ def create_new_relation():
     node1_index_name = request.args.get('node1_index_name', 'event_index')  # node_index event_index
     rel = request.args.get('rel', 'special_event')
     node_key2 = request.args.get('node_key2', 'event')  # event,uid
-    node2_name = request.args.get('node2_id', u'政治专题5')
+    node2_name = request.args.get('node2_id', u'政治专题r')
     submit_user = request.args.get('submit_user', 'admin@qq.com')
     node2_id = node2_name + '_' + submit_user
     node2_index_name = request.args.get('node2_index_name', 'special_event_index')
-    k_label = request.args.get('k_label', 'test') #split &
+    k_label = request.args.get('k_label', '') #split ,
     flag = create_node_and_rel(node_key1, node1_list, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name, submit_user, k_label, node2_name)
     return json.dumps(flag)
