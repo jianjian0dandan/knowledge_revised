@@ -37,6 +37,11 @@ function include_user(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     return row[0];
+                    if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        include_user_list.push('<span>'+row[0]+'</span>');
+                    }else {
+                        include_user_list.push(row[1]+'('+'<span>'+row[0]+'</span>'+')');
+                    }
                 }
             },
             {
@@ -51,6 +56,7 @@ function include_user(data) {
                         return '暂无';
                     }else {
                         return row[1];
+
                     }
                 }
             },
@@ -447,7 +453,7 @@ function character(data) {
         columns: [
             {
                 title: "事件名称",//标题
-                field: "id",//键名
+                field: "event_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
@@ -455,16 +461,16 @@ function character(data) {
             },
             {
                 title: "关联人数",//标题
-                field: "name",//键名
+                field: "user",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='NULL'){
-                        return row.id;
+                    if (row.user==''||row.user=='NULL'){
+                        return 0;
                     }else {
-                        return row.name;
+                        return row.user.length;
                     }
                 }
             },
@@ -491,10 +497,11 @@ function character(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row.related_event==''||row.related_event=='NULL'){
-                        return 0;
+                    if (row.user==''||row.user=='NULL'){
+                        return '暂无';
                     }else {
-                        return row.related_event.length;
+                        var user=row.user.splice(' ');
+                        return row.user.length;
                     }
                 },
             },
