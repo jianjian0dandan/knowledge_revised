@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/theme_modify.css">
 <style>
     .table>thead:first-child>tr:first-child>th {
-        width: 11%;
+        width: 1%!important;
     }
     .fixed-table-container tbody td .th-inner,
     .fixed-table-container thead th .th-inner {
@@ -20,15 +20,34 @@
     <div class="theme">
         <h3 class="theme_name" style="color: white;font-weight:800;"></h3>
         <div class="tag">
-            <span >业务标签:</span>
-            <p class="tags" style="display: inline-block"></p>
+            <div>
+                <span>业务标签:</span>
+                <p class="tags" style="display: inline-block"></p>
+                <input type="text" class="add_tag" placeholder="多个标签请用逗号隔开"
+                       style="display: none;font-size: 10px;padding: 2px 5px;"/>
+                <button class="t_sure" style="display: none;">确定</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <span>关联资源:</span>
+                <p class="source" style="display: inline-block"></p>
+                <div class="add_resource" style="display:none;">
+                    <span>资源名称:</span>
+                    <input type="text" class="add_source" placeholder="资源名称"
+                           style="font-size: 10px;padding: 2px 5px;"/>
+                    <span>url:</span>
+                    <input type="text" class="add_source_url" placeholder="资源链接"
+                           style="font-size: 10px;padding: 2px 5px;"/>
+                    <button class="s_sure">确定</button>
+                </div>
+
+            </div>
         </div>
         <div class="theme_list" style="width: 84%;margin: 0 auto;">
             <div id="theme_list"></div>
         </div>
-        <button id="add_thing">添加事件</button>
+        <!--<button id="add_thing">添加事件</button>-->
     </div>
-    <div class="event" style="margin-top: 40px;display: none;">
+    <div class="event" style="margin-top: 40px;">
         <h3 style="color: white;font-weight:800;">添加事件</h3>
         <div class="event-1">
             <span>添加方式</span>
@@ -45,8 +64,27 @@
         <div class="event_list" style="width: 84%;margin: 0 auto;">
             <div id="event_list"></div>
         </div>
-        <button id="add_theme">加入专题</button>
-        <button id="new_theme" style="margin-right:30px;">新建专题</button>
+        <button id="add_theme" style="margin-top: 20px;">加入专题</button>
+        <!--<button id="new_theme" style="margin-right:30px;">新建专题</button>-->
+    </div>
+</div>
+
+<!--删除提示-->
+<div class="modal fade" id="fail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">删除提示</h4>
+            </div>
+            <div class="modal-body">
+                您确定要删除吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="del()">确定</button>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -55,20 +93,10 @@
 {% block my_js %}
 
 <script>
-    var theme_name="美国大选";
-//    var theme_name="{{theme_name}}";
+//    var theme_name="美国大选";
+    var theme_name="{{theme_name}}";
     var submit_user=$('#name').text();
     $('.theme_name').text(theme_name).attr('title',theme_name);
-    var add=1;
-    $('#add_thing').on('click',function () {
-        if (add==1){
-            $('.event').show();
-            add=2;
-        }else {
-            $('.event').hide();
-            add=1;
-        }
-    })
 </script>
 <script src="/static/js/theme_modify-1.js"></script>
 {% endblock %}

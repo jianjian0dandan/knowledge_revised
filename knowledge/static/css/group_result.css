@@ -132,8 +132,9 @@ body {
 }
 #container #content_left .network_analysis .net_detail .detail-1 {
     width: 80%;
-    padding: 0.5% 0;
-    margin-top:5%;
+    margin: 0 auto;
+    padding: 7px 0;
+    margin-top: 30px;
     text-align: center;
     background-color: #fff;
 }
@@ -277,5 +278,16 @@ body {
     cursor: pointer;
     margin: 15px 0;
 }
-
+#container #content_left .place .define{
+    padding: 3px 7px;
+    color: white;
+    margin-left: 30px;
+    font-size: 12px;
+    background-color: #1ab5e2;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#container #content_left .place .define:hover {
+    background-color:#176de2;
+}
 

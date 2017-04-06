@@ -3,26 +3,56 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/group_modify.css">
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 1%!important;
+    }
+    .fixed-table-container tbody td .th-inner,
+    .fixed-table-container thead th .th-inner {
+        padding: 5px;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 style="color: white;font-weight:800;padding-top: 0.5%">编辑群体</h1>
-    <div class="theme" style="margin-top: 8%;">
-        <h3 class="theme_name" style="color: white;font-weight:800;padding-top: 0.5%">XX群体</h3>
-        <div id="theme_list"></div>
-        <button id="add_thing">添加人物</button>
+    <h1 class="tit" style="color: white;font-weight:800;">编辑群体</h1>
+    <div class="theme" style="margin-top: 80px;">
+        <h3 class="theme_name" style="color: white;font-weight:800;"></h3>
+        <div class="tag">
+            <div>
+                <span>业务标签:</span>
+                <p class="tags" style="display: inline-block"></p>
+                <input type="text" class="add_tag" placeholder="多个标签请用逗号隔开"
+                       style="display: none;font-size: 10px;padding: 2px 5px;"/>
+                <button class="t_sure" style="display: none;">确定</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <span>关联资源:</span>
+                <p class="source" style="display: inline-block"></p>
+                <div class="add_resource" style="display:none;">
+                    <span>资源名称:</span>
+                    <input type="text" class="add_source" placeholder="资源名称"
+                           style="font-size: 10px;padding: 2px 5px;"/>
+                    <span>url:</span>
+                    <input type="text" class="add_source_url" placeholder="资源链接"
+                           style="font-size: 10px;padding: 2px 5px;"/>
+                    <button class="s_sure">确定</button>
+                </div>
+
+            </div>
+        </div>
+        <div class="theme_list" style="width: 84%;margin: 0 auto;">
+            <div id="theme_list"></div>
+        </div>
     </div>
-    <div class="event" style="margin-top: 48%">
-        <h3 style="color: white;font-weight:800;padding-top: 0.5%">添加人物</h3>
+    <div class="event" style="margin-top: 50px;">
+        <h3>添加人物</h3>
         <div class="event-1">
             <span>添加方式</span>
             <select id="add_way" onchange="add_way(this.value)">
-                <option value="1">关联添加</option>
-                <option value="2">手动添加</option>
+                <option value="r">关联添加</option>
+                <option value="m">手动添加</option>
             </select>
             <div class="hands" style="display:none;">
                 <span>输入人物名称或ID</span>
@@ -30,22 +60,41 @@
                 <button class="sure">确定</button>
             </div>
         </div>
-        <div id="event_list"></div>
+        <div class="event_list" style="width: 84%;margin: 0 auto;">
+            <div id="event_list"></div>
+        </div>
         <button id="add_theme">加入群体</button>
+    </div>
+</div>
+
+<!--删除提示-->
+<div class="modal fade" id="fail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">删除提示</h4>
+            </div>
+            <div class="modal-body">
+                您确定要删除吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="del()">确定</button>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 
 {% block my_js %}
-<!--<script src="/static/js/theme_modify-1.js"></script>-->
+
 <script>
-    function add_way(value) {
-        if (value==2){
-            $('.hands').show();
-        }else {
-            $('.hands').hide();
-        }
-    }
+    var theme_name="{{group_name}}";
+    var submit_user=$('#name').text();
+    $('.theme_name').text(theme_name).attr('title',theme_name);
+
 </script>
+<script src="/static/js/group_modify-1.js"></script>
 {% endblock %}

@@ -32,8 +32,8 @@ def group_add():#新建群体
 @mod.route('/modify/')
 @login_required
 def group_modify():#编辑群体
-
-    return render_template('group/group_modify.html')
+    group_name = request.args.get('group_name','')
+    return render_template('group/group_modify.html',group_name=group_name)
 
 @mod.route('/compare/')
 @login_required

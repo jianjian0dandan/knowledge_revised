@@ -478,14 +478,22 @@ function person(p_data) {
                 },
             },
             {
-                title: "创建相似节点",//标题
-                field: "",//键名
+                title: "计算状态",//标题
+                field: "sim",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '创建相似节点';
+                    if (value=='not exist'){
+                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],
@@ -627,14 +635,22 @@ function agencies(data) {
                 },
             },
             {
-                title: "创建相似节点",//标题
-                field: "",//键名
+                title: "计算状态",//标题
+                field: "sim",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '创建相似节点';
+                    if (value=='not exist'){
+                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],
@@ -775,14 +791,22 @@ function events(e_data) {
                 },
             },
             {
-                title: "创建相似节点",//标题
-                field: "",//键名
+                title: "计算状态",//标题
+                field: "sim",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '创建相似节点';
+                    if (value=='not exist'){
+                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],
@@ -905,14 +929,22 @@ function organization(data) {
                 },
             },
             {
-                title: "创建相似节点",//标题
-                field: "",//键名
+                title: "计算状态",//标题
+                field: "sim",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '创建相似节点';
+                    if (value=='not exist'){
+                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],
@@ -1024,14 +1056,22 @@ function subject(data) {
                 },
             },
             {
-                title: "创建相似节点",//标题
-                field: "",//键名
+                title: "计算状态",//标题
+                field: "sim",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '创建相似节点';
+                    if (value=='not exist'){
+                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        return '计算完成';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],

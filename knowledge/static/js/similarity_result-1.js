@@ -1,4 +1,15 @@
-
+var result_url='/relation/check_sim_nodes/?node_type='+node_type+'&node_id='+node_id;
+$.ajax({
+    url: result_url,
+    type: 'GET',
+    dataType: 'json',
+    async: true,
+    success:result
+});
+function result(data) {
+    var data=eval(data);
+    console.log(data)
+}
 //相关人物
 var person_url='';
 $.ajax({

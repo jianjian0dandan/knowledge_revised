@@ -94,7 +94,7 @@ function theme_overview(data) {
                     }else {
                         var tag='';
                         for (var k=0;k<row[4].length;k++){
-                            tag+=row[3][k]+' ';
+                            tag+=row[4][k]+' ';
                         }
                         return tag;
                     }
@@ -142,7 +142,7 @@ function theme_overview(data) {
             if ($element[0].innerText=='查看专题') {
                 window.open('/theme/result/?theme_name='+row[1]);
             }else if ($element[0].innerText=='编辑专题') {
-                // window.open(+row[1]);
+                window.open('/theme/modify/?theme_name='+row[1]);
             }
         }
     });
