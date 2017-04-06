@@ -8,17 +8,35 @@ $.ajax({
     async: true,
     success:function (data) {
         var data=eval(data);
+        console.log(data)
         if (data[0][4].length==0||data[0][4]==''||data[0][4]=='NULL'){
             $('#container .theme .tag .tags').html('暂无');
         }else {
             var tag='';
             for(var t=0;t<data[0][4].length;t++){
-                tag+='<span>'+data[0][4][t]+'</span> ';
+                tag+='<span>'+data[0][4][t]+'</span> <b class="del icon icon-remove"></b>';
             }
+            tag+=' <b class="add icon icon-plus"></b>';
             $('#container .theme .tag .tags').html(tag);
         }
+        $('.del').on('click',function () {
+            var k_label=$(this).text();
+            var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
+                    '&k_label='+k_label+'&operation=del';
+            $.ajax({
+                url: del_or_add_url,
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                success:del_or_add
+            });
+        })
     }
 });
+function del_or_add(data) {
+    var data=eval(data);
+}
+
 
 //专题下的事件
 var things_url='/theme/theme_detail/?theme_name='+theme_name+'&submit_user='+submit_user;

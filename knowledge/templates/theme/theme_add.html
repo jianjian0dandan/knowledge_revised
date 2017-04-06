@@ -3,7 +3,9 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/theme_add.css">
 <style>
-
+    .fixed-table-container thead th .sortable {
+        padding-right: 5px;
+    }
 </style>
 {% endblock %}
 
@@ -26,7 +28,7 @@
     </div>
     <div class="theme_list">
         <div id="special_topic"></div>
-        <button class="new_build">新建专题</button>
+        <button class="new_build" style="display: none;">新建专题</button>
     </div>
 </div>
 {% endblock %}

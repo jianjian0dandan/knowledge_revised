@@ -20,8 +20,14 @@
     <div class="theme">
         <h3 class="theme_name" style="color: white;font-weight:800;"></h3>
         <div class="tag">
-            <span >业务标签:</span>
-            <p class="tags" style="display: inline-block"></p>
+            <div>
+                <span>业务标签:</span>
+                <p class="tags" style="display: inline-block"></p>
+            </div>
+            <div style="margin-top: 15px;">
+                <span>关联资源:</span>
+                <p class="source" style="display: inline-block"></p>
+            </div>
         </div>
         <div class="theme_list" style="width: 84%;margin: 0 auto;">
             <div id="theme_list"></div>
@@ -55,8 +61,8 @@
 {% block my_js %}
 
 <script>
-    var theme_name="美国大选";
-//    var theme_name="{{theme_name}}";
+//    var theme_name="美国大选";
+    var theme_name="{{theme_name}}";
     var submit_user=$('#name').text();
     $('.theme_name').text(theme_name).attr('title',theme_name);
     var add=1;
