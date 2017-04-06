@@ -234,10 +234,10 @@ def ajax_search_node():
 #添加关系,上传文件
 @mod.route('/relation_add/', methods=['GET', 'POST'])
 def ajax_relation_add():
-    input_data = dict()
+    # input_data = dict()
     input_data = request.get_json()
-    input_data = [['uid', '5848882336', 'node_index', u'relative', 'uid',   \
-                 '1799791715', 'node_index']]  #other_relationship,测试   join
+    # input_data = [['uid', u'5014862797', 'node_index', u'user_tag,测试2', 'uid',   \
+    #              '2705119801', 'node_index']]  #other_relationship,测试   join
     result = relation_add(input_data)
     return json.dumps(result)  #[true] or[False, i(wrong num)]
 

@@ -13,7 +13,8 @@ from  knowledge.global_utils import get_group
 from utils import search_related_u_card, create_node_and_rel, create_group_relation, del_u_group_rel,\
      add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
      compare_group_keywords, compare_group_k_label, group_geo_vary, get_group_user_track, group_event_rank,\
-     group_user_rank, group_user_keyowrds, group_related,group_user_tag, show_file_link, group_map
+     group_user_rank, group_user_keyowrds, group_related,group_user_tag, show_file_link, group_map, \
+     search_related_u_auto, get_group_location
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -66,6 +67,7 @@ def search_related_event_item():  #群体编辑-增加前先搜索人物,如果�
 def search_related_people_auto():  #群体编辑-推荐一跳
     g_name = request.args.get('g_name', u'美选群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
     user_card = search_related_u_auto(g_name, submit_user)
     return json.dumps(user_card)
 
@@ -214,6 +216,16 @@ def group_user_geo():  #群体中个人的地理位置信息
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     # g_name = g_name + '_' + submit_user
     detail_t = get_group_user_track(uid)
+    return json.dumps(detail_t)
+
+@mod.route('/group_location_geo/')
+def group_location_geo():  #群体主要地理位置信息
+    city = request.args.get('city', u'中国\t上海')
+    direction = request.args.get('direction', 'out')
+    g_name = request.args.get('g_name', u'美选群体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = get_group_location(city, direction, g_name, submit_user)
     return json.dumps(detail_t)
 
 @mod.route('/group_user_rank/')
