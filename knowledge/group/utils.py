@@ -497,6 +497,34 @@ def get_vary_detail_info(vary_detail_dict, uid_list):
 
     return results
 
+def get_group_location(city, direction, g_name, submit_user):
+    basic_info = group_map(g_name, submit_user)
+    need_info = basic_info['activity_geo_vary']
+    # if need_info:
+    long_city = city
+    short_city = city.split('\t')[-1]
+    geolist = []
+    line_list = []
+    geolist.append(short_city)
+    for k,v in need_info.iteritems():
+        start_city = k.split('&')[0]
+        end_city = k.split('&')[1]
+        if direction == 'out':
+            if long_city == start_city:
+                geolist.append(end_city.split('\t')[-1])
+                line_list.append([short_city, end_city.split('\t')[-1], v])
+            else:
+                continue
+        elif direction == 'in':
+            if long_city == end_city:
+                geolist.append(start_city.split('\t')[-1])
+                line_list.append([short_city, start_city.split('\t')[-1], v])
+            else:
+                continue
+    return {'city':geolist, 'line':line_list}
+
+
+
 def group_map(g_name, submit_user):
     result = {}
     group_id = p.get_pinyin(g_name)
@@ -645,7 +673,18 @@ def get_group_user_track(uid):
             results.append([iter_date, ''])
         start_ts = start_ts + DAY
 
-    return results
+    geolist = []
+    line_list = []
+    index_city = 0
+    for i in results:
+        if i[1] and i[1].split('\t')[0] == u'中国':
+            geolist.append(i[1])
+    geolist = [i for i in set(geolist)]
+    for x in range(len(results)-1):
+        if results[x][1] != '' and results[x+1][1]!='' and results[x][1].split('\t')[0] == u'中国' and results[x+1][1].split('\t')[0] == u'中国':
+            if results[x][1] !=  results[x+1][1]:
+                line_list.append([results[x][1],results[x+1][1]])
+    return {'city':geolist, 'line':line_list}
 
 def group_event_rank(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
