@@ -221,7 +221,9 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
         theme_dict['event_count'] = len(node1_list)
         theme_dict['create_ts'] = int(time.time())
         theme_dict['user'] = submit_user
-        theme_dict['k_label'] = k_label
+        if k_label:
+            k_label = '&'.join(k_label.split(','))
+            theme_dict['k_label'] = k_label
         topic_id = p.get_pinyin(node2_id)
         labels = get_special_labels(node1_list)
         theme_dict['label'] = labels
