@@ -521,7 +521,10 @@ def group_geo_vary(g_name, submit_user):
                     vary_detail_geo[vary_item] = [[uid, vary_ts[0], vary_ts[1]]]
     all_activity_geo = union_dict_list(activity_geo_distribution_date.values())
     sort_all_activity_geo = sorted(all_activity_geo.items(), key=lambda x:x[1], reverse=True)
-    main_activity_geo = sort_all_activity_geo[0][0]
+    try:
+        main_activity_geo = sort_all_activity_geo[0][0]
+    except:
+        main_activity_geo = ''
 
 
     return  {'main_start_geo':main_start_geo, 'main_end_geo': main_end_geo, \
@@ -560,22 +563,49 @@ def group_event_rank(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
+    related_event_list = []
+    event_user_dict = {}
     for uid in uid_list:
-        print uid,'-----'
-        query_body = {
-            "query":{
-                'bool':{
-                    'must':[
-                        {"wildcard":{'user_results':'*'+uid+'*'}},      
-                    ]
-                }
+        c_string = 'start n=node:'+node_index_name+'("'+people_primary+':'+str(uid)+'") match (n)-[r]-(e:Event) return e'
+        result = graph.run(c_string)
+        for event in result:
+            print event,'---------'
+            # if event:
+            event_dict = dict(event)
+            event_id = event_dict['e']['event_id']
+            related_event_list.append(event_id)
+            try:
+                event_user_dict[event_id].append(uid)
+            except:
+                event_user_dict[event_id] = []
+                event_user_dict[event_id].append(uid)
+    event_rank_list = []
+    for k,v in event_user_dict.iteritems():
+        k_dict = {}
+        event_result = es_event.get(index=event_analysis_name, doc_type=event_text_type, id=k, fields=['user_results','name'])
+        event_rank = event_result['fields']['user_results'][0]
+        event_name = event_result['fields']['name'][0]
+        user_results = json.loads(event_rank)
+        k_dict['event_id'] = k
+        k_dict['event_name'] = event_name
+        k_dict['user'] = v
+        for u in v:
+            try:
+                k_dict['influ'] += user_results[u]['influ']
+            except:
+                k_dict['influ'] = user_results[u]['influ']
+        event_rank_list.append(k_dict)
+    sorted_event = sorted(event_rank_list, key=lambda x:x['influ'], reverse=True)
+    try:
+        max_value = sorted_event[0]['influ']
+    except:
+        return []
+    final_event_rank = []
+    for ii in sorted_event:
+        ii['influ'] = float(ii['influ'])/max_value
+        final_event_rank.append(ii)
+    return final_event_rank
 
-            },
-            'size':100
-        }
-        event_result = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
-                body=query_body, fields=['en_name'])['hits']['hits']
-        print event_result
 
 def group_user_tag(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
@@ -706,6 +736,19 @@ def group_user_rank(g_name, submit_user):
     return {'relation_table':exist_relation, 'relation_count':relation_set_count,\
         'conclusion':conclusion, 'relation_degree':relation_degree}
 
+def show_file_link(g_name, submit_user):
+    group_id = p.get_pinyin(g_name)
+    uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people', 'file_link', 'wiki_link'])
+    uid_list = uid_string['fields']['people'][0].split('&')
+    origin_list = []
+    try:
+        file_link = uid_string['fields']['file_link'][0].split('+')
+    except:
+        file_link = []
+    final_file = []
+    for i in file_link:
+        final_file.append(i.split(','))
+    return final_file
 
 def group_related(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
