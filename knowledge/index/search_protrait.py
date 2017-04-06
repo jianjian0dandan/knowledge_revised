@@ -129,8 +129,23 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
     return relation_name
 
 
+def search_related_docs(uid,es_host,es_name,es_type):
+    
+    uid_list = [uid]
+    result = []
+    search_result = es_host.mget(index=es_name, doc_type=es_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            return result
+        else:
+            data = item['_source']
+            docs = data['related_docs']
+            result = docs.split('+')
 
-
+    return result
 
 
 
