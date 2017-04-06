@@ -758,6 +758,20 @@ def get_theme_user_tag(theme_name, submit_user):
 
     return {'keywords':normal_keywords_list, 'mark':normal_mark_list}
 
+def show_theme_file_link(theme_name, submit_user):
+    topic_id = p.get_pinyin(theme_name)
+    eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
+    event_list = eid_string['fields']['event'][0].split('&')
+    origin_event = event_list
+    try:
+        file_link = eid_string['fields']['file_link'][0].split('+')
+    except:
+        file_link = []
+    final_file = []
+    for i in file_link:
+        final_file.append(i.split(','))
+    return final_file
+        
 def get_theme_related(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
