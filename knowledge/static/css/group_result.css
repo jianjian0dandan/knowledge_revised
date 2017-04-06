@@ -132,8 +132,9 @@ body {
 }
 #container #content_left .network_analysis .net_detail .detail-1 {
     width: 80%;
-    padding: 0.5% 0;
-    margin-top:5%;
+    margin: 0 auto;
+    padding: 7px 0;
+    margin-top: 30px;
     text-align: center;
     background-color: #fff;
 }

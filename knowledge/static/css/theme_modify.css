@@ -77,8 +77,17 @@ body {
     box-shadow: 2px 2px 2px #7c7c7d;
     cursor: pointer;
 }
+#container .theme .t_sure,#container .theme .s_sure {
+    padding: 2px 5px;
+    margin-left: 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 12px;
+    background-color:#00aad8;
+    cursor: pointer;
+}
 #container .theme #add_thing:hover, #container .event #add_theme:hover,
-#container .event #new_theme:hover{
+#container .event #new_theme:hover,#container .theme .t_sure:hover,#container .theme .s_sure:hover{
     background-color: #0b7ed8;
 }
 #container .event .event-1 {

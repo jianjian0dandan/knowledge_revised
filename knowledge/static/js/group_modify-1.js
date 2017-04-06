@@ -1,6 +1,5 @@
 //--标签
-var tag_url='/theme/theme_analysis_basic/?theme_name='+theme_name
-    +'&submit_user='+submit_user;
+var tag_url='/group/group_basic/?g_name='+theme_name +'&submit_user='+submit_user;
 $.ajax({
     url:tag_url,
     type: 'GET',
@@ -10,6 +9,7 @@ $.ajax({
 });
 function tag(data) {
     var data=eval(data);
+    console.log(data)
     if (data[0][4].length==0||data[0][4]==''||data[0][4]=='NULL'){
         $('#container .theme .tag .tags').html('暂无'+' <b class="add icon icon-plus"></b>');
         //添加
@@ -31,7 +31,7 @@ function tag(data) {
         //删除
         $('.tags .del').on('click',function () {
             var k_label=$(this).prev().text();
-            var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
+            var del_or_add_url='/group/group_add_tag/?g_name='+theme_name+'&submit_user='+submit_user+
                 '&k_label='+k_label+'&operation=del';
             $.ajax({
                 url: del_or_add_url,
@@ -52,7 +52,7 @@ function tag(data) {
 //添加-----------标签
 $('.t_sure').on('click',function () {
     var k_label=$('.add_tag').val();
-    var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
+    var del_or_add_url='/group/group_add_tag/?g_name='+theme_name+'&submit_user='+submit_user+
         '&k_label='+k_label+'&operation=add';
     $.ajax({
         url: del_or_add_url,

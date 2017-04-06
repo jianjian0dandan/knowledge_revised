@@ -21,7 +21,6 @@ function group_user(data) {
     var data = eval(data);
     var data1=data.detail_result1;
     var data2=data.detail_result2;
-    console.log(data)
     $('#list-1-user').bootstrapTable('load', data1);
     $('#list-1-user').bootstrapTable({
         data:data1,
@@ -127,36 +126,36 @@ function group_user(data) {
                     }
                 },
             },
-            {
-                title: "自动标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[6].toString().split('&').slice(0,6);
-                    }
-                },
-            },
-            {
-                title: "业务标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[7];
-                    }
-                },
-            },
+            // {
+            //     title: "自动标签",//标题
+            //     field: "",//键名
+            //     sortable: true,//是否可排序
+            //     order: "desc",//默认排序方式
+            //     align: "center",//水平
+            //     valign: "middle",//垂直
+            //     formatter: function (value, row, index) {
+            //         if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
+            //             return '暂无';
+            //         }else {
+            //             return row[6].toString().split('&').slice(0,6);
+            //         }
+            //     },
+            // },
+            // {
+            //     title: "业务标签",//标题
+            //     field: "",//键名
+            //     sortable: true,//是否可排序
+            //     order: "desc",//默认排序方式
+            //     align: "center",//水平
+            //     valign: "middle",//垂直
+            //     formatter: function (value, row, index) {
+            //         if (row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
+            //             return '暂无';
+            //         }else {
+            //             return row[7];
+            //         }
+            //     },
+            // },
 
         ],
         onClickCell: function (field, value, row, $element) {
@@ -268,37 +267,6 @@ function group_user(data) {
                     }
                 },
             },
-            {
-                title: "自动标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[6].toString().split('&').slice(0,6);
-                    }
-                },
-            },
-            {
-                title: "业务标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
-                        return '暂无';
-                    }else {
-                        return row[7];
-                    }
-                },
-            },
-
         ],
         onClickCell: function (field, value, row, $element) {
 
@@ -636,7 +604,7 @@ function keywords_include(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -663,7 +631,7 @@ function keywords_include(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -752,7 +720,7 @@ function tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -779,7 +747,7 @@ function tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -794,7 +762,7 @@ function tag(data) {
 
 
 };
-$('#container .tags .edit-tags input').on('click',function () {
+$('#container .tags .edit-tag input').on('click',function () {
     if ($(this).val()=='all'){
         tag_flag='all';
         label_tag();

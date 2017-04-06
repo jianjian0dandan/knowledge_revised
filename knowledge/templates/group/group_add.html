@@ -3,14 +3,16 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/group_add.css">
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 1%!important;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight:800;padding-top: 0.5%">新建群体</h3>
+    <h3 class="tit">新建群体</h3>
     <div class="new_property" style="margin-top:5%;padding-left: 22%">
         <div>
             <b>新建群体名称</b><input type="text" class="theme_name" placeholder="请输入专题名称">
@@ -24,16 +26,17 @@
             <button class="pro_sure">确定</button>
         </div>
     </div>
-    <div class="theme_list">
+    <div class="theme_list" style="margin-top: 40px;">
         <div id="special_topic"></div>
-        <button class="new_build">新建群体</button>
+        <button class="new_build" style="display: none;">新建群体</button>
     </div>
 </div>
 {% endblock %}
 
 
 {% block my_js %}
-
 <script>
+    var submit_user=$('#name').text();
 </script>
+<script src="/static/js/group_add-1.js"></script>
 {% endblock %}
