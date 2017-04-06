@@ -243,11 +243,15 @@ def get_organization():#机构属性页面
 def get_card():#卡片罗列页面
 
     user_id = request.args.get('user_id', '')
-    node_type = request.args.get('node_type', '')
-    card_type = request.args.get('card_type', '')
+    node_type = request.args.get('node_type', 'Not Found')
+    card_type = request.args.get('card_type', 'Not Found')
     user_name = g.user.email
 
-    result,flag = get_relation_node(user_id,node_type,card_type,user_name)#获取关联节点
+    if user_id:
+        result,flag = get_relation_node(user_id,node_type,card_type,user_name)#获取关联节点
+    else:
+        result = []
+        flag = -1
 
     return render_template('index/card_display.html', result = result, flag = flag)
 
