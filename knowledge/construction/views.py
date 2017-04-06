@@ -117,8 +117,6 @@ def ajax_update_user():
     r.rpush(uid, json.dumps([date, '1', node_type, relation_list, submit_user, recommend_style]))
     return json.dumps(1)
 
-
-
 #上传文件方式人物入库
 @mod.route('/submit_identify_in/', methods=['POST', 'GET' ])
 def ajax_submit_identify_in():
@@ -246,7 +244,7 @@ def ajax_relation_add():
 #关系编辑，先查找
 @mod.route('/relation_edit_search/', methods=['GET', 'POST'])
 def ajax_relation_edit_search():
-    node_type = request.args.get('node_type', 'Event') #User , Org
+    node_type = request.args.get('node_type', 'User') #User , Org
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
@@ -288,7 +286,7 @@ def create_relation():
 #节点编辑,查找展示表格
 @mod.route('/node_edit_search/')
 def ajax_node_edit():
-    node_type = request.args.get('node_type', 'Event') #User , Org
+    node_type = request.args.get('node_type', 'User') #User , Org
     item = request.args.get('item', '1')
     editor = request.args.get('submit_user', 'admin@qq.com')  #admin
     start_ts = request.args.get('start_ts', '')  # 1504195000
