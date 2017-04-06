@@ -416,6 +416,7 @@ function add_way(value) {
     if (value=='r'){
         way='r';
         $('.hands').hide();
+        $('.event_list').css({display:'block'});
         // 专题下--------关联添加
         var event_list_url='/theme/search_related_event/?theme_name='+theme_name
             +'&submit_user='+submit_user;
@@ -428,7 +429,7 @@ function add_way(value) {
         });
     }else {
         way='m';
-        $('.event_list').hide();
+        $('.event_list').css({display:'none'});
         $('.hands').show();
     }
 };
@@ -465,6 +466,7 @@ $('#container .event .event-1 .sure').on('click',function () {
 
 function event_list(data) {
     var data = eval(data);
+    console.log(11)
     $('#event_list').bootstrapTable('load', data);
     $('#event_list').bootstrapTable({
         data:data,
