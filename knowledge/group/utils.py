@@ -86,13 +86,12 @@ def search_related_u_auto(g_name, submit_user):
         for item in result:
             item_dict = dict(item)
             related_list.append(item_dict['s3']['uid'])
+    print related_list, '---------'
+    print uid_list, '---------'
     related_list = set(related_list) - set(uid_list)
     related_list = [i for i in related_list]
-    result = event_detail_search(related_list, submit_user)
+    result = user_detail_search(related_list, submit_user)
     return result
-
-
-
 
 def search_related_u_card(item, submit_user, g_name):
     evaluate_max = get_evaluate_max()

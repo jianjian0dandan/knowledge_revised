@@ -314,7 +314,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
     user_profile_result = es_user_profile.mget(index='weibo_user', doc_type='user', body={'ids':uid_list}, _source=True)['docs'] #个人姓名，注册地
     # bci_history_result = es_bci_history.mget(index=bci_history_index_name, doc_type=bci_history_index_type, body={"ids":uid_list}, fields=['user_fansnum', 'weibo_month_sum'])['docs']
     sensitive_history_result = es_bci_history.mget(index=sensitive_index_name, doc_type=sensitive_index_type, body={'ids':uid_list}, fields=[sensitive_string], _source=False)['docs']
-    max_evaluate_influ = get_evaluate_max(index_name)
+    max_evaluate_influ = get_evaluate_max_i(index_name)
     for i in range(0, len(uid_list)):
         uid = uid_list[i]
         bci_dict = user_bci_result[i]
@@ -410,7 +410,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
 
     return results
 
-def get_evaluate_max(index_name):
+def get_evaluate_max_i(index_name):
     max_result = {}
     index_type = 'bci'
     evaluate_index = ['user_index']
@@ -564,7 +564,7 @@ def submit_event_file(input_data):
     return result_flag, valid_event
 
 def relation_add(input_data):
-    # print input_data, type(input_data),'------------'
+    print input_data, type(input_data),'------------'
     result_detail = [False]
     rel_num = 0
     for i in input_data:
@@ -632,21 +632,11 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, no
     if not (node1 and node2):
         print "node does not exist"
         return 'does not exist'
-    # c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') MATCH (start_node)-[r:%s]->(end_node) RETURN r" % (
-    # node1_index_name,node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
-    # # return c_string
-
-    # result = graph.run(c_string)
-    # # print result
-    # rel_list = []
-    # for item in result:
-    #     rel_list.append(item)
-    # # print rel_list
-    # if rel in rel_list:
-    #     return 'has relation already'
     rel = rel_union.split(',')[0]
     if rel in [other_rel, event_other, organization_tag, user_tag]:
-        rel_name = rel_union.split(',')[1]
+        print rel_union,'************'
+        rel_name = rel_union.split(',')[1:]
+        # print rel_name,'=============='
         c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
                     MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
@@ -660,9 +650,10 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, no
                    MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
             result = graph.run(del_string)
-        exist_relation.append(rel_name)
-        exist_relation = [i for i in set(exist_relation)]
-        add_relation_string = ','.join(exist_relation)
+        exist_relation.extend(rel_name)
+        print exist_relation,'00000000000'
+        exist_relation2 = [i for i in set(exist_relation)]
+        add_relation_string = ','.join(exist_relation2)
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
                 create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
                 node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
