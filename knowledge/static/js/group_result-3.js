@@ -139,11 +139,14 @@ function Draw_top_location(data){
 };
 
 //地域分布
+var p,in_out;
 function condition1(value) {
     if (value==1){
+        p=1;
         go();
     }else if(value==2){
         $('#condition2').empty();
+        in_out='out';
         for (var t=0;t<main_place.length;t++){
             $('#condition2').append(
                 '<option>'+main_place[t][0].split('\t').pop()+'</option>'
@@ -151,6 +154,7 @@ function condition1(value) {
         }
     }else if (value==3){
         $('#condition2').empty();
+        in_out='in';
         for (var i=0;i<end_place.length;i++){
             $('#condition2').append(
                 '<option>'+end_place[i][0].split('\t').pop()+'</option>'
@@ -160,38 +164,80 @@ function condition1(value) {
 }
 var include_user_list=[];
 function go() {
-    // include_user_list=[];
     var include_person='/group/group_detail/?g_name='+group_name+'&submit_user='+submit_user;
     $.ajax({
         url: include_person,
         type: 'GET',
         dataType: 'json',
         async: true,
-        success:person
+        success:function (data) {
+            var data=eval(data)
+            $.each(data,function (index,item) {
+                if (item[1]==''||item[1]=='NULL'||item[1]=='unknown'){
+                    include_user_list.push('<span class="uid">'+item[0]+'</span>');
+                }else {
+                    include_user_list.push(item[1]+'('+'<span class="uid">'+item[0]+'</span>'+')');
+                }
+            });
+            $('#condition2').empty();
+            for (var t=0;t<include_user_list.length;t++){
+                $('#condition2').append(
+                    '<option>'+include_user_list[t]+'</option>'
+                )
+            }
+        }
     });
 }
 go();
 
-function person(data) {
-    var data=eval(data)
-    $.each(data,function (index,item) {
-        if (item[1]==''||item[1]=='NULL'||item[1]=='unknown'){
-            include_user_list.push('<span>'+item[0]+'</span>');
-        }else {
-            include_user_list.push(item[1]+'('+'<span>'+item[0]+'</span>'+')');
-        }
-    });
-    $('#condition2').empty();
-    for (var t=0;t<include_user_list.length;t++){
-        $('#condition2').append(
-            '<option>'+include_user_list[t]+'</option>'
-        )
-    }
-}
-function condition2(value) {
 
-}
+$('#container #content_left .place .define').on('click',function () {
+    if (p==1){
+        var reg = /.*\([^\)\(\d]*(\d+)[^\)\(\d]*\).*/;
+        var str = $('#condition2').val();
+        var uid = str.replace(reg, "$1");
+        var person_url='/group/group_user_geo/?uid='+uid+'&submit_user='+submit_user;
+        console.log(person_url)
+        $.ajax({
+            url: person_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:people
+        });
+    }else {
+        var geo = $('#condition2').val();
+        var geo_url='/group/group_location_geo/?g_name='+group_name+'&city='+geo+'&direction='+in_out+
+            '&submit_user='+submit_user;
+        console.log(geo_url)
+        $.ajax({
+            url: geo_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:people
+        });
+    }
+
+})
+
+
 //=============
+var line=[],city=[];
+function people(data) {
+    // var data=eval(data);
+    console.log(data);
+    $.each(data.line,function (index,item) {
+        line.push(
+            [{name:item[0]}, {name:item[1]}]
+        )
+    });
+    $.each(data.city,function (index,item) {
+        city.push(
+            {name:item}
+        )
+    })
+}
 require.config({
     paths: {
         echarts: '/static/js/echarts-2/build/dist',
