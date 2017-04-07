@@ -507,16 +507,16 @@ def get_group_location(city, direction, g_name, submit_user):
     line_list = []
     geolist.append(short_city)
     for k,v in need_info.iteritems():
-        start_city = k.split('&')[0]
-        end_city = k.split('&')[1]
+        start_city = k.split('&')[0].split('\t')[-1]
+        end_city = k.split('&')[1].split('\t')[-1]
         if direction == 'out':
-            if long_city == start_city:
+            if short_city == start_city:
                 geolist.append(end_city.split('\t')[-1])
                 line_list.append([short_city, end_city.split('\t')[-1], v])
             else:
                 continue
         elif direction == 'in':
-            if long_city == end_city:
+            if short_city == end_city:
                 geolist.append(start_city.split('\t')[-1])
                 line_list.append([short_city, start_city.split('\t')[-1], v])
             else:

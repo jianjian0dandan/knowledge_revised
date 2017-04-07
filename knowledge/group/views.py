@@ -220,7 +220,7 @@ def group_user_geo():  #群体中个人的地理位置信息
 
 @mod.route('/group_location_geo/')
 def group_location_geo():  #群体主要地理位置信息
-    city = request.args.get('city', u'中国\t上海')
+    city = request.args.get('city', u'上海')
     direction = request.args.get('direction', 'out')
     g_name = request.args.get('g_name', u'美选群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
