@@ -207,7 +207,9 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a><a>编辑</a><a>删除</a>';
+                    return '<a>立即更新</a><br/>' +
+                        '<a type="button" data-toggle="modal" data-target="#complie" onclick="go('+row[0]+')">编辑</a><br/>' +
+                        '<a>删除</a>';
                 },
             },
 
@@ -222,17 +224,158 @@ function node(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-            console.log($element)
-            console.log($element[0].childNodes.innerText)
-            if ($element[0].childNodes[0]=='编辑') {
-                console.log($element[0].childNodes.index())
-            }
+
         }
     });
 };
 
+function go(item) {
+    item=item;
+    $('.group-1').css({display:'none'});
+    $('.tags-1').css({display:'none'});
+    $('.words-1').css({display:'none'});
+    $('.group-1 input').val("");
+    $('.tags-1 input').val("");
+    $('.words-1 input').val("");
+    var com_url='/construction/node_edit_show/?node_type='+node_type+'&item='+item+
+        '&submit_user='+submit_user;
+    $.ajax({
+        url: com_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:com
+    });
+}
+
+function com(data) {
+    var data=eval(data);
+    $('#complie #tags').empty();
+    $('#complie #words').empty();
+    $('#complie #group').empty();
+    var name;
+    if (data[1]==''||data[1]=='NULL'||data[1]=='unknown'){
+        name=data[0];
+    }else {
+        name=data[1];
+    };
+    $('#complie .name').text(name);
+
+    if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
+        $('#complie #business #business-1').val('暂无');
+    }else {
+        $('#complie #business #business-1').val(data[4]);
+    };
+    if (data[5]==''||data[5]=='NULL'||data[5]=='unknown'||data[5].length==0){
+        $('#complie #tags').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[5].length;t++){
+            tag+=' <a>'+data[5][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #tags').append(tag);
+    };
+
+    if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'||data[6].length==0){
+        $('#complie #words').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[6].length;t++){
+            tag+=' <a>'+data[6][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #words').append(tag);
+    };
+    if (data[7]==''||data[7]=='NULL'||data[7]=='unknown'||data[7].length==0){
+        $('#complie #group').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[7].length;t++){
+            tag+=' <a>'+data[7][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #group').append(tag);
+    };
+    
+    $('.add').on('click',function () {
+        $(this).parent().next().css({display:'block'});
+        words=$(this).parent().next().attr('class');
+    });
+
+};
+var words;
+var related_docs='';
+$('.btn-xs').on('click',function () {
+    if (words=='words-1'){
+        var _tit=$(this).prevAll('.tit').val();
+        var _url=$(this).prevAll('.url').val();
+        if (_tit==''||_url==''){
+            alert('不能为空。');
+        }else {
+            if (related_docs==''){
+                related_docs+=_tit+','+_url;
+            }else {
+                related_docs+='+'+_tit+','+_url;
+            }
+            $(this).parent().prev().find('span').remove();
+            $(this).parent().prev().find('.add').before(
+                ' <a href="'+_url+'">'+_tit+'</a> <b class="s_del icon icon-remove"></b> '
+            );
+        }
+    }else {
+        var _new=$(this).prev().val();
+        if (_new==''){
+            alert('不能为空。');
+        }else {
+            $(this).parent().prev().find('span').remove();
+            $(this).parent().prev().find('.add').before('<a>'+_new+'</a> <b class="del icon icon-remove"> ');
+        }
+    }
+});
+
+var item;
+function pass() {
+    if (node_type=='Event'){
+
+    }else {
+        var topic=[];
+        $("#topic [name=rels]:checkbox:checked").each(function (index,item) {
+            topic.push($(this).val());
+        });
+        var topic_string=topic.join(',')
+        var domain=$('#ID-1').val();
+        var function_description=$('#complie #business #business-1').val();
+        var mark=[];
+        $.each($('#tags').children('a'),function(index,item){
+            mark.push($(item).text());
+        })
+        var function_mark=mark.join(',');
+        var pass_url;
+        if (function_description=='暂无'){
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
+                '&function_mark='+function_mark+'&related_docs='+related_docs;
+        }else {
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
+                '&function_description='+function_description+'&function_mark='+function_mark+
+                '&related_docs='+related_docs;
+        }
+        console.log(pass_url);
+    }
+    $('.group-1').css({display:'none'});
+    $('.tags-1').css({display:'none'});
+    $('.words-1').css({display:'none'});
+    $('.group-1 input').val("");
+    $('.tags-1 input').val("");
+    $('.words-1 input').val("");
+};
+
+//事件
 function event(data) {
     var data = eval(data);
+    console.log(data)
     $('#event_list').bootstrapTable('load', data);
     $('#event_list').bootstrapTable({
         data:data,
@@ -421,7 +564,9 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a> <a>编辑</a> <a>删除</a>';
+                    return '<a>立即更新</a><br/>' +
+                        '<a type="button" data-toggle="modal" data-target="#event_complie" onclick="run('+row[0]+')">编辑</a><br/>' +
+                        '<a>删除</a>';
                 },
             },
             // //多选框
@@ -434,11 +579,87 @@ function event(data) {
             // },
 
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+
+        }
     });
 };
+
+function run(item) {
+    ev_tem=item;
+    $('.group-1').css({display:'none'});
+    $('.tags-1').css({display:'none'});
+    $('.words-1').css({display:'none'});
+    $('.group-1 input').val("");
+    $('.tags-1 input').val("");
+    $('.words-1 input').val("");
+    var event_com_url='/construction/node_edit_show/?node_type='+node_type+'&item='+item+
+        '&submit_user='+submit_user;
+    $.ajax({
+        url: event_com_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:event_com
+    });
+};
+function event_com(data) {
+    var data=eval(data);
+    console.log(data)
+    $('#event_complie #person').empty();
+    $('#event_complie #special').empty();
+    $('#event_complie #e_tag').empty();
+    $('#event_complie #documents').empty();
+    var name;
+    if (data[1]==''||data[1]=='NULL'||data[1]=='unknown'){
+        name=data[0];
+    }else {
+        name=data[1];
+    };
+    $('#event_complie .name').text(name);
+
+    if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
+        $('#complie #business #business-1').val('暂无');
+    }else {
+        $('#complie #business #business-1').val(data[4]);
+    };
+    if (data[5]==''||data[5]=='NULL'||data[5]=='unknown'||data[5].length==0){
+        $('#complie #tags').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[5].length;t++){
+            tag+=' <a>'+data[5][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #tags').append(tag);
+    };
+
+    if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'||data[6].length==0){
+        $('#complie #words').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[6].length;t++){
+            tag+=' <a>'+data[6][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #words').append(tag);
+    };
+    if (data[7]==''||data[7]=='NULL'||data[7]=='unknown'||data[7].length==0){
+        $('#complie #group').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[7].length;t++){
+            tag+=' <a>'+data[7][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#complie #group').append(tag);
+    };
+
+    $('.add').on('click',function () {
+        $(this).parent().next().css({display:'block'});
+        words=$(this).parent().next().attr('class');
+    });
+
+};
+
+
