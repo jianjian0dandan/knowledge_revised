@@ -523,19 +523,12 @@ def get_group_location(city, direction, g_name, submit_user):
                 continue
     return {'city':geolist, 'line':line_list}
 
-
-
 def group_map(g_name, submit_user):
     result = {}
     group_id = p.get_pinyin(g_name)
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
-    # {'main_start_geo':main_start_geo, 'main_end_geo': main_end_geo, \
-    #     'vary_detail_geo': vary_detail_geo, 'activity_geo_vary':activity_geo_vary,\
-    #     'main_activity_geo':main_activity_geo, 'activity_geo_distribution_date':activity_geo_distribution_date}
-
     source = group_geo_vary(g_name, submit_user)
-    # result['activity_trend'] = source['activity_trend']
     result['activity_geo_distribution_date'] = source['activity_geo_distribution_date']
     result['activity_geo_vary'] = source['activity_geo_vary']
     result['main_activity_geo'] = source['main_activity_geo']
@@ -543,7 +536,6 @@ def group_map(g_name, submit_user):
         vary_detail_geo_dict = source['vary_detail_geo']
     except:
         vary_detail_geo_dict = {}
-    # uid_list = source['uid_list']
     if vary_detail_geo_dict != {}:
         result['vary_detail_geo'] = get_vary_detail_info(vary_detail_geo_dict, uid_list)
     else:
