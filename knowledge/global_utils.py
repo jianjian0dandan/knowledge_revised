@@ -183,7 +183,7 @@ def event_name_search(en_name):
             }
         }
     }
-    name_results = es_event.search(index=event_name, doc_type=event_type, \
+    name_results = es_event.search(index=event_analysis_name, doc_type=event_text_type, \
                 body=query_body,fields=['name'])['hits']['hits'][0]['fields']
     for k,v in name_results.iteritems():
         ch_name = v[0]

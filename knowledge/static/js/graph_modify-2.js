@@ -181,7 +181,6 @@ function getCon(obj){
         $('#container .rel_attributes .one .manone').val(value);
         $('.append-1').hide().html('');
         uid_1=$(obj).find('._id').text();
-        console.log($(obj))
         uid_1_name=$(obj).find('._id').text();
         $('.manone').attr('disabled',true);
     }else {
@@ -201,35 +200,50 @@ $('#container .rel_submit').on('click',function () {
     }else {
         var name_type_1,name_type_2,name_index_1,name_index_2;
         var input_data=[];
-        if (start_type=='User'||end_type=='User'){
+        if (start_type=='User'){
             name_type_1='uid';
             name_index_1='node_index';
-            name_type_2='uid';
-            name_index_2='node_index';
-        }else if(start_type=='Org'||end_type=='Org') {
+        }else if(start_type=='Org') {
             name_type_1='org_id';
             name_index_1='org_index';
-            name_type_2='org_id';
-            name_index_2='org_index';
-        }else if(start_type=='Event'||end_type=='Event') {
+        }else if(start_type=='Event') {
             name_type_1='event_id';
             name_index_1='event_index';
+        }
+
+        if (end_type=='User'){
+            name_type_2='uid';
+            name_index_2='node_index';
+        } else if(end_type=='Org') {
+            name_type_2='org_id';
+            name_index_2='org_index';
+        }else if(end_type=='Event') {
             name_type_2='event_id';
             name_index_2='event_index';
         }
-        input_data.push([
-            name_type_1, uid_1, name_index_1,
-            name_type_2, uid_2, name_index_2
-        ]);
-        var input_url='/construction/relation_show_edit/';
+        // input_data.push([
+        //     name_type_1, uid_1, name_index_1,
+        //     name_type_2, uid_2, name_index_2
+        // ]);
+        var input_url='/construction/relation_show_edit/?node_key1='+name_type_1+'&node1_id='+uid_1+
+            '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+            '&node2_index_name='+name_index_2;
         $.ajax({
-            type:'POST',
             url: input_url,
-            contentType:"application/json",
-            data: JSON.stringify(input_data),
-            dataType: "json",
-            success: relation_add
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:relation_add
         });
+        // var input_url='/construction/relation_show_edit/';
+        // $.ajax({
+        //     type:'POST',
+        //     url: input_url,
+        //     contentType:"application/json",
+        //     data: JSON.stringify(input_data),
+        //     dataType: "json",
+        //     success: relation_add
+        // });
     }
 })
 var rel_table={
@@ -254,9 +268,21 @@ function relation_add(data) {
 }
 function rel_list(data) {
     var data = eval(data);
+    console.log(data)
+    var node1,node2;
+    if (data[0].node1[1]==''){
+        node1 = data[0].node1[0];
+    }else {
+        node1 = data[0].node1[1];
+    };
+    if (data[0].node2[1]==''){
+        node2 = data[0].node2[0];
+    }else {
+        node2 = data[0].node2[1];
+    }
     $('#rel_list').bootstrapTable('load', data);
     $('#rel_list').bootstrapTable({
-        data:data,
+        data:data[0].rel_list,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
@@ -281,7 +307,12 @@ function rel_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return uid_1_name;
+                    // if (row.node1[1]==''){
+                    //     return row.node1[0];
+                    // }else {
+                    //     return row.node1[1];
+                    // };
+                    return node1;
                 }
             },
             {
@@ -292,12 +323,17 @@ function rel_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return uid_2_name;
+                    // if (row.node2[1]==''){
+                    //     return row.node2[0];
+                    // }else {
+                    //     return row.node2[1];
+                    // };
+                    return node2;
                 },
             },
             {
                 title: "关系",//标题
-                field: "",//键名
+                field: "rel_list",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平

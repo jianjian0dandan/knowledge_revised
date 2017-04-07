@@ -286,7 +286,7 @@ def create_relation():
 #节点编辑,查找展示表格
 @mod.route('/node_edit_search/')
 def ajax_node_edit():
-    node_type = request.args.get('node_type', 'User') #User , Org
+    node_type = request.args.get('node_type', 'Event') #User , Org
     item = request.args.get('item', '1')
     editor = request.args.get('submit_user', 'admin@qq.com')  #admin
     start_ts = request.args.get('start_ts', '')  # 1504195000
@@ -299,7 +299,7 @@ def ajax_node_edit():
             node_result = search_user(item, field, editor)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
-            field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
+            field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag','compute_status']
             node_result = search_event(item, field, editor)
     return json.dumps(node_result)
 

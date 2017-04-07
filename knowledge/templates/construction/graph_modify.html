@@ -7,7 +7,10 @@
         margin-top: 60px;
     }
     .table>thead:first-child>tr:first-child>th {
-        width: 23%;
+        width: 10%;
+    }
+    .fixed-table-container thead th .sortable {
+        padding-right: 10px;
     }
     .item{
         padding:3px 5px;
@@ -46,19 +49,26 @@
     </div>
     <div class="node">
         <div class="attributes" style="margin-top: 3%">
-            <span>节点名称</span><input type="text" class="node_name">
+
             <span>节点类型</span>
             <select id="node_type" onchange="type_node(this.value)">
                 <option value="User">人物</option>
                 <option value="Org">机构</option>
                 <option value="Event">事件</option>
             </select>
+            <span>节点名称</span><input type="text" class="node_name">
             <div style="display: inline">
                 <!--<span>入库日期</span><input type="text" class="warehousing">-->
                 <button class="submit">确 定</button>
             </div>
         </div>
-        <div id="node_list" style="width: 100%"></div>
+        <div class="node_list">
+            <div id="node_list" ></div>
+        </div>
+        <div class="event_list">
+            <div id="event_list"></div>
+        </div>
+
     </div>
 
 
