@@ -13,6 +13,8 @@ $('#container .attributes .submit').on('click',function () {
         // var node_url='/construction/node_edit_search/?item='+item+'&node_type='+node_type+
         //     '&submit_user='+submit_user+'&start_ts='+'&end_ts=';
         if (node_type=='Event'){
+            $('.node_list').hide();
+            $('.event_list').show();
             $.ajax({
                 url: node_url,
                 type: 'GET',
@@ -21,6 +23,8 @@ $('#container .attributes .submit').on('click',function () {
                 success:event
             });
         }else {
+            $('.node_list').show();
+            $('.event_list').hide();
             $.ajax({
                 url: node_url,
                 type: 'GET',
@@ -35,7 +39,6 @@ $('#container .attributes .submit').on('click',function () {
 
 function node(data) {
     var data = eval(data);
-    console.log(data)
     $('#node_list').bootstrapTable('load', data);
     $('#node_list').bootstrapTable({
         data:data,
@@ -74,7 +77,7 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    return row[0];
                 }
             },
             {
@@ -85,7 +88,11 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        return row[0];
+                    }else {
+                        return row[1];
+                    }
                 },
             },
             {
@@ -96,7 +103,11 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                        return '未知';
+                    }else {
+                        return row[2];
+                    }
                 },
             },
             {
@@ -107,7 +118,11 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                        return 0;
+                    }else {
+                        return row[3].toFixed(2);
+                    }
                 },
             },
             {
@@ -118,7 +133,11 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
+                        return 0;
+                    }else {
+                        return row[4].toFixed(2);
+                    }
                 },
             },
             {
@@ -129,7 +148,11 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                        return 0;
+                    }else {
+                        return row[5].toFixed(2);
+                    }
                 },
             },
             {
@@ -140,7 +163,18 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[6]==''||row[6]=='unknown'||row[6]=='NULL'){
+                        return '暂无';
+                    }else {
+                        var words=row[6].split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
+                    }
                 },
             },
             {
@@ -151,7 +185,18 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[7]==''||row[7]=='unknown'||row[7]=='NULL'){
+                        return '暂无';
+                    }else {
+                        var words=row[7].split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
+                    }
                 },
             },
             {
@@ -162,20 +207,10 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a> <a>编辑</a> <a>删除</a>';
+                    return '<a>立即更新</a><a>编辑</a><a>删除</a>';
                 },
             },
-            {
-                title: "加入专题",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return '加入专题';
-                },
-            },
+
             // //多选框
             // {
             //     title: "",//标题
@@ -186,18 +221,20 @@ function node(data) {
             // },
 
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            console.log($element)
+            console.log($element[0].childNodes.innerText)
+            if ($element[0].childNodes[0]=='编辑') {
+                console.log($element[0].childNodes.index())
+            }
+        }
     });
 };
+
 function event(data) {
     var data = eval(data);
-    $('#node_list').bootstrapTable('load', data);
-    $('#node_list').bootstrapTable({
+    $('#event_list').bootstrapTable('load', data);
+    $('#event_list').bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
@@ -234,7 +271,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
+                        return row[0];
+                    }else {
+                        return row[1];
+                    }
                 }
             },
             {
@@ -245,7 +286,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[2];
+                    }
                 },
             },
             {
@@ -256,7 +301,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[3];
+                    }
                 },
             },
             {
@@ -267,7 +316,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[4];
+                    }
                 },
             },
             {
@@ -278,7 +331,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[5];
+                    }
                 },
             },
             {
@@ -289,7 +346,11 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
+                        return '暂无';
+                    }else {
+                        return row[6];
+                    }
                 },
             },
             {
@@ -300,7 +361,17 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[7]==''||row[7]=='unknown'||row[7]=='NULL'){
+                        return '暂无';
+                    }else {
+                        if (row[7].length<=5){
+                            return row[7].join(',');
+                        }else {
+                            var words=row[7].splice(0,5).join(',');
+                            var tit=row[7].splice(5).join(',');
+                            return '<p title="'+tit+'">'+words+'</p> ';
+                        }
+                    }
                 },
             },
             {
@@ -311,18 +382,35 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
+                    if (row[8]==''||row[8]=='unknown'||row[8]=='NULL'){
+                        return '暂无';
+                    }else {
+                        if (row[8].length<=5){
+                            return row[8].join(',');
+                        }else {
+                            var words=row[8].splice(0,5).join(',');
+                            var tit=row[8].splice(5).join(',');
+                            return '<p title="'+tit+'">'+words+'</p> ';
+                        }
 
+                    }
                 },
             },
             {
-                title: "时间状态",//标题
+                title: "计算状态",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[9] < 0){
+                        return '正在计算';
+                    }else if (row[9]= 1){
+                        return '计算完成';
+                    }else if (row[9]= 0){
+                        return '尚未计算';
+                    }
                 },
             },
             {

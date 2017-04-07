@@ -29,11 +29,11 @@ from knowledge.global_utils import es_user_profile, portrait_index_name, portrai
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
-from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
+from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
-                other_rel, event_other, user_tag, organization_tag, relation_dict
+                other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
@@ -618,7 +618,17 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
                 rel_list.append(relation_ch2)
         else:
             rel_list.append(relation_ch)
-    return rel_list
+    if node_key1 == 'uid' or node_key1 == 'org_id':
+        node1_name = user_name_search(node1_id)
+    else:
+        node1_name = event_name_search(node1_id)
+
+    if node_key2 == 'uid' or node_key2 == 'org_id':
+        node2_name = user_name_search(node2_id)
+    else:
+        node2_name = event_name_search(node2_id)
+
+    return [{'rel_list':rel_list, 'node1':[node1_id, node1_name, node_key1], 'node2':[node2_id, node2_name, node_key2]}]
 
 def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
@@ -899,8 +909,12 @@ def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
         field = p_column
         field = ['uid', 'uname','domain', 'topic_string', "function_description"]
-        index_n = node_index_name
-        index_key = people_primary
+        if node_type == 'User':
+            index_n = node_index_name
+            index_key = people_primary
+        if node_type == 'Org':
+            index_n = org_index_name
+            index_key = org_primary
         node_key = group_node
         node_result = search_user(item, field, '')[0]
         tag = deal_user_tag(item, submit_user )[0]
