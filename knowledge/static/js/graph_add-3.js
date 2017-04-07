@@ -246,19 +246,24 @@ $('#container .relation .upload-2').on('click',function () {
     }else {
         var name_type_1,name_type_2,name_index_1,name_index_2;
         var input_data=[];
-        if (start_type=='User'||end_type=='User'){
+        if (start_type=='User'){
             name_type_1='uid';
             name_index_1='node_index';
-            name_type_2='uid';
-            name_index_2='node_index';
-        }else if(start_type=='Org'||end_type=='Org') {
+        }else if(start_type=='Org') {
             name_type_1='org_id';
             name_index_1='org_index';
-            name_type_2='org_id';
-            name_index_2='org_index';
-        }else if(start_type=='Event'||end_type=='Event') {
+        }else if(start_type=='Event') {
             name_type_1='event_id';
             name_index_1='event_index';
+        }
+
+        if (end_type=='User'){
+            name_type_2='uid';
+            name_index_2='node_index';
+        } else if(end_type=='Org') {
+            name_type_2='org_id';
+            name_index_2='org_index';
+        }else if(end_type=='Event') {
             name_type_2='event_id';
             name_index_2='event_index';
         }

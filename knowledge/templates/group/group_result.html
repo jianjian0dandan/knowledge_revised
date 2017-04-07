@@ -1,7 +1,6 @@
 {% extends "public_nav.html" %}
 {% block title %}<title>知识图谱 - 群体查看</title>{% endblock %}
 {% block my_css %}
-<link rel="stylesheet" href="/static/css/fishBone.css" />
 <link rel="stylesheet" href="/static/css/group_result.css">
 
 <style>
@@ -74,13 +73,12 @@
                         <option value="2">主要出发地</option>
                         <option value="3">主要目的地</option>
                     </select>
-                    <select id="condition2" style="padding: 2px 5px;border: 1px solid #9e9e9e;"
-                            onchange="condition2(this.value)">
+                    <select id="condition2" style="padding: 2px 5px;border: 1px solid #9e9e9e;">
 
                     </select>
                     <button class="define">确定</button>
                 </div>
-                <div id="area" style="width: 100%;height: 300px;"></div>
+                <div id="area" style="width: 100%;height: 300px;display: none;"></div>
                 <div class="area_table">
                     <div id="area_table"></div>
                 </div>
