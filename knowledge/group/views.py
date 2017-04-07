@@ -212,7 +212,7 @@ def detail_group_geo():  #群体地理位置信息
 
 @mod.route('/group_user_geo/')
 def group_user_geo():  #群体中个人的地理位置信息
-    uid = request.args.get('uid', u'2971183691')
+    uid = request.args.get('uid', u"1649173367")
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     # g_name = g_name + '_' + submit_user
     detail_t = get_group_user_track(uid)
