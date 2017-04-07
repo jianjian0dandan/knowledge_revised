@@ -17,7 +17,8 @@ from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_ty
 from knowledge.global_config import event_task_name, event_task_type 
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
-                  deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in
+                  deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
+                  node_delete, delete_relation, deal_event_tag
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -124,9 +125,9 @@ def ajax_submit_identify_in():
     input_data = request.get_json()
     # print type(input_data),'=======!!!'
     #input_data={'date': 2016-03-13, 'upload_data':[],'node_type':'1/2', 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'upload/write', 'type':'uid', 'operation_type': 'show'/'submit'} 
-    # input_data={'date': '2016-03-13', 'upload_data':[2674977220, 1895944731],'node_type':'0', 'user':'admin@qq.com','compute_status':0,'relation_string':'friend', 'recommend_style':'write',  'operation_type': 'submit'} 
+    # input_data={'date': '2016-03-13', 'upload_data':[1198503091],'node_type':'0', 'user':'admin@qq.com','compute_status':'1','relation_string':'friend', 'recommend_style':'write',  'operation_type': 'submit'} 
     #upload_data stucture same to detect/views/mult_person
-    print 'input_data:', input_data
+    # print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]
     return json.dumps(results)
 
@@ -147,32 +148,6 @@ def ajax_show_user_task_status():
         else:
             continue
     return json.dumps(result_list)
-
-# # submit group analysis task and save to redis as lists
-# # submit group task: task name should be unique
-# # input_data is dict ---two types
-# # one type: {'u_type':'user/organization', 'submit_date':x, 'uid_list':[], 'relation_list':[], 'cal_style':0/1, 'recommend_style':'', 'task_name':x, 'submit_user':submit_user}
-# # two type: {'u_type':'user/organization', 'submit_date':x, 'uid_file':filename, 'relation_list':[], 'cal_style':0/1, 'recommend_style':'file','task_name':x, 'submit_user':submit_user}
-# @mod.route('/submit_task/',methods=['GET', 'POST'])
-# def ajax_submit_task():
-#     input_data = dict()
-#     input_data = request.get_json()
-#     input_data = {'u_type':'user/organization', 'submit_date':'x', 'uid_list':json.dumps(['3036528532','5825134863']), 'relation_list':json.dumps(['friend']), 'cal_style':0, 'recommend_style':'', 'submit_user':'submit_user'}
-#     try:
-#         submit_user = input_data['submit_user']
-#     except:
-#         return 'no submit_user information'
-#     try:
-#       task_name = input_data['task_name']
-#     except:
-#       task_name = submit_user + '_' + str(int(time.time()))
-#         input_data['task_name'] = task_name
-#     task_id = submit_user + '_' + str(int(time.time()))
-#     input_data['task_id'] = task_id
-#     now_ts = int(time.time())
-#     input_data['submit_date'] = now_ts
-#     status = submit_task(input_data)
-#     return json.dumps(status)
 
 #事件提交任务,推荐方式或手写
 @mod.route('/submit_event/', methods=['GET', 'POST'])
@@ -274,7 +249,7 @@ def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', 'join')
+    rel = request.args.get('rel', 'XXXX')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
     node2_index_name = request.args.get('node2_index_name', 'event_index')
@@ -282,6 +257,19 @@ def create_relation():
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
 
+#关系编辑，删除关系
+@mod.route('/delete_relation/')
+def ajax_delete_relation():
+    node_key1 = request.args.get('node_key1', 'uid')  # uid,event
+    node1_id = request.args.get('node1_id', '2705119801')
+    node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
+    rel = request.args.get('rel', u'other_relationship,测试3')
+    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
+    node2_id = request.args.get('node2_id', 'xi-la-li-1480176000')
+    node2_index_name = request.args.get('node2_index_name', 'event_index')
+    flag = delete_relation(node_key1, node1_id, node1_index_name, rel, \
+                                   node_key2, node2_id, node2_index_name)
+    return json.dumps(flag)
 
 #节点编辑,查找展示表格
 @mod.route('/node_edit_search/')
@@ -315,13 +303,16 @@ def ajax_node_edit_show():
     # result.append(tag)
     return json.dumps(result)
 
-@mod.route('/node_tag/')
-def ajax_node_edit_tag():
-    node_type = request.args.get('node_type', 'Event') #User , Org
-    submit_user = request.args.get('submit_user', 'admin')  #admin
-    item = request.args.get('item', '5779325975')  #id
-    tag_value = 'admin1_不知道&admin_还是&admin2_为啥&admin_是的吗'
-    result = deal_user_tag(item ,submit_user, tag_value)
+#特定节点删除
+@mod.route('/node_delete/')
+def ajax_node_delete():
+    node_type = request.args.get('node_type', 'User') #User , Org, Event
+    item = request.args.get('item', '1198503091')  #id
+    submit_user = request.args.get('submit_user', 'admin1')  #admin
+    # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
+    result = node_delete(node_type, item, submit_user)
+    # tag = deal_user_tag(item, submit_user, tag_value)[0]
+    # result.append(tag)
     return json.dumps(result)
 
 #特定节点编辑，提交
@@ -345,7 +336,7 @@ def ajax_node_edit_():
             i_value = request.args.get(i, '测试,www.baidu.com+测试2,www.weibo.com') #User , Org
             if i_value:
                 edit_num += 1
-                i_value = '+'.join(i_value.split('+'))
+                i_value = '+'.join(i_value.split(' '))
                 try:
                     es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
                 except:
@@ -356,12 +347,18 @@ def ajax_node_edit_():
                 i_value = i_value
                 edit_num += 1
                 other_tag = deal_user_tag(item, editor)[1]
+                if other_tag:
+                    other_tag_l = other_tag
+                else:
+                    other_tag_l = []
+                print other_tag_l,'other_tag_l1'
                 user_tag = deal_user_tag(item, editor)[0]
+                print user_tag,'user_tag'
                 i_value = i_value.split(',')
                 for ii in i_value:
-                    if ii not in user_tag:
-                        other_tag.append(editor + '_' + ii)
-                tag_string = '&'.join(other_tag)
+                    other_tag_l.append(editor + '_' + ii)
+                print other_tag_l
+                tag_string = '&'.join(other_tag_l)
                 es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:tag_string}})
         if edit_num>0:
             pelple_history = PeopleHistory(name=editor, peopleID=item, modifyRecord='edit', modifyTime=datetime.now())
@@ -370,8 +367,8 @@ def ajax_node_edit_():
         return json.dumps(True)
     elif node_type == 'Event':
         edit_num = 0
-        field =  [['real_geo', 'real_time',  'category', 'real_person', 'real_auth', \
-                   'start_ts', 'end_ts','description'], ['related_docs'], ['work_tag']]
+        field =  [['real_geo', 'real_time',  'event_type', 'real_person', 'real_auth', \
+                   'start_ts', 'end_ts','description'], ['related_docs'], ['work_tag'],['real_time', 'start_ts', 'end_ts']]
         for i in field[0]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
@@ -381,9 +378,10 @@ def ajax_node_edit_():
         for i in field[1]:
             i_value = request.args.get(i, '') #User , Org
             if i_value:
+                print i_value,'!!!!!!!!!1'
                 edit_num += 1
-                i_value = '&'.join(i_value.split(','))
-                print i, i_value, event_docs_type, event_docs_name
+                i_value = '+'.join(i_value.split(' '))
+                # print i, i_value, event_docs_type, event_docs_name
                 try:
                     es_related_docs.update(index=event_docs_name, doc_type=event_docs_type, id=item, body={'doc':{i:i_value}})
                 except:
@@ -391,18 +389,29 @@ def ajax_node_edit_():
         for i in field[2]:
             i_value = request.args.get(i, u'')
             if i_value:
-                i_value = i_value.decode('utf-8')
+                i_value = i_value
                 edit_num += 1
                 other_tag = deal_event_tag(item, editor)[1]
                 event_tag = deal_event_tag(item, editor)[0]
                 # print other_tag,'---------'
+                if other_tag:
+                    other_tag_l = other_tag
+                else:
+                    other_tag_l = []
                 i_value = i_value.split(',')
+                i_value = [ij for ij in set(i_value)]
                 for ii in i_value:
-                    if ii not in user_tag:
-                        other_tag.append(editor + '_' + ii)
+                    # if ii not in event_tag:
+                    other_tag_l.append(editor + '_' + ii)
                 # print other_tag,'==========='
-                tag_string = '&'.join(other_tag)
+                tag_string = '&'.join(other_tag_l)
                 es_event.update(index=event_analysis_name,doc_type=event_type,id=item,body={'doc':{i:tag_string}})
+        for i in field[3]:
+            i_value = request.args.get(i, '') #User , Org
+            if i_value:
+                edit_num += 1
+                i_value = int(i_value)
+                es_event.update(index=event_analysis_name,doc_type=event_type,id=item,body={'doc':{i:i_value}})
         if edit_num>0:
             event_history = EventHistory(name=editor, eventID=item, modifyRecord='edit', modifyTime=datetime.now())
             db.session.add(event_history)
