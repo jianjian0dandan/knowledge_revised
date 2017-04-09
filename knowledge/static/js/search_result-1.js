@@ -45,15 +45,15 @@ function network(n_data) {
     var links = [];
     $.each(n_data,function (index,item) {
         var source,target;
-        if (item[0].name[0]==''||item[0].name[0]=='unknown'){
+        if (item[0].name==''||item[0].name=='unknown'){
             source=item[0].event_id;
         }else {
-            source=item[0].name[0];
+            source=item[0].name;
         }
-        if (item[2].name[0]==''||item[2].name[0]=='unknown'){
+        if (item[2].name==''||item[2].name=='unknown'){
             target=item[2].uid;
         }else {
-            target=item[2].name[0];
+            target=item[2].name;
         }
         links.push({source:source,type1:item[1], target:target,});
     });
