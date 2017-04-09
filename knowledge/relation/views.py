@@ -52,8 +52,9 @@ def relation_similarity():#相似计算
 @login_required
 def relation_similarity_result():#相似计算
     node_id = request.args.get('node_id', '')
+    node_type = request.args.get('node_type', '')
     # result = sim_result(node_id)
-    return render_template('relation/similarity_result.html',node_id=node_id)
+    return render_template('relation/similarity_result.html',node_id=node_id,node_type=node_type)
 
 @mod.route('/submit_task/',methods=['GET', 'POST'])
 @login_required

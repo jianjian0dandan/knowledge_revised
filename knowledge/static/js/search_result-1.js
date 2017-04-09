@@ -20,6 +20,7 @@ $.ajax({
     success:result
 });
 function result(data) {
+    console.log(data)
     var data=eval(data);
     if (simple_advanced=='s'){
         $('.related_network').hide();
@@ -42,22 +43,27 @@ function result(data) {
 //相关网络
 function network(n_data) {
     var n_data = eval(n_data);
+    console.log(n_data)
     var links = [];
     $.each(n_data,function (index,item) {
+        var type2;
+        for (var key in item[0]){
+            type2=key;
+            break;
+        }
         var source,target;
-        if (item[0].name[0]==''||item[0].name[0]=='unknown'){
-            source=item[0].event_id;
+        if (item[0].name==''||item[0].name=='unknown'){
+            source=item[0].event_id||item[0].org_id||item[0].uid;
         }else {
-            source=item[0].name[0];
+            source=item[0].name;
         }
-        if (item[2].name[0]==''||item[2].name[0]=='unknown'){
-            target=item[2].uid;
+        if (item[2].name==''||item[2].name=='unknown'){
+            target=item[2].uid||item[2].event_id||item[2].org_id;
         }else {
-            target=item[2].name[0];
+            target=item[2].name;
         }
-        links.push({source:source,type1:item[1], target:target,});
+        links.push({source:source,type1:item[1],type2:type2, target:target,});
     });
-
     var nodes = {};
 
     links.forEach(function(link) {
@@ -94,7 +100,7 @@ function network(n_data) {
             .attr("markerWidth", 12)//标识的大小
             .attr("markerHeight", 12)
             // .attr("orient", "auto")//绘制方向，可设定为：auto（自动确认方向）和 角度值
-            .attr("stroke-width",2)//箭头宽度
+            .attr("stroke-width",12)//箭头宽度
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")//箭头的路径
             .attr('fill','#000000');//箭头颜色
@@ -126,10 +132,12 @@ function network(n_data) {
         .style("stroke",function(d){
             var lineColor;
             //根据关系的不同设置线条颜色
-            if(d.rela=="discuss"){
+            if(d.type2=="enent_id"){
+                lineColor="#F6E8E9";
+            }else if(d.type2=="uid"){
                 lineColor="#A254A2";
-            }else {
-                lineColor="#B43232";
+            }else{
+                lineColor="#00d464";
             }
             return lineColor;
         })
@@ -163,26 +171,26 @@ function network(n_data) {
         .data(force.nodes())//表示使用force.nodes数据
         .enter().append("circle")
         .style("fill",function(node){
-            var color="#F6E8E9";//圆圈背景色
-            var link=links[node.index];
-            if(link.type1=='event'){
+            var color;//圆圈背景色
+            // var link=links[node.index];
+            if(node.type2=="enent_id"){
                 color="#F6E8E9";
-            }else if(link.type1=='org'){
+            }else if(node.type2=="uid"){
                 color="rgb(243, 25, 47)";
-            }else if(link.type1=="people"){
+            }else{
                 color="#00d464";
             }
             return color;
         })
         .style('stroke',function(node){
             var color;//圆圈线条的颜色
-            var link=links[node.index];
-            if(link.type1=='event'){
-                color="#B43232";
-            }else if(link.type1=='org'){
-                color="#A254A2";
-            }else if(link.type1=='people'){
-                color="#795548";
+            // var link=links[node.index];
+            if(node.type2=="enent_id"){
+                color="#F6E8E9";
+            }else if(node.type2=="uid"){
+                color="rgb(243, 25, 47)";
+            }else{
+                color="#00d464";
             }
             return color;
         })
@@ -209,13 +217,13 @@ function network(n_data) {
      }); */
 
     //圆圈的提示文字
-    circle.append("svg:title")
-        .text(function(node) {
-            var link=links[node.index];
-            if(node.name==link.source.name && link.rela=="主营产品"){
-                return "双击可查看详情"
-            }
-        });
+    // circle.append("svg:title")
+    //     .text(function(node) {
+    //         // var link=links[node.index];
+    //         if(node.name==link.source.name){
+    //             return "双击可查看详情"
+    //         }
+    //     });
     /* 矩形
      var rect=svg.append("rect")
      .attr({"x":100,"y":100,
@@ -237,11 +245,13 @@ function network(n_data) {
         .attr("text-anchor", "middle")//在圆圈中加上数据
         .style('fill',function(node){
             var color;//文字颜色
-            var link=links[node.index];
-            if(node.name==link.source.name){
-                color="#B43232";
+            // var link=links[node.index];
+            if(node.type2=="enent_id"){
+                color="#F6E8E9";
+            }else if(node.type2=="uid"){
+                color="rgb(243, 25, 47)";
             }else{
-                color="#A254A2";
+                color="#00d464";
             }
             return color;
         }).attr('x',function(d){
@@ -488,7 +498,8 @@ function person(p_data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                        var infor=row.uname+','+row.uid+',User';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
@@ -500,11 +511,10 @@ function person(p_data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='创建相似节点') {
-                var time=Date.parse(new Date());
-                var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
-                    '&node_name='+row.uname+'&node_id='+row.uid+'&node_type=User'
-                creat(creat_url);
+            if ($element[0].innerText=='计算完成') {
+                window.open('/relation/similarity_result/?node_id='+row.uid+'&node_type=User')
+            }else {
+                alert('还未计算完成。')
             }
         }
     });
@@ -647,7 +657,8 @@ function agencies(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                        var infor=row.uname+','+row.id+',Org';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
@@ -660,10 +671,7 @@ function agencies(data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='创建相似节点') {
-                var time=Date.parse(new Date());
-                var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
-                    '&node_name='+row.uname+'&node_id='+row.id+'&node_type=Org';
-                creat(creat_url);
+
             }
         }
     });
@@ -805,7 +813,8 @@ function events(e_data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                        var infor=row.name+','+row.id+',Event';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
@@ -818,10 +827,7 @@ function events(e_data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='创建相似节点') {
-                var time=Date.parse(new Date());
-                var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
-                    '&node_name='+row.name+'&node_id='+row.name+'&node_type=Event';
-                creat(creat_url);
+
             }
         }
     });
@@ -945,7 +951,8 @@ function organization(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                        var infor=row.group_name+','+row.id+',Group';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
@@ -1076,7 +1083,8 @@ function subject(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        return '无相似计算任务'+'<br/><a>添加相似任务</a>';
+                        var infor=row.event+','+row.id+',SpecialEvent';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
@@ -1101,13 +1109,19 @@ function subject(data) {
 function getLocalTime(nS) {
     return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
 };
-function creat(creat_url) {
+function add_new_task(row) {
+    var information=row.split(',');
+    var time=Date.parse(new Date());
+    var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
+        '&node_name='+information[0]+'&node_id='+information[1]+'&node_type='+information[2];
     $.ajax({
         url: creat_url,
         type: 'GET',
         dataType: 'json',
         async: true,
         success:function (data) {
+            var data=eval(data)
+            console.log(data)
             if (data=='yes'){
                 alert('创建成功。');
             }else {
@@ -1116,7 +1130,8 @@ function creat(creat_url) {
         }
     });
 }
+
 // setTimeout(function () {
 //     localStorage.removeItem('temp');
-// },2000);
+// },60000);
 

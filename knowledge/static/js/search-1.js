@@ -281,16 +281,75 @@ function rel_value() {
 
 //高级搜索开始
 var input_data;
-var short_path='False';
-$('#sure_advan').on('click',function () {
-    simple_advanced='a';
+var short_path;
+function end_node() {
+    //结束节点数据整理
+
+    if (end_no_ids==1){
+        end_ids.push($('.end .options-1-value').val());
+        end_nodes.push(
+            {
+                'node_type':end_type,
+                'ids':end_ids,
+            }
+        )
+    }else if (end_no_ids==2){
+        end_nodes.push(
+            {
+                'node_type':end_type,
+                'ids':end_ids_files,
+            }
+        );
+    }else if (end_no_ids==3) {
+        end_yhf_key=$('#e_tag').val();
+        end_yhf_value='*'+$('.end .options-3_down').val()+'*';
+        var end_conditions={};
+        var end_wildcard={};
+        var end_wildcard_value={};
+        var end_wildcard_list=[];
+        end_wildcard_value[end_yhf_key]=end_yhf_value;
+        end_wildcard['wildcard']=end_wildcard_value;
+        end_wildcard_list.push(end_wildcard);
+        end_conditions[end_yhf]=end_wildcard_list;
+        end_nodes.push(
+            {
+                'node_type':end_type,
+                'conditions':end_conditions
+            }
+        )
+    };
     //--------其他信息----
     var step=$('.advan-4 .other .jump').val();
     var limit=$('.advan-4 .other .datanums').val();
-    if ($("[name=short]:checkbox").prop("checked")=='true'){
+
+    //--------其他信息----完
+    if (short_path=='True'){
+        //此处要对起始节点进行判断，只能输入一个节点
+        if( $('.end .options-1-value').val()=='' || $('.start .options-1-value').val()==''){
+            alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+        }
+    }else {
+        input_data={
+            'start_nodes':starts_nodes,
+            'end_nodes':end_nodes,
+            'relation':relation,
+            'step':step,
+            'limit':limit,
+            'submit_user':submit_user,
+            'short_path':short_path,
+        };
+        // console.log('跳')
+        input_data=JSON.stringify(input_data);
+        localStorage.setItem('temp',input_data);
+        window.open('/relation/search_result/?simple_advanced='+simple_advanced);
+    }
+}
+$('#sure_advan').on('click',function () {
+    simple_advanced='a';
+    short_path='False';
+    if ($("[name=short]:checkbox").prop("checked")== true){
         short_path='True';
     };
-
     //开始节点数据整理
     if (no_ids==1){
         if ($('.start .options-1-value').val()==''){
@@ -302,11 +361,11 @@ $('#sure_advan').on('click',function () {
                     'node_type':start_type,
                     'ids':ids,
                 }
-            )
+            );
+            end_node();
         };
-
     }else if (no_ids==2){
-        if (ids_files=='undefined'){
+        if (ids_files== undefined){
             alert('您还没有上传文件。(不能为空)');
         }else {
             starts_nodes.push(
@@ -314,7 +373,8 @@ $('#sure_advan').on('click',function () {
                     'node_type':start_type,
                     'ids':ids_files,
                 }
-            )
+            );
+            end_node();
         };
     }else if (no_ids==3){
         if (yhf_value==''){
@@ -335,80 +395,13 @@ $('#sure_advan').on('click',function () {
                     'node_type':start_type,
                     'conditions':conditions
                 }
-            )
-        }
-    }
-    //结束节点数据整理
-    if (end_no_ids==1){
-        if ($('.end .options-1-value').val()==''){
-            alert('请输入终止节点的值。(不能为空)');
-        }else {
-            end_ids.push($('.end .options-1-value').val());
-            end_nodes.push(
-                {
-                    'node_type':end_type,
-                    'ids':end_ids,
-                }
-            )
-        }
-    }else if (end_no_ids==2){
-        if (end_ids_files=='undefined'){
-            alert('您还没有上传文件。(不能为空)');
-        }else {
-            end_nodes.push(
-                {
-                    'node_type':end_type,
-                    'ids':end_ids_files,
-                }
-            )
+            );
+            end_node();
         };
-
-    }else if (end_no_ids==3) {
-        if (end_yhf_value==''){
-            alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
-        }else {
-            end_yhf_key=$('#e_tag').val();
-            end_yhf_value='*'+$('.end .options-3_down').val()+'*';
-            var end_conditions={};
-            var end_wildcard={};
-            var end_wildcard_value={};
-            var end_wildcard_list=[];
-            end_wildcard_value[end_yhf_key]=end_yhf_value;
-            end_wildcard['wildcard']=end_wildcard_value;
-            end_wildcard_list.push(end_wildcard);
-            end_conditions[end_yhf]=end_wildcard_list;
-            end_nodes.push(
-                {
-                    'node_type':end_type,
-                    'conditions':end_conditions
-                }
-            )
-        }
     }
 
-    //--------其他信息----完
-    if (short_path=='True'){
-        //此处要对起始节点进行判断，只能输入一个节点
-        if(!(ids.length==1&&end_ids.length==1)){
-            alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
-        }
-    }else {
-        input_data={
-            'start_nodes':starts_nodes,
-            'end_nodes':end_nodes,
-            'relation':relation,
-            'step':step,
-            'limit':limit,
-            'submit_user':submit_user,
-            'short_path':short_path,
-        };
-        input_data=JSON.stringify(input_data);
-        localStorage.setItem('temp',input_data);
-        window.open('/relation/search_result/?simple_advanced='+simple_advanced);
-    }
     ids=[],end_ids=[],ids_files=[],end_ids_files=[],relation=[],
         starts_nodes=[],end_nodes=[];
-    // console.log(input_data)
 });
 
 
