@@ -198,14 +198,20 @@
             <button class="add_sure">确 定</button>
         </div>
 
-        <!--计算任务表格-----人物机构----->
+        <!--计算任务表格-----人物----->
         <div class="count_task" style="width: 100%;margin-top:50px;">
             <span class="ct" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
             <div class="ct_1" style="display:none;">
                 <div id="count" style="width: 100%;"></div>
             </div>
         </div>
-
+        <!--计算任务表格-----机构----->
+        <div class="count_task_2" style="width: 100%;margin-top:50px;display: none;">
+            <span class="ct_2" style="font-size: 14px;font-weight: 800;cursor: pointer;">任务状态</span>
+            <div class="ct_1_2" style="display:none;">
+                <div id="count_2" style="width: 100%;"></div>
+            </div>
+        </div>
         <!--推荐人物表格-->
         <div id="node_list" style="width: 100%;margin-top:50px;">
             <span style="font-size: 14px;font-weight: 800;">推荐人物</span>
@@ -465,6 +471,17 @@
         }else {
             $('.ct_1').hide();
             cc=1;
+        }
+    });
+    //计算任务的出现与隐藏--机构
+    var gg=1;
+    $('.ct_2').on('click',function () {
+        if (gg==1){
+            $('.ct_1_2').show();
+            gg=2;
+        }else {
+            $('.ct_1_2').hide();
+            gg=1;
         }
     });
     //计算任务的出现与隐藏--事件

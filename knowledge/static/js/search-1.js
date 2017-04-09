@@ -52,10 +52,10 @@ function start(value) {
     }
 }
 //开始节点选择的输入方式
-var ids=[],ids_files,
+var ids=[],ids_files;
 // 属性搜索
 //与或非
-yhf,yhf_key,yhf_value;
+var yhf='must',yhf_key,yhf_value;
 function s_yhf(value) {
     if (value=='y'){
         yhf='must';
@@ -65,9 +65,9 @@ function s_yhf(value) {
         yhf='must_not';
     }
 };
-function tag_start(value) {
-    yhf_key=value;
-}
+// function tag_start(value) {
+//     yhf_key=value;
+// }
 var no_ids=1;
 $.each($("#container .start .options input"),function (index,item) {
     $(item).on('click',function () {
@@ -175,7 +175,7 @@ function end(value) {
 var end_ids=[],end_ids_files;
 // 属性搜索
 //与或非
-var end_yhf,end_yhf_key,end_yhf_value;
+var end_yhf='must',end_yhf_key,end_yhf_value;
 
 function e_yhf(value) {
     if (value=='y'){
@@ -186,9 +186,9 @@ function e_yhf(value) {
         end_yhf='must_not';
     }
 };
-function tag_end(value) {
-    end_yhf_key=value;
-}
+// function tag_end(value) {
+//     end_yhf_key=value;
+// }
 var end_no_ids=1;
 $.each($("#container .end .options-3 input"),function (index,item) {
     $(item).on('click',function () {
@@ -320,13 +320,20 @@ $('#sure_advan').on('click',function () {
         if (yhf_value==''){
             alert('请输入起始节点中属性搜索中的值。(不能为空)');
         }else {
-            yhf_value=$('.start .options-2_down').val();
+            yhf_key=$('#s_tag').val();
+            yhf_value='*'+$('.start .options-2_down').val()+'*';
+            var conditions={};
+            var wildcard={};
+            var wildcard_value={};
+            var wildcard_list=[];
+            wildcard_value[yhf_key]=yhf_value;
+            wildcard['wildcard']=wildcard_value;
+            wildcard_list.push(wildcard);
+            conditions[yhf]=wildcard_list;
             starts_nodes.push(
                 {
                     'node_type':start_type,
-                    'conditions':{
-                        yhf:[{'wildcard':{yhf_key:yhf_value}}],
-                    }
+                    'conditions':conditions
                 }
             )
         }
@@ -360,13 +367,20 @@ $('#sure_advan').on('click',function () {
         if (end_yhf_value==''){
             alert('请输入起始节点/终止节点中属性搜索中的值。(不能为空)');
         }else {
-            end_yhf_value=$('.end .options-3_down').val();
+            end_yhf_key=$('#e_tag').val();
+            end_yhf_value='*'+$('.end .options-3_down').val()+'*';
+            var end_conditions={};
+            var end_wildcard={};
+            var end_wildcard_value={};
+            var end_wildcard_list=[];
+            end_wildcard_value[end_yhf_key]=end_yhf_value;
+            end_wildcard['wildcard']=end_wildcard_value;
+            end_wildcard_list.push(end_wildcard);
+            end_conditions[end_yhf]=end_wildcard_list;
             end_nodes.push(
                 {
                     'node_type':end_type,
-                    'conditions':{
-                        end_yhf:[{'wildcard':{end_yhf_key:end_yhf_value}}],
-                    }
+                    'conditions':end_conditions
                 }
             )
         }

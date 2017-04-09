@@ -51,7 +51,7 @@ function network(n_data) {
             source=item[0].name;
         }
         if (item[2].name==''||item[2].name=='unknown'){
-            target=tem[2].uid;
+            target=item[2].uid;
         }else {
             target=item[2].name;
         }

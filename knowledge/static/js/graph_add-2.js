@@ -93,8 +93,8 @@ function weibo_content() {
             var html_c = '';
 
             if(dataArray==''){
-                html_c = "<p style='width:1000px;text-align: center'>用户未发布任何微博</p>";
-                oTBody.rows[0].cells[0].innerHTML = html_c;
+                html_c = "<p style='width:840px;text-align: center'>用户未发布任何微博</p>";
+                oTBody.innerHTML = html_c;
             }else{
 
                 for(i=0;i<parseInt(PageNo.value);i++)
@@ -192,8 +192,8 @@ function weibo_content() {
                 var html_c = '';
 
                 if(dataArray==''){
-                    html_c = "<p style='width:1000px;text-align: center'>用户未发布任何微博</p>";
-                    oTBody.rows[0].cells[0].innerHTML = html_c;
+                    html_c = "<p style='width:840px;text-align: center'>用户未发布任何微博</p>";
+                    oTBody.innerHTML = html_c;
                 }else{
 
                     for(i=0;i<parseInt(PageNo.value);i++)
