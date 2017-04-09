@@ -3,6 +3,9 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/search_result.css">
 <style>
+    .table>thead:first-child>tr:first-child>th {
+        width: 1%;
+    }
     .link {
         fill: none;
         stroke: #666;
@@ -39,42 +42,42 @@
     <h3 class="result" style="color: white;font-weight: 900;">探索结果</h3>
     <div class="related_network">
         <h3>相关网络</h3>
-        <div class="network" style="width: 90%;margin: 20px auto 0;">
+        <div class="network" style="width: 90%;margin: 20px auto;">
             <div id="network"></div>
         </div>
     </div>
 
     <div class="related_person">
         <h3>相关人物</h3>
-        <div class="person" style="width: 90%;margin: 20px auto 0;">
+        <div class="person" style="width: 90%;margin: 20px auto;">
             <div id="person"></div>
         </div>
     </div>
 
     <div class="related_agencies">
         <h3>相关机构</h3>
-        <div class="agencies" style="width: 90%;margin: 20px auto 0;">
+        <div class="agencies" style="width: 90%;margin: 20px auto;">
             <div id="agencies"></div>
         </div>
     </div>
 
     <div class="related_events">
         <h3>相关事件</h3>
-        <div class="events" style="width: 90%;margin: 20px auto 0;">
+        <div class="events" style="width: 90%;margin: 20px auto;">
             <div id="events"></div>
         </div>
     </div>
 
     <div class="related_organization">
         <h3>相关组织</h3>
-        <div class="organization" style="width: 90%;margin: 20px auto 0;">
+        <div class="organization" style="width: 90%;margin: 20px auto;">
             <div id="organization"></div>
         </div>
     </div>
 
     <div class="related_subject">
         <h3>相关专题</h3>
-        <div class="subject" style="width: 90%;margin: 20px auto 0;">
+        <div class="subject" style="width: 90%;margin: 20px auto;">
             <div id="subject"></div>
         </div>
     </div>

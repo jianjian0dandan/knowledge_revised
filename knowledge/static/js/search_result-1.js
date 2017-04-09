@@ -45,15 +45,15 @@ function network(n_data) {
     var links = [];
     $.each(n_data,function (index,item) {
         var source,target;
-        if (item[0].name==''||item[0].name=='unknown'){
+        if (item[0].name[0]==''||item[0].name[0]=='unknown'){
             source=item[0].event_id;
         }else {
-            source=item[0].name;
+            source=item[0].name[0];
         }
-        if (item[2].name==''||item[2].name=='unknown'){
+        if (item[2].name[0]==''||item[2].name[0]=='unknown'){
             target=item[2].uid;
         }else {
-            target=item[2].name;
+            target=item[2].name[0];
         }
         links.push({source:source,type1:item[1], target:target,});
     });
@@ -89,7 +89,7 @@ function network(n_data) {
             //.attr("markerUnits","strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
             .attr("markerUnits","userSpaceOnUse")
             .attr("viewBox", "0 -5 10 10")//坐标系的区域
-            .attr("refX",32)//箭头坐标
+            .attr("refX",22)//箭头坐标
             .attr("refY", -1)
             .attr("markerWidth", 12)//标识的大小
             .attr("markerHeight", 12)
@@ -468,12 +468,14 @@ function person(p_data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.keywords_string.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -625,12 +627,14 @@ function agencies(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.keywords_string.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -781,12 +785,14 @@ function events(e_data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.keywords.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -889,12 +895,14 @@ function organization(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.label.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -1000,12 +1008,14 @@ function subject(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.k_label.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 }
             },
@@ -1020,12 +1030,14 @@ function subject(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        var words=row.label.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -1086,8 +1098,6 @@ function subject(data) {
     });
 };
 
-
-
 function getLocalTime(nS) {
     return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
 };
@@ -1106,7 +1116,7 @@ function creat(creat_url) {
         }
     });
 }
-setTimeout(function () {
-    localStorage.removeItem('temp');
-},2000);
+// setTimeout(function () {
+//     localStorage.removeItem('temp');
+// },2000);
 
