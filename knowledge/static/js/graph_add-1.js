@@ -898,6 +898,7 @@ $('.add_sure').on('click',function () {
                         async: true,
                         success:recommend_4
                     });
+                    task_renew();
                 }else {
                     var recommend_url_5='/construction/show_in/?date='+date+'&type='+type+'&submit_user='+submit_user+
                         '&node_type='+node_type;
@@ -1082,138 +1083,268 @@ function fail_or_success(data) {
 
 //任务列表
 function task_renew() {
-    var nt=0;
+    var nt;
     if(node_type=='user'){
         nt=0;
+        $('.count_task').css({display:'block'});
+        $('.count_task_2').css({display:'none'});
+        var task_url='/construction/show_user_task_status/?node_type='+nt;
+        $.ajax({
+            url: task_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:task_list
+        });
     }else if(node_type=='org') {
         nt=1;
-    }
-    var task_url='/construction/show_user_task_status/?node_type='+nt;
-    $.ajax({
-        url: task_url,
-        type: 'GET',
-        dataType: 'json',
-        async: true,
-        success:task_list
-    });
-    function task_list(data) {
-        var data = eval(data);
-        $('#count').bootstrapTable('load', data);
-        $('#count').bootstrapTable({
-            data:data,
-            search: true,//是否搜索
-            pagination: true,//是否分页
-            pageSize: 5,//单页记录数
-            pageList: [5, 20, 40, 80],//分页步进值
-            sidePagination: "client",//服务端分页
-            searchAlign: "left",
-            searchOnEnterKey: false,//回车搜索
-            showRefresh: false,//刷新按钮
-            showColumns: false,//列选择按钮
-            buttonsAlign: "right",//按钮对齐方式
-            locale: "zh-CN",//中文支持
-            detailView: false,
-            showToggle:true,
-            sortName:'bci',
-            sortOrder:"desc",
-            columns: [
-                {
-                    title: "人物名称",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        return row[0];
-                    }
-                },
-                {
-                    title: "添加方式",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        if (row[6]=="influence"){
-                            return '影响力推荐';
-                        }else if(row[6]=="sensitive"){
-                            return '敏感度推荐';
-                        }else if(row[6]=="upload"){
-                            return '上传文件';
-                        }else if(row[6]=="write"){
-                            return '手动输入';
-                        }else if(row[6]=="auto"){
-                            return '关注用户推荐';
-                        }
-                    }
-                },
-                {
-                    title: "添加人",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        return row[5];
-                    },
-                },
-                {
-                    title: "提交时间",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        return row[1];
-                    },
-                },
-                {
-                    title: "任务状态",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        if (row[2]==1){
-                            return '立即计算';
-                        }else if (row[2]==2){
-                            return '预约计算';
-                        }else if (row[2]==3){
-                            return '正在计算';
-                        }else if (row[2]==4){
-                            return '计算完成';
-                        }
-
-                    },
-                },
-                {
-                    title: "立即更新",//标题
-                    field: "",//键名
-                    sortable: true,//是否可排序
-                    order: "desc",//默认排序方式
-                    align: "center",//水平
-                    valign: "middle",//垂直
-                    formatter: function (value, row, index) {
-                        return '<a>立即更新</a>';
-                    },
-                },
-
-            ],
-            // onClickRow: function (row, tr) {
-            //     if ($(tr.context).index()==2) {
-            //         del_eventuid=row[0];
-            //         $('#del_ject').modal("show");
-            //     }
-            // }
+        $('.count_task').css({display:'none'});
+        $('.count_task_2').css({display:'block'});
+        var task_url='/construction/show_user_task_status/?node_type='+nt;
+        $.ajax({
+            url: task_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:task_list_2
         });
-    };
+    }
+
 }
 task_renew();
+function task_list(data) {
+    var data = eval(data);
+    $('#count').bootstrapTable('load', data);
+    $('#count').bootstrapTable({
+        data:data,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 5,//单页记录数
+        pageList: [5, 20, 40, 80],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:true,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "人物名称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[0];
+                }
+            },
+            {
+                title: "添加方式",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[6]=="influence"){
+                        return '影响力推荐';
+                    }else if(row[6]=="sensitive"){
+                        return '敏感度推荐';
+                    }else if(row[6]=="upload"){
+                        return '上传文件';
+                    }else if(row[6]=="write"){
+                        return '手动输入';
+                    }else if(row[6]=="auto"){
+                        return '关注用户推荐';
+                    }
+                }
+            },
+            {
+                title: "添加人",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[5];
+                },
+            },
+            {
+                title: "提交时间",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[1];
+                },
+            },
+            {
+                title: "任务状态",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[2]==1){
+                        return '立即计算';
+                    }else if (row[2]==2){
+                        return '预约计算';
+                    }else if (row[2]==3){
+                        return '正在计算';
+                    }else if (row[2]==4){
+                        return '计算完成';
+                    }
+
+                },
+            },
+            {
+                title: "立即更新",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return '<a>立即更新</a>';
+                },
+            },
+
+        ],
+        // onClickRow: function (row, tr) {
+        //     if ($(tr.context).index()==2) {
+        //         del_eventuid=row[0];
+        //         $('#del_ject').modal("show");
+        //     }
+        // }
+    });
+};
+
+function task_list_2(data) {
+    var data = eval(data);
+    $('#count_2').bootstrapTable('load', data);
+    $('#count_2').bootstrapTable({
+        data:data,
+        search: true,//是否搜索
+        pagination: true,//是否分页
+        pageSize: 5,//单页记录数
+        pageList: [5, 20, 40, 80],//分页步进值
+        sidePagination: "client",//服务端分页
+        searchAlign: "left",
+        searchOnEnterKey: false,//回车搜索
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
+        buttonsAlign: "right",//按钮对齐方式
+        locale: "zh-CN",//中文支持
+        detailView: false,
+        showToggle:true,
+        sortName:'bci',
+        sortOrder:"desc",
+        columns: [
+            {
+                title: "人物名称",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[0];
+                }
+            },
+            {
+                title: "添加方式",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[6]=="influence"){
+                        return '影响力推荐';
+                    }else if(row[6]=="sensitive"){
+                        return '敏感度推荐';
+                    }else if(row[6]=="upload"){
+                        return '上传文件';
+                    }else if(row[6]=="write"){
+                        return '手动输入';
+                    }else if(row[6]=="auto"){
+                        return '关注用户推荐';
+                    }
+                }
+            },
+            {
+                title: "添加人",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[5];
+                },
+            },
+            {
+                title: "提交时间",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return row[1];
+                },
+            },
+            {
+                title: "任务状态",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[2]==1){
+                        return '立即计算';
+                    }else if (row[2]==2){
+                        return '预约计算';
+                    }else if (row[2]==3){
+                        return '正在计算';
+                    }else if (row[2]==4){
+                        return '计算完成';
+                    }
+
+                },
+            },
+            {
+                title: "立即更新",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    return '<a>立即更新</a>';
+                },
+            },
+
+        ],
+        // onClickRow: function (row, tr) {
+        //     if ($(tr.context).index()==2) {
+        //         del_eventuid=row[0];
+        //         $('#del_ject').modal("show");
+        //     }
+        // }
+    });
+};
 
 
 
