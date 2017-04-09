@@ -543,10 +543,14 @@ def deal_user_tag(item ,submit_user):
 
 def search_data(input_data):
     start_id = get_node_id(input_data['start_nodes'])
+    print 'start_id',start_id
     end_id = get_node_id(input_data['end_nodes'])
+    print 'end_id:',end_id
     relation = input_data['relation']
     submit_user = input_data['submit_user']
     step = str(input_data['step'])
+    if len(step) == 0:
+        step = '1'
     if input_data['limit']:
         limit = 'limit '+input_data['limit']
     else:
@@ -605,7 +609,6 @@ def get_info_by_query(query,submit_user):
             if this_relation not in graph_result:
                 graph_result.append(this_relation)
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
-        print '???????????/',len(node_list)
     # print '?????',graph_result
     # max_influence_peo =  get_max_index_peo('influence')
     # max_activeness_peo = get_max_index_peo('activeness')
@@ -626,7 +629,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    # print graph_result,table_result
+    print graph_result
     return {'graph_result':graph_result,'table_result':table_result}
 
 def get_sim_status(node_type,node_id):
@@ -699,7 +702,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
         except:
             f_result[tag] = ''
         f_result['sim'] = get_sim_status(node_type,node_id)
-        return [[primary_key,f_result],result['fields'][name]]
+        return [[primary_key,f_result],result['fields'][name][0]]
     except:#人造节点
         return [0,node_id]
 
@@ -723,9 +726,9 @@ def get_node_id(start_node):
         elif node_type == group_node:
             primary = group_primary
             neo_index = group_index_name
-        if node['ids']:  #输入或者上传id
+        try:
             id_list = node['ids']
-        else:#属性搜索
+        except:#属性搜索
             # condition={'must/should/must_not':{'key1':'value1','key2':'value2'}}
             condition = node['conditions']
             if node_type == people_node or node_type == org_node:#人，机构
@@ -760,15 +763,18 @@ def get_node_id(start_node):
                     'bool':condition
                 }
             }
-            print query_body
             result = es.search(index=es_index,doc_type=es_type,body=query_body)['hits']['hits']
             id_list = [i['_id'] for i in result]
         #'node:node_type(primary=id_list)'
         print id_list
         for i in id_list:
-            a = graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')
-            for j in a:
-                input_id.append(str(dict(j)['id(n)']))
+            try:
+                a = graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')
+                for j in a:
+                    print j
+                    input_id.append(str(dict(j)['id(n)']))
+            except:
+                continue
             # input_id.append(graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')) 
     return input_id     
 
@@ -801,7 +807,7 @@ def simple_search(keywords_list,submit_user):
                         'should':[
                             {'query_string':{
                                 'fields':['uid','en_name','group_name','topic_name','uname','description','function_mark','keywords','hashtag','location','name','work_tag','k_label','label','event'],
-                                'query':key
+                                'query':'*'+key+'*'
                                 }
                             }
                         ],
