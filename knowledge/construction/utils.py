@@ -97,7 +97,7 @@ def submit_identify_in_uid(input_data):
     in_date = input_data['date']
     submit_user = input_data['user']
     operation_type = input_data['operation_type']
-    compute_status = input_data['compute_status'] 
+    compute_status = str(input_data['compute_status'])
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
     node_type = input_data['node_type']
@@ -630,6 +630,64 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
 
     return [{'rel_list':rel_list, 'node1':[node1_id, node1_name, node_key1], 'node2':[node2_id, node2_name, node_key2]}]
 
+def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
+    Index = ManualIndexManager(graph)
+    node_index = Index.get_index(Node, node1_index_name)
+    group_index = Index.get_index(Node, node2_index_name)
+    print node_index
+    print group_index
+    tx = graph.begin()
+    node1 = node_index.get(node_key1, node1_id)[0]
+    node2 = group_index.get(node_key2, node2_id)[0]
+    if not (node1 and node2):
+        print "node does not exist"
+        return 'does not exist'
+    rel = rel_union.split(',')[0]
+    if rel in [other_rel, event_other, organization_tag, user_tag]:
+        print rel_union,'************'
+        rel_name = rel_union.split(',')[1:]
+        # print rel_name, '=============='
+        c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
+                    MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        result = graph.run(c_string)
+        exist_relation = []
+        for i in result:
+            dict_i = dict(i)
+            exist_relation = dict_i['r.name'].split(',')
+        if exist_relation:
+            del_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s') \
+                   MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
+                    node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+            result = graph.run(del_string)
+        exist_relation = set(exist_relation)-set(rel_name)
+        print exist_relation,'00000000000'
+        exist_relation2 = [i for i in exist_relation]
+        add_relation_string = ','.join(exist_relation2)
+        c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
+                create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
+                node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
+        try:
+            result = graph.run(c_string)
+        except:
+            return 0
+    else:
+        c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
+                match (start_node)-[r:%s]->(end_node) delete r " %(node1_index_name,\
+                node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        try:
+            result = graph.run(c_string)
+        except:
+            return 0
+        # for i in result:
+        #     print i
+    return 1
+
+    #     rel = Relationship(node1, rel, node2)
+    #     graph.create(rel)
+    #     print "create success"
+    # return True
+
 def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel_union, node_key2, node2_id, node2_index_name):
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
@@ -923,10 +981,11 @@ def show_node_detail(node_type, item, submit_user):
         node_result.append(file_link)
 
     if node_type == 'Event':
-        field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
+        field = ['en_name','name','real_geo','real_time','event_type', 'start_ts', 'end_ts','real_person', \
+                 'real_auth','work_tag', 'description']
         node_result = search_event(item, field, submit_user)[0]
-        tag = deal_event_tag(item, submit_user)[0]
-        node_result.append(tag)
+        # tag = deal_event_tag(item, submit_user)[0]
+        # node_result.append([tag,1])
         file_link = search_event_file(item)
         node_result.append(file_link)
         index_n = event_index_name
@@ -945,6 +1004,42 @@ def show_node_detail(node_type, item, submit_user):
 
 def edit_node():
     pass
+
+def node_delete(node_type, item, submit_user):
+    if node_type == 'User':
+        try:
+            es.delete(index=portrait_index_name, doc_type=portrait_index_type, id=item)
+        except:
+            # pass
+            return 'not in es'
+        index_n = node_index_name
+        index_key = people_primary
+    if node_type == 'Org':
+        try:
+            es.delete(index=portrait_index_name, doc_type=portrait_index_type, id=item)
+        except:
+            return 'not in es'
+        index_n = org_index_name
+        index_key = org_primary
+    if node_type == 'Event':
+        try:
+            es_event.delete(index=event_analysis_name,doc_type=event_text_type, id=item)
+        except:
+            return 'not in es'
+        index_n = event_index_name
+        index_key = event_primary
+    s_string = 'START s3 = node:%s(%s="%s") MATCH (s0)-[r]-(s3) delete r, s3' \
+               %(index_n, index_key, item)
+    # print s_string,'========'
+    try:
+        event_result = graph.run(s_string)
+        # print event_result,'========'
+        # for i in event_result:
+        #     print i,'=------'
+        return 1
+    except:
+        return 0
+
 
 def deal_user_tag(item ,submit_user):
     try:
@@ -966,7 +1061,10 @@ def deal_user_tag(item ,submit_user):
     return [keep_tag, left_tag]
 
 def deal_event_tag(item ,submit_user):
-    tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag'][0]
+    try:
+        tag = es_event.get(index=event_analysis_name,doc_type=event_text_type, id=item)['_source']['work_tag']
+    except:
+        return ['','']
     # return result
     # tag = tag_value
     print tag,'=============!!==='

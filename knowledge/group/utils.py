@@ -664,7 +664,7 @@ def get_group_user_track(uid):
         else:
             results.append([iter_date, ''])
         start_ts = start_ts + DAY
-
+    # results= [['2017-03-31', ''], ['2017-04-01', u'\u4e2d\u56fd\t\u56db\u5ddd\t2\u6210\u90fd'], ['2017-04-02', u'\u4e2d\u56fd\t\u56db\u5ddd\t3\u6210\u90fd'], ['2017-04-03', u'\u4e2d\u56fd\t\u56db\u5ddd\t7\u6210\u90fd'], ['2017-04-04', u'\u4e2d\u56fd\t\u56db\u5ddd\t\u6210\u90fd'], ['2017-04-05', u'\u4e2d\u56fd\t\u56db\u5ddd\t\u6210\u90fd'], ['2017-04-06', u'\u4e2d\u56fd\t\u56db\u5ddd\t\u6210\u90fd']]
     geolist = []
     line_list = []
     index_city = 0
@@ -675,7 +675,7 @@ def get_group_user_track(uid):
     for x in range(len(results)-1):
         if results[x][1] != '' and results[x+1][1]!='' and results[x][1].split('\t')[0] == u'中国' and results[x+1][1].split('\t')[0] == u'中国':
             if results[x][1] !=  results[x+1][1]:
-                line_list.append([results[x][1],results[x+1][1]])
+                line_list.append([results[x][1], results[x+1][1]])
     return {'city':geolist, 'line':line_list}
 
 def group_event_rank(g_name, submit_user):
