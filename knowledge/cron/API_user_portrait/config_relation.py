@@ -143,7 +143,7 @@ TOPIC_N = 10#lda话题数量
 MAX_COUNT = 500#最大的词语数量(topic pagerank)
 COUNT_RATE = 0.1#限制交互数量的比例
 inter_sta = 4#最小交互次数
-event_sta = 0.3#最小交叉词语数量
+event_sta = 0.1#最小交叉词语数量
 MAX_I = 1.3#最大影响力值的百分比
 MIN_I = 0.7#最小影响力值的百分比
 
