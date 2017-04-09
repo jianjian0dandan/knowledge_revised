@@ -375,7 +375,6 @@ function pass() {
 //事件
 function event(data) {
     var data = eval(data);
-    console.log(data)
     $('#event_list').bootstrapTable('load', data);
     $('#event_list').bootstrapTable({
         data:data,
@@ -603,6 +602,9 @@ function run(item) {
         success:event_com
     });
 };
+function getLocalTime(nS) {
+    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
+};
 function event_com(data) {
     var data=eval(data);
     console.log(data)
@@ -610,6 +612,7 @@ function event_com(data) {
     $('#event_complie #special').empty();
     $('#event_complie #e_tag').empty();
     $('#event_complie #documents').empty();
+    //名字
     var name;
     if (data[1]==''||data[1]=='NULL'||data[1]=='unknown'){
         name=data[0];
@@ -617,7 +620,19 @@ function event_com(data) {
         name=data[1];
     };
     $('#event_complie .name').text(name);
-
+    //地点
+    if (data[2]==''||data[2]=='NULL'||data[2]=='unknown'){
+        $('#event_complie #place').val('未知');
+    }else {
+        $('#event_complie #place').val(data[2]);
+    };
+    //发生时间
+    if (data[3]==''||data[3]=='NULL'||data[3]=='unknown'){
+        $('#event_complie .time').val('未知');
+    }else {
+        $('#event_complie .time').val(getLocalTime(data[3]));
+    };
+    //事件类型
     if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
         $('#complie #business #business-1').val('暂无');
     }else {

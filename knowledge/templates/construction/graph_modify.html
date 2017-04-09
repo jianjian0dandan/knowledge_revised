@@ -261,7 +261,11 @@
                 </div>
                 <div>
                     <span>实际发生时间：</span>
-                    <input type="date" class="time">
+                    <div style="display: inline-block;width: 200px;">
+                        <input size="16" type="text" value=""
+                               readonly class="form_datetime time"
+                               style="border: 1px solid #595959;padding: 2px 5px;">
+                    </div>
                 </div>
                 <div>
                     <span>事件类型</span>
@@ -292,9 +296,27 @@
                 <div>
                     <span>关注周期</span>
                     <div class="cycle" style="display: inline-block;">
-                        <input type="date" class="start">
+                        <div style="display: inline-block;width: 200px;margin: 20px 0 0 0;">
+                            <div class="form-group" style="margin: 0">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    <input type='text' class="form-control start" style="height: 28px"/>
+                                    <b class="input-group-addon">
+                                        <b class="icon icon-calendar"></b>
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
                         <b> - </b>
-                        <input type="date" class="end">
+                        <div style="display: inline-block;width: 200px;">
+                            <div class="form-group" style="margin: 0">
+                                <div class='input-group date' id='datetimepicker3'>
+                                    <input type='text' class="form-control end" style="height: 28px"/>
+                                    <b class="input-group-addon">
+                                        <b class="icon icon-calendar"></b>
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -365,7 +387,15 @@
             }
         })
     });
-
+    $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    $('#datetimepicker2').datetimepicker();
+    $('#datetimepicker3').datetimepicker();
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").minDate(e.date);
+    });
+    $("#datetimepicker2").on("dp.change",function (e) {
+        $('#datetimepicker3').data("DateTimePicker").maxDate(e.date);
+    });
 </script>
 <script src="/static/js/graph_modify-1.js"></script>
 <script src="/static/js/graph_modify-2.js"></script>
