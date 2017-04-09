@@ -58,52 +58,54 @@ def relation_similarity_result():#相似计算
 @mod.route('/submit_task/',methods=['GET', 'POST'])
 @login_required
 def submit_task_function():
-    input_data = dict()
-    # input_data = request.get_json()
-    input_data = {
-        'start_nodes':[
-            {
-                'node_type':'User',
-                'ids':[2772291221,1470809487,5014862797]
-                # 'conditions':[
-                #     {'must':{'keywords':'kkk'}},
-                #     {'should':{'hashtag':'ddd'}}
-                # ]
-            }#,
-            # {
-            #     'node_type':'User',
-            #     'ids':[],
-            #     'conditions':[
-            #         {'must':{'keywords':'kkk'}},
-            #         {'should':{'hashtag':'ddd'}}
-            #     ]
-            # }
-        ],
-        'end_nodes':[
-            {
-                'node_type':'User',
-                'ids':[],
-                'conditions':{
-                    'must':[{'wildcard':{'keywords':u'*心*'}}],
-                    'should':[{'wildcard':{'hashtag':u'*韩庚*'}}]
-                }
-            }#,
-            # {
-            #     'node_type':'User',
-            #     'ids':[],
-            #     'conditions':[
-            #         {'must':{'keywords':'kkk'}},
-            #         {'should':{'hashtag':'ddd'}}
-            #     ]
-            # }
-        ],
-        'relation':['join','discuss'],
-        'step':'5',
-        'limit':'100',
-        'submit_user':'admin',
-        'short_path':True#True
-    }
+    # input_data = dict()
+    input_data = request.get_json()
+    # input_data = {
+    #     'start_nodes':[
+    #         {
+    #             'node_type':'User',
+    #             'ids':[2772291221,1470809487,5014862797]
+    #             # 'conditions':[
+    #             #     {'must':{'keywords':'kkk'}},
+    #             #     {'should':{'hashtag':'ddd'}}
+    #             # ]
+    #         }#,
+    #         # {
+    #         #     'node_type':'User',
+    #         #     'ids':[],
+    #         #     'conditions':[
+    #         #         {'must':{'keywords':'kkk'}},
+    #         #         {'should':{'hashtag':'ddd'}}
+    #         #     ]
+    #         # }
+    #     ],
+    #     'end_nodes':[
+    #         {
+    #             'node_type':'User',
+    #             'ids':[],
+    #             'conditions':{
+    #                 'must':[{'wildcard':{'keywords':u'*心*'}}],
+    #                 'should':[{'wildcard':{'hashtag':u'*韩庚*'}}]
+    #             }
+    #         }#,
+    #         # {
+    #         #     'node_type':'User',
+    #         #     'ids':[],
+    #         #     'conditions':[
+    #         #         {'must':{'keywords':'kkk'}},
+    #         #         {'should':{'hashtag':'ddd'}}
+    #         #     ]
+    #         # }
+    #     ],
+    #     'relation':['join','discuss'],
+    #     'step':'5',
+    #     'limit':'100',
+    #     'submit_user':'admin',
+    #     'short_path':True#True
+    # }
+    print '11111111111111',input_data
     result = json.dumps(search_data(input_data))
+    print '2222222222222222222s'
     # print type(result)
     # return redirect(url_for('.relation_search_result',result=result))
     return result
@@ -116,7 +118,7 @@ def simple_result():
 	keywords = keywords.split(',') 
 	submit_user = request.args.get('submit_user', '')
 	# keywords = ['2635695961','2121667213']
-	submit_user = 'admin'
+	# submit_user = 'admin'
 	print keywords
 	result = simple_search(keywords,submit_user)
 	return json.dumps(result)
