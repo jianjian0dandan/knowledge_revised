@@ -131,7 +131,7 @@ def compute_sim():
 	node_name = request.args.get('node_name', '')
 	node_type = request.args.get('node_type', '')
 	node_id = request.args.get('node_id', '')
-	result = compute_fun(submit_user,submit_ts,node_name,node_type,node_id)
+	result = json.dumps(compute_fun(submit_user,submit_ts,node_name,node_type,node_id))
 	return result
 
 @mod.route('/all_sim/')

@@ -939,11 +939,13 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
     info = {'submit_user':submit_user,'submit_ts':int(submit_ts),'node_name':node_name,\
             'node_type':node_type,'node_id':node_id,'compute_status':0
             }
+    print info
     result = es_sim.index(index=sim_name,doc_type=sim_type,id=node_id,body=info)
     # os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
-
+    print result
     if result['created']==True:
         os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
+        print 'yes'
         return 'yes'
     else:
         return 'no'
