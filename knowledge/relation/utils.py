@@ -543,7 +543,9 @@ def deal_user_tag(item ,submit_user):
 
 def search_data(input_data):
     start_id = get_node_id(input_data['start_nodes'])
+    print 'start_id',start_id
     end_id = get_node_id(input_data['end_nodes'])
+    print 'end_id:',end_id
     relation = input_data['relation']
     submit_user = input_data['submit_user']
     step = str(input_data['step'])
@@ -705,6 +707,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
 
 
 def get_node_id(start_node):
+    print 'aaa',start_node
     input_id = []
     for node in start_node:
         node_type = node['node_type']
@@ -801,7 +804,7 @@ def simple_search(keywords_list,submit_user):
                         'should':[
                             {'query_string':{
                                 'fields':['uid','en_name','group_name','topic_name','uname','description','function_mark','keywords','hashtag','location','name','work_tag','k_label','label','event'],
-                                'query':key
+                                'query':'*'+key+'*'
                                 }
                             }
                         ],
