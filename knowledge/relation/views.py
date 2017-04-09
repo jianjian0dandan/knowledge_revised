@@ -52,8 +52,9 @@ def relation_similarity():#相似计算
 @login_required
 def relation_similarity_result():#相似计算
     node_id = request.args.get('node_id', '')
+    node_type = request.args.get('node_type', '')
     # result = sim_result(node_id)
-    return render_template('relation/similarity_result.html',node_id=node_id)
+    return render_template('relation/similarity_result.html',node_id=node_id,node_type=node_type)
 
 @mod.route('/submit_task/',methods=['GET', 'POST'])
 @login_required
@@ -131,7 +132,7 @@ def compute_sim():
 	node_name = request.args.get('node_name', '')
 	node_type = request.args.get('node_type', '')
 	node_id = request.args.get('node_id', '')
-	result = compute_fun(submit_user,submit_ts,node_name,node_type,node_id)
+	result = json.dumps(compute_fun(submit_user,submit_ts,node_name,node_type,node_id))
 	return result
 
 @mod.route('/all_sim/')

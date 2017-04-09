@@ -3,7 +3,9 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/similarity_result.css">
 <style>
-
+    .table>thead:first-child>tr:first-child>th {
+        width: 1%;
+    }
 </style>
 {% endblock %}
 
@@ -12,35 +14,35 @@
 <div id="container">
     <h1>相似节点计算结果</h1>
 
-    <div class="related_person" style="margin-top:8.5%;">
+    <div class="related_person" style="margin-top:85px;display:none;">
         <h3>相关人物</h3>
         <div class="person" style="width: 90%;margin: 20px auto 0;">
             <div id="person"></div>
         </div>
     </div>
 
-    <div class="related_agencies">
+    <div class="related_agencies" style="display: none;">
         <h3>相关机构</h3>
         <div class="agencies" style="width: 90%;margin: 20px auto 0;">
             <div id="agencies"></div>
         </div>
     </div>
 
-    <div class="related_events">
+    <div class="related_events" style="display: none;">
         <h3>相关事件</h3>
         <div class="events" style="width: 90%;margin: 20px auto 0;">
             <div id="events"></div>
         </div>
     </div>
 
-    <div class="related_organization">
-        <h3>相关组织</h3>
-        <div class="organization" style="width: 90%;margin: 20px auto 0;">
-            <div id="organization"></div>
-        </div>
-    </div>
+    <!--<div class="related_organization">-->
+        <!--<h3>相关组织</h3>-->
+        <!--<div class="organization" style="width: 90%;margin: 20px auto 0;">-->
+            <!--<div id="organization"></div>-->
+        <!--</div>-->
+    <!--</div>-->
 
-    <div class="related_subject">
+    <div class="related_subject" style="display: none;">
         <h3>相关专题</h3>
         <div class="subject" style="width: 90%;margin: 20px auto 0;">
             <div id="subject"></div>
@@ -53,6 +55,7 @@
 <!------JS-------->
 {% block my_js %}
 <script>
+    var submit_user=$('#name').text();
     var node_id='{{node_id}}';
     var node_type='{{node_type}}';
 </script>

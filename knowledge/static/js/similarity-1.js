@@ -9,6 +9,7 @@ $.ajax({
 });
 function calculation(data) {
     var data = eval(data);
+    console.log(data)
     $('#task').bootstrapTable('load', data);
     $('#task').bootstrapTable({
         data:data,
@@ -65,34 +66,36 @@ function calculation(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        return getLocalTime(row.submit_ts);
+
+                        var to_time=getLocalTime(row.submit_ts.toString());
+                        var pattern = /[\u4e00-\u9fa5]/;
+                        var time=to_time.replace(/pattern/,'');
+                        return time;
                     }
                 },
             },
-            {
-                title: "相似节点ID",//标题
-                field: "related_id",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
-                        return '暂无';
-                    }else {
-                        if (value==''||value=='unknown'||value=='NULL'){
-                            return '暂无';
-                        }else {
-                            var key='';
-                            var words=value.split('&');
-                            for (var k=0;k<words.length;k++){
-                                key+=words[k]+' ';
-                            }
-                            return key;
-                        }
-                    }
-                },
-            },
+            // {
+            //     title: "相似节点ID",//标题
+            //     field: "related_id",//键名
+            //     sortable: true,//是否可排序
+            //     order: "desc",//默认排序方式
+            //     align: "center",//水平
+            //     valign: "middle",//垂直
+            //     formatter: function (value, row, index) {
+            //         if (value==''||value=='unknown'||value=='NULL'){
+            //             return '暂无';
+            //         }else {
+            //             var words=row.related_id.split('&');
+            //             if (words.length<=5){
+            //                 return words.join(',');
+            //             }else {
+            //                 var key=words.splice(0,5).join(',');
+            //                 var tit=words.splice(5).join(',');
+            //                 return '<p title="'+tit+'">'+key+'</p> ';
+            //             }
+            //         }
+            //     },
+            // },
             {
                 title: "计算进度",//标题
                 field: "compute_status",//键名
@@ -137,5 +140,5 @@ function calculation(data) {
 
 
 function getLocalTime(nS) {
-    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
+    return new Date(parseInt(nS) * 1000).toLocaleString();
 };
