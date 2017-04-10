@@ -23,9 +23,9 @@ def event_input(event_words,event_id):
     elif len(event_words) > 0 and len(event_words) <= 2:
         n = 1
     else:
-        n = float(len(event_words))*event_sta
+        n = int(float(len(event_words))*event_sta)
         if n < 2:
-            n = 2
+            n = 1
     
     w_list = []
     for w in event_words:

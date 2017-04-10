@@ -1,3 +1,10 @@
+var types={
+    'User':'人物',
+    'Event':'事件',
+    'Org':'机构',
+    'Group':'群体',
+    'SpecialEvent':'专题'
+}
 //计算任务
 var calculation_url='/relation/all_sim/';
 $.ajax({
@@ -50,9 +57,9 @@ function calculation(data) {
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                // formatter: function (value, row, index) {
-                //
-                // }
+                formatter: function (value, row, index) {
+                    return types[row.node_type];
+                }
             },
             {
                 title: "提交时间",//标题
@@ -69,30 +76,28 @@ function calculation(data) {
                     }
                 },
             },
-            {
-                title: "相似节点ID",//标题
-                field: "related_id",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
-                        return '暂无';
-                    }else {
-                        if (value==''||value=='unknown'||value=='NULL'){
-                            return '暂无';
-                        }else {
-                            var key='';
-                            var words=value.split('&');
-                            for (var k=0;k<words.length;k++){
-                                key+=words[k]+' ';
-                            }
-                            return key;
-                        }
-                    }
-                },
-            },
+            // {
+            //     title: "相似节点ID",//标题
+            //     field: "related_id",//键名
+            //     sortable: true,//是否可排序
+            //     order: "desc",//默认排序方式
+            //     align: "center",//水平
+            //     valign: "middle",//垂直
+            //     formatter: function (value, row, index) {
+            //         if (value==''||value=='unknown'||value=='NULL'){
+            //             return '暂无';
+            //         }else {
+            //             var words=row.related_id.split('&');
+            //             if (words.length<=5){
+            //                 return words.join(',');
+            //             }else {
+            //                 var key=words.splice(0,5).join(',');
+            //                 var tit=words.splice(5).join(',');
+            //                 return '<p title="'+tit+'">'+key+'</p> ';
+            //             }
+            //         }
+            //     },
+            // },
             {
                 title: "计算进度",//标题
                 field: "compute_status",//键名
@@ -135,7 +140,11 @@ function calculation(data) {
     });
 };
 
-
 function getLocalTime(nS) {
-    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
+    var ns_len=nS.toString().length;
+    if (ns_len>10){
+        return new Date(parseInt(nS) ).toLocaleString();
+    }else {
+        return new Date(parseInt(nS) *1000 ).toLocaleString();
+    }
 };

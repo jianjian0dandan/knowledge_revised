@@ -182,6 +182,8 @@ def get_colleague_r(des,s_uid):#提取业务关联关系（人物与人物、人
     else:
         n = float(len(des))*event_sta
         n = int(n)
+        if n < 2:
+            n = 1
             
     for w in des:
         w_list.append({"wildcard":{"description":'*'+w+'*'}})

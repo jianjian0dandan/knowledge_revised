@@ -310,8 +310,8 @@ def search_event_es(dict_name,dict_value,s_uid):#根据对应的属性查询es_e
         w_list = []
         for w in words:
             w_list.append({"wildcard":{"keywords":'*'+str(w)+'*'}})
-        n = int(len(words)*0.5)
-        if len(words) < 4:
+        n = int(len(words)*event_sta)
+        if n < 2:
             n = 1
 
         query_body = {
