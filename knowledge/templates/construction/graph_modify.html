@@ -130,8 +130,9 @@
         top: 2px;
     }
 </style>
-<div class="modal fade" id="complie" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+
+<div class="modal fade" id="complie" role="dialog">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -246,8 +247,8 @@
         padding: 2px 5px;
     }
 </style>
-<div class="modal fade" id="event_complie" tabindex="-1" role="dialog" aria-labelledby="myModal">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="event_complie" role="dialog">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -261,9 +262,10 @@
                 </div>
                 <div>
                     <span>实际发生时间：</span>
-                    <div class="form-group" style="display: inline-block;width: 200px;">
+                    <!--<input type="text" class="time">-->
+                    <div class="form-group" style="display: inline-block;width: 200px;margin-bottom: 0;">
                         <div class='input-group date' id='datetimepicker1'>
-                            <input type='text' class="form-control" style="border: 1px solid #595959;padding: 2px 5px;"/>
+                            <input type='text' class="form-control time" style="height: 28px;"/>
                             <b class="input-group-addon">
                                 <b class="icon icon-calendar"></b>
                             </b>
@@ -309,7 +311,7 @@
                                 </div>
                             </div>
                         </div>
-                        <b> - </b>
+                        <b style="position: relative;top: -7px;"> - </b>
                         <div style="display: inline-block;width: 200px;">
                             <div class="form-group" style="margin: 0">
                                 <div class='input-group date' id='datetimepicker3'>
@@ -324,15 +326,23 @@
                 </div>
                 <div>
                     <span>实际参与人物</span>
-                    <div id="person" class="cont"></div>
+                    <div id="person" class="cont counts"></div>
                     <div class="person-1" style="display: none;padding-left: 100px;">
                         <input type="text" value="" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
                         <button type="button" class="btn btn-default btn-xs person-2" style="display: inline-block">确定</button>
                     </div>
                 </div>
                 <div>
+                    <span>实际参与机构</span>
+                    <div id="org" class="cont counts"></div>
+                    <div class="org-1" style="display: none;padding-left: 100px;">
+                        <input type="text" value="" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
+                        <button type="button" class="btn btn-default btn-xs org-2" style="display: inline-block">确定</button>
+                    </div>
+                </div>
+                <div>
                     <span>所属专题</span>
-                    <div id="special" class="cont"></div>
+                    <div id="special" class="cont counts"></div>
                     <div class="special-1" style="display: none;padding-left: 100px;">
                         <input type="text" value="" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
                         <button type="button" class="btn btn-default btn-xs special-2" style="display: inline-block">确定</button>
@@ -340,7 +350,7 @@
                 </div>
                 <div>
                     <span>业务标签</span>
-                    <div id="e_tag" class="cont"></div>
+                    <div id="e_tag" class="cont counts"></div>
                     <div class="e_tag-1" style="display: none;padding-left: 100px;">
                         <input type="text" value="" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
                         <button type="button" class="btn btn-default btn-xs e_tag-2" style="display: inline-block">确定</button>
@@ -348,11 +358,11 @@
                 </div>
                 <div>
                     <span>关联文档</span>
-                    <div id="documents" class="cont"></div>
+                    <div id="documents" class="cont counts"></div>
                     <div class="documents-1" style="display:none;">
-                        <span>标题</span>
+                        <b>标题</b>
                         <input type="text" value="" class="e_tit" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
-                        <span>链接</span>
+                        <b>链接</b>
                         <input type="text" value="" class="e_url" style="padding: 2px 5px;border: 1px solid #9c9c9c;"/>
                         <button type="button" class="btn btn-default btn-xs documents-2" style="display: inline-block">确定</button>
                     </div>
@@ -368,16 +378,21 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="event_pass()">确定</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pass()">确定</button>
             </div>
         </div>
     </div>
 </div>
+
+
 {% endblock %}
 
 
 {% block my_js %}
 <script>
+    $('.graph_modify').on('click',function () {
+        $('#event_complie').modal('show')
+    });
     var submit_user=$('#name').text();
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {
@@ -391,7 +406,7 @@
         })
     });
     $(function () {
-        $('#datetimepicker1').datetimepicker();
+        $('#datetimepicker1').datetimepicker('format', new Date());
         $('#datetimepicker2').datetimepicker();
         $('#datetimepicker3').datetimepicker();
     });

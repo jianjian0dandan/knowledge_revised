@@ -297,7 +297,7 @@ function com(data) {
         tag+=' <b class="add icon icon-plus"></b>';
         $('#complie #group').append(tag);
     };
-    
+
     $('.add').on('click',function () {
         $(this).parent().next().css({display:'block'});
         words=$(this).parent().next().attr('class');
@@ -305,7 +305,10 @@ function com(data) {
 
 };
 var words;
+var documents;
 var related_docs='';
+var event_related_docs='';
+
 $('.btn-xs').on('click',function () {
     if (words=='words-1'){
         var _tit=$(this).prevAll('.tit').val();
@@ -323,7 +326,23 @@ $('.btn-xs').on('click',function () {
                 ' <a href="'+_url+'">'+_tit+'</a> <b class="s_del icon icon-remove"></b> '
             );
         }
-    }else {
+    }else if (documents=='documents-1'){
+        var _tit=$(this).prevAll('.e_tit').val();
+        var _url=$(this).prevAll('.e_url').val();
+        if (_tit==''||_url==''){
+            alert('不能为空。');
+        }else {
+            if (documents==''){
+                documents+=_tit+','+_url;
+            }else {
+                documents+='+'+_tit+','+_url;
+            }
+            $(this).parent().prev().find('span').remove();
+            $(this).parent().prev().find('.add').before(
+                ' <a href="'+_url+'">'+_tit+'</a> <b class="s_del icon icon-remove"></b> '
+            );
+        }
+    } else {
         var _new=$(this).prev().val();
         if (_new==''){
             alert('不能为空。');
@@ -564,7 +583,9 @@ function event(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     return '<a>立即更新</a><br/>' +
-                        '<a type="button" data-toggle="modal" data-target="#event_complie" onclick="run('+row[0]+')">编辑</a><br/>' +
+                        '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
+
+                        // '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
                         '<a>删除</a>';
                 },
             },
@@ -585,13 +606,17 @@ function event(data) {
 };
 
 function run(item) {
-    ev_tem=item;
-    $('.group-1').css({display:'none'});
-    $('.tags-1').css({display:'none'});
-    $('.words-1').css({display:'none'});
-    $('.group-1 input').val("");
-    $('.tags-1 input').val("");
-    $('.words-1 input').val("");
+    $('.person-1').css({display:'none'});
+    $('.org-1').css({display:'none'});
+    $('.e_tag-1').css({display:'none'});
+    $('.documents-1').css({display:'none'});
+    $('.documents-1').css({display:'none'});
+    $('.special-1').css({display:'none'});
+    $('.person-1 input').val("");
+    $('.org-1 input').val("");
+    $('.e_tag-1 input').val("");
+    $('.documents-1 input').val("");
+    $('.special-1 input').val("");
     var event_com_url='/construction/node_edit_show/?node_type='+node_type+'&item='+item+
         '&submit_user='+submit_user;
     $.ajax({
@@ -608,6 +633,7 @@ function getLocalTime(nS) {
 function event_com(data) {
     var data=eval(data);
     console.log(data)
+    $('#event_complie .counts').empty();
     $('#event_complie #person').empty();
     $('#event_complie #special').empty();
     $('#event_complie #e_tag').empty();
@@ -634,47 +660,129 @@ function event_com(data) {
     };
     //事件类型
     if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
-        $('#complie #business #business-1').val('暂无');
+        // $('#event_complie #event_type-1').val('暂无');
     }else {
-        $('#complie #business #business-1').val(data[4]);
+        // $('#event_complie #event_type-1').val(data[4]);
     };
-    if (data[5]==''||data[5]=='NULL'||data[5]=='unknown'||data[5].length==0){
-        $('#complie #tags').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    //关注周期
+    if (data[5]==''||data[5]=='NULL'||data[5]=='unknown'){
+        $('#event_complie .start').val('未知');
     }else {
-        var tag='';
-        for(var t=0;t<data[5].length;t++){
-            tag+=' <a>'+data[5][t]+'</a> <b class="del icon icon-remove"></b>';
-        }
-        tag+=' <b class="add icon icon-plus"></b>';
-        $('#complie #tags').append(tag);
+        $('#event_complie .start').val(getLocalTime(data[5]));
     };
 
-    if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'||data[6].length==0){
-        $('#complie #words').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'){
+        $('#event_complie .end').val('未知');
     }else {
-        var tag='';
-        for(var t=0;t<data[6].length;t++){
-            tag+=' <a>'+data[6][t]+'</a> <b class="del icon icon-remove"></b>';
-        }
-        tag+=' <b class="add icon icon-plus"></b>';
-        $('#complie #words').append(tag);
+        $('#event_complie .end').val(getLocalTime(data[6]));
     };
+    //实际参与人物
     if (data[7]==''||data[7]=='NULL'||data[7]=='unknown'||data[7].length==0){
-        $('#complie #group').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+        $('#event_complie #person').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag=data[7].split('&');
+        var user='';
+        for(var t=0;t<tag.length;t++){
+            user+=' <a>'+tag[t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        user+=' <b class="add icon icon-plus"></b>';
+        $('#event_complie #person').append(user);
+    };
+    //实际参与机构
+    if (data[8]==''||data[8]=='NULL'||data[8]=='unknown'||data[8].length==0){
+        $('#event_complie #org').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag=data[8].split('&');
+        var org='';
+        for(var t=0;t<tag.length;t++){
+            org+=' <a>'+tag[t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        org+=' <b class="add icon icon-plus"></b>';
+        $('#event_complie #org').append(org);
+    };
+    //所属专题
+    if (data[12]==''||data[12]=='NULL'||data[12]=='unknown'||data[12].length==0){
+        $('#event_complie #special').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
     }else {
         var tag='';
-        for(var t=0;t<data[7].length;t++){
-            tag+=' <a>'+data[7][t]+'</a> <b class="del icon icon-remove"></b>';
+        for(var t=0;t<data[12].length;t++){
+            tag+=' <a>'+data[12][t]+'</a> <b class="del icon icon-remove"></b>';
         }
         tag+=' <b class="add icon icon-plus"></b>';
-        $('#complie #group').append(tag);
+        $('#event_complie #special').append(tag);
     };
-
+    //业务标签
+    if (data[9]==''||data[9]=='NULL'||data[9]=='unknown'||data[9].length==0){
+        $('#event_complie #e_tag').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var tag='';
+        for(var t=0;t<data[9].length;t++){
+            tag+=' <a>'+data[9][t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#event_complie #e_tag').append(tag);
+    };
+    //关联文档
+    if (data[11]==''||data[11]=='NULL'||data[11]=='unknown'||data[11].length==0){
+        $('#event_complie #documents').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
+    }else {
+        var doc=data[11][0].split(' ');
+        var tag='';
+        for(var t=0;t<doc.length;t++){
+            var a=doc[t].split(',');
+            tag+=' <a href="'+a[1]+'">'+a[0]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        tag+=' <b class="add icon icon-plus"></b>';
+        $('#event_complie #documents').append(tag);
+    };
+    //事件描述
+    if (data[10]==''||data[10]=='NULL'||data[10]=='unknown'){
+        $('#event_complie #e_business #e_business-1').val('暂无');
+    }else {
+        $('#event_complie #e_business #e_business-1').val(data[10]);
+    };
+    $('#event_complie').modal('show');
     $('.add').on('click',function () {
         $(this).parent().next().css({display:'block'});
-        words=$(this).parent().next().attr('class');
+        documents=$(this).parent().next().attr('class');
     });
 
 };
+var item;
+function pass() {
+    if (node_type=='Event'){
 
+    }else {
+        var topic=[];
+        $("#topic [name=rels]:checkbox:checked").each(function (index,item) {
+            topic.push($(this).val());
+        });
+        var topic_string=topic.join(',')
+        var domain=$('#ID-1').val();
+        var function_description=$('#complie #business #business-1').val();
+        var mark=[];
+        $.each($('#tags').children('a'),function(index,item){
+            mark.push($(item).text());
+        })
+        var function_mark=mark.join(',');
+        var pass_url;
+        if (function_description=='暂无'){
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
+                '&function_mark='+function_mark+'&related_docs='+related_docs;
+        }else {
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
+                '&function_description='+function_description+'&function_mark='+function_mark+
+                '&related_docs='+related_docs;
+        }
+        console.log(pass_url);
+    }
+    $('.group-1').css({display:'none'});
+    $('.tags-1').css({display:'none'});
+    $('.words-1').css({display:'none'});
+    $('.group-1 input').val("");
+    $('.tags-1 input').val("");
+    $('.words-1 input').val("");
+};
 
