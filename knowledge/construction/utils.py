@@ -837,7 +837,27 @@ def get_evaluate_max():
         max_result[evaluate] = max_evaluate
     return max_result
 
-def search_user(item, field, submit_user):
+def search_user_type(uid_list):
+    type_list = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, \
+                body={'ids': uid_list},_source=False, fields=['id', 'verified_type'])['docs']
+    user_list = []
+    org_list = []
+    for i in type_list:
+        if i['found'] == False:
+            user_list.append(i['_id'])
+        else:
+            # print i
+            if not i.has_key('verified_type'):
+                user_list.append(i['_id'])
+                continue
+            verified_type = i['fields']['verified_type'][0]
+            if verified_type in org_list:
+                org_list.append(i['_id'])
+            else:
+                user_list.append(i['_id'])
+    return user_list,org_list
+
+def search_user(item, field, submit_user, node_type):
     evaluate_max = get_evaluate_max()
     query_body = {
         "query":{
@@ -859,9 +879,18 @@ def search_user(item, field, submit_user):
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
+    for i in name_results:
+        only_uid.append(i['fields']['uid'][0])
+    print only_uid
+    if node_type == 'User':
+        user_uid = search_user_type(only_uid)[0]
+    elif node_type == 'Org':
+        user_uid = search_user_type(only_uid)[1]
     result = []
     for i in name_results:
-        print i
+        print i,'-------------'
+        if i['fields']['uid'][0] not in user_uid:
+            continue
         event = []
         # if i['found'] == False:
         #     event.append(i['_id'])

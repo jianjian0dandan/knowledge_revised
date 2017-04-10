@@ -284,7 +284,7 @@ def ajax_node_edit():
     else:
         if node_type == 'User' or node_type == 'Org':
             field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'function_mark']
-            node_result = search_user(item, field, editor)
+            node_result = search_user(item, field, editor,node_type)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
             field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag','compute_status']
@@ -333,10 +333,10 @@ def ajax_node_edit_():
                 i_value = '&'.join(i_value.split(','))
                 es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
         for i in field[1]:
-            i_value = request.args.get(i, '测试,www.baidu.com+测试2,www.weibo.com') #User , Org
+            i_value = request.args.get(i, '测试,www.baidu.com 测试2,www.weibo.com') #User , Org
             if i_value:
                 edit_num += 1
-                i_value = '+'.join(i_value.split(' '))
+                i_value = ' '.join(i_value.split(' '))
                 try:
                     es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
                 except:
