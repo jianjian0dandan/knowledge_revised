@@ -10,8 +10,9 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <div class="current_situation" style="padding-top: 0.5%">
-        <h3 style="color: white;font-weight:800;padding-top: 0.5%">当前态势</h3>
+    <h1>突发分析</h1>
+    <div class="current_situation" style="margin-top:30px;">
+        <h3>当前态势</h3>
         <div class="forward_discussion">
             <div style="padding-left: 1%">
                 <label class="radio-inline">
@@ -22,7 +23,7 @@
                 </label>
             </div>
 
-            <div id="weibo" style="padding: 3% 2%">
+            <div class="weibo" id="weibo" style="padding:7px 4px;">
                 <div class="user">
                     <div class="user_left">
                         <img src="/static/images/unknown.png" alt="">
@@ -43,12 +44,15 @@
             </div>
         </div>
     </div>
-    <div class="trend_forecast" style="margin-top:29%">
-        <h3 style="color: white;font-weight:800;">趋势预测</h3>
+    <div class="trend_forecast" style="margin-top:30px;">
+        <h3>趋势预测</h3>
+        <div class="weibo_content">
+
+        </div>
         <div class="forecast_content">
-            <p>预测爆发时间为 <span class="time" style="color:red;">2017-6-6 21:33:55</span></p>
-            <p>预测参与人数：<span class="people">123124</span>人</p>
-            <p>发布微博数：<span>12314</span></p>
+            <p>预测爆发时间为 <span class="time" style="color:red;"></span></p>
+            <p>预测参与人数：<span class="people"></span>人</p>
+            <p>发布微博数：<span class="weibo_count"></span></p>
             <div id="forecast_img"></div>
         </div>
     </div>
@@ -57,9 +61,9 @@
 
 
 {% block my_js %}
-<script src="/static/js/brust_analysis-1.js"></script>
 <script>
-
-
+    var mid="{{mid}}";
 </script>
+<script src="/static/js/brust_analysis-1.js"></script>
+
 {% endblock %}

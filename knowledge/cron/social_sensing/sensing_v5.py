@@ -460,7 +460,7 @@ def social_sensing(task_detail):
     if exist_es:
         index_list.append(index_name_2)
     if es_text.indices.exists(index=flow_text_index_name_pre+ts2datetime(ts-2*DAY)):
-        index_list.append(flow_text_index_name_pre+ts2datetime(ts2datetime(ts-2*DAY)))
+        index_list.append(flow_text_index_name_pre+ts2datetime(ts-2*DAY))
 
     # PART 1
     

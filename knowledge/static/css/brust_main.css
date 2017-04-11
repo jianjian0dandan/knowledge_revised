@@ -2,20 +2,49 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 820px;
+        /*height: 920px;*/
+        margin: 0 auto;
     }
 }
 /*内容样式*/
 body {
     width: 100%;
     min-width: 1349px;
-    min-height: 820px;
-    background: url("/static/images/brust_main.png") no-repeat;
+    /*min-height: 970px;*/
+    background: url("/static/images/graph_add.png") no-repeat;
+    background-size: 100% 100%;
 }
 #container {
-    width: 70%;
-    padding: 2% 5%;
-    margin: 13% auto 0;
+    position: relative;
+    width: 1000px;
+    padding:50px;
+    margin:70px auto 100px;
+    background: #f3f4f5;
+    box-shadow: 2px 1px 1px #ccced0;
+}
+#container .add {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 225px;
+    height:78px;
+    text-align: center;
+    line-height: 74px;
+    font-size: 32px;
+    background: url("/static/images/result_tit.png") no-repeat;
+    background-size: 100% 100%;
+}
+h4 {
+    width: 241px;
+    height: 49px;
+    margin-left: -60px;
+    line-height: 44px;
+    text-align: center;
+    font-size: 24px;
+    color: white;
+    font-weight: 900;
+    background: url("/static/images/small_tit.png") no-repeat;
+    background-size: 100% 100%;
 }
 /*用户发的微博*/
 #container .hot_find .weibo {

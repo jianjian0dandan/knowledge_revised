@@ -574,7 +574,7 @@ function keywords_include(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -601,7 +601,7 @@ function keywords_include(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -690,7 +690,7 @@ function tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -717,7 +717,7 @@ function tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
