@@ -369,7 +369,7 @@ function key_tag(data) {
         key_series.push(
             {
                 name: item[0],
-                value: item[1]*100,
+                value: item[1].toFixed(2) *100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -378,7 +378,7 @@ function key_tag(data) {
         tag_series.push(
             {
                 name: item[0],
-                value: item[1]*100,
+                value: item[1].toFixed(2) *100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -405,7 +405,7 @@ function key_tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -446,7 +446,7 @@ function key_tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -593,7 +593,7 @@ function user_tag(data) {
         user_key_series.push(
             {
                 name: item[0],
-                value: item[1] * 100,
+                value: item[1].toFixed(2) * 100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -602,7 +602,7 @@ function user_tag(data) {
         user_tag_series.push(
             {
                 name: item[0],
-                value: item[1] * 100,
+                value: item[1].toFixed(2)  * 100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -631,7 +631,7 @@ require(
                 // name: 'Google Trends',
                 type: 'wordCloud',
                 size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
+                textRotation : [0, 0, 0, 0],
                 textPadding: 0,
                 autoSize: {
                     enable: true,
@@ -670,7 +670,7 @@ require(
                 // name: 'Google Trends',
                 type: 'wordCloud',
                 size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
+                textRotation : [0, 0, 0, 0],
                 textPadding: 0,
                 autoSize: {
                     enable: true,

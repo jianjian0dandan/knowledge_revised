@@ -27,6 +27,9 @@ function link_source(data) {
                 )
             }
         });
+        $('.link_user .users a').on('click',function () {
+            window.open('/index/person/?user_id='+$(this).find('b').text());
+        })
     }
     //关联事件
     var event=[];
@@ -46,6 +49,9 @@ function link_source(data) {
                 )
             }
         });
+        $('.link_event .events a').on('click',function () {
+            window.open('/index/event/?user_id='+$(this).find('b').text());
+        })
     }
 
     //关联机构
@@ -66,6 +72,9 @@ function link_source(data) {
                 )
             }
         });
+        $('.link_agency .agencys a').on('click',function () {
+            window.open('/index/organization/?user_id='+$(this).find('b').text());
+        })
     }
 
     //关联知识

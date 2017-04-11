@@ -8,14 +8,9 @@
 }
 /*内容样式*/
 body {
-    /*width: 100%;*/
-    /*min-width: 1349px;*/
-    /*min-height: 3508px;*/
-    /*background: url("/static/images/search_result.png") no-repeat;*/
     width: 100%;
     margin: 0;
     min-width: 1349px;
-    /*min-height: 820px;*/
     background-color:#e6e9eb;
 }
 #container {

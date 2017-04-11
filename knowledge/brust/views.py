@@ -9,7 +9,7 @@ import time
 from datetime import date
 from datetime import datetime
 
-from utils import get_time_series, show_weibo_list, get_weibo_bursting
+from utils import get_time_series, show_weibo_list, get_weibo_bursting, current_status
 
 
 mod = Blueprint('brust', __name__, url_prefix='/brust')
@@ -23,17 +23,17 @@ def brust_discover():#热点发现
 @mod.route('/result/')
 @login_required
 def brust_analysis():#突发分析
-
-    return render_template('brust/brust_analysis.html')
+    mid = request.args.get("mid", "")
+    return render_template('brust/brust_analysis.html',mid=mid)
 
 # show all weibo trendline
 @mod.route('/show_weibo/')
 def ajax_show_weibo():
     ts = request.args.get("ts", "")
-    resutlt = get_time_series()
+    result = get_time_series()
     # results = show_weibo_detail()
 
-    return json.dumps(results)
+    return json.dumps(result)
 
 
 # show ts weibo
@@ -48,10 +48,19 @@ def ajax_show_weibo_list():
     return json.dumps(results)
 
 
-@mod.route('show_weibo_bursting')
+@mod.route('/show_weibo_bursting/')
 def ajax_show_weibo_bursting():
     mid = request.args.get("mid", "")
     results = get_weibo_bursting(mid)
+
+    return json.dumps(results)
+
+
+# 热门转发和评论微博
+@mod.route('/show_current_hot_weibo/')
+def ajax_show_current_hot_weibo():
+    mid = request.args.get("mid", "")
+    results = current_status(mid)
 
     return json.dumps(results)
 
