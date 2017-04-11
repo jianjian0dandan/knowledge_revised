@@ -250,6 +250,7 @@ function go(item) {
 
 function com(data) {
     var data=eval(data);
+    console.log(data)
     $('#complie #tags').empty();
     $('#complie #words').empty();
     $('#complie #group').empty();
@@ -260,7 +261,25 @@ function com(data) {
         name=data[1];
     };
     $('#complie .name').text(name);
-
+    if (data[2]==''||data[2]=='NULL'||data[2]=='unknown'){
+        $('#complie #ID-1').val('');
+    }else {
+        $('#complie #ID-1').val(data[2]);
+    };
+    if (data[3]==''||data[3]=='NULL'||data[3]=='unknown'){
+        null;
+    }else {
+        var topic=$('#topic [name=rels]:checkbox');
+        var top=data[3].split('&');
+        for(var i=0;i<topic.length;i++){
+            //当前checkbox实现勾选
+            for (var j=0;j<top.length;j++){
+                if (topic[i].value==top[j]){
+                    topic[i].checked=true;
+                }
+            }
+        }
+    };
     if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
         $('#complie #business #business-1').val('暂无');
     }else {
@@ -280,9 +299,11 @@ function com(data) {
     if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'||data[6].length==0){
         $('#complie #words').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
     }else {
+        var doc=data[6];
         var tag='';
-        for(var t=0;t<data[6].length;t++){
-            tag+=' <a>'+data[6][t]+'</a> <b class="del icon icon-remove"></b>';
+        for(var t=0;t<doc.length;t++){
+            var a=doc[t].split(',');
+            tag+=' <a href="'+a[1]+'">'+a[0]+'</a> <b class="del icon icon-remove"></b>';
         }
         tag+=' <b class="add icon icon-plus"></b>';
         $('#complie #words').append(tag);
@@ -302,7 +323,10 @@ function com(data) {
         $(this).parent().next().css({display:'block'});
         words=$(this).parent().next().attr('class');
     });
-
+    $('.del').on('click',function () {
+        $(this).prev().remove('a');
+        $(this).remove();
+    });
 };
 var words;
 var documents;
@@ -332,10 +356,10 @@ $('.btn-xs').on('click',function () {
         if (_tit==''||_url==''){
             alert('不能为空。');
         }else {
-            if (documents==''){
-                documents+=_tit+','+_url;
+            if (event_related_docs==''){
+                event_related_docs+=_tit+','+_url;
             }else {
-                documents+='+'+_tit+','+_url;
+                event_related_docs+='+'+_tit+','+_url;
             }
             $(this).parent().prev().find('span').remove();
             $(this).parent().prev().find('.add').before(
@@ -352,44 +376,6 @@ $('.btn-xs').on('click',function () {
         }
     }
 });
-
-var item;
-function pass() {
-    if (node_type=='Event'){
-
-    }else {
-        var topic=[];
-        $("#topic [name=rels]:checkbox:checked").each(function (index,item) {
-            topic.push($(this).val());
-        });
-        var topic_string=topic.join(',')
-        var domain=$('#ID-1').val();
-        var function_description=$('#complie #business #business-1').val();
-        var mark=[];
-        $.each($('#tags').children('a'),function(index,item){
-            mark.push($(item).text());
-        })
-        var function_mark=mark.join(',');
-        var pass_url;
-        if (function_description=='暂无'){
-            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
-                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
-                '&function_mark='+function_mark+'&related_docs='+related_docs;
-        }else {
-            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
-                '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
-                '&function_description='+function_description+'&function_mark='+function_mark+
-                '&related_docs='+related_docs;
-        }
-        console.log(pass_url);
-    }
-    $('.group-1').css({display:'none'});
-    $('.tags-1').css({display:'none'});
-    $('.words-1').css({display:'none'});
-    $('.group-1 input').val("");
-    $('.tags-1 input').val("");
-    $('.words-1 input').val("");
-};
 
 //事件
 function event(data) {
@@ -606,6 +592,7 @@ function event(data) {
 };
 
 function run(item) {
+    e_item=item;
     $('.person-1').css({display:'none'});
     $('.org-1').css({display:'none'});
     $('.e_tag-1').css({display:'none'});
@@ -628,8 +615,8 @@ function run(item) {
     });
 };
 function getLocalTime(nS) {
-    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
-};
+    return new Date(parseInt(nS) * 1000).toLocaleString().replace(/年|月/g, "-").replace(/日|上午|下午/g, " ");
+}
 function event_com(data) {
     var data=eval(data);
     console.log(data)
@@ -654,25 +641,25 @@ function event_com(data) {
     };
     //发生时间
     if (data[3]==''||data[3]=='NULL'||data[3]=='unknown'){
-        $('#event_complie .time').val('未知');
+        $('#event_complie .time').val('');
     }else {
         $('#event_complie .time').val(getLocalTime(data[3]));
     };
     //事件类型
     if (data[4]==''||data[4]=='NULL'||data[4]=='unknown'){
-        // $('#event_complie #event_type-1').val('暂无');
+        $('#event_complie #event_type-1').val('');
     }else {
-        // $('#event_complie #event_type-1').val(data[4]);
+        $('#event_complie #event_type-1').val(data[4]);
     };
     //关注周期
     if (data[5]==''||data[5]=='NULL'||data[5]=='unknown'){
-        $('#event_complie .start').val('未知');
+        $('#event_complie .start').val('');
     }else {
         $('#event_complie .start').val(getLocalTime(data[5]));
     };
 
     if (data[6]==''||data[6]=='NULL'||data[6]=='unknown'){
-        $('#event_complie .end').val('未知');
+        $('#event_complie .end').val('');
     }else {
         $('#event_complie .end').val(getLocalTime(data[6]));
     };
@@ -726,7 +713,7 @@ function event_com(data) {
     if (data[11]==''||data[11]=='NULL'||data[11]=='unknown'||data[11].length==0){
         $('#event_complie #documents').append('<span>暂无</span>'+' <b class="add icon icon-plus"></b>');
     }else {
-        var doc=data[11][0].split(' ');
+        var doc=data[11];
         var tag='';
         for(var t=0;t<doc.length;t++){
             var a=doc[t].split(',');
@@ -746,12 +733,70 @@ function event_com(data) {
         $(this).parent().next().css({display:'block'});
         documents=$(this).parent().next().attr('class');
     });
+    $('.del').on('click',function () {
+        $(this).prev().remove('a');
+        $(this).remove();
+    });
 
 };
-var item;
+
+//传url
+var item,e_item;
 function pass() {
     if (node_type=='Event'){
-
+        var events=[];
+        var event_1=[],event_2=[],event_3=[];
+        var geo=$('#place').val();
+        var time='';
+        if (!$('.time').val()==''){
+            time=Date.parse(new Date($('.time').val()))/1000;
+        }
+        var e_type=$('#event_type-1').val();
+        var start='';
+        if (!$('.start').val()==''){
+            start=Date.parse(new Date($('.start').val()))/1000;
+        };
+        var end='';
+        if (!$('.end').val()==''){
+            end=Date.parse(new Date($('.end').val()))/1000;
+        }
+        //-----
+        var rel_p=[];
+        var person=$('#person').children('a');
+        for (var p=0;p<person.length;p++){
+            rel_p.push(person[p].text);
+        };
+        var user=rel_p.join(',');//参与人
+        //-----
+        var rel_o=[];
+        var org=$('#org').children('a');
+        for (var y=0;y<org.length;y++){
+            rel_o.push(org[y].text);
+        };
+        var orgs=rel_o.join(',');//参与机构
+        var desc=$('#e_business-1').val();
+        //-----
+        var tag=[];
+        var e_tag=$('#e_tag').children('a');
+        for (var p=0;p<e_tag.length;p++){
+            tag.push(e_tag[p].text);
+        };
+        var tags=tag.join(',');
+        //标签
+        //------------
+        var event_pass_url;
+        event_pass_url='/construction/node_edit/?node_type='+node_type+'&item='+e_item+
+            '&submit_user='+submit_user+'&real_geo='+geo+'&real_time='+time+
+            '&event_type='+e_type+'&real_person='+user+'&real_auth='+orgs+'&start_ts='+start+
+            '&end_ts='+end+'&description='+desc+'&work_tag='+tags+'&related_docs='+event_related_docs;
+        console.log(event_pass_url)
+        $.ajax({
+            url: event_pass_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:yes_no
+        });
     }else {
         var topic=[];
         $("#topic [name=rels]:checkbox:checked").each(function (index,item) {
@@ -785,4 +830,12 @@ function pass() {
     $('.tags-1 input').val("");
     $('.words-1 input').val("");
 };
+function yes_no(data) {
+    console.log(data)
+    if (data== true){
+        alert('修改成功');
+    }else {
+        alert('修改失败');
+    }
+}
 

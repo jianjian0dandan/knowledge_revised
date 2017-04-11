@@ -27,12 +27,13 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
-from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
+from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column, es_group
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
 from knowledge.time_utils import ts2datetime, datetime2ts
-from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
-from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
+from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type,\
+special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,event_primary,\
                 other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
@@ -994,6 +995,7 @@ def search_event_file(item):
 
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
+        index_key2 = group_primary
         field = p_column
         field = ['uid', 'uname','domain', 'topic_string', "function_description"]
         if node_type == 'User':
@@ -1003,13 +1005,14 @@ def show_node_detail(node_type, item, submit_user):
             index_n = org_index_name
             index_key = org_primary
         node_key = group_node
-        node_result = search_user(item, field, '')[0]
+        node_result = search_user(item, field, '',node_type)[0]
         tag = deal_user_tag(item, submit_user )[0]
         node_result.append(tag)
         file_link = search_user_file(item)
         node_result.append(file_link)
 
     if node_type == 'Event':
+        index_key2 = special_event_primary
         field = ['en_name','name','real_geo','real_time','event_type', 'start_ts', 'end_ts','real_person', \
                  'real_auth','work_tag', 'description']
         node_result = search_event(item, field, submit_user)[0]
@@ -1018,18 +1021,31 @@ def show_node_detail(node_type, item, submit_user):
         file_link = search_event_file(item)
         node_result.append(file_link)
         index_n = event_index_name
-        index_key = 'event'
+        index_key = event_primary
         node_key = special_event_node
 
-    s_string = 'START s3 = node:%s(%s="%s") MATCH (s0:%s)-[r]-(s3) return s0' \
+    s_string = 'START s3 = node:%s(%s="%s") MATCH (s3)-[r]-(s0:%s) return s0' \
                %(index_n, index_key, item, node_key)
+    # return s_string
     event_result = graph.run(s_string)
     events = []
     for special_event in event_result:
-        events.append(special_event[0][index_key])
+        # return special_event
+        ch_name = search_ch_name(special_event[0][index_key2], index_key2)
+        events.append(ch_name)
     # result = node_result[0]
     node_result.append(events)
     return node_result
+
+def search_ch_name(en_name, node_type):
+    # return node_type,'000000000000'
+    if node_type == group_primary:
+        result_name = es_group.get(index=group_name, doc_type=group_type, id=en_name, fields=['group_name'])['fields']['group_name'][0]
+
+    elif node_type == special_event_primary:
+        result_name = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
+                            fields=['topic_name'])['fields']['topic_name'][0]
+    return result_name
 
 def edit_node():
     pass

@@ -200,7 +200,7 @@ def ajax_search_node():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field,'')
+        result = search_user(item, field,'', node_type)
     if node_type == 'Event':
         field = ['en_name', 'name']  
         result = search_event(item, field,'')
@@ -223,7 +223,7 @@ def ajax_relation_edit_search():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field, '')
+        result = search_user(item, field, '', node_type)
     if node_type == 'Event':
         field = ['en_name', 'name']
         result = search_event(item, field, '')
@@ -295,7 +295,7 @@ def ajax_node_edit():
 @mod.route('/node_edit_show/')
 def ajax_node_edit_show():
     node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '5779325975')  #id
+    item = request.args.get('item', '5848882336')  #id
     submit_user = request.args.get('submit_user', 'admin1')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = show_node_detail(node_type, item, submit_user)
