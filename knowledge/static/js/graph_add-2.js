@@ -768,10 +768,10 @@ function event_task_renew() {
 event_task_renew();
 
 //--事件---推荐事件
-var event_type='政治';
-function event_lx(value) {
-
-}
+var event_type=$('#event_lx-1').val;
+// function event_lx(value) {
+//
+// }
 //----文件传输--
 var updata_file_event;
 function handleFileSelect_event(evt){
