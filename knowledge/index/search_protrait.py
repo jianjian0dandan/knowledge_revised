@@ -19,6 +19,9 @@ from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_
 from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
+people_es_dict = ['hashtag_dict','online_pattern','topic','school_dict','domain_v3','keywords','sensitive_dict','activity_geo_dict']
+event_es_dict = ['geo_results','topics','keywords_list','hashtag_dict','user_results','time_results','sentiment_results']
+
 def search_person_by_id(uid):#根据uid查询用户属性
 
     uid_list = [uid]
@@ -33,7 +36,13 @@ def search_person_by_id(uid):#根据uid查询用户属性
         else:
             data = item['_source']
             for k,v in data.iteritems():
-                result[k] = json.dumps(v)
+                if k in people_es_dict:
+                    result[k] = json.loads(v)
+                else:
+                    if v == 'NULL':
+                        result[k] = ''
+                    else:
+                        result[k] = v
 
     return result
 
@@ -51,7 +60,13 @@ def search_org_by_id(uid):#根据uid查询用户属性
         else:
             data = item['_source']
             for k,v in data.iteritems():
-                result[k] = json.dumps(v)
+                if k in people_es_dict:
+                    result[k] = json.loads(v)
+                else:
+                    if v == 'NULL':
+                        result[k] = ''
+                    else:
+                        result[k] = v
 
     return result
 
@@ -69,7 +84,13 @@ def search_event_by_id(uid):#根据uid查询用户属性
         else:
             data = item['_source']
             for k,v in data.iteritems():
-                result[k] = json.dumps(v)
+                if k in event_es_dict:
+                    result[k] = json.loads(v)
+                else:
+                    if v == 'NULL':
+                        result[k] = ''
+                    else:
+                        result[k] = v
 
     return result
 
