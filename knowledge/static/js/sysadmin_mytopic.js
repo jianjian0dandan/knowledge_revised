@@ -89,8 +89,8 @@ $.ajax({
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                formatter: function (value) {
-                    var addr = '<a href="#"><span style="text-decoration:underline;font-weight:bold;">查看圈子</span></a>'
+                formatter: function (value,row) {
+                    var addr = '<a href="/theme/result/?theme_name='+row.name+'" target="_blank"><span style="text-decoration:underline;font-weight:bold;">查看专题</span></a>'
                     return addr;
                 },
             }

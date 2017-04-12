@@ -62,6 +62,18 @@ h3 {
 .block {
     margin-top:80px; 
 }
+.add {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width: 225px;
+    height:78px;
+    text-align: center;
+    line-height: 74px;
+    font-size: 32px;
+    background: url("/static/images/result_tit.png") no-repeat;
+    background-size: 100% 100%;
+}
 </style>
 <script type="text/javascript"></script>
 {% endblock %}
@@ -69,7 +81,7 @@ h3 {
 
 {% block main %}
 <div id="container">
-    <h1 class="result" style="color: white;font-weight: 900;padding-left:38px;margin-bottom: 80px;">我的关注</h1>
+    <h1 class="add" class="result" style="color: white;font-weight: 900;padding-left:38px;margin-bottom: 80px;">我的关注</h1>
     <div class="related_person block">
         <h3>关注人物</h3>
         <div class="person table_block" style="width: 80%;margin: 0 auto;">
@@ -96,264 +108,8 @@ h3 {
 
 
 {% block my_js %}
-
+<script src='/static/js/sysadmin_myfocus.js'></script>
 <script>
-var result = {{ result|tojson }}; //从views收到result
-console.log(result);
-people_data=result['people'];
-org_data=result['org'];
-event_data=result['event'];
-
-function draw_people_table(data){
-    data=eval(data);
-    $('#person_table').bootstrapTable('load',data)
-    $('#person_table').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-        {
-            title: "人物名称",//标题
-            field: "name",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            visible:true,
-        },
-        {
-            title: "ID",//标题
-            field: "uid",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-        },
-        {
-            title: "业务标签",//标题
-            field: "label",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "关注时间",//标题
-            field: "tmie",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "群体查看",//标题
-            field: "",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value,row) {
-                var addr = '<a href="/index/person/?user_id='+row.uid+'" target="_blank"><span style="text-decoration:underline;font-weight:bold;">查看用户</span></a>'
-                return addr;
-            },
-        }
-        ]
-    });
-}
-
-function draw_org_table(data){
-    data=eval(data);
-    $('#agencies_table').bootstrapTable('load',data)
-    $('#agencies_table').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-        {
-            title: "机构名称",//标题
-            field: "name",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直 
-            visible:true,
-        },
-        {
-            title: "ID",//标题
-            field: "uid",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-        },
-        {
-            title: "业务标签",//标题
-            field: "label",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "关注时间",//标题
-            field: "tmie",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "机构查看",//标题
-            field: "",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value,row) {
-                var addr = '<a href="/index/organization/?user_id='+row.uid+'" target="_blank"><span style="text-decoration:underline;font-weight:bold;">查看机构</span></a>'
-                return addr;
-            },
-        }
-        ]
-    });
-}
-
-function draw_event_table(data){
-    data=eval(data);
-    $('#events_table').bootstrapTable('load',data)
-    $('#events_table').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-        {
-            title: "事件名称",//标题
-            field: "name",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            visible:true,
-        },
-        // {
-        //     title: "ID",//标题
-        //     field: "uid",//键名
-        //     sortable: true,//是否可排序
-        //     order: "desc",//默认排序方式
-        //     align: "center",//水平
-        //     valign: "middle",//垂直
-        // },
-        {
-            title: "业务标签",//标题
-            field: "label",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "关注时间",//标题
-            field: "tmie",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value, row, index) {
-                if (value)
-                    return value;
-                else
-                    return '暂无';
-            },
-        },
-        {
-            title: "事件查看",//标题
-            field: "",//键名
-            sortable: true,//是否可排序
-            order: "desc",//默认排序方式
-            align: "center",//水平
-            valign: "middle",//垂直
-            formatter: function (value) {
-                var addr = '<a href="/index/event/?user_id='+row.uid+'" target="_blank"><span style="text-decoration:underline;font-weight:bold;">查看事件</span></a>'
-                return addr;
-            },
-        }
-        ]
-    });
-}
-
-
-draw_people_table(people_data);
-draw_org_table(org_data);
-draw_event_table(event_data);
 
 </script>
 {% endblock %}

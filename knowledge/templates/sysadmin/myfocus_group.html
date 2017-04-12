@@ -19,7 +19,7 @@ body,tr,th,div,span{
 
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight:800;padding-top: 0.5%">我的群体</h3>
+    <h3 class="add" style="color: white;font-weight:800;padding-top: 0.5%">我的群体</h3>
     <div class="group_operating" style="margin-top: 3%;background-color:white;width: 100%;	padding: 40px 20px 50px 20px;">
     	<div id="table-user-contain">
 			<table id="sysadmin_group_table" class="table table-striped">
@@ -124,8 +124,8 @@ function draw_table(data){
             order: "desc",//默认排序方式
             align: "center",//水平
             valign: "middle",//垂直
-            formatter: function (value) {
-                var addr = '<a href="#"><span style="text-decoration:underline;font-weight:bold;">查看群体</span></a>'
+            formatter: function (value,row) {
+                var addr = '<a href="/group/result/?group_name='+row.name+'" target="_blank"><span style="text-decoration:underline;font-weight:bold;">查看群体</span></a>'
                 return addr;
             },
         }
