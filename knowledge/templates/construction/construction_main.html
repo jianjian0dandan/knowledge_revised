@@ -4,29 +4,31 @@
 <link rel="stylesheet" href="/static/css/theme_main.css">
 <link rel="stylesheet" href="/static/css/a-btn.css">
 <style>
-
+#container {
+	height: 450px;
+}
 </style>
 {% endblock %}
 
 
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight:800;padding-top: 0.5%">图谱管理</h3>
+    <h3 class="add" style="color: white;font-weight:800;padding-top: 0.5%">图谱管理</h3>
     <div class="group_operating" style="margin-top: 10%;">
        	<div class="button-wrapper" style="margin-left: 20%;float: left">
-			<a href="/construction/graph_add" class="a-btn" style="height: 261px;width: 220px;">
+			<a href="/construction/graph_add" class="a-btn" style="height: 220px;width: 180px;">
 				<span>
-					<img src="/static/images/const_add.png" width="160xp" height="160px">
+					<img src="/static/images/const_add.png" width="130xp" height="130px">
 				</span>
-				<span class="a-btn-text" style="margin-top: 45px !important;">图谱添加</span> 
+				<span class="a-btn-text" style="margin-top: 15px !important;">图谱添加</span> 
 			</a>
 		</div>
        	<div class="button-wrapper" style="margin-left: 10%;float: left;">
-			<a href="/construction/graph_modify" class="a-btn" style="height: 261px;width: 220px;">
+			<a href="/construction/graph_modify" class="a-btn" style="height: 220px;width: 180px;">
 				<span>
-					<img src="/static/images/const_edit.png" width="170xp" height="170px">
+					<img src="/static/images/const_edit.png" width="140xp" height="140px">
 				</span>
-				<span class="a-btn-text" style="margin-top: 35px !important;">图谱编辑</span> 
+				<span class="a-btn-text" style="margin-top: 5px !important;">图谱编辑</span> 
 			</a>
 		</div>	
 
