@@ -10,7 +10,7 @@ import heapq
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
-from get_result import uid_name_list,event_id_name
+from get_result import uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
 import knowledge.model
 from knowledge.model import *
 from knowledge.extensions import db
@@ -102,7 +102,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
             for k,v in data.iteritems():
                 if k in people_es_dict:
                     result[k] = json.loads(v)
-                elif k == event_tag:
+                elif k == people_tag:
                     flag = 1
                     work_tag = v
                     tags = work_tag.split('&')
@@ -111,7 +111,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                         u,t = tag.split('_')
                         if u == user_name:
                             tag_str.append(t)
-                    result[event_tag] = tag_str
+                    result[people_tag] = tag_str
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -123,7 +123,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                         result[k] = v
 
     if flag == 0:
-        result[event_tag] = []
+        result[people_tag] = []
         
     return result
 
@@ -283,6 +283,30 @@ def get_people_org_track(activity_geo_dict):#根据用户地理位置计算轨�
                 line_list.append([results[x][1], results[x+1][1]])
     return {'city':geolist, 'line':line_list}
 
+def get_people_weibo(uid):#根据uid查询微博文本
+
+    time_str = '2016-11-27'#ts2datetime(int(time.time()))
+    query_body = {
+        "query":{
+            "bool":{
+                "must":[{'term':{'uid':uid}}],
+            }
+        }
+    }
+    result = []
+    search_results = es_flow_text.search(index=flow_text_index_name_pre+time_str, doc_type=flow_text_index_type, body=query_body)['hits']['hits']
+    if len(search_results) > 0:
+        for item in search_results:
+            mid = item['_id'].encode('utf-8')
+            data = item['_source']
+            text = data['text']
+            comment = data['comment']
+            retweeted = data['retweeted']
+            ts = ts2date(data['timestamp'])
+            result.append({'mid':mid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+
+    return result            
+
 def search_event_by_id(uid,user_name):#根据uid查询事件属性
 
     uid_list = [uid]
@@ -300,7 +324,7 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
             for k,v in data.iteritems():
                 if k in event_es_dict:
                     result[k] = json.loads(v)
-                elif k == people_tag:
+                elif k == event_tag:
                     flag = 1
                     work_tag = v
                     tags = work_tag.split('&')
@@ -309,14 +333,104 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                         u,t = tag.split('_')
                         if u == user_name:
                             tag_str.append(t)
-                    result[people_tag] = tag_str
+                    result[event_tag] = tag_str
                 else:
                     if v == 'NULL':
                         result[k] = ''
                     else:
                         result[k] = v
 
+    if flag == 0:
+        result[event_tag] = []
+
     return result
+
+def get_event_weibo(event_id):#根据事件id获取微博文本
+
+    result = []
+    uid_list = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    while True:
+        try:
+            scan_re = s_re.next()
+            _id = scan_re['_id']
+            source = scan_re['_source']
+            mid = source['mid']
+            uid = source['uid']
+            text = source['text']
+            comment = source['comment']
+            retweeted = source['retweeted']
+            ts = ts2date(source['timestamp'])
+            result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+            uid_list.append(uid)
+        except StopIteration:
+            print "all done"
+            break
+
+    if len(uid_list):
+        uname_list = uid_name_type(uid_list)
+        if uname_list == '-1':
+            uname_list = dict()
+    else:
+        uname_list = dict()
+
+    all_result = []
+    media_result = []
+    people_result = []
+    if len(uname_list):
+        for item in result:
+            uid = item['uid']
+            item['name'] = uname_list[uid]['name']
+            all_result.append(item)
+            u_type = uname_list[uid]['type']
+            if str(u_type) in ['3']:#媒体微博
+                media_result.append(item)
+            elif str(u_type) in ['-1','0','200','220']:#网民微博
+                people_result.append(item)
+            else:
+                pass
+
+    return all_result,media_result,people_result
+
+def get_event_weibo_by_type(event_id,type_list):#根据事件id获取微博文本
+
+    result = []
+    uid_list = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    while True:
+        try:
+            scan_re = s_re.next()
+            _id = scan_re['_id']
+            source = scan_re['_source']
+            mid = source['mid']
+            uid = source['uid']
+            text = source['text']
+            comment = source['comment']
+            retweeted = source['retweeted']
+            ts = ts2date(source['timestamp'])
+            result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+            uid_list.append(uid)
+        except StopIteration:
+            print "all done"
+            break
+
+    if len(uid_list):
+        uname_list = uid_name_type(uid_list)
+        if uname_list == '-1':
+            uname_list = dict()
+    else:
+        uname_list = dict()
+
+    new_result = []
+    if len(uname_list):
+        for item in result:
+            uid = item['uid']
+            u_type = uname_list[uid]['type']
+            if str(u_type) in type_list:
+                item['name'] = uname_list[uid]['name']
+                new_result.append(item)
+
+    return new_result
 
 def search_neo4j_by_uid(uid,index_name,index_primary):
 
@@ -331,7 +445,7 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(peo_list):
-        peo_name = uid_name_list(peo_list)
+        peo_name = uid_2_name_list(peo_list)
         if peo_name == '-1':
             peo_name = {}
     else:
@@ -348,7 +462,7 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(org_list):
-        org_name = uid_name_list(org_list)
+        org_name = uid_2_name_list(org_list)
         if org_name == '-1':
             org_name = {}
     else:
@@ -365,11 +479,11 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(event_list):
-        event_name = event_id_name(event_list)
+        event_name = event_id_name_list(event_list)
     else:
         event_name = {}
 
-    relation_name = {'people':peo_name.values(),'org':org_name.values(),'event':event_name.values()}
+    relation_name = {'people':peo_name,'org':org_name,'event':event_name}
 
     return relation_name
 

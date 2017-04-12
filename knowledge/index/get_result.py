@@ -14,7 +14,7 @@ from knowledge.model import *
 from knowledge.extensions import db
 from knowledge.global_config import *
 from knowledge.global_utils import *
-from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster,get_evaluate_max as get_evaluate_max_all
 from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
@@ -41,7 +41,7 @@ def uid_name(uid_list,result):
 
     return result
 
-def uid_name_list(uid_list):
+def uid_name_list(uid_list):#以字典形式返回
 
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -61,6 +61,52 @@ def uid_name_list(uid_list):
 
     return uname
 
+def uid_2_name_list(uid_list):#以列表形式返回
+
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return '-1'
+    uname = []
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            uname.append([uid,uid])
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['uname']
+            except:
+                name = uid
+            if name:
+                uname.append([uid,name])
+            else:
+                uname.append([uid,uid])
+
+    return uname
+
+def uid_name_type(uid_list):#获取用户的昵称和认证类型
+
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return '-1'
+    uname = dict()
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            uname[uid] = {'name':uid,'type':''}
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['uname']
+            except:
+                name = uid
+            u_type = data['verify_type']
+            uname[uid] = {'name':name,'type':u_type}
+
+    return uname
+
 def eventid_name(uidlist,result):
 
     search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
@@ -77,6 +123,30 @@ def eventid_name(uidlist,result):
                 result[uid]['name'] = data['name']
             except:
                 result[uid]['name'] = uid
+
+    return result
+
+def event_id_name_list(uidlist):#以列表形式返回
+
+    result = []
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result.append([uid,uid])
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['name']
+            except:
+                name = uid
+            if name:
+                result.append([uid,name])
+            else:
+                result.append([uid,uid])
 
     return result
             
@@ -430,15 +500,15 @@ def get_all_geo():#地图链接：获取地址
     return event_result,peo_result,org_result
 
 def get_type_key(item):
-    if item == 1:#人物
+    if item == '1':#人物
         return people_primary
-    elif item == 2:#事件
+    elif item == '2':#事件
         return event_primary
-    elif item == 0:#机构
+    elif item == '0':#机构
         return org_primary
-    elif item == 3:#专题
+    elif item == '3':#专题
         return special_event_primary
-    elif item == 4:#群体
+    elif item == '4':#群体
         return group_primary
     else:
         return 'Not Found'
@@ -448,6 +518,11 @@ def get_detail_person(uid_list,user_name):
     if len(uid_list) == 0:
         return {}
     result = {}
+    evaluate_max = get_evaluate_max_all()
+    date = 1480176000#time.time()
+    bci_date = ts2datetime(date - DAY)
+    index_name = 'bci_' + ''.join(bci_date.split('-'))
+    index_type = 'bci'
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -463,27 +538,30 @@ def get_detail_person(uid_list,user_name):
             if not data['uname']:
                 name = ''
             else:
-                name = data['uname'].encode('utf-8')
-            domain = data['domain'].encode('utf-8')
+                name = data['uname']
+            domain = data['domain']
             if not data['location']:
                 location = ''
             else:
-                location = data['location'].encode('utf-8')           
+                location = data['location']           
             if not data['verify_type']:
                 verified = ''
             else:
                 verified = ver_data[data['verify_type']]
-            importance = data['importance']
-            influence = data['influence']
-            activeness = data['activeness']
+            importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
+            influence = normal_index(data['influence'],evaluate_max['influence'])
+            activeness = normal_index(data['activeness'],evaluate_max['activeness'])
 
-            work_tag = data['function_mark'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            try:
+                work_tag = data['function_mark']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
             
             bci_dict = user_bci_result[i]
             try:
@@ -491,7 +569,7 @@ def get_detail_person(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':round(influence,2),'activeness':activeness,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
+            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 
@@ -500,6 +578,10 @@ def get_detail_org(uid_list,user_name):
     if len(uid_list) == 0:
         return {}
     result = {}
+    date = 1480176000#time.time()
+    bci_date = ts2datetime(date - DAY)
+    index_name = 'bci_' + ''.join(bci_date.split('-'))
+    index_type = 'bci'
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -515,24 +597,27 @@ def get_detail_org(uid_list,user_name):
             if not data['uname']:
                 name = ''
             else:
-                name = data['uname'].encode('utf-8')
+                name = data['uname']
 
             if not data['location']:
                 location = ''
             else:
-                location = data['location'].encode('utf-8')           
+                location = data['location']          
             if not data['verify_type']:
                 verified = ''
             else:
                 verified = ver_data[data['verify_type']]
 
-            work_tag = data['function_mark'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            try:
+                work_tag = data['function_mark']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
 
             bci_dict = user_bci_result[i]
             try:
@@ -540,7 +625,7 @@ def get_detail_org(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
+            result[uid] = {'name':name,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 
@@ -548,7 +633,8 @@ def get_detail_event(uid_list,user_name):
 
     if len(uid_list) == 0:
         return {}
-    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    result = {}
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for item in search_result:
@@ -561,26 +647,29 @@ def get_detail_event(uid_list,user_name):
             if not data['name']:
                 name = ''
             else:
-                name = data['name'].encode('utf-8')
+                name = data['name']
             if data['real_geo'] != 'NULL':
-                geo = data['real_geo'].encode('utf-8')
+                geo = data['real_geo']
             else:
                 geo = ''
-            category = data['category']
+            category = data['event_type']
             if data['real_time'] != 'NULL':
-                time_ts = data['real_time'].encode('utf-8')
+                time_ts = data['real_time']
             else:
-                time_ts = ''
+                time_ts = ts2date(data['start_ts'])
 
-            work_tag = data['work_tag'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            try:
+                work_tag = data['work_tag']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
 
-            result[uid] = {'name':name,'geo':geo,'category':category,'time_ts':time_ts,'tag':tag_list}
+            result[uid] = {'name':name,'geo':geo,'event_type':category,'time_ts':time_ts,'tag':tag_list}
 
     return result
 
@@ -588,6 +677,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
 
     node_key = get_type_key(node_type)
     card_key = get_type_key(card_type)
+
     if node_key == 'Not Found' or card_key == 'Not Found':#未找到匹配类型
         return [],-1
     if node_key == people_primary:

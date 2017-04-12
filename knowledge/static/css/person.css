@@ -247,6 +247,7 @@ body {
 #person_content #content_right .link_user .users a,
 #person_content #content_right .link_event .events a,
 #person_content #content_right .link_agency .agencys a,
+#person_content #content_right .link_knowledge .knowledge a,
 #person_content #content_right .link_resources .resources a {
     width: 70%;
     display: block;
@@ -281,5 +282,15 @@ body {
 #person_content #content_right .link_resources .resources_more:hover {
     background-color: #bcbcbc;
     color: white;
+}
+#link #link_content a {
+    display: inline-block;
+    width: 90px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    margin: 15px 0;
 }
 

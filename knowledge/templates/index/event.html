@@ -3,7 +3,16 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/event.css">
 <style>
-
+    .bootstrap-table {
+        width:60%;
+        margin: 0 auto;
+    }
+    .table>thead:first-child>tr:first-child>th {
+        width:1%;
+    }
+    .fixed-table-pagination .pagination-detail {
+        display: none;
+    }
 </style>
 {% endblock %}
 
@@ -13,81 +22,73 @@
     <div id="content_left">
         <div class="basic" style="padding-bottom:20px">
             <div class="basic-1">
-                <h2 class="event_name" style="font-weight:900;display:inline-block;">徐玉玉事件</h2>
+                <h2 class="event_name" style="font-weight:900;display:inline-block;"></h2>
+                <img src="/static/images/gov_circle.png" alt="" id="focus">
                 <button class="edit">编&nbsp;辑</button>
                 <div class="map_area">
-                    <dl id="map" style="right:10.5%;">
+                    <dl id="map" style="right:11.3%;">
                         <dt><img src="/static/images/earth.png"></dt>
                         <dd>地图链接</dd>
                     </dl>
-                    <dl id="chart" style="right:15px">
+                    <dl id="chart" style="right:0.21%;">
                         <dt><img src="/static/images/go_line.png" alt=""></dt>
                         <dd>图谱链接</dd>
                     </dl>
                 </div>
             </div>
             <div class="basic-2">
-                <h3 style="padding-left:10px;color: white;font-weight:800;">基本信息</h3>
+                <h3>基本信息</h3>
                 <div class="information">
                     <p class="in_one">
-                        <span>实际发生地</span><span class="place crude">山东青岛</span>
-                        <span>事件发生时间</span><span class="happen_time crude">2016-12-11</span>
+                        <span>实际发生地</span><span class="area crude"></span>
+                        <span>事件发生时间</span><span class="happen_time crude"></span>
                     </p>
                     <p class="in_two">
-                        <span>事件类型</span><span class="type crude">诈骗</span>
-                        <span>实际参与人物</span><span class="join_user crude">律师</span>
+                        <span>事件类型</span><span class="type crude"></span>
+                        <span>实际参与人物</span><span class="join_user crude"></span>
                     </p>
                     <p class="in_three">
-                        <span>自动标签</span><span class="auto_tag crude">诈骗</span>
-                        <span>实际参与机构</span><span class="agency crude">法院</span>
+                        <span>自动标签</span><span class="auto_tag crude"></span>
+                        <span>实际参与机构</span><span class="agency crude"></span>
                     </p>
                     <p class="in_four">
-                        <span>业务标签</span><span class="bus_tag crude">大学生</span>
-                        <span>微博数量</span><span class="weibo crude">201611</span>
+                        <span>业务标签</span><span class="bus_tag crude"></span>
+                        <span>微博数量</span><span class="weibo crude"></span>
                     </p>
                     <p class="in_five">
-                        <span>参与讨论人数</span><span class="discuss crude">32412</span>
-                        <span>关注周期</span><span class="timefrom crude">2016-12-11</span><span class="timeto" style="color: black;font-weight:800">2016-12-11</span>
+                        <span>参与讨论人数</span><span class="discuss crude"></span>
+                        <span>关注周期</span><!--
+                        --><span class="timefrom crude" style="width: 80px"></span>
+                        <span class="timeto" style="width:auto;color: black;font-weight:800"></span>
                     </p>
                 </div>
             </div>
         </div>
         <div class="online">
             <div class="online-1">
-                <h3 style="color: white;font-weight:800;margin-left: -10px;">网上讨论信息</h3>
+                <h3>网上讨论信息</h3>
                 <div class="hot">
                     <div id="hot_trend"></div>
                 </div>
-                <div class="place">
+                <div class="place" style="display: none;">
                     <div id="place_trend"></div>
                 </div>
                 <div class="topic">
-                    <div id="topic_trend">
-                        <a href="###" title="星级评分">星级评分</a>
-                        <a href="###" title="层特效">层特效</a>
-                        <a href="###" title="关键字">关键字</a>
-                        <a href="###" title="拖拽">拖拽</a>
-                        <a href="###" title="分页插件">分页插件</a>
-                        <a href="###" title="时间插件">时间插件</a>
-                        <a href="###" title="弹出层">弹出层</a>
-                        <a href="###" title="数据统计">数据统计</a>
-                        <a href="###" title="HTML5">HTML5</a>
-                        <a href="###" title="置顶特效">置顶特效</a>
-                        <a href="###" title="选项卡">选项卡</a>
-                        <a href="###" title="导航菜单">导航菜单</a>
-                    </div>
+                    <h2 style="text-align: center;margin: 20px 0;">话题</h2>
+                    <div id="topic_trend"></div>
                 </div>
                 <div class="mood">
                     <div id="mood_trend"></div>
                 </div>
                 <div class="user">
-                    <div id="collection"></div>
+                    <h2 style="text-align: center;margin: 20px 0;">参与讨论的重要人物</h2>
+                    <div id="collection" style=""></div>
                 </div>
             </div>
         </div>
 
         <div class="text_info" style="padding-top:12px">
-            <h3 style="padding-left:10px;color: white;font-weight:800;">文本信息</h3>
+            <h3>文本信息</h3>
             <div class="button_list">
                 <button id="all">所有微博文本</button>
                 <button id="media">媒体微博文本</button>
@@ -99,59 +100,87 @@
         </div>
     </div>
     <div id="content_right">
-        <div class="link_user" style="padding-top:10px;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联人物</h3>
-            <div class="users" style="text-align: center;margin-top: 50px;">
-                <a href="###">王二麻子</a>
-                <a href="###">李思</a>
-                <a href="###">张三</a>
-                <a href="###">乌鸡</a>
-            </div>
-            <button class="user_more">+查看更多</button>
-        </div>
-        <div class="link_event" style="padding-top:36px;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联事件</h3>
-            <div class="events" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
-            </div>
-            <button class="event_more">+查看更多</button>
-        </div>
-        <div class="link_agency" style="padding-top:55px;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联机构</h3>
-            <div class="agencys" style="text-align: center;margin-top: 50px;">
-                <a href="###">美国CIA</a>
-                <a href="###">俄罗斯KGB</a>
-                <a href="###">以色列Mossad</a>
-                <a href="###">英国MI6</a>
-            </div>
-            <button class="agency_more">+查看更多</button>
-        </div>
-        <div class="link_resources" style="padding-top:88px;height: 265px">
-            <h3 style="padding-left:30px;color: white;font-weight:800;">关联资源</h3>
-            <div class="resources" style="text-align: center;margin-top: 50px;">
-                <a href="###">抢银行</a>
-                <a href="###">抢车</a>
-                <a href="###">打人</a>
-                <a href="###">送快递</a>
-            </div>
-            <button class="resources_more">+查看更多</button>
-        </div>
+        <div class="link_user">
+            <h3>关联人物</h3>
+            <div class="users" style="text-align: center;margin: 20px 0;">
 
+            </div>
+            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_event" style="margin: 10px 0;">
+            <h3>关联事件</h3>
+            <div class="events" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_agency" style="margin: 10px 0;">
+            <h3>关联机构</h3>
+            <div class="agencys" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_knowledge" style="margin: 10px 0;">
+            <h3>关联知识</h3>
+            <div class="knowledge" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="knowledge_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_resources" style="margin: 10px 0;">
+            <h3>关联资源</h3>
+            <div class="resources" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="resources_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="link" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title tit_h4" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body" id="link_content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
     </div>
 </div>
 
 {% endblock %}
 
 {% block my_js %}
-<script src="/static/js/wordcloud.js"></script>
-<script src="/static/js/event-1.js"></script>
 <script>
+    var s=1;
+    $('#focus').on('click',function () {
+        if (s==1){
+            $(this).attr('src','/static/images/gov_xin.png');
+            s=2;
+        }else {
+            $(this).attr('src','/static/images/gov_circle.png');
+            s=1;
+        }
+    });
+    var result_1={{result_att|tojson}};
+    var result_2={{relation_dict|tojson}};
+    console.log(result_1,result_2);
     $('#event_content #content_left .basic .basic-1 .edit').on('click',function () {
         window.open('/theme/modify/?theme_name='+$('.event_name').text());
     })
 
 </script>
+<!--<script src="/static/js/wordcloud.js"></script>-->
+<script src="/static/js/echarts-2/build/dist/echarts.js"></script>
+<script src="/static/js/event-1.js"></script>
+<script src="/static/js/event-2.js"></script>
+<script src="/static/js/event-3.js"></script>
 {% endblock %}
