@@ -182,22 +182,23 @@ def get_person_atr():#人物属性页面
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
 
-    print text_list
-    return render_template('index/person.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,relation_dict = relation_dict)
+    return render_template('index/person.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/event/', methods=['GET','POST'])
 @login_required
 def get_event_atr():#事件属性页面
 
     user_id = request.args.get('user_id', '')
-
+    user_name = g.user.email
     ### 事件属性查询函数
     if user_id:
-        result_att = search_event_by_id(user_id)
+        result_att = search_event_by_id(user_id,user_name)
         doc_list = search_related_docs(user_id,es_related_docs,event_docs_name,event_docs_type)#查找关联文档
+        all_weibo,media_weibo,people_weibo = get_event_weibo(user_id)
     else:
         result_att = {}
         doc_list = []
+        all_weibo,media_weibo,people_weibo = [],[],[]
 
     ### 获取相关wiki
     try:
@@ -217,8 +218,10 @@ def get_event_atr():#事件属性页面
     
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
-    
-    return render_template('index/event.html',result_att = result_att,relation_dict = relation_dict)
+
+    text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
+
+    return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/organization/', methods=['GET','POST'])
 @login_required
@@ -232,11 +235,13 @@ def get_organization():#机构属性页面
         doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
         inter_list = get_interaction(user_id)#查找人物交互情况
         friends_dict = search_bci(user_id)#查找人物的影响力信息
+        text_list = get_people_weibo(user_id)#查找人物的微博文本
     else:
         result_att = {}
         doc_list = []
         inter_list = {'retweet':[],'beretweet':[],'comment':[],'becomment':[]}
         friends_dict = {'fansnum':'', 'statusnum':'', 'friendnum':''}
+        text_list = []
 
     ### 获取相关wiki
     try:
@@ -256,7 +261,7 @@ def get_organization():#机构属性页面
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
     
-    return render_template('index/organization.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,relation_dict = relation_dict)
+    return render_template('index/organization.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/cards/', methods=['GET','POST'])
 @login_required
@@ -289,6 +294,30 @@ def show_attention():
         infors = get_org(user_name,2)
 
     return json.dumps(infors)
+
+@mod.route('/get_media_weibo/', methods=['GET','POST'])
+def get_media_weibo():#获取媒体发布的weibo
+
+    #event_id = request.args.get('event_id', '')
+    event_id = request.form['event_id']
+    if event_id:
+        result = get_event_weibo_by_type(event_id,['3'])
+    else:
+        result = []
+
+    return json.dumps(result)
+
+@mod.route('/get_user_weibo/', methods=['GET','POST'])
+def get_user_weibo():#获取网民发布的weibo
+
+    #event_id = request.args.get('event_id', '')
+    event_id = request.form['event_id']
+    if event_id:
+        result = get_event_weibo_by_type(event_id,['-1','0','200','220'])
+    else:
+        result = []
+
+    return json.dumps(result)    
 
 ### for neo4j test
 @mod.route('/test/')

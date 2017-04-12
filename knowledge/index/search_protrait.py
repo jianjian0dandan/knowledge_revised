@@ -10,7 +10,7 @@ import heapq
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
-from get_result import uid_name_list,event_id_name
+from get_result import uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
 import knowledge.model
 from knowledge.model import *
 from knowledge.extensions import db
@@ -345,6 +345,93 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
 
     return result
 
+def get_event_weibo(event_id):#根据事件id获取微博文本
+
+    result = []
+    uid_list = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    while True:
+        try:
+            scan_re = s_re.next()
+            _id = scan_re['_id']
+            source = scan_re['_source']
+            mid = source['mid']
+            uid = source['uid']
+            text = source['text']
+            comment = source['comment']
+            retweeted = source['retweeted']
+            ts = ts2date(source['timestamp'])
+            result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+            uid_list.append(uid)
+        except StopIteration:
+            print "all done"
+            break
+
+    if len(uid_list):
+        uname_list = uid_name_type(uid_list)
+        if uname_list == '-1':
+            uname_list = dict()
+    else:
+        uname_list = dict()
+
+    all_result = []
+    media_result = []
+    people_result = []
+    if len(uname_list):
+        for item in result:
+            uid = item['uid']
+            item['name'] = uname_list[uid]['name']
+            all_result.append(item)
+            u_type = uname_list[uid]['type']
+            if str(u_type) in ['3']:#媒体微博
+                media_result.append(item)
+            elif str(u_type) in ['-1','0','200','220']:#网民微博
+                people_result.append(item)
+            else:
+                pass
+
+    return all_result,media_result,people_result
+
+def get_event_weibo_by_type(event_id,type_list):#根据事件id获取微博文本
+
+    result = []
+    uid_list = []
+    s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    while True:
+        try:
+            scan_re = s_re.next()
+            _id = scan_re['_id']
+            source = scan_re['_source']
+            mid = source['mid']
+            uid = source['uid']
+            text = source['text']
+            comment = source['comment']
+            retweeted = source['retweeted']
+            ts = ts2date(source['timestamp'])
+            result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+            uid_list.append(uid)
+        except StopIteration:
+            print "all done"
+            break
+
+    if len(uid_list):
+        uname_list = uid_name_type(uid_list)
+        if uname_list == '-1':
+            uname_list = dict()
+    else:
+        uname_list = dict()
+
+    new_result = []
+    if len(uname_list):
+        for item in result:
+            uid = item['uid']
+            u_type = uname_list[uid]['type']
+            if str(u_type) in type_list:
+                item['name'] = uname_list[uid]['name']
+                new_result.append(item)
+
+    return new_result
+
 def search_neo4j_by_uid(uid,index_name,index_primary):
 
     p_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-(m) return m LIMIT 10' % (index_name,index_primary,uid,node_index_name,people_primary)
@@ -358,7 +445,7 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(peo_list):
-        peo_name = uid_name_list(peo_list)
+        peo_name = uid_2_name_list(peo_list)
         if peo_name == '-1':
             peo_name = {}
     else:
@@ -375,7 +462,7 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(org_list):
-        org_name = uid_name_list(org_list)
+        org_name = uid_2_name_list(org_list)
         if org_name == '-1':
             org_name = {}
     else:
@@ -392,11 +479,11 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
             continue
 
     if len(event_list):
-        event_name = event_id_name(event_list)
+        event_name = event_id_name_list(event_list)
     else:
         event_name = {}
 
-    relation_name = {'people':peo_name.values(),'org':org_name.values(),'event':event_name.values()}
+    relation_name = {'people':peo_name,'org':org_name,'event':event_name}
 
     return relation_name
 
