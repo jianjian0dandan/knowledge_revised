@@ -35,7 +35,7 @@ def uid_name(uid_list,result):
         else:
             data = item['_source']
             try:
-                result[uid]['name'] = data['uname'].encode('utf-8')
+                result[uid]['name'] = data['uname']
             except:
                 result[uid]['name'] = uid
 
@@ -55,7 +55,7 @@ def uid_name_list(uid_list):
         else:
             data = item['_source']
             try:
-                uname[uid] = data['uname'].encode('utf-8')
+                uname[uid] = data['uname']
             except:
                 uname[uid] = uid
 
@@ -74,7 +74,7 @@ def eventid_name(uidlist,result):
         else:
             data = item['_source']
             try:
-                result[uid]['name'] = data['name'].encode('utf-8')
+                result[uid]['name'] = data['name']
             except:
                 result[uid]['name'] = uid
 

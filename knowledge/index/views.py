@@ -149,14 +149,18 @@ def get_map():#地图页面
 def get_person_atr():#人物属性页面
 
     user_id = request.args.get('user_id', '')
-
+    user_name = g.user.email
     ### 人物属性查询函数
     if user_id:
-        result_att = search_person_by_id(user_id)
+        result_att = search_person_by_id(user_id,user_name)#查找人物属性
         doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
+        inter_list = get_interaction(user_id)#查找人物交互情况
+        friends_dict = search_bci(user_id)#查找人物的影响力信息
     else:
         result_att = {}
         doc_list = []
+        inter_list = {'retweet':[],'beretweet':[],'comment':[],'becomment':[]}
+        friends_dict = {'fansnum':'', 'statusnum':'', 'friendnum':''}
 
     ### 获取相关wiki
     try:
@@ -176,7 +180,7 @@ def get_person_atr():#人物属性页面
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
 
-    return render_template('index/person.html',result_att = result_att,relation_dict = relation_dict)
+    return render_template('index/person.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,relation_dict = relation_dict)
 
 @mod.route('/event/', methods=['GET','POST'])
 @login_required
@@ -218,14 +222,18 @@ def get_event_atr():#事件属性页面
 def get_organization():#机构属性页面
 
     user_id = request.args.get('user_id', '')
-
+    user_name = g.user.email
     ### 机构属性查询函数
     if user_id:
-        result_att = search_org_by_id(user_id)
+        result_att = search_org_by_id(user_id,user_name)
         doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
+        inter_list = get_interaction(user_id)#查找人物交互情况
+        friends_dict = search_bci(user_id)#查找人物的影响力信息
     else:
         result_att = {}
         doc_list = []
+        inter_list = {'retweet':[],'beretweet':[],'comment':[],'becomment':[]}
+        friends_dict = {'fansnum':'', 'statusnum':'', 'friendnum':''}
 
     ### 获取相关wiki
     try:
@@ -245,7 +253,7 @@ def get_organization():#机构属性页面
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
     
-    return render_template('index/organization.html',result_att = result_att,relation_dict = relation_dict)
+    return render_template('index/organization.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,relation_dict = relation_dict)
 
 @mod.route('/cards/', methods=['GET','POST'])
 @login_required
