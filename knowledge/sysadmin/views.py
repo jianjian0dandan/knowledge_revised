@@ -10,6 +10,7 @@ from datetime import date
 from datetime import datetime
 from knowledge.global_utils import get_theme,get_group
 from knowledge.index.get_result import get_people,get_event,get_org
+from knowledge.time_utils import ts2date
 
 mod = Blueprint('sysadmin', __name__, url_prefix='/sysadmin')
 
@@ -75,3 +76,50 @@ def myfocus_group_get_data():#我的专题
         group_list.append(group_dic)
 
     return json.dumps(group_list)
+
+@mod.route('/add_people/', methods=['GET','POST'])
+def myfocus_add_people():#加入我的关注-人物
+
+    result = 'Success'
+    user_name = request.form['user_name']
+    uid = request.form['uid']
+    label = request.form['label']
+    date_time = ts2date(time.time())
+    new_item = PeopleAttention(name=user_name, peopleID=uid, label=label, attentionTime=date_time)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return json.dumps(result)
+
+@mod.route('/add_org/', methods=['GET','POST'])
+def myfocus_add_org():#加入我的关注-机构
+
+    result = 'Success'
+    user_name = request.form['user_name']
+    uid = request.form['uid']
+    label = request.form['label']
+    date_time = ts2date(time.time())
+    new_item = OrgAttention(name=user_name, orgID=uid, label=label, attentionTime=date_time)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return json.dumps(result)
+
+@mod.route('/add_event/', methods=['GET','POST'])
+def myfocus_add_event():#加入我的关注-机构
+
+    result = 'Success'
+    user_name = request.form['user_name']
+    uid = request.form['uid']
+    label = request.form['label']
+    date_time = ts2date(time.time())
+    new_item = EventAttention(name=user_name, eventID=uid, label=label, attentionTime=date_time)
+    db.session.add(new_item)
+    db.session.commit()
+
+    return json.dumps(result)    
+    
+
+
+    
+    
