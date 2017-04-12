@@ -102,7 +102,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
             for k,v in data.iteritems():
                 if k in people_es_dict:
                     result[k] = json.loads(v)
-                elif k == event_tag:
+                elif k == people_tag:
                     flag = 1
                     work_tag = v
                     tags = work_tag.split('&')
@@ -111,7 +111,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                         u,t = tag.split('_')
                         if u == user_name:
                             tag_str.append(t)
-                    result[event_tag] = tag_str
+                    result[people_tag] = tag_str
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -123,7 +123,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                         result[k] = v
 
     if flag == 0:
-        result[event_tag] = []
+        result[people_tag] = []
         
     return result
 
@@ -283,6 +283,30 @@ def get_people_org_track(activity_geo_dict):#根据用户地理位置计算轨�
                 line_list.append([results[x][1], results[x+1][1]])
     return {'city':geolist, 'line':line_list}
 
+def get_people_weibo(uid):#根据uid查询微博文本
+
+    time_str = '2016-11-27'#ts2datetime(int(time.time()))
+    query_body = {
+        "query":{
+            "bool":{
+                "must":[{'term':{'uid':uid}}],
+            }
+        }
+    }
+    result = []
+    search_results = es_flow_text.search(index=flow_text_index_name_pre+time_str, doc_type=flow_text_index_type, body=query_body)['hits']['hits']
+    if len(search_results) > 0:
+        for item in search_results:
+            mid = item['_id'].encode('utf-8')
+            data = item['_source']
+            text = data['text']
+            comment = data['comment']
+            retweeted = data['retweeted']
+            ts = ts2date(data['timestamp'])
+            result.append({'mid':mid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
+
+    return result            
+
 def search_event_by_id(uid,user_name):#根据uid查询事件属性
 
     uid_list = [uid]
@@ -300,7 +324,7 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
             for k,v in data.iteritems():
                 if k in event_es_dict:
                     result[k] = json.loads(v)
-                elif k == people_tag:
+                elif k == event_tag:
                     flag = 1
                     work_tag = v
                     tags = work_tag.split('&')
@@ -309,12 +333,15 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                         u,t = tag.split('_')
                         if u == user_name:
                             tag_str.append(t)
-                    result[people_tag] = tag_str
+                    result[event_tag] = tag_str
                 else:
                     if v == 'NULL':
                         result[k] = ''
                     else:
                         result[k] = v
+
+    if flag == 0:
+        result[event_tag] = []
 
     return result
 

@@ -156,11 +156,13 @@ def get_person_atr():#人物属性页面
         doc_list = search_related_docs(user_id,es_related_docs,user_docs_name,user_docs_type)#查找关联文档
         inter_list = get_interaction(user_id)#查找人物交互情况
         friends_dict = search_bci(user_id)#查找人物的影响力信息
+        text_list = get_people_weibo(user_id)#查找人物的微博文本
     else:
         result_att = {}
         doc_list = []
         inter_list = {'retweet':[],'beretweet':[],'comment':[],'becomment':[]}
         friends_dict = {'fansnum':'', 'statusnum':'', 'friendnum':''}
+        text_list = []
 
     ### 获取相关wiki
     try:
@@ -180,6 +182,7 @@ def get_person_atr():#人物属性页面
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
 
+    print text_list
     return render_template('index/person.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,relation_dict = relation_dict)
 
 @mod.route('/event/', methods=['GET','POST'])
