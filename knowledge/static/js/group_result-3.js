@@ -1,5 +1,5 @@
 function getLocalTime(nS) {
-    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
+    return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10);
 };
 // 柱状图
 var location_url='/group/group_geo/?g_name='+group_name+'&submit_user='+submit_user;
