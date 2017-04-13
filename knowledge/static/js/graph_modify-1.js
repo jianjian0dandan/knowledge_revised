@@ -58,17 +58,6 @@ function node(data) {
         sortName:'bci',
         sortOrder:"desc",
         columns: [
-            // {
-            //     title: "序号",//标题
-            //     field: "",//键名
-            //     sortable: true,//是否可排序
-            //     order: "desc",//默认排序方式
-            //     align: "center",//水平
-            //     valign: "middle",//垂直
-            //     formatter: function (value, row, index) {
-            //         return index+1;
-            //     }
-            // },
             {
                 title: "用户ID",//标题
                 field: "",//键名
@@ -207,37 +196,131 @@ function node(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a><br/>' +
-                        '<a type="button" data-toggle="modal" data-target="#complie" onclick="go('+row[0]+')">编辑</a><br/>' +
-                        '<a>删除</a>';
+                    return '<a onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
+                        '<a type="button" data-toggle="modal" data-target="#complie" onclick="go(\''+row[0]+'\')">编辑</a><br/>' +
+                        '<a onclick="del(\''+row[0]+'\')">删除</a>';
                 },
             },
-
-            // //多选框
-            // {
-            //     title: "",//标题
-            //     field: "select",
-            //     checkbox: true,
-            //     align: "center",//水平
-            //     valign: "middle"//垂直
-            // },
-
         ],
         onClickCell: function (field, value, row, $element) {
 
         }
     });
 };
+//---更新--
+var relation=[],uid_update,r_style;
+function rel_new(update) {
+    uid_update=update;
+    if (node_type=='User'){
+        $('#update_rel .rel_list').empty();
+        $('#update_rel .rel_list').append(
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="friend" checked> 交互'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="colleague" checked> 自述关联'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="colleague" checked> 业务关联'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="discuss" checked> 参与讨论'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="join" checked> 参与事件'+
+            '</label>'
+        );
+    }else if (node_type=='Event'){
+        $('#update_rel .rel_list').empty();
+        $('#update_rel .rel_list').append(
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="join" checked> 参与事件'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="discuss" checked> 参与讨论'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="contain" checked> 主题关联'+
+            '</label>'
+        )
+    }else {
+        $('#update_rel .rel_list').empty();
+        $('#update_rel .rel_list').append(
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="friend" checked> 交互'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="colleague" checked> 业务关联'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="join" checked> 参与事件'+
+            '</label>'+
+            '<label class="checkbox-inline">'+
+            '   <input type="checkbox" value="discuss" checked> 参与讨论'+
+            '</label>'
+        )
+    }
+    $('#update_rel').modal('show');
+};
 
+function update_rel() {
+    $("#update_rel .rel_list input:checkbox:checked").each(function (index,item) {
+        relation.push($(this).val());
+    });
+    if(node_type=='Event'){
+        var update_url='/construction/event_update/?event_id='+uid_update+
+            '&relation_compute='+relation.join(',');
+        $.ajax({
+            url: update_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:function (data) {
+                if (data==1){
+                    alert('已提交更新，正在计算。');
+                }else {
+                    alert('更新失败。');
+                }
+            }
+        });
+    }else {
+        var type_num;
+        if(node_type=='User'){
+            type_num=0;
+        }else if(node_type=='Org'){
+            type_num=1;
+        }
+        var d = new Date();
+        var date = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+        var update_url='/construction/update_user/?date='+date+'&node_type='+type_num+'&uid='+uid_update+
+            '&recommend_style=update&submit_user='+submit_user+'&user_rel='+relation.join(',');
+        $.ajax({
+            url: update_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:function (data) {
+                if (data==1){
+                    alert('已提交更新，正在计算。');
+                }else {
+                    alert('更新失败。');
+                }
+            }
+        });
+    }
+
+};
+
+//===编辑--
 function go(item) {
-    item=item;
+    u_item=item;
     $('.group-1').css({display:'none'});
     $('.tags-1').css({display:'none'});
     $('.words-1').css({display:'none'});
     $('.group-1 input').val("");
     $('.tags-1 input').val("");
     $('.words-1 input').val("");
-    var com_url='/construction/node_edit_show/?node_type='+node_type+'&item='+item+
+    var com_url='/construction/node_edit_show/?node_type='+node_type+'&item='+u_item+
         '&submit_user='+submit_user;
     $.ajax({
         url: com_url,
@@ -250,7 +333,6 @@ function go(item) {
 
 function com(data) {
     var data=eval(data);
-    console.log(data)
     $('#complie #tags').empty();
     $('#complie #words').empty();
     $('#complie #group').empty();
@@ -568,22 +650,13 @@ function event(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a><br/>' +
+                    return '<a onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
                         '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
 
                         // '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
                         '<a>删除</a>';
                 },
             },
-            // //多选框
-            // {
-            //     title: "",//标题
-            //     field: "select",
-            //     checkbox: true,
-            //     align: "center",//水平
-            //     valign: "middle"//垂直
-            // },
-
         ],
         onClickCell: function (field, value, row, $element) {
 
@@ -619,7 +692,6 @@ function getLocalTime(nS) {
 }
 function event_com(data) {
     var data=eval(data);
-    console.log(data)
     $('#event_complie .counts').empty();
     $('#event_complie #person').empty();
     $('#event_complie #special').empty();
@@ -741,7 +813,7 @@ function event_com(data) {
 };
 
 //传url
-var item,e_item;
+var u_item,e_item;
 function pass() {
     if (node_type=='Event'){
         var events=[];
@@ -789,7 +861,6 @@ function pass() {
             '&submit_user='+submit_user+'&real_geo='+geo+'&real_time='+time+
             '&event_type='+e_type+'&real_person='+user+'&real_auth='+orgs+'&start_ts='+start+
             '&end_ts='+end+'&description='+desc+'&work_tag='+tags+'&related_docs='+event_related_docs;
-        console.log(event_pass_url)
         $.ajax({
             url: event_pass_url,
             type: 'GET',
@@ -812,16 +883,22 @@ function pass() {
         var function_mark=mark.join(',');
         var pass_url;
         if (function_description=='暂无'){
-            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+u_item+
                 '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
                 '&function_mark='+function_mark+'&related_docs='+related_docs;
         }else {
-            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+item+
+            pass_url='/construction/node_edit/?node_type='+node_type+'&item='+u_item+
                 '&submit_user='+submit_user+'&topic_string='+topic_string+'&domain='+domain+
                 '&function_description='+function_description+'&function_mark='+function_mark+
                 '&related_docs='+related_docs;
         }
-        console.log(pass_url);
+        $.ajax({
+            url: event_pass_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:yes_no
+        });
     }
     $('.group-1').css({display:'none'});
     $('.tags-1').css({display:'none'});
@@ -831,11 +908,26 @@ function pass() {
     $('.words-1 input').val("");
 };
 function yes_no(data) {
-    console.log(data)
     if (data== true){
         alert('修改成功');
-    }else {
+    }else if(data== false){
         alert('修改失败');
-    }
+    }else if(data== 1){
+        alert('删除成功');
+    }else if(data== 0||data=='not in es'){
+        alert('删除失败');
+    };
+}
+
+//删除
+function del(_id) {
+    var del_url='/construction/node_delete/?node_type='+node_type+'&item='+_id+'&submit_user='+submit_user;
+    $.ajax({
+        url: del_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:yes_no
+    });
 }
 

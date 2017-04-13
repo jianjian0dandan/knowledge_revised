@@ -1,3 +1,12 @@
+//删除指定项
+Array.prototype.removeByValue = function(val) {
+    for(var i=0; i<this.length; i++) {
+        if(this[i] == val) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+};
 //推荐人物
 var recommend_url='/construction/show_in/';
 var uid=[];
@@ -15,10 +24,11 @@ function recommend_1(data1) {
     $('.recommend2').css({display:'none'});
     $('.recommend3').css({display:'none'});
     $('.recommend4').css({display:'none'});
+    $('.recommend5').css({display:'none'});
     $('#recommend').bootstrapTable('load', data1);
     $('#recommend').bootstrapTable({
         data:data1,
-        search: true,//是否搜索
+        search: false,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -31,7 +41,7 @@ function recommend_1(data1) {
         locale: "zh-CN",//中文支持
         detailView: false,
         showToggle:true,
-        sortName:'bci',
+        sortName:'',
         sortOrder:"desc",
         columns: [
             {
@@ -127,13 +137,16 @@ function recommend_1(data1) {
         ],
         onCheck:function (row) {
             uid.push(row[0]);
-        }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        },
+        onUncheck:function (row) {
+            uid.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            uid.push(row[0]);
+        },
+        onUncheckAll:function (row) {
+            uid.removeByValue(row[1]);
+        },
     });
 };
 
@@ -144,10 +157,11 @@ function recommend_2(data2) {
     $('.recommend2').css({display:'block'});
     $('.recommend3').css({display:'none'});
     $('.recommend4').css({display:'none'});
+    $('.recommend5').css({display:'none'});
     $('#recommend2').bootstrapTable('load', data2);
     $('#recommend2').bootstrapTable({
         data:data2,
-        search: true,//是否搜索
+        search: false,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -159,7 +173,7 @@ function recommend_2(data2) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -242,7 +256,7 @@ function recommend_2(data2) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if(row[5]==''){
-                        return '未知';
+                        return 0;
                     }else {
                         return row[5].toFixed(2);
                     }
@@ -259,9 +273,14 @@ function recommend_2(data2) {
                     if(row[6].length==0){
                         return '暂无';
                     }else {
-                        $.each(row[6],function (index,item) {
-                            return item;
-                        })
+                        var words=row[6];
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
                     }
                 },
             },
@@ -277,13 +296,16 @@ function recommend_2(data2) {
         ],
         onCheck:function (row) {
             uid.push(row[0]);
-        }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        },
+        onUncheck:function (row) {
+            uid.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            uid.push(row[0]);
+        },
+        onUncheckAll:function (row) {
+            uid.removeByValue(row[1]);
+        },
     });
 };
 
@@ -294,10 +316,11 @@ function recommend_3(data3) {
     $('.recommend2').css({display:'none'});
     $('.recommend3').css({display:'block'});
     $('.recommend4').css({display:'none'});
+    $('.recommend5').css({display:'none'});
     $('#recommend3').bootstrapTable('load', data3);
     $('#recommend3').bootstrapTable({
         data:data3,
-        search: true,//是否搜索
+        search: false,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -308,8 +331,7 @@ function recommend_3(data3) {
         showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -417,13 +439,16 @@ function recommend_3(data3) {
         ],
         onCheck:function (row) {
             uid.push(row[0]);
-        }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        },
+        onUncheck:function (row) {
+            uid.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            uid.push(row[0]);
+        },
+        onUncheckAll:function (row) {
+            uid.removeByValue(row[1]);
+        },
     });
 };
 
@@ -434,6 +459,7 @@ function recommend_4(data4) {
     $('.recommend2').css({display:'none'});
     $('.recommend3').css({display:'none'});
     $('.recommend4').css({display:'block'});
+    $('.recommend5').css({display:'none'});
     $('#recommend4').bootstrapTable('load', data4);
     $('#recommend4').bootstrapTable({
         data:data4,
@@ -546,13 +572,16 @@ function recommend_4(data4) {
         ],
         onCheck:function (row) {
             uid.push(row[0]);
-        }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        },
+        onUncheck:function (row) {
+            uid.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            uid.push(row[0]);
+        },
+        onUncheckAll:function (row) {
+            uid.removeByValue(row[1]);
+        },
     });
 };
 
@@ -676,13 +705,16 @@ function recommend_5(data5) {
         ],
         onCheck:function (row) {
             uid.push(row[0]);
-        }
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        },
+        onUncheck:function (row) {
+            uid.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            uid.push(row[0]);
+        },
+        onUncheckAll:function (row) {
+            uid.removeByValue(row[1]);
+        },
     });
 };
 //=======推荐人物==完=====
@@ -817,8 +849,9 @@ function type_2_age(value) {
         $('.agency .manual-1').hide();
         $('.agency .manual').hide();
     }else {
-        $('.agency #tui_shou').empty();
-        $('.agency #tui_shou').append(
+        console.log(value)
+        $('.agency #tui_shou_age').empty();
+        $('.agency #tui_shou_age').append(
             '<option value="4">文件导入</option>'+
             '<option value="5">手动添加</option>'
         );
@@ -1108,6 +1141,9 @@ function task_renew() {
             async: true,
             success:task_list_2
         });
+    }else {
+        $('.count_task').css({display:'none'});
+        $('.count_task_2').css({display:'none'});
     }
 
 }
@@ -1117,7 +1153,7 @@ function task_list(data) {
     $('#count').bootstrapTable('load', data);
     $('#count').bootstrapTable({
         data:data,
-        search: true,//是否搜索
+        search: false,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -1129,7 +1165,7 @@ function task_list(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [

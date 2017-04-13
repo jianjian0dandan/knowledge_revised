@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/graph_add.css">
 <style>
     .table>thead:first-child>tr:first-child>th {
-        width: 18%;
+        width: 20%;
     }
      .item{
         padding:3px 5px;
@@ -164,7 +164,20 @@
                     <input type="file" class="text" multiple onchange="handleFileSelect_event(this.files)"  style="display: inline-block;padding: 0;">
                     <span>事件类型</span>
                     <select id="event_lx-2" onchange="event_lx(this.value)">
-                        <option value="1">1</option>
+                        <option value="" disabled selected>请选择事件类型</option>
+                        <option value="高校">高校</option>
+                        <option value="境内机构">境内机构</option>
+                        <option value="境外机构">境外机构</option>
+                        <option value="媒体">媒体</option>
+                        <option value="境外媒体">境外媒体</option>
+                        <option value="民间组织">民间组织</option>
+                        <option value="法律机构及人士">法律机构及人士</option>
+                        <option value="政府机构及人士">政府机构及人士</option>
+                        <option value="媒体人士">媒体人士</option>
+                        <option value="活跃人士">活跃人士</option>
+                        <option value="草根">草根</option>
+                        <option value="其他">其他</option>
+                        <option value="商业人士">商业人士</option>
                     </select>
                 </div>
                 <div class="manual-2-2" style="display: none;margin-top: -15px;">
@@ -350,9 +363,9 @@
                     <input type="text" class="other_value" style="display:none;margin: 0;padding:1px 8px;" placeholder="请输入您想添加的关系"/>
                 </div>
             </div>
-            <div class="add_plus">
-                <b class="icon icon-plus"></b>
-            </div>
+            <!--<div class="add_plus">-->
+                <!--<b class="icon icon-plus"></b>-->
+            <!--</div>-->
         </div>
         <div class="uploading" style="display: none;">
             <div class="checkbox">
