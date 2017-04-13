@@ -70,7 +70,6 @@ def ajax_recommentation_in():
         results = recommentation_in(input_ts, recomment_type, submit_user, node_type)
     return json.dumps(results)
 
-
 # show auto recommentation
 @mod.route('/show_auto_in/')
 def ajax_show_auto_in():
@@ -168,7 +167,8 @@ def ajax_submit_event():
 @mod.route('/event_update/')
 def ajax_event_update():
     event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
-    update_event(event_id)
+    compute_relation = request.args.get('compute_relation', '') #split by ,
+    update_event(event_id, compute_relation)
     return '1'
 
 #上传文件方式事件入库
@@ -181,7 +181,7 @@ def ajax_submit_identify_file():
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
-    print results,'===============00000000000'
+    # print results,'===============00000000000'
     return json.dumps(results)  # True, submit_num
 
 #事件任务状态
@@ -246,9 +246,9 @@ def ajax_relation_show_edit():
 #关系编辑，添加关系
 @mod.route('/create_relation/')
 def create_relation():
-    node_key1 = request.args.get('node_key1', 'uid')  # uid,event
+    node_key1 = request.args.get('node_key1', 'uid')  # uid,org_id, event_id
     node1_id = request.args.get('node1_id', '1497035431')
-    node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
+    node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index , org_index,event_index
     rel = request.args.get('rel', 'XXXX')
     node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
     node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
@@ -307,8 +307,8 @@ def ajax_node_edit_show():
 @mod.route('/node_delete/')
 def ajax_node_delete():
     node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '1198503091')  #id
-    submit_user = request.args.get('submit_user', 'admin1')  #admin
+    item = request.args.get('item', '2079185253')  #id
+    submit_user = request.args.get('submit_user', 'admin@qq.com')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = node_delete(node_type, item, submit_user)
     # tag = deal_user_tag(item, submit_user, tag_value)[0]
