@@ -249,10 +249,10 @@ def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,org_id, event_id
     node1_id = request.args.get('node1_id', '1497035431')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index , org_index,event_index
-    rel = request.args.get('rel', 'XXXX')
-    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
-    node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
-    node2_index_name = request.args.get('node2_index_name', 'event_index')
+    rel = request.args.get('rel', 'user_tag,0411')
+    node_key2 = request.args.get('node_key2', 'uid')  # event,uid
+    node2_id = request.args.get('node2_id', '2762995793')
+    node2_index_name = request.args.get('node2_index_name', 'node_index')
     flag = create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
