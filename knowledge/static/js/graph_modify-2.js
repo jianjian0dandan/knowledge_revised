@@ -335,7 +335,7 @@ function rel_list(data) {
 };
 $('.yes').on('click',function () {
     var new_add=$('.relation #new_rel').val();
-    var rel;
+    var rel='';
     if (rel_table[new_add]=='其他关系'){
         var other=$('.other_rel').val();
         $('.relation .have').append(' <a title="'+new_add+'">'+ other +'</a> <b class="del icon icon-remove"></b>');
@@ -347,6 +347,7 @@ $('.yes').on('click',function () {
     var creat_url='/construction/create_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
         '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
         '&node2_index_name='+name_index_2+'&rel='+rel;
+    console.log(creat_url)
     $.ajax({
         url: creat_url,
         type: 'GET',
