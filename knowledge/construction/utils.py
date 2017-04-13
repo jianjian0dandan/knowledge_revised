@@ -514,12 +514,13 @@ def submit_event(input_data):
             os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     return '1'
 
-def update_event(event_id):
+def update_event(event_id, relation_compute):
+    relation_compute = '&'.join(relation_compute.split(','))
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
     # print result
     now_ts = int(time.time())
     if result['end_ts'] < now_ts:
-        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
+        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts,'relation_compute':relation_compute}})
 
     os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
@@ -1083,9 +1084,9 @@ def node_delete(node_type, item, submit_user):
         # print event_result,'========'
         # for i in event_result:
         #     print i,'=------'
-        return 1
+        return '1'
     except:
-        return 0
+        return '0'
 
 
 def deal_user_tag(item ,submit_user):

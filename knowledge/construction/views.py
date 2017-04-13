@@ -167,8 +167,8 @@ def ajax_submit_event():
 @mod.route('/event_update/')
 def ajax_event_update():
     event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
-    compute_relation = request.args.get('compute_relation', '') #split by ,
-    update_event(event_id, compute_relation)
+    relation_compute = request.args.get('relation_compute', '') #User , Org
+    update_event(event_id, relation_compute)
     return '1'
 
 #上传文件方式事件入库

@@ -4,29 +4,31 @@
 <link rel="stylesheet" href="/static/css/theme_main.css">
 <link rel="stylesheet" href="/static/css/a-btn.css">
 <style>
-
+#container {
+	height: 450px;
+}
 </style>
 {% endblock %}
 
 
 {% block main %}
 <div id="container">
-    <h3 style="color: white;font-weight:800;padding-top: 0.5%">图谱探索</h3>
+    <h3 class="add" style="color: white;font-weight:800;padding-top: 0.5%">图谱探索</h3>
     <div class="group_operating" style="margin-top: 10%;">
        	<div class="button-wrapper" style="margin-left: 20%;float: left">
-			<a href="/relation/search" class="a-btn" style="height: 261px;width: 220px;">
+			<a href="/relation/search" class="a-btn" style="height: 220px;width: 180px;">
 				<span>
-					<img src="/static/images/relation_tupu.png" width="160xp" height="160px">
+					<img src="/static/images/relation_tupu.png" width="130xp" height="130px">
 				</span>
-				<span class="a-btn-text" style="margin-top: 45px !important;">图谱探索</span> 
+				<span class="a-btn-text" style="margin-top: 25px !important;">图谱探索</span> 
 			</a>
 		</div>
        	<div class="button-wrapper" style="margin-left: 10%;float: left;">
-			<a href="/relation/similarity" class="a-btn" style="height: 261px;width: 220px;">
+			<a href="/relation/similarity" class="a-btn" style="height: 220px;width: 180px;">
 				<span>
-					<img src="/static/images/relation_search.png" width="170xp" height="170px">
+					<img src="/static/images/relation_search.png" width="140xp" height="140px">
 				</span>
-				<span class="a-btn-text" style="margin-top: 35px !important;">相似搜索</span> 
+				<span class="a-btn-text" style="margin-top: 15px !important;">相似搜索</span> 
 			</a>
 		</div>	
 
