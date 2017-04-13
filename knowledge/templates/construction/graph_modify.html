@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/graph_modify.css">
 <style>
     .bootstrap-table {
-        margin-top: 60px;
+        margin-top: 20px;
     }
     .table>thead:first-child>tr:first-child>th {
         width: 10%;
@@ -107,7 +107,31 @@
             <!--<span>入库日期</span><input type="text" class="warehousing">-->
             <button class="rel_submit">确 定</button>
         </div>
-        <div id="rel_list" style="width: 100%"></div>
+        <div class="relation" style="margin-top:50px;display:none;">
+            <p class="have" style="display: inline-block;">
+                <b>关系：</b>
+            </p>
+            <div style="margin-top:10px;">
+                <b>增加关系：</b>
+                <select id="new_rel" onchange="add_rel(this.value)"
+                        style="display: inline-block;position: relative;top:2px;
+                padding: 2px 5px;border: 1px solid silver;margin: 0 10px;">
+
+                </select>
+                <input type="text" class="other_rel" style="display: none;
+                padding:4px 5px;border: 1px solid silver;margin: 0 20px;"/>
+                <button type="button" class="btn btn-default btn-sm yes"
+                        style="display: inline-block;padding: 2px 6px;">确定</button>
+            </div>
+            <!--<div>-->
+                <!--<button type="button" class="btn btn-default change_rel"-->
+                <!--style="float: right;margin: 25px 120px 0 0;">确定修改关系</button>-->
+            <!--</div>-->
+        </div>
+        <!--<div class="rel_list" style="width: 100%">-->
+            <!--<div id="rel_list"></div>-->
+        <!--</div>-->
+
     </div>
 
 </div>
@@ -396,7 +420,44 @@
     </div>
 </div>
 
+<!--人物更新关系-->
+<div class="modal fade" id="update_rel" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">关系选择</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <span style="font-size: 12px;color: #676767">计算关系</span>
+                    <div class="rel_list" style="display: inline-block;margin: 0 10px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="update_rel()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body content">
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="update()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
