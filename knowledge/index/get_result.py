@@ -651,16 +651,25 @@ def get_detail_event(uid_list,user_name):
                 name = ''
             else:
                 name = data['name']
-            if data['real_geo'] != 'NULL':
-                geo = data['real_geo']
-            else:
+            try:
+                if data['real_geo'] != 'NULL':
+                    geo = data['real_geo']
+                else:
+                    geo = ''
+            except KeyError:
                 geo = ''
-            category = data['event_type']
-            if data['real_time'] != 'NULL':
-                time_ts = data['real_time']
-            else:
-                time_ts = ts2date(data['start_ts'])
+            try:
+                category = data['event_type']
+            except KeyError:
+                category = ''
 
+            try:
+                if data['real_time'] != 'NULL':
+                    time_ts = data['real_time']
+                else:
+                    time_ts = ts2date(data['start_ts'])
+            except KeyError:
+                time_ts = ts2date(data['start_ts'])
             try:
                 work_tag = data['work_tag']
                 tags = work_tag.split('&')
