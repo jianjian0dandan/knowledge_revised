@@ -153,12 +153,11 @@ function things(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
 };
 
@@ -327,12 +326,6 @@ function network(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
     });
 };
 
@@ -569,12 +562,11 @@ function character(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row.id);
+            }
+        }
     });
 };
 //----人物自动标签
@@ -618,8 +610,6 @@ require(
     function (ec) {
         // 基于准备好的dom，初始化echarts图表
         var myChart = ec.init(document.getElementById('label_left'));
-
-
         option = {
             title: {
                 // text: '关键词',

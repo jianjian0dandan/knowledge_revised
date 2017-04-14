@@ -1,3 +1,6 @@
+function getLocalTime(nS) {
+    return new Date(parseInt(nS) * 1000).toLocaleString().replace(/年|月|\//g, "-").replace(/日|上午|下午/g, " ").substr(0,10);
+}
 require.config({
     paths: {
         echarts: '/static/js/echarts-2/build/dist',
@@ -59,7 +62,11 @@ function theme_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[2];
+                    if (row[2]==''||row[2]=='null'||row[2]=='unknown'){
+                        return '未知';
+                    }else {
+                        return row[2];
+                    }
                 }
             },
             {
@@ -73,7 +80,7 @@ function theme_list(data) {
                     if (row[3]==''||row[3]=='NULL'){
                         return '暂无数据';
                     }else {
-                        return row[3];
+                        return getLocalTime(row[3]);
                     }
                 },
             },
@@ -125,8 +132,10 @@ function theme_list(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
     $('#list-2').bootstrapTable('load', data2);
     $('#list-2').bootstrapTable({
@@ -166,7 +175,11 @@ function theme_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[2];
+                    if (row[2]==''||row[2]=='null'||row[2]=='unknown'){
+                        return '未知';
+                    }else {
+                        return row[2];
+                    }
                 }
             },
             {
@@ -180,7 +193,7 @@ function theme_list(data) {
                     if (row[3]==''||row[3]=='NULL'){
                         return '暂无数据';
                     }else {
-                        return row[3];
+                        return getLocalTime(row[3]);
                     }
                 },
             },
@@ -192,7 +205,7 @@ function theme_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[4]==''||row[4]=='NULL'){
+                    if (row[4]==''||row[4]=='null'){
                         return '未知';
                     }else {
                         return row[4];
@@ -232,8 +245,10 @@ function theme_list(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
 };
 $('#container .include .edit input').on('click',function () {
@@ -320,7 +335,7 @@ function user_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                    if (row[2]==''||row[2]=='null'||row[2]=='unknown'){
                         return '未知';
                     }else {
                         return row[2];
@@ -375,8 +390,10 @@ function user_list(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }
+        },
     });
     $('#list-2-user').bootstrapTable('load', data2);
     $('#list-2-user').bootstrapTable({
@@ -486,8 +503,10 @@ function user_list(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }
+        },
     });
 };
 $('#container .link_user .edit-user input').on('click',function () {

@@ -90,6 +90,7 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
     uid_list = [uid]
     result = dict()
     flag = 0
+    evaluate_max = get_evaluate_max()
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
@@ -350,6 +351,7 @@ def get_event_weibo(event_id):#根据事件id获取微博文本
     result = []
     uid_list = []
     s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    count = 0
     while True:
         try:
             scan_re = s_re.next()
@@ -363,6 +365,9 @@ def get_event_weibo(event_id):#根据事件id获取微博文本
             ts = ts2date(source['timestamp'])
             result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
             uid_list.append(uid)
+            count = count + 1
+            if count >= 1500:
+                break
         except StopIteration:
             print "all done"
             break
@@ -447,9 +452,9 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
     if len(peo_list):
         peo_name = uid_2_name_list(peo_list)
         if peo_name == '-1':
-            peo_name = {}
+            peo_name = []
     else:
-        peo_name = {}
+        peo_name = []
 
     p_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-(m) return m LIMIT 10' % (index_name,index_primary,uid,org_index_name,org_primary)
     p_result = graph.run(p_string)
@@ -464,9 +469,9 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
     if len(org_list):
         org_name = uid_2_name_list(org_list)
         if org_name == '-1':
-            org_name = {}
+            org_name = []
     else:
-        org_name = {}
+        org_name = []
 
     p_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-(m) return m LIMIT 10' % (index_name,index_primary,uid,event_index_name,event_primary)
     p_result = graph.run(p_string)
@@ -481,7 +486,7 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
     if len(event_list):
         event_name = event_id_name_list(event_list)
     else:
-        event_name = {}
+        event_name = []
 
     relation_name = {'people':peo_name,'org':org_name,'event':event_name}
 

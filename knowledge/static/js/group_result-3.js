@@ -224,6 +224,7 @@ $('#container #content_left .place .define').on('click',function () {
 //=============
 var line=[],city=[];
 function people(data) {
+    console.log(data)
     if (p==1){
         $.each(data.line,function (index,item) {
             line.push(
@@ -263,11 +264,7 @@ function people(data) {
                 tooltip : {
                     trigger: 'item',
                     formatter: function (v) {
-                        if (v.seriesIndex==0){
-                            return v.name;
-                        }else {
-                            return v[1] + '  ' + v[2] + '次';
-                        }
+                        return v.name;
                     }
                 },
                 dataRange: {

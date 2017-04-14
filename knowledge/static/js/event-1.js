@@ -54,7 +54,18 @@ if (result_1.real_auth==''||result_1.real_auth=='unknown' ||result_1.real_auth==
     }
 };
 
-// $('.bus_tag').html(tag);
+if (result_1.work_tag==''||result_1.work_tag=='unknown' ||result_1.work_tag.length==0){
+    $('.bus_tag').text('暂无');
+}else {
+    var words=result_1.work_tag;
+    if (words.length<=3){
+        $('.bus_tag').text(words.join(','));
+    }else {
+        var key=words.splice(0,3).join(',');
+        $('.bus_tag').attr('title',key);
+        $('.bus_tag').text(key);
+    }
+};
 
 $('.weibo').text(result_1.weibo_counts);
 $('.discuss').text(result_1.uid_counts);

@@ -26,7 +26,7 @@
             </label>
         </div>
         <div id="card_set">
-            <div id="gov_card_details" class="card" style="padding:30px 0 0 30px">
+            <div class="gov_card_details card" style="padding:30px 0 0 30px">
                 <div class="details-1">
                     <div class="details-1-left">
                         <h3 class="name" title="中华人民共和国">中华人民共和国</h3>
@@ -46,7 +46,7 @@
                     <span class="tag">大学生</span>
                 </div>
             </div>
-            <div id="per_card_details" class="card" style="padding:10px 0 0 0;">
+            <div class="per_card_details card" style="padding:10px 0 0 0;">
                 <div class="details-1">
                     <div class="details-1-top">
                         <img src="/static/images/unknown.png" class="photo">
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div id="event_card_details" class="card">
+            <div class="event_card_details card">
                 <div class="details-left">
                     <h3 class="name" title="徐玉玉事件">徐玉玉事件</h3>
                     <p>发生时间：<b class="time">2016-9-12</b></p>
@@ -125,7 +125,7 @@
 {% endblock %}
 
 {% block my_js %}
-<script src="/static/js/card_display-1.js"></script>
+
 <script>
 //    $('body').height($(window).height());
     var h=1;
@@ -148,5 +148,11 @@
             s=1;
         }
     });
+    var result={{result|tojson}};
+    var flag={{flag|tojson}};
+//    console.log(result)
+// var cards_list =  result;
+
 </script>
+<!--<script src="/static/js/card_display-1.js"></script>-->
 {% endblock %}

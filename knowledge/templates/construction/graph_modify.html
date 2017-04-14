@@ -467,6 +467,8 @@
         $('#event_complie').modal('show')
     });
     var submit_user=$('#name').text();
+    var _id="{{_id}}";
+    var _type="{{_type}}";
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {
             if ($(this).val()==1){
@@ -483,15 +485,7 @@
         $('#datetimepicker2').datetimepicker();
         $('#datetimepicker3').datetimepicker();
     });
-//    $('.form_datetime').datetimepicker('format', new Date());
-//    $('#datetimepicker2').datetimepicker();
-//    $('#datetimepicker3').datetimepicker();
-//    $("#datetimepicker2").on("dp.change",function (e) {
-//        $('#datetimepicker3').data("DateTimePicker").minDate(e.date);
-//    });
-//    $("#datetimepicker2").on("dp.change",function (e) {
-//        $('#datetimepicker3').data("DateTimePicker").maxDate(e.date);
-//    });
+
 
 
 </script>

@@ -90,12 +90,38 @@
         <div class="text_info" style="padding-top:12px">
             <h3>文本信息</h3>
             <div class="button_list">
-                <button id="all">所有微博文本</button>
+                <button id="all" style="background-color:#8bc34a;">所有微博文本</button>
                 <button id="media">媒体微博文本</button>
                 <button id="internet_users">网名微博文本</button>
             </div>
             <div class="info_content">
+                <div id="group_emotion_loading" style="display:block;text-align:center;">正在加载，请稍后...</div>
+                <div id="influeweibo" style="overflow-x: auto; overflow-y: auto;height:auto;">
+                    <table id="input-table" class="In-table" style="display: block;">
+                        <tbody class="In-table" style='width:100%!important;'>
+                        </tbody>
+                    </table>
+                </div>
+                <div class='fanye' style="width:100%;text-align:center;">
+                    <span style="display:none;">
+                        每页显示
+                        <input type="text" id="PageNo" size="5" value="5"
+                                   style='text-align:center;border:1px solid #ccc;'/>组
+                    </span>
+                    <div id="div-button" style="display:inline-block;margin-left:5px;">
+                        <input type="button" value="首页" id="F-page"
+                               style='border-radius: 5px;padding: 3px 5px;font-size: 10px;'>
+                        <input type="button" value="上一页" id="Pre-page"
+                               style='border-radius: 5px;padding: 3px 5px;font-size: 10px;'>
+                        <input type="button" value="下一页" id="Nex-page"
+                               style='border-radius: 5px;padding: 3px 5px;font-size: 10px;'>
+                        <input type="button" value="尾页" id="L-page"
+                               style='border-radius: 5px;padding: 3px 5px;font-size: 10px;'>
+                    </div>
+                    <span style="display:inline-block;">&nbsp;当前第<span id="s2"></span>页</span>
+                    <span style="display:inline-block;">总共<span id="s1"></span>页</span>
 
+                </div>
             </div>
         </div>
     </div>
@@ -172,11 +198,12 @@
     });
     var result_1={{result_att|tojson}};
     var result_2={{relation_dict|tojson}};
-    console.log(result_1,result_2);
+    var result_3={{text_list|tojson}};
+    var user_id=result_1.en_name;
     $('#event_content #content_left .basic .basic-1 .edit').on('click',function () {
-        window.open('/theme/modify/?theme_name='+$('.event_name').text());
+        window.open('/construction/graph_modify/?_id='+$('.event_name').text()+'&_type=Event');
     });
-    var user_id='{{user_id}}';
+
     $('#chart').on('click',function () {
         window.open('/index/graph/?user_id='+user_id+'&node_type=event');
     });
@@ -185,7 +212,6 @@
     });
 
 </script>
-<!--<script src="/static/js/wordcloud.js"></script>-->
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 <script src="/static/js/event-1.js"></script>
 <script src="/static/js/event-2.js"></script>

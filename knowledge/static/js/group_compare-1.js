@@ -126,41 +126,12 @@ function group_user(data) {
                     }
                 },
             },
-            // {
-            //     title: "自动标签",//标题
-            //     field: "",//键名
-            //     sortable: true,//是否可排序
-            //     order: "desc",//默认排序方式
-            //     align: "center",//水平
-            //     valign: "middle",//垂直
-            //     formatter: function (value, row, index) {
-            //         if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
-            //             return '暂无';
-            //         }else {
-            //             return row[6].toString().split('&').slice(0,6);
-            //         }
-            //     },
-            // },
-            // {
-            //     title: "业务标签",//标题
-            //     field: "",//键名
-            //     sortable: true,//是否可排序
-            //     order: "desc",//默认排序方式
-            //     align: "center",//水平
-            //     valign: "middle",//垂直
-            //     formatter: function (value, row, index) {
-            //         if (row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
-            //             return '暂无';
-            //         }else {
-            //             return row[7];
-            //         }
-            //     },
-            // },
-
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }
+        },
     });
     $('#list-2-user').bootstrapTable('load', data2);
     $('#list-2-user').bootstrapTable({
@@ -269,8 +240,10 @@ function group_user(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }
+        },
     });
 };
 $('#container .include .edit-user input').on('click',function () {
@@ -408,8 +381,10 @@ function event(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
     $('#list-2').bootstrapTable('load', data2);
     $('#list-2').bootstrapTable({
@@ -515,8 +490,10 @@ function event(data) {
 
         ],
         onClickCell: function (field, value, row, $element) {
-
-        }
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }
+        },
     });
 };
 $('#container .link_event .edit input').on('click',function () {
