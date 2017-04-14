@@ -1,568 +1,562 @@
-/**
- * Created by Administrator on 2017/3/18.
- */
-
-//活动信息
-require.config({
-    paths: {
-        echarts: '/static/js/echarts-2/build/dist',
+//认证类型
+var attest_type={
+    '0':'名人','1':'政府','2':'企业', '3':'媒体',
+    '4':'校园','5':'网站','6':'应用', '7':'团体(机构)','8':'待审机构',
+    '-1':'普通用户','200':'初级达人','220':'中高级达人','400':'已故V用户'
+};
+//姓名
+var name;
+if (result_1.uname==""||result_1.uname=='NUll'||result_1.uname=='unknown'){
+    name=result_1.uid;
+}else {
+    name=result_1.uname
+}
+$('.user_name').text(name);
+$('.org_name').text(name);
+//基本信息
+$('.ID').text(result_1.uid);
+if (result_1.photo_url==''||result_1.photo_url=='unknown'
+    ||result_1.photo_url=='NULL'){
+    $('.in_photo img').attr('src','/static/images/unknown.png');
+}else {
+    $('.in_photo img').attr('src',result_1.photo_url);
+};
+if (result_1.verify_type in attest_type){
+    if (result_1.verify_type==0||result_1.verify_type==200
+        ||result_1.verify_type==220||result_1.verify_type==400){
+        $('.attest').text('否');
+    }else {
+        $('.attest').text('是');
     }
+    $('.attest_type').text(attest_type[result_1.verify_type]);
+}else {
+    $('.attest').text('否');
+    $('.attest_type').text('未知');
+}
+if (result_1.description==''||result_1.description=='unknown'
+    ||result_1.description=='NULL'){
+    $('.description').text('暂无数据');
+}else {
+    $('.description').attr('title',result_1.description);
+    $('.description').text(result_1.description);
+};
+if (result_1.location==''||result_1.location=='unknown'
+    ||result_1.location=='NULL'){
+    $('.place').text('未知');
+}else {
+    $('.place').text(result_1.location);
+};
+if (result_1.domain==''||result_1.domain=='unknown'
+    ||result_1.domain=='NULL'){
+    $('.identity').text('未知');
+}else {
+    $('.identity').text(result_1.domain);
+};
+if (result_1.domain==''||result_1.domain=='unknown'
+    ||result_1.domain=='NULL'){
+    $('.identity').text('未知');
+}else {
+    $('.identity').text(result_1.domain);
+}
+
+if (result_1.function_mark==''||result_1.function_mark=='unknown'
+    ||result_1.function_mark.length==0){
+    $('.tag').append('暂无');
+}else {
+    var tag='';
+    var words=result_1.function_mark;
+    if (words.length<=7){
+        tag=words.join(',');
+    }else {
+        var key=words.splice(0,7).join(',');
+        var tit=words.splice(7).join(',');
+        tag+='<p title="'+tit+'">'+key+'</p> ';
+    }
+    $('.tag').append(tag);
+};
+
+if (result_4.fansnum==''||result_4.fansnum=='unknown'
+    ||result_4.fansnum=='NULL'){
+    $('.fansnum').text('0');
+}else {
+    $('.fansnum').text(result_4.fansnum);
+};
+
+if (result_4.statusnum==''||result_4.statusnum=='unknown'
+    ||result_4.statusnum=='NULL'){
+    $('.focus').text('0');
+}else {
+    $('.focus').text(result_4.statusnum);
+}
+
+if (result_4.friendnum==''||result_4.friendnum=='unknown'
+    ||result_4.friendnum=='NULL'){
+    $('.weibonum').text('0');
+}else {
+    $('.weibonum').text(result_4.friendnum);
+}
+
+var link='http://weibo.com/u/'+result_1.uid;
+$('.weibo_link a').attr('href',link);
+$('.weibo_link a').text(link);
+
+$('.influ-1 .active0').text(result_1.activeness.toFixed(2));
+if (result_1.activeness <= 33&&result_1.activeness >= 0) {
+    $('.influ-1 .level0').text('低');
+}else if (result_1.activeness <= 66 &&result_1.activeness > 33) {
+    $('.influ-1 .level0').text('中');
+}else if(result_1.activeness <= 100&&result_1.activeness > 66) {
+    $('.influ-1 .level0').text('高');
+};
+
+$('.influ-1 .active1').text(result_1.influence.toFixed(2));
+if (result_1.influence <= 33&&result_1.influence >= 0) {
+    $('.influ-1 .level1').text('低');
+}else if (result_1.influence <= 66 &&result_1.influence > 33) {
+    $('.influ-1 .level1').text('中');
+}else if(result_1.influence <= 100 &&result_1.influence > 66) {
+    $('.influ-1 .level1').text('高');
+};
+
+$('.influ-1 .active2').text(result_1.sensitive.toFixed(2));
+if (result_1.sensitive <= 33&&result_1.sensitive >= 0) {
+    $('.influ-1 .level2').text('低');
+}else if (result_1.sensitive <= 66 &&result_1.sensitive > 33) {
+    $('.influ-1 .level2').text('中');
+}else if(result_1.sensitive <= 100 &&result_1.sensitive > 66) {
+    $('.influ-1 .level2').text('高');
+}
+
+if (result_1.activity_geo==''||result_1.activity_geo=='unknown'
+    ||result_1.activity_geo=='NULL'){
+    $('.activity .position').text('未知');
+}else {
+    $('.activity .position').text(result_1.activity_geo.replace(/&|局域网|中国/g,' '));
+};
+
+if (result_1.activity_ip==''||result_1.activity_ip=='unknown'
+    ||result_1.activity_ip=='NULL'){
+    $('.activity .IP').text('未知');
+}else {
+    $('.activity .IP').text(result_1.activity_ip);
+};
+
+if (result_1.submit_ts==''||result_1.submit_ts=='unknown'
+    ||result_1.submit_ts=='NULL'){
+    $('.activity .time').text('未知');
+}else {
+    $('.activity .time').text(getLocalTime(result_1.submit_ts));
+};
+
+if (result_1.topic_string==''||result_1.topic_string=='unknown'
+    ||result_1.hashtag=='NULL'){
+    $('#organization #content_left .preference .talk .talk_name').append('暂无');
+}else {
+    var tag='';
+    var words=result_1.topic_string.split('&');
+    if (words.length<=5){
+        tag=words.join(',');
+    }else {
+        var key=words.splice(0,5).join(',');
+        var tit=words.splice(5).join(',');
+        tag+='<span title="'+tit+'">'+key+'</span> ';
+    }
+    $('#organization #content_left .preference .talk .talk_name').append(tag);
+};
+//社交信息
+var retweet=result_3.retweet;
+var retweet_1=[],retweet_2=[];
+for (var r in retweet){
+    if (retweet[r]==''||retweet[r]=='NULL'||retweet[r]=='unknown'){
+        retweet_1.push('<a uid="'+r+'">'+r+'</a> ');
+        retweet_2.push(r);
+    }else {
+        retweet_1.push('<a uid="'+r+'">'+retweet[r]+'</a> ');
+        retweet_2.push(retweet[r]);
+    };
+};
+$('#organization #content_left .social .soc_one .user').attr('title',retweet_2.join(','));
+$('#organization #content_left .social .soc_one .user').html(retweet_1);
+
+var beretweet=result_3.beretweet;
+var beretweet_1=[],beretweet_2=[];
+for (var r in beretweet){
+    if (beretweet[r]==''||beretweet[r]=='NULL'||beretweet[r]=='unknown'){
+        beretweet_1.push('<a uid="'+r+'">'+r+'</a> ');
+        beretweet_2.push(r);
+    }else {
+        beretweet_1.push('<a uid="'+r+'">'+beretweet[r]+'</a> ');
+        beretweet_2.push(beretweet[r]);
+    };
+};
+$('#organization #content_left .social .soc_two .user').attr('title',beretweet_2.join(','));
+$('#organization #content_left .social .soc_two .user').html(beretweet_1);
+
+var comment=result_3.comment;
+var comment_1=[];
+var comment_2=[];
+for (var r in comment){
+    if (comment[r]==''||comment[r]=='NULL'||comment[r]=='unknown'){
+        comment_1.push('<a uid="'+r+'">'+r+'</a> ');
+        comment_2.push(r);
+    }else {
+        comment_1.push('<a uid="'+r+'">'+comment[r]+'</a> ');
+        comment_2.push(comment[r]);
+    };
+};
+$('#organization #content_left .social .soc_three .user').attr('title',comment_2.join(','));
+$('#organization #content_left .social .soc_three .user').html(comment_1);
+
+var becomment=result_3.becomment;
+var becomment_1=[],becomment_2=[];
+for (var r in becomment){
+    if (becomment[r]==''||becomment[r]=='NULL'||becomment[r]=='unknown'){
+        becomment_1.push('<a uid="'+r+'">'+r+'</a> ');
+        becomment_2.push(r);
+    }else {
+        becomment_1.push('<a uid="'+r+'">'+becomment[r]+'</a> ');
+        becomment_2.push(becomment[r]);
+    };
+};
+$('#organization #content_left .social .soc_four .user').attr('title',becomment_2.join(','));
+$('#organization #content_left .social .soc_four .user').html(becomment_1);
+
+$('#organization #content_left .social .user a').on('click',function () {
+    window.open('/index/person/?user_id='+$(this).attr('uid'));
 });
-require(
-    [
-        'echarts',
-        'echarts/chart/map'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('activity_map'));
-        var option = {
-            color: ['gold','aqua','lime'],
-            tooltip : {
-                trigger: 'item',
-                formatter: '{b}'
-            },
-            dataRange: {
-                min : 0,
-                max : 100,
-                calculable : true,
-                color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
-                textStyle:{
-                    color:'#676767'
-                }
-            },
-            series : [
-                {
-                    type: 'map',
-                    roam: true,
-                    hoverable: true,
-                    mapType: 'china',
-                    itemStyle:{
-                        normal:{
-                            borderColor:'rgba(100,149,237,1)',
-                            borderWidth:0.5,
-                            areaStyle:{
-                                color: '#e7e7e8'
-                            }
-                        },
-                        emphasis:{
-                            label:{
-                                show:true,
-                                areaStyle:{
-                                    color: '#67b4d0'
-                                }
-                            }
-                        }
 
-                    },
-                    data:[],
-                    geoCoord: {
-                        '上海': [121.4648,31.2891],
-                        '东莞': [113.8953,22.901],
-                        '东营': [118.7073,37.5513],
-                        '中山': [113.4229,22.478],
-                        '临汾': [111.4783,36.1615],
-                        '临沂': [118.3118,35.2936],
-                        '丹东': [124.541,40.4242],
-                        '丽水': [119.5642,28.1854],
-                        '乌鲁木齐': [87.9236,43.5883],
-                        '佛山': [112.8955,23.1097],
-                        '保定': [115.0488,39.0948],
-                        '兰州': [103.5901,36.3043],
-                        '包头': [110.3467,41.4899],
-                        '北京': [116.4551,40.2539],
-                        '北海': [109.314,21.6211],
-                        '南京': [118.8062,31.9208],
-                        '南宁': [108.479,23.1152],
-                        '南昌': [116.0046,28.6633],
-                        '南通': [121.1023,32.1625],
-                        '厦门': [118.1689,24.6478],
-                        '台州': [121.1353,28.6688],
-                        '合肥': [117.29,32.0581],
-                        '呼和浩特': [111.4124,40.4901],
-                        '咸阳': [108.4131,34.8706],
-                        '哈尔滨': [127.9688,45.368],
-                        '唐山': [118.4766,39.6826],
-                        '嘉兴': [120.9155,30.6354],
-                        '大同': [113.7854,39.8035],
-                        '大连': [122.2229,39.4409],
-                        '天津': [117.4219,39.4189],
-                        '太原': [112.3352,37.9413],
-                        '威海': [121.9482,37.1393],
-                        '宁波': [121.5967,29.6466],
-                        '宝鸡': [107.1826,34.3433],
-                        '宿迁': [118.5535,33.7775],
-                        '常州': [119.4543,31.5582],
-                        '广州': [113.5107,23.2196],
-                        '廊坊': [116.521,39.0509],
-                        '延安': [109.1052,36.4252],
-                        '张家口': [115.1477,40.8527],
-                        '徐州': [117.5208,34.3268],
-                        '德州': [116.6858,37.2107],
-                        '惠州': [114.6204,23.1647],
-                        '成都': [103.9526,30.7617],
-                        '扬州': [119.4653,32.8162],
-                        '承德': [117.5757,41.4075],
-                        '拉萨': [91.1865,30.1465],
-                        '无锡': [120.3442,31.5527],
-                        '日照': [119.2786,35.5023],
-                        '昆明': [102.9199,25.4663],
-                        '杭州': [119.5313,29.8773],
-                        '枣庄': [117.323,34.8926],
-                        '柳州': [109.3799,24.9774],
-                        '株洲': [113.5327,27.0319],
-                        '武汉': [114.3896,30.6628],
-                        '汕头': [117.1692,23.3405],
-                        '江门': [112.6318,22.1484],
-                        '沈阳': [123.1238,42.1216],
-                        '沧州': [116.8286,38.2104],
-                        '河源': [114.917,23.9722],
-                        '泉州': [118.3228,25.1147],
-                        '泰安': [117.0264,36.0516],
-                        '泰州': [120.0586,32.5525],
-                        '济南': [117.1582,36.8701],
-                        '济宁': [116.8286,35.3375],
-                        '海口': [110.3893,19.8516],
-                        '淄博': [118.0371,36.6064],
-                        '淮安': [118.927,33.4039],
-                        '深圳': [114.5435,22.5439],
-                        '清远': [112.9175,24.3292],
-                        '温州': [120.498,27.8119],
-                        '渭南': [109.7864,35.0299],
-                        '湖州': [119.8608,30.7782],
-                        '湘潭': [112.5439,27.7075],
-                        '滨州': [117.8174,37.4963],
-                        '潍坊': [119.0918,36.524],
-                        '烟台': [120.7397,37.5128],
-                        '玉溪': [101.9312,23.8898],
-                        '珠海': [113.7305,22.1155],
-                        '盐城': [120.2234,33.5577],
-                        '盘锦': [121.9482,41.0449],
-                        '石家庄': [114.4995,38.1006],
-                        '福州': [119.4543,25.9222],
-                        '秦皇岛': [119.2126,40.0232],
-                        '绍兴': [120.564,29.7565],
-                        '聊城': [115.9167,36.4032],
-                        '肇庆': [112.1265,23.5822],
-                        '舟山': [122.2559,30.2234],
-                        '苏州': [120.6519,31.3989],
-                        '莱芜': [117.6526,36.2714],
-                        '菏泽': [115.6201,35.2057],
-                        '营口': [122.4316,40.4297],
-                        '葫芦岛': [120.1575,40.578],
-                        '衡水': [115.8838,37.7161],
-                        '衢州': [118.6853,28.8666],
-                        '西宁': [101.4038,36.8207],
-                        '西安': [109.1162,34.2004],
-                        '贵阳': [106.6992,26.7682],
-                        '连云港': [119.1248,34.552],
-                        '邢台': [114.8071,37.2821],
-                        '邯郸': [114.4775,36.535],
-                        '郑州': [113.4668,34.6234],
-                        '鄂尔多斯': [108.9734,39.2487],
-                        '重庆': [107.7539,30.1904],
-                        '金华': [120.0037,29.1028],
-                        '铜川': [109.0393,35.1947],
-                        '银川': [106.3586,38.1775],
-                        '镇江': [119.4763,31.9702],
-                        '长春': [125.8154,44.2584],
-                        '长沙': [113.0823,28.2568],
-                        '长治': [112.8625,36.4746],
-                        '阳泉': [113.4778,38.0951],
-                        '青岛': [120.4651,36.3373],
-                        '韶关': [113.7964,24.7028]
-                    }
-                },
-                {
-                    type: 'map',
-                    mapType: 'china',
-                    data:[],
-                    markLine : {
-                        smooth:true,
-                        effect : {
-                            show: true,
-                            scaleSize: 1,
-                            period: 30,
-                            color: '#fff',
-                            shadowBlur: 10
-                        },
-                        itemStyle : {
-                            normal: {
-                                borderWidth:1,
-                                lineStyle: {
-                                    type: 'solid',
-                                    shadowBlur: 10
-                                }
-                            }
-                        },
-                        data : [
-                            [{name:'临沂'}, {name:'上海',value:95}],
-                            [{name:'武汉'}, {name:'广州',value:90}],
-                            [{name:'北京'}, {name:'大连',value:80}],
-                            [{name:'南京'}, {name:'南宁',value:70}],
-                            [{name:'天津'}, {name:'南昌',value:60}],
-                            [{name:'北京'}, {name:'拉萨',value:50}],
-                            [{name:'上海'}, {name:'长春',value:40}],
-                            [{name:'乌鲁木齐'}, {name:'包头',value:30}],
-                            [{name:'广州'}, {name:'重庆',value:20}],
-                            [{name:'长沙'}, {name:'常州',value:10}],
-                            [{name:'大连'}, {name:'拉萨',value:50}],
-                            [{name:'兰州'}, {name:'长春',value:40}],
-                            [{name:'沈阳'}, {name:'包头',value:88}],
-                            [{name:'北京'}, {name:'重庆',value:20}],
-                            [{name:'拉萨'}, {name:'常州',value:66}]
-                        ]
-                    },
-                    markPoint : {
-                        symbol:'emptyCircle',
-                        symbolSize : function (v){
-                            return 10 + v/10
-                        },
-                        effect : {
-                            show: true,
-                            shadowBlur : 0
-                        },
-                        itemStyle:{
-                            normal:{
-                                label:{show:false}
-                            },
-                            emphasis: {
-                                label:{position:'top'}
-                            }
-                        },
-                        data : [
-                            {name:'上海',value:95},
-                            {name:'广州',value:90},
-                            {name:'大连',value:80},
-                            {name:'南宁',value:70},
-                            {name:'南昌',value:60},
-                            {name:'拉萨',value:50},
-                            {name:'长春',value:40},
-                            {name:'包头',value:30},
-                            {name:'重庆',value:20},
-                            {name:'常州',value:10}
-                        ]
-                    }
-                }
-            ]
-        };
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
+//文本信息
+function weibo(){
+    $('#group_emotion_loading').css('display', 'none');
+    $('#input-table').css('display', 'block');
+    var dataArray = result_5;
+    var PageNo=document.getElementById('PageNo');                   //设置每页显示行数
+    var InTb=document.getElementById('input-table');               //表格
+    var Fp=document.getElementById('F-page');                      //首页
+    var Nep=document.getElementById('Nex-page');                  //下一页
+    var Prp=document.getElementById('Pre-page');                  //上一页
+    var Lp=document.getElementById('L-page');                     //尾页
+    var S1=document.getElementById('s1');                         //总页数
+    var S2=document.getElementById('s2');                         //当前页数
+    var currentPage;                                              //定义变量表示当前页数
+    var SumPage;
 
-
-//字符云 ---关键词
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('key_words'));
-
-        function createRandomItemStyle() {
-            return {
-                normal: {
-                    color: 'rgb(' + [
-                        Math.round(Math.random() * 160),
-                        Math.round(Math.random() * 160),
-                        Math.round(Math.random() * 160)
-                    ].join(',') + ')'
-                }
-            };
+    if(PageNo.value!="")                                       //判断每页显示是否为空
+    {
+        InTb.innerHTML='';                                     //每次进来都清空表格
+        S2.innerHTML='';                                        //每次进来清空当前页数
+        currentPage=1;                                          //首页为1
+        S2.appendChild(document.createTextNode(currentPage));
+        S1.innerHTML='';                                        //每次进来清空总页数
+        if(dataArray.length%PageNo.value==0)                    //判断总的页数
+        {
+            SumPage=parseInt(dataArray.length/PageNo.value);
         }
-
-        option = {
-            title: {
-                text: '关键词',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
-                },
-                data: [
-                    {
-                        name: "Sam S Club",
-                        value: 10000,
-                        itemStyle: {
-                            normal: {
-                                color: 'black'
-                            }
-                        }
-                    },
-                    {
-                        name: "Macys",
-                        value: 6181,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Amy Schumer",
-                        value: 4386,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Jurassic World",
-                        value: 4055,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Charter Communications",
-                        value: 2467,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Chick Fil A",
-                        value: 2244,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Planet Fitness",
-                        value: 1898,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Pitch Perfect",
-                        value: 1484,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Express",
-                        value: 1112,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Home",
-                        value: 965,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Johnny Depp",
-                        value: 847,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Lena Dunham",
-                        value: 582,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Lewis Hamilton",
-                        value: 555,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "KXAN",
-                        value: 550,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Mary Ellen Mark",
-                        value: 462,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Farrah Abraham",
-                        value: 366,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Rita Ora",
-                        value: 360,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Serena Williams",
-                        value: 282,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "NCAA baseball tournament",
-                        value: 273,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Point Break",
-                        value: 265,
-                        itemStyle: createRandomItemStyle()
-                    }
-                ]
-            }]
-        };
-
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
-
-// 字符云 ---微话题
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('micro_topic'));
-
-        function createRandomItemStyle() {
-            return {
-                normal: {
-                    color: 'rgb(' + [
-                        Math.round(Math.random() * 160),
-                        Math.round(Math.random() * 160),
-                        Math.round(Math.random() * 160)
-                    ].join(',') + ')'
-                }
-            };
+        else
+        {
+            SumPage=parseInt(dataArray.length/PageNo.value)+1
         }
+        S1.appendChild(document.createTextNode(SumPage));
+        var oTBody=document.createElement('tbody');               //创建tbody
+        oTBody.setAttribute('class','In-table');                   //定义class
+        InTb.appendChild(oTBody);                                     //将创建的tbody添加入table
+        var html_c = '';
 
-        option = {
-            title: {
-                text: '微话题',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
-                },
-                data: [
-                    {
-                        name: "Sam S Club",
-                        value: 10000,
-                        itemStyle: {
-                            normal: {
-                                color: 'black'
-                            }
-                        }
-                    },
-                    {
-                        name: "Macys",
-                        value: 6181,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Amy Schumer",
-                        value: 4386,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Jurassic World",
-                        value: 4055,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Charter Communications",
-                        value: 2467,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Chick Fil A",
-                        value: 2244,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Planet Fitness",
-                        value: 1898,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Pitch Perfect",
-                        value: 1484,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Express",
-                        value: 1112,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Home",
-                        value: 965,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Johnny Depp",
-                        value: 847,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Lena Dunham",
-                        value: 582,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Lewis Hamilton",
-                        value: 555,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "KXAN",
-                        value: 550,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Mary Ellen Mark",
-                        value: 462,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Farrah Abraham",
-                        value: 366,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Rita Ora",
-                        value: 360,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Serena Williams",
-                        value: 282,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "NCAA baseball tournament",
-                        value: 273,
-                        itemStyle: createRandomItemStyle()
-                    },
-                    {
-                        name: "Point Break",
-                        value: 265,
-                        itemStyle: createRandomItemStyle()
-                    }
-                ]
-            }]
-        };
+        if(dataArray==''){
+            html_c = "<p style='text-align: center'>用户未发布任何微博</p>";
+            oTBody.innerHTML = html_c;
+        }else{
 
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
+            for(i=0;i<parseInt(PageNo.value);i++)
+            {                                                          //循环打印数组值
+                oTBody.insertRow(i);
+                var text,time;
+                if (dataArray[i].time==''||dataArray[i].time=='unknown') {
+                    time='未知';
+                }else {
+                    time=dataArray[i].time;
+                };
+                if (dataArray[i].text==''||dataArray[i].text=='unknown') {
+                    text='未发表任何内容';
+                }else {
+                    text=dataArray[i].text;
+                };
+                html_c =
+                    '<div class="published">'+
+                    '     <span id="'+dataArray[i].mid+'"></span>'+
+                    '     <p class="master">'+
+                    '          微博内容：'+
+                    '          <span class="master1">'+text+'</span>'+
+                    '     </p>'+
+                    '     <p class="time">'+
+                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span style="display: inline-block;float:right;">'+
+                    '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
+                    '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
+                    '     </p>'+
+                    '</div>';
+                oTBody.rows[i].insertCell(0);
+                oTBody.rows[i].cells[0].innerHTML = html_c;
+            }
+        }
     }
-);
+
+    Fp.onclick=function()
+    {
+
+        if(PageNo.value!="")                                       //判断每页显示是否为空
+        {
+            InTb.innerHTML='';                                     //每次进来都清空表格
+            S2.innerHTML='';                                        //每次进来清空当前页数
+            currentPage=1;                                          //首页为1
+            S2.appendChild(document.createTextNode(currentPage));
+            S1.innerHTML='';                                        //每次进来清空总页数
+            if(dataArray.length%PageNo.value==0)                    //判断总的页数
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value);
+            }
+            else
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value)+1
+            }
+            S1.appendChild(document.createTextNode(SumPage));
+            var oTBody=document.createElement('tbody');               //创建tbody
+            oTBody.setAttribute('class','In-table');                   //定义class
+            InTb.appendChild(oTBody);                                     //将创建的tbody添加入table
+            var html_c = '';
+
+            if(dataArray==''){
+                html_c = "<p style='width:840px;text-align: center'>用户未发布任何微博</p>";
+                oTBody.innerHTML = html_c;
+            }else{
+
+                for(i=0;i<parseInt(PageNo.value);i++)
+                {                                                          //循环打印数组值
+                    oTBody.insertRow(i);
+                    var text,time;
+                    if (dataArray[i].time==''||dataArray[i].time=='unknown') {
+                        time='未知';
+                    }else {
+                        time=dataArray[i].time;
+                    };
+                    if (dataArray[i].text==''||dataArray[i].text=='unknown') {
+                        text='未发表任何内容';
+                    }else {
+                        text=dataArray[i].text;
+                    };
+                    html_c =
+                        '<div class="published">'+
+                        '     <span id="'+dataArray[i].mid+'"></span>'+
+                        '     <p class="master">'+
+                        '          微博内容：'+
+                        '          <span class="master1">'+text+'</span>'+
+                        '     </p>'+
+                        '     <p class="time">'+
+                        '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                        '        <span style="display: inline-block;float:right;">'+
+                        '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
+                        '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
+                        '     </p>'+
+                        '</div>';
+                    oTBody.rows[i].insertCell(0);
+                    oTBody.rows[i].cells[0].innerHTML = html_c;
+                }
+            }
+        }
+    }
+
+    Nep.onclick=function()
+    {
+        if(currentPage<SumPage)                                 //判断当前页数小于总页数
+        {
+            InTb.innerHTML='';
+            S1.innerHTML='';
+            if(dataArray.length%PageNo.value==0)
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value);
+            }
+            else
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value)+1
+            }
+            S1.appendChild(document.createTextNode(SumPage));
+            S2.innerHTML='';
+            currentPage=currentPage+1;
+            S2.appendChild(document.createTextNode(currentPage));
+            var oTBody=document.createElement('tbody');
+            oTBody.setAttribute('class','In-table');
+            InTb.appendChild(oTBody);
+            var a;                                                 //定义变量a
+            a=PageNo.value*(currentPage-1);                       //a等于每页显示的行数乘以上一页数
+            var c;                                                  //定义变量c
+            if(dataArray.length-a>=PageNo.value)                  //判断下一页数组数据是否小于每页显示行数
+            {
+                c=PageNo.value;
+            }
+            else
+            {
+                c=dataArray.length-a;
+            }
+            for(i=0;i<c;i++)
+            {
+                oTBody.insertRow(i);
+                var text,time;
+                if (dataArray[i+a].time==''||dataArray[i+a].time=='unknown') {
+                    time='未知';
+                }else {
+                    time=dataArray[i+a].time;
+                };
+                if (dataArray[i+a].text==''||dataArray[i+a].text=='unknown') {
+                    text='未发表任何内容';
+                }else {
+                    text=dataArray[i+a].text;
+                };
+                oTBody.rows[i].insertCell(0);
+                html_c =
+                    '<div class="published">'+
+                    '     <span id="'+dataArray[i+a].mid+'"></span>'+
+                    '     <p class="master">'+
+                    '          微博内容：'+
+                    '          <span class="master1">'+text+'</span>'+
+                    '     </p>'+
+                    '     <p class="time">'+
+                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span style="display: inline-block;float:right;">'+
+                    '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
+                    '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
+                    '     </p>'+
+                    '</div>';
+                oTBody.rows[i].cells[0].innerHTML = html_c;
+                //数组从第i+a开始取值
+            }
+        }
+    }
+
+    Prp.onclick=function()
+    {
+        if(currentPage>1)                        //判断当前是否在第一页
+        {
+            InTb.innerHTML='';
+            S1.innerHTML='';
+            if(dataArray.length%PageNo.value==0)
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value);
+            }
+            else
+            {
+                SumPage=parseInt(dataArray.length/PageNo.value)+1
+            }
+            S1.appendChild(document.createTextNode(SumPage));
+            S2.innerHTML='';
+            currentPage=currentPage-1;
+            S2.appendChild(document.createTextNode(currentPage));
+            var oTBody=document.createElement('tbody');
+            oTBody.setAttribute('class','In-table');
+            InTb.appendChild(oTBody);
+            var a;
+            a=PageNo.value*(currentPage-1);
+            for(i=0;i<parseInt(PageNo.value);i++)
+            {
+                oTBody.insertRow(i);
+                var text,time;
+                if (dataArray[i+a].time==''||dataArray[i+a].time=='unknown') {
+                    time='未知';
+                }else {
+                    time=dataArray[i+a].time;
+                };
+                if (dataArray[i+a].text==''||dataArray[i+a].text=='unknown') {
+                    text='未发表任何内容';
+                }else {
+                    text=dataArray[i+a].text;
+                };
+                oTBody.rows[i].insertCell(0);
+                html_c =
+                    '<div class="published">'+
+                    '     <span id="'+dataArray[i+a].mid+'"></span>'+
+                    '     <p class="master">'+
+                    '          微博内容：'+
+                    '          <span class="master1">'+text+'</span>'+
+                    '     </p>'+
+                    '     <p class="time">'+
+                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span style="display: inline-block;float:right;">'+
+                    '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
+                    '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
+                    '     </p>'+
+                    '</div>';
+                oTBody.rows[i].cells[0].innerHTML = html_c;
+            }
+        }
+    }
+
+    Lp.onclick=function()
+    {
+        InTb.innerHTML='';
+        S1.innerHTML='';
+        if(dataArray.length%PageNo.value==0)
+        {
+            SumPage=parseInt(dataArray.length/PageNo.value);
+        }
+        else
+        {
+            SumPage=parseInt(dataArray.length/PageNo.value)+1
+        }
+        S1.appendChild(document.createTextNode(SumPage));
+        S2.innerHTML='';
+        currentPage=SumPage;
+        S2.appendChild(document.createTextNode(currentPage));
+        var oTBody=document.createElement('tbody');
+        oTBody.setAttribute('class','In-table');
+        InTb.appendChild(oTBody);
+        var a;
+        a=PageNo.value*(currentPage-1);
+        var c;
+        if(dataArray.length-a>=PageNo.value)
+        {
+            c=PageNo.value;
+        }
+        else
+        {
+            c=dataArray.length-a;
+        }
+        for(i=0;i<c;i++)
+        {
+            oTBody.insertRow(i);
+            var text,time;
+            if (dataArray[i+a].time==''||dataArray[i+a].time=='unknown') {
+                time='未知';
+            }else {
+                time=dataArray[i+a].time;
+            };
+            if (dataArray[i+a].text==''||dataArray[i+a].text=='unknown') {
+                text='未发表任何内容';
+            }else {
+                text=dataArray[i+a].text;
+            };
+            oTBody.rows[i].insertCell(0);
+            html_c =
+                '<div class="published">'+
+                '     <span id="'+dataArray[i+a].mid+'"></span>'+
+                '     <p class="master">'+
+                '          微博内容：'+
+                '          <span class="master1">'+text+'</span>'+
+                '     </p>'+
+                '     <p class="time">'+
+                '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                '        <span style="display: inline-block;float:right;">'+
+                '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
+                '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
+                '     </p>'+
+                '</div>';
+            oTBody.rows[i].cells[0].innerHTML = html_c;
+        }
+    }
+
+}
+weibo();
+
+
+//===========================
+function getLocalTime(nS) {
+    return new Date(parseInt(nS) * 1000).toLocaleString().replace(/年|月|\//g, "-").replace(/日|上午|下午/g, " ");
+}

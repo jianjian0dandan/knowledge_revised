@@ -45,7 +45,9 @@ def construction_graph_add():#图谱添加
 @mod.route('/graph_modify/')
 @login_required
 def construction_graph_modify():#图谱编辑
-    return render_template('construction/graph_modify.html')
+    _type = request.args.get('_type', '')
+    _id = request.args.get('_id', '')
+    return render_template('construction/graph_modify.html',_id=_id,_type=_type)
 
 @mod.route('/node/')
 def add_node():

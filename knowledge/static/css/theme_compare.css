@@ -69,7 +69,7 @@ body {
 /*关联人物*/
 #container .link_user {
     width:100%;
-    margin-top:10px;
+    margin-top:60px;
     position: relative;
 }
 #container .link_user .edit-user {

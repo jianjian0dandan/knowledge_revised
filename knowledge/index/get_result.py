@@ -551,6 +551,7 @@ def get_detail_person(uid_list,user_name):
             importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
             influence = normal_index(data['influence'],evaluate_max['influence'])
             activeness = normal_index(data['activeness'],evaluate_max['activeness'])
+            picture = data['photo_url']
 
             try:
                 work_tag = data['function_mark']
@@ -569,7 +570,7 @@ def get_detail_person(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
+            result[uid] = {'name':name,'domain':domain,'picture':picture,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 
@@ -608,6 +609,8 @@ def get_detail_org(uid_list,user_name):
             else:
                 verified = ver_data[data['verify_type']]
 
+            picture = data['photo_url']
+            
             try:
                 work_tag = data['function_mark']
                 tags = work_tag.split('&')
@@ -625,7 +628,7 @@ def get_detail_org(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
+            result[uid] = {'name':name,'picture':picture,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 

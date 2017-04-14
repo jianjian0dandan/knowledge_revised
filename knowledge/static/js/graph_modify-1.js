@@ -1,3 +1,31 @@
+if (!!_id){
+    $('#container .attributes .node_name').val(_id);
+    $('#node_type').val(_type);
+    var node_url='/construction/node_edit_search/?item='+_id+'&node_type='+_type+
+        '&submit_user='+submit_user;
+    if (_type=='Event'){
+        $('.node_list').hide();
+        $('.event_list').show();
+        $.ajax({
+            url: node_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:event
+        });
+    }else {
+        $('.node_list').show();
+        $('.event_list').hide();
+        $.ajax({
+            url: node_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:node
+        });
+    }
+}
+
 //节点编辑
 var node_type='User';
 function type_node(value) {
@@ -49,12 +77,12 @@ function node(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [

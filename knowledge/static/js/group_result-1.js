@@ -53,7 +53,7 @@ function include_user(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (row[1]==''||row[1]=='NULL'||row[1]=='unknown'){
-                        return '暂无';
+                        return row[0];
                     }else {
                         return row[1];
 
@@ -160,12 +160,11 @@ function include_user(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
 };
 
@@ -282,12 +281,13 @@ function network(data) {
                 }
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[0]);
+            }else if ($element[0].cellIndex==3){
+                window.open('/index/person/?user_id='+row[3]);
+            };
+        },
     });
 };
 
@@ -507,12 +507,11 @@ function character(data) {
             },
 
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row.event_id);
+            }
+        },
     });
 };
 
