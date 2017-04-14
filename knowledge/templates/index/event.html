@@ -23,7 +23,7 @@
         <div class="basic" style="padding-bottom:20px">
             <div class="basic-1">
                 <h2 class="event_name" style="font-weight:900;display:inline-block;"></h2>
-                <img src="/static/images/gov_circle.png" alt="" id="focus">
+                <img src="/static/images/gov_circle.png" id="focus">
                 <button class="edit">编&nbsp;辑</button>
                 <div class="map_area">
                     <dl id="map" style="right:11.3%;">
@@ -175,7 +175,14 @@
     console.log(result_1,result_2);
     $('#event_content #content_left .basic .basic-1 .edit').on('click',function () {
         window.open('/theme/modify/?theme_name='+$('.event_name').text());
-    })
+    });
+    var user_id='{{user_id}}';
+    $('#chart').on('click',function () {
+        window.open('/index/graph/?user_id='+user_id+'&node_type=event');
+    });
+    $('#map').on('click',function () {
+        window.open('/index/map/?user_id='+user_id+'&node_type=event');
+    });
 
 </script>
 <!--<script src="/static/js/wordcloud.js"></script>-->
