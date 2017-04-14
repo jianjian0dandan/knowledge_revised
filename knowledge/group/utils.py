@@ -850,7 +850,10 @@ def group_user_rank(g_name, submit_user):
     relation_set_count = len(list(set_exist_relation))
     node_count = len(uid_list)
     total_count = node_count*(node_count-1)/2
-    relation_degree = float(relation_set_count)/total_count
+    try:
+        relation_degree = float(relation_set_count)/total_count
+    except:
+        relation_degree = 0
     conclusion = u'联系紧密'##未定义！！
     return {'relation_table':exist_relation, 'relation_count':relation_set_count,\
         'conclusion':conclusion, 'relation_degree':relation_degree}
