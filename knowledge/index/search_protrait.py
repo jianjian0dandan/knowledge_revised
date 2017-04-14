@@ -350,6 +350,7 @@ def get_event_weibo(event_id):#根据事件id获取微博文本
     result = []
     uid_list = []
     s_re = scan(es_event, query={'query':{'match_all':{}}},index=event_id, doc_type="text")
+    count = 0
     while True:
         try:
             scan_re = s_re.next()
@@ -363,6 +364,9 @@ def get_event_weibo(event_id):#根据事件id获取微博文本
             ts = ts2date(source['timestamp'])
             result.append({'mid':mid,'uid':uid,'text':text,'time':ts,'comment':comment,'retweeted':retweeted})
             uid_list.append(uid)
+            count = count + 1
+            if count >= 1500:
+                break
         except StopIteration:
             print "all done"
             break
