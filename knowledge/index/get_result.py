@@ -465,10 +465,13 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
                 name = uid
             else:
                 name = data['name'].replace('&',',')
-            if not data['real_geo'] or not data['real_geo'] in set(black_location):
+            try:
+                if not data['real_geo'] or not data['real_geo'] in set(black_location):
+                    continue
+                else:
+                    location = data['real_geo']
+            except KeyError:
                 continue
-            else:
-                location = data['real_geo']
             
             result.append([name,location])
 
