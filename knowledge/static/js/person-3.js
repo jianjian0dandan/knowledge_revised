@@ -127,7 +127,7 @@ function link_source(data) {
         //     }
         // }
         // $('#link').modal('show');
-        window.open('/index/cards/?user_id='+user_id+'&node_type=2&card_type=2');
+        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=2');
     });
 
     //-----机构-----
@@ -142,7 +142,7 @@ function link_source(data) {
         //     }
         // }
         // $('#link').modal('show');
-        window.open('/index/cards/?user_id='+user_id+'&node_type=0&card_type=0');
+        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=0');
     });
 
     //-----知识-----

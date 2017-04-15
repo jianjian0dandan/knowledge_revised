@@ -3,7 +3,9 @@ var cards_list =  result;
 if (flag==1){
     var card='';
     var name,photo,verified,place,tag,domain;
+    var f = 1;//判断数据是否为空
     for (var key in cards_list){
+    		f = 0;
         var data=cards_list[key];
         if (data.name==''||data.name=='unknown' ||data.name=='null'){
             name=key;
@@ -73,11 +75,24 @@ if (flag==1){
             '                </div>'+
             '            </div>';
         $('.tag').attr('title',tit);
+        
     }
+    var rank_contnet='<label class="radio-inline">'+
+              '<input type="radio" name="options" id="peo_influence" value="" checked> 影响度</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="peo_activity" value=""> 活跃度</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="peo_sensitivity" value=""> 敏感度</label>'
+    if(f==1){//数据为空
+    	card='暂无数据';
+    }
+
 }else if(flag==2){
     var card='';
     var name,time,place,tag;
+    var f = 1;//判断数据是否为空 
     for (var key in cards_list){
+    		f = 0;
         var data=cards_list[key];
         if (data.name==''||data.name=='unknown' ||data.name=='null'){
             name=key;
@@ -119,8 +134,8 @@ if (flag==1){
             '                            <img src="/static/images/gov_circle.png" class="heart evt_xin">'+
             '                        </p>'+
             '                        <p>'+
-            '                            <img src="/static/images/gov_weibo.png" title="微博数"> <span class="weibonum">1223</span>'+
-            '                            <img src="/static/images/gov_people.png" title="参与人数"> <span class="join">17223</span>'+
+            '                            <img src="/static/images/gov_weibo.png" title="微博数"> <span class="weibonum">'+data.weibo+'</span>'+
+            '                            <img src="/static/images/gov_people.png" title="参与人数"> <span class="join">'+data.people+'</span>'+
             '                        </p>'+
             '                    </div>'+
             '                    <div class="details-right-2">'+
@@ -132,27 +147,28 @@ if (flag==1){
             '                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>'+tag+
             '                        </p>'+
             '                        <p class="legend">'+
-            '                            悟空和唐僧一起上某卫视非诚勿扰,悟空上台,24盏灯全灭。'+
-            '                            理由:1.没房没车只有一根破棍.'+
-            '                            2.保镖职业危险.'+
-            '                            3.动不动打妖精,对女生不温柔.'+
-            '                            4.坐过牢,曾被压五指山下500年。'+
-            '                            唐僧上台，哗!灯全亮。'+
-            '                            理由:1.公务员；'+
-            '                            2.皇上兄弟，后台最硬'+
-            '                            3.精通梵文等外语'+
-            '                            4.长得帅'+
-            '                            5.最关键一点：有宝马！'+
+                              						data.des+
             '                        </p>'+
             '                    </div>'+
             '                </div>'+
             '            </span>';
         $('.tag_e').attr('title',tit);
     }
+    var rank_contnet='<label class="radio-inline">'+
+              '<input type="radio" name="options" id="event_weibo" value="" checked> 微博数</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="event_people" value=""> 参与人数</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="event_time" value=""> 发生时间</label>'
+    if(f==1){//数据为空
+    	card='暂无数据';
+    }
 }else if(flag==0){
     var card='';
     var name,photo,place,tag,tit;
+    var f = 1;//判断数据是否为空
     for (var key in cards_list){
+    		f = 0;
         var data=cards_list[key];
         if (data.name==''||data.name=='unknown' ||data.name=='null'){
             name=key;
@@ -191,7 +207,7 @@ if (flag==1){
             '                <div class="details-1">'+
             '                    <div class="details-1-left">'+
             '                        <h3 class="name" title="'+name+'">'+name+'</h3>'+
-            '                        <p>发生时间：<b class="time">2016-9-12</b></p>'+
+           // '                        <p>发生时间：<b class="time">2016-9-12</b></p>'+
             '                    </div>'+
             '                    <div class="details-1-right">'+
             '                        <img src="'+photo+'">'+
@@ -208,8 +224,17 @@ if (flag==1){
             '            </div>';
         $('.details-2').attr('title',tit);
     };
-
+		var rank_contnet='<label class="radio-inline">'+
+              '<input type="radio" name="options" id="org_influence" value="" checked> 影响度</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="org_activity" value=""> 活跃度</label>'+
+              '<label class="radio-inline">'+
+              '<input type="radio" name="options" id="org_sensitivity" value=""> 敏感度</label>'
+    if(f==1){//数据为空
+    	card='暂无数据';
+    }
 }
+$('#cards_rank').append(rank_contnet);
 $('#card_set').append(card);
 
 

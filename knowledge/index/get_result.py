@@ -550,7 +550,11 @@ def get_detail_person(uid_list,user_name):
             if not data['verify_type']:
                 verified = ''
             else:
-                verified = ver_data[data['verify_type']]
+                if data['verify_type'] not in org_list:
+                    verified = ver_data[data['verify_type']]
+                else:
+                    result[uid] = {}
+                    continue
             importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
             influence = normal_index(data['influence'],evaluate_max['influence'])
             activeness = normal_index(data['activeness'],evaluate_max['activeness'])
@@ -608,12 +612,17 @@ def get_detail_org(uid_list,user_name):
             else:
                 location = data['location']          
             if not data['verify_type']:
-                verified = ''
+                result[uid] = {}
+                continue
             else:
-                verified = ver_data[data['verify_type']]
+                if data['verify_type'] in org_list:
+                    verified = ver_data[data['verify_type']]
+                else:
+                    result[uid] = {}
+                    continue
 
             picture = data['photo_url']
-            
+                
             try:
                 work_tag = data['function_mark']
                 tags = work_tag.split('&')
@@ -666,13 +675,8 @@ def get_detail_event(uid_list,user_name):
             except KeyError:
                 category = ''
 
-            try:
-                if data['real_time'] != 'NULL':
-                    time_ts = data['real_time']
-                else:
-                    time_ts = ts2date(data['start_ts'])
-            except KeyError:
-                time_ts = ts2date(data['start_ts'])
+            time_ts = ts2date(data['start_ts'])
+
             try:
                 work_tag = data['work_tag']
                 tags = work_tag.split('&')
@@ -684,7 +688,24 @@ def get_detail_event(uid_list,user_name):
             except:
                 tag_list = []
 
-            result[uid] = {'name':name,'geo':geo,'event_type':category,'time_ts':time_ts,'tag':tag_list}
+            try:
+                weibo = data['weibo_count']
+            except KeyError:
+                weibo = 0
+
+            try:
+                people = data['uid_count']
+            except KeyError:
+                people = 0
+
+            try:
+                keywords = data['keywords']
+                ks = keywords.split('&')
+                keyword = '&'.join(ks[0:10])
+            except KeyError:
+                keyword = ''
+                
+            result[uid] = {'name':name,'geo':geo,'event_type':category,'time_ts':time_ts,'tag':tag_list,'weibo':weibo,'people':people,'des':keyword}
 
     return result
 
@@ -699,7 +720,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#uid-uid
             start_index_name = node_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -709,7 +730,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#uid-event
             start_index_name = node_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -719,7 +740,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#uid-org
             start_index_name = node_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -731,7 +752,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#event-uid
             start_index_name = event_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -741,7 +762,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#event-event
             start_index_name = event_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -751,7 +772,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#event-org
             start_index_name = event_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -763,7 +784,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#org-uid
             start_index_name = org_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -773,7 +794,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#org-event
             start_index_name = org_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -783,7 +804,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#org-org
             start_index_name = org_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -795,7 +816,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#special_event-uid
             start_index_name = node_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -805,7 +826,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#special_event-event
             start_index_name = node_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -815,7 +836,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#special_event-org
             start_index_name = node_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -827,7 +848,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#group-uid
             start_index_name = group_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -837,7 +858,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#group-event
             start_index_name = group_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -847,7 +868,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#group-org
             start_index_name = group_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:

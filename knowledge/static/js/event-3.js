@@ -102,7 +102,7 @@ function link_source(data) {
 
     //-------人物------
     $('#event_content #content_right .link_user .user_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联人物');
+        /*$('#link .tit_h4').empty().text('关联人物');
         $('#link #link_content').empty();
         if (user.length==0){
             $('#link #link_content').text('没有更多数据');
@@ -111,12 +111,13 @@ function link_source(data) {
                 $('#link #link_content').append(user[u]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+user_id+'&node_type=2&card_type=1');
     });
 
     //------事件-----
     $('#event_content #content_right .link_event .event_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联事件');
+        /*$('#link .tit_h4').empty().text('关联事件');
         $('#link #link_content').empty();
         if (event.length==0){
             $('#link #link_content').text('没有更多数据');
@@ -125,12 +126,13 @@ function link_source(data) {
                 $('#link #link_content').append(event[e]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+user_id+'&node_type=2&card_type=2');
     });
 
     //-----机构-----
     $('#event_content #content_right .link_agency .agency_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联机构');
+        /*$('#link .tit_h4').empty().text('关联机构');
         $('#link #link_content').empty();
         if (org.length==0){
             $('#link #link_content').text('没有更多数据');
@@ -139,7 +141,8 @@ function link_source(data) {
                 $('#link #link_content').append(org[g]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+user_id+'&node_type=2&card_type=0');
     });
 
     //-----知识-----

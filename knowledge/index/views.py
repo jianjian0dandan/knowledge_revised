@@ -260,7 +260,7 @@ def get_organization():#机构属性页面
     
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
-    
+
     return render_template('index/organization.html',result_att = result_att,inter_list = inter_list,friends_dict = friends_dict,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/cards/', methods=['GET','POST'])

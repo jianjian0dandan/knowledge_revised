@@ -441,16 +441,16 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
 
     p_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-(m) return m LIMIT 10' % (index_name,index_primary,uid,node_index_name,people_primary)
     p_result = graph.run(p_string)
-    peo_list = []
+    p_list = []
     for item in p_result:
         id_key = dict(item[0]).values()[0]
-        if id_key not in peo_list:
-            peo_list.append(id_key)
+        if id_key not in p_list:
+            p_list.append(id_key)
         else:
             continue
 
-    if len(peo_list):
-        peo_name = uid_2_name_list(peo_list)
+    if len(p_list):
+        peo_name = uid_2_name_list(p_list)
         if peo_name == '-1':
             peo_name = []
     else:
@@ -458,16 +458,16 @@ def search_neo4j_by_uid(uid,index_name,index_primary):
 
     p_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-(m) return m LIMIT 10' % (index_name,index_primary,uid,org_index_name,org_primary)
     p_result = graph.run(p_string)
-    org_list = []
+    o_list = []
     for item in p_result:
         id_key = dict(item[0]).values()[0]
-        if id_key not in org_list:
-            org_list.append(id_key)
+        if id_key not in o_list:
+            o_list.append(id_key)
         else:
             continue
 
-    if len(org_list):
-        org_name = uid_2_name_list(org_list)
+    if len(o_list):
+        org_name = uid_2_name_list(o_list)
         if org_name == '-1':
             org_name = []
     else:
