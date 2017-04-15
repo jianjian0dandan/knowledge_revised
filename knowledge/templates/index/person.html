@@ -3,7 +3,14 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/person.css">
 <style>
-
+    .user_name {
+        font-weight:900;
+        display:inline-block;
+        width: 400px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
 {% endblock %}
 
@@ -13,7 +20,7 @@
     <div id="content_left">
         <div class="basic" style="padding-bottom: 10px;">
             <div class="basic-1">
-                <h1 class="user_name" style="font-weight:900;display:inline-block;"></h1>
+                <h1 class="user_name"></h1>
                 <img src="/static/images/gov_circle.png" alt="" id="focus">
                 <button class="edit">编&nbsp;辑</button>
                 <div class="map_area">

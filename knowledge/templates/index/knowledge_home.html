@@ -176,6 +176,15 @@
     $('.focus_more').on('click',function () {
         window.open('/sysadmin/focus/');
     });
-
+    var simple_advanced;
+    $('#refer').on('click',function () {
+        var key_words=$('#container #search_val').val();
+        if (key_words==''){
+            alert('请输入您想查询的内容。(不能为空)');
+        }else {
+            simple_advanced='s';
+            window.open('/relation/search_result/?result='+key_words+'&simple_advanced='+simple_advanced);
+        }
+    })
 </script>
 {% endblock %}

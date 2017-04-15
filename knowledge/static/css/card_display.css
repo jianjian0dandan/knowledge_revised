@@ -1,14 +1,21 @@
+/*屏幕大小*/
+@media screen and (min-width: 1366px) {
+    body {
+        width: 1349px;
+        margin: 0 auto;
+    }
+}
 /*内容样式*/
 body {
     width: 100%;
     min-width: 1349px;
-    min-height: 1408px;
-    margin: 0 auto;
-    background: url("/static/images/cards.jpg") no-repeat;
+    /* min-height: 970px; */
+    background: url(/static/images/graph_add.png) no-repeat;
     background-size: 100% 100%;
 }
 #all_cards {
-    width: 100%;
+    width: 1174px;
+    margin: 0 auto 50px;
     position: relative;
 }
 #all_cards .cards_content {
@@ -44,12 +51,11 @@ body {
 /*----卡片----*/
 #all_cards .cards_content #card_set .card {
     float: left;
-    margin-right: 20px;
-    width: 31%;
-    height: 22%;
-    min-width: 300px;
-    min-height: 200px;
+    margin:0 20px 20px 0;
+    width: 300px;
+    height: 200px;
     border-radius: 10px;
+    overflow: hidden;
 }
 
 /*三种卡片样式*/
@@ -88,7 +94,8 @@ body {
     text-align: center;
     color: white;
     font-size: 8px;
-    margin-top: 20px
+    margin-top: 20px;
+    margin-left: -30px;
 }
 #all_cards .cards_content #card_set .gov_card_details .details-2 {
     width: 190px;
@@ -212,17 +219,31 @@ body {
     float: left;
     position: relative;
     width: 50%;
-    margin-top:40px;
+    margin-top:15px;
     padding-left: 20px;
 }
 #all_cards .cards_content #card_set .event_card_details .details-right .details-right-1 {
-    width: 60%;
+    /*width: 60%;*/
     font-size: 10px;
 }
 #all_cards .cards_content #card_set .event_card_details .details-right .photo {
     position: absolute;
     top:0;
     right:0;
+}
+/*#all_cards .cards_content #card_set .event_card_details .details-right .details-right-2 .type_e {*/
+    /*display:inline-block;*/
+    /*padding: 2px 5px;*/
+    /*background-color:#b8bbbd;*/
+    /*border-radius: 6px;*/
+    /*font-size: 6px;*/
+/*}*/
+#all_cards .cards_content #card_set .event_card_details .details-right .details-right-2 .type_e .type {
+    width:42px;
+    font-size: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #all_cards .cards_content #card_set .event_card_details .details-right .details-right-2 .tag {
     display:inline-block;
@@ -253,12 +274,4 @@ body {
 /*------卡片样式 ---完----*/
 
 
-/*屏幕大小*/
-@media screen and (min-width: 1366px) {
-    body {
-        width: 1349px;
-        height: 1408px;
-        margin: 0 auto;
-    }
-}
 

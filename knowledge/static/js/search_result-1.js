@@ -44,7 +44,6 @@ function result(data) {
 function network(n_data) {
     var n_data = eval(n_data);
     var links = [];
-    console.log(n_data)
     $.each(n_data,function (index,item) {
         var type2;
         for (var key in item[0]){

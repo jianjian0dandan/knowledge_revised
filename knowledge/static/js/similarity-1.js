@@ -36,7 +36,7 @@ function calculation(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "节点名称",//标题
+                title: "任务名称",//标题
                 field: "node_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
