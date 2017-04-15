@@ -273,11 +273,44 @@ def get_card():#卡片罗列页面
     user_name = g.user.email
     
     if user_id:
-        result,flag = get_relation_node(user_id,node_type,card_type,user_name)#获取关联节点
+        if node_type == '3':#专题关联
+            if card_type == '1':#人物
+                uid_list = user_id.split(',')
+                result = get_detail_person(uid_list,user_name)
+                flag = 1
+            elif card_type == '2':#事件
+                uid_list = user_id.split(',')
+                result = get_detail_event(uid_list,user_name)
+                flag = 2
+            elif card_type == '0':#机构
+                uid_list = user_id.split(',')
+                result = get_detail_org(uid_list,user_name)
+                flag = 0
+            else:#有错误
+                result = {}
+                flag = -1
+        elif node_type == '4':#群体关联
+            if card_type == '1':#人物
+                uid_list = user_id.split(',')
+                result = get_detail_person(uid_list,user_name)
+                flag = 1
+            elif card_type == '2':#事件
+                uid_list = user_id.split(',')
+                result = get_detail_event(uid_list,user_name)
+                flag = 2
+            elif card_type == '0':#机构
+                uid_list = user_id.split(',')
+                result = get_detail_org(uid_list,user_name)
+                flag = 0
+            else:#有错误
+                result = {}
+                flag = -1
+        else:#其他关联
+            result,flag = get_relation_node(user_id,node_type,card_type,user_name)#获取关联节点
     else:
         result = {}
         flag = -1
-    #print result[42],result[43]
+
     return render_template('index/card_display.html', result = result, flag = flag)
 
 @mod.route('/show_attention/', methods=['GET','POST'])

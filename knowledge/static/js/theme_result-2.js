@@ -20,12 +20,12 @@ function link_source(data) {
             if (index<=4){
                 $('.link_user .users').append(
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
-            }else {
-                user.push(
-                    '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
+                );
             }
+            if(!isNaN(item[0]))
+						{
+   						user.push(item[0]);
+						}                               
         });
         $('.link_user .users a').on('click',function () {
             window.open('/index/person/?user_id='+$(this).find('b').text());
@@ -42,12 +42,9 @@ function link_source(data) {
             if (index<=4){
                 $('.link_event .events').append(
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
-            }else {
-                event.push(
-                    '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
+                );
             }
+            event.push(item[0]);
         });
         $('.link_event .events a').on('click',function () {
             window.open('/index/event/?user_id='+$(this).find('b').text());
@@ -65,12 +62,12 @@ function link_source(data) {
             if (index<=4){
                 $('.link_agency .agencys').append(
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
-            }else {
-                org.push(
-                    '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
+                );
             }
+            if(!isNaN(item[0]))
+						{
+   			  		org.push(item[0]);
+						}
         });
         $('.link_agency .agencys a').on('click',function () {
             window.open('/index/organization/?user_id='+$(this).find('b').text());
@@ -89,11 +86,11 @@ function link_source(data) {
                 $('.link_knowledge .knowledge').append(
                     '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
                 )
-            }else {
+            }
                 wiki.push(
                     '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
                 )
-            }
+
         });
     }
 
@@ -109,18 +106,19 @@ function link_source(data) {
                 $('.link_resources .resources').append(
                     '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
                 )
-            }else {
+            }
                 file.push(
                     '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
                 )
-            }
+
         });
     }
 
     //-------人物------
     $('#container #content_right .link_user .user_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联人物');
+        /*$('#link .tit_h4').empty().text('关联人物');
         $('#link #link_content').empty();
+        console.log(user);
         if (user.length==0){
             $('#link #link_content').text('没有更多数据');
         }else {
@@ -128,12 +126,13 @@ function link_source(data) {
                 $('#link #link_content').append(user[u]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+user+'&node_type=3&card_type=1');
     });
 
     //------事件-----
     $('#container #content_right .link_event .event_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联事件');
+        /*$('#link .tit_h4').empty().text('关联事件');
         $('#link #link_content').empty();
         if (event.length==0){
             $('#link #link_content').text('没有更多数据');
@@ -142,12 +141,13 @@ function link_source(data) {
                 $('#link #link_content').append(event[e]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+event+'&node_type=3&card_type=2');
     });
 
     //-----机构-----
     $('#container #content_right .link_agency .agency_more').on('click',function () {
-        $('#link .tit_h4').empty().text('关联机构');
+        /*$('#link .tit_h4').empty().text('关联机构');
         $('#link #link_content').empty();
         if (org.length==0){
             $('#link #link_content').text('没有更多数据');
@@ -156,7 +156,8 @@ function link_source(data) {
                 $('#link #link_content').append(org[g]);
             }
         }
-        $('#link').modal('show');
+        $('#link').modal('show');*/
+        window.open('/index/cards/?user_id='+org+'&node_type=3&card_type=0');
     });
 
     //-----知识-----

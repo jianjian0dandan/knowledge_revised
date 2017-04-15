@@ -90,10 +90,12 @@ if (flag==1){
 }else if(flag==2){
     var card='';
     var name,time,place,tage;
-    var f = 1;//判断数据是否为空 
+    var f = 1;//判断数据是否为空
+     
     for (var key in cards_list){
     		f = 0;
         var data=cards_list[key];
+        console.log(card);
         if (data.name==''||data.name=='unknown' ||data.name=='null'){
             name=key;
         }else {
