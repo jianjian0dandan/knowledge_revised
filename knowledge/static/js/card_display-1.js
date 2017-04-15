@@ -95,7 +95,6 @@ if (flag==1){
     for (var key in cards_list){
     		f = 0;
         var data=cards_list[key];
-        console.log(card);
         if (data.name==''||data.name=='unknown' ||data.name=='null'){
             name=key;
         }else {
@@ -153,7 +152,7 @@ if (flag==1){
             '                        </p>'+
             '                    </div>'+
             '                </div>'+
-            '            </span>';
+            '            </div>';
         $('.tag_e').attr('title',tit);
     }
     var rank_contnet='<label class="radio-inline">'+
