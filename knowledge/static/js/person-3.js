@@ -175,3 +175,42 @@ function link_source(data) {
 
 }
 link_source(data);
+
+//加入关注
+
+$('#focus').on('click',function () {
+        $(this).attr('src','/static/images/gov_xin.png');
+        //-----
+        var uid=user_id;
+        var user_name=$('#name').text();
+        var label=$('.tag').text();
+        var data={'user_name':user_name,'uid':uid,'label':label};
+        join_del.call_request(data,'/sysadmin/add_people/',yes_no);
+        //------
+});
+
+//--关注成功
+function join_del(){};
+join_del.prototype= {
+    call_request:function(focus,url,callback) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            data:focus,
+            success:callback
+        });
+    },
+};
+var join_del=new join_del();
+function yes_no(data) {
+    if(data=='Success'){
+        alert('加入关注成功！');
+    }else if (data== 'Exist'){
+        alert('已经在我的关注中！');
+    }else{
+        alert('加入关注失败！');
+    }
+};
+//-----

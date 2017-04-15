@@ -159,7 +159,7 @@ def get_people(name,count):#获取我关注的人物
         for infor in infors:
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -168,7 +168,7 @@ def get_people(name,count):#获取我关注的人物
                 break
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
@@ -185,7 +185,7 @@ def get_event(name,count):#获取我关注的事件
         for infor in infors:
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -194,7 +194,7 @@ def get_event(name,count):#获取我关注的事件
                 break
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = eventid_name(uid_list,result)
@@ -210,7 +210,7 @@ def get_org(name,count):#获取我关注的机构
         for infor in infors:
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -219,7 +219,7 @@ def get_org(name,count):#获取我关注的机构
                 break
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
@@ -534,7 +534,7 @@ def get_detail_person(uid_list,user_name):
         item = search_result[i]
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']
@@ -553,7 +553,7 @@ def get_detail_person(uid_list,user_name):
                 if data['verify_type'] not in org_list:
                     verified = ver_data[data['verify_type']]
                 else:
-                    result[uid] = {}
+                    #result[uid] = {}
                     continue
             importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
             influence = normal_index(data['influence'],evaluate_max['influence'])
@@ -598,7 +598,7 @@ def get_detail_org(uid_list,user_name):
         item = search_result[i]
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']
@@ -612,13 +612,13 @@ def get_detail_org(uid_list,user_name):
             else:
                 location = data['location']          
             if not data['verify_type']:
-                result[uid] = {}
+                #result[uid] = {}
                 continue
             else:
                 if data['verify_type'] in org_list:
                     verified = ver_data[data['verify_type']]
                 else:
-                    result[uid] = {}
+                    #result[uid] = {}
                     continue
 
             picture = data['photo_url']
@@ -655,7 +655,7 @@ def get_detail_event(uid_list,user_name):
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']

@@ -106,13 +106,17 @@ def myfocus_add_people():#加入我的关注-人物
     uid = request.form['uid']
     label = request.form['label']
     date_time = ts2date(time.time())
-    old_items = db.session.query(PeopleAttention).filter((PeopleAttention.peopleID==uid)&(PeopleAttention.name==user_name)).all()
-    if len(old_items):
-        result = 'Exist'
+    if not user_name:
+        result = 'Fail'
     else:
-        new_item = PeopleAttention(name=user_name, peopleID=uid, label=label, attentionTime=date_time)
-        db.session.add(new_item)
-        db.session.commit()
+        old_items = db.session.query(PeopleAttention).filter((PeopleAttention.peopleID==uid)&(PeopleAttention.name==user_name)).all()
+        if len(old_items):
+            result = 'Exist'
+        else:
+            new_item = PeopleAttention(name=user_name, peopleID=uid, label=label, attentionTime=date_time)
+            db.session.add(new_item)
+            db.session.commit()
+            result = 'Success'
 
     return json.dumps(result)
 
@@ -124,40 +128,48 @@ def myfocus_add_org():#加入我的关注-机构
     uid = request.form['uid']
     label = request.form['label']
     date_time = ts2date(time.time())
-    old_items = db.session.query(OrgAttention).filter((OrgAttention.orgID==uid)&(OrgAttention.name==user_name)).all()
-    if len(old_items):
-        result = 'Exist'
+    if not user_name:
+        result = 'Fail'
     else:
-        new_item = OrgAttention(name=user_name, orgID=uid, label=label, attentionTime=date_time)
-        db.session.add(new_item)
-        db.session.commit()
+        old_items = db.session.query(OrgAttention).filter((OrgAttention.orgID==uid)&(OrgAttention.name==user_name)).all()
+        if len(old_items):
+            result = 'Exist'
+        else:
+            new_item = OrgAttention(name=user_name, orgID=uid, label=label, attentionTime=date_time)
+            db.session.add(new_item)
+            db.session.commit()
+            result = 'Success'
 
     return json.dumps(result)
 
 @mod.route('/add_event/', methods=['GET','POST'])
-def myfocus_add_event():#加入我的关注-机构
+def myfocus_add_event():#加入我的关注-事件
 
     result = 'Success'
     user_name = request.form['user_name']
     uid = request.form['uid']
     label = request.form['label']
     date_time = ts2date(time.time())
-    old_items = db.session.query(EventAttention).filter((EventAttention.eventID==uid)&(EventAttention.name==user_name)).all()
-    if len(old_items):
-        result = 'Exist'
+    if not user_name:
+        result = 'Fail'
     else:
-        new_item = EventAttention(name=user_name, eventID=uid, label=label, attentionTime=date_time)
-        db.session.add(new_item)
-        db.session.commit()
+        old_items = db.session.query(EventAttention).filter((EventAttention.eventID==uid)&(EventAttention.name==user_name)).all()
+        if len(old_items):
+            result = 'Exist'
+        else:
+            new_item = EventAttention(name=user_name, eventID=uid, label=label, attentionTime=date_time)
+            db.session.add(new_item)
+            db.session.commit()
+            result = 'Success'
 
     return json.dumps(result)   
 
 @mod.route('/delete_focus_people/', methods=['GET','POST'])
+@login_required
 def myfocus_delete_focus_people():#删除关注的人
     
     submit_user = g.user.email
     people_id = request.args.get('people_id','')
-    print people_id
     old_items = db.session.query(PeopleAttention).filter((PeopleAttention.peopleID==people_id)&(PeopleAttention.name==submit_user)).all()
     print old_items,submit_user
     for old_item in old_items:
@@ -168,11 +180,11 @@ def myfocus_delete_focus_people():#删除关注的人
     return json.dumps(result)   
 
 @mod.route('/delete_focus_org/', methods=['GET','POST'])
+@login_required
 def myfocus_delete_focus_org():#删除关注的人
     
     submit_user = g.user.email
     org_id = request.args.get('org_id','')
-    print org_id
     old_items = db.session.query(OrgAttention).filter((OrgAttention.orgID==org_id)&(OrgAttention.name==submit_user)).all()
     print old_items,submit_user
     for old_item in old_items:
@@ -183,13 +195,12 @@ def myfocus_delete_focus_org():#删除关注的人
     return json.dumps(result)   
 
 @mod.route('/delete_focus_event/', methods=['GET','POST'])
+@login_required
 def myfocus_delete_focus_event():#删除关注的人
     
     submit_user = g.user.email
     event_id = request.args.get('event_id','')
-    print event_id
     old_items = db.session.query(EventAttention).filter((EventAttention.eventID==event_id)&(EventAttention.name==submit_user)).all()
-    print old_items,submit_user
     for old_item in old_items:
         db.session.delete(old_item)
     db.session.commit()

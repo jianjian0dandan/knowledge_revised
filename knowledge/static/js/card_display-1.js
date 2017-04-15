@@ -2,7 +2,7 @@
 var cards_list =  result;
 if (flag==1){
     var card='';
-    var name,photo,verified,place,tag,domain;
+    var name,photo,verified,place,tage,domain;
     var f = 1;//判断数据是否为空
     for (var key in cards_list){
     		f = 0;
@@ -28,13 +28,13 @@ if (flag==1){
             place=data.location;
         };
         if (data.tag==''||data.tag=='unknown'||data.tag.length==0){
-            tag='<span class="tag">暂无</span>';
+            tage='<span class="tag">暂无</span>';
             tit='';
         }else {
-            var tag='';
+            var tage='';
             var words=data.tag;
             for(var w=0;w<=3;w++){
-                tag+='<span class="tag">'+words[w]+'</span>';
+                tage+='<span class="tag">'+words[w]+'</span>';
             }
             tit=words.join(',');
         };
@@ -60,7 +60,7 @@ if (flag==1){
             '                    </div>'+
             '                    <div class="details-1-bottom-right">'+
             '                        <p class="tag" style="margin-top:2px;font-size: 8px">'+
-            '                            <b>业务标签：</b>'+tag+
+            '                            <b>业务标签：</b>'+tage+
             '                        </p>'+
             '                        <p style="margin-top:2px;font-size: 8px">'+
             '                            <b>领域：</b>'+
@@ -89,7 +89,7 @@ if (flag==1){
 
 }else if(flag==2){
     var card='';
-    var name,time,place,tag;
+    var name,time,place,tage;
     var f = 1;//判断数据是否为空 
     for (var key in cards_list){
     		f = 0;
@@ -110,13 +110,13 @@ if (flag==1){
             place=data.geo;
         };
         if (data.tag==''||data.tag=='unknown'||data.tag.length==0){
-            tag='<span class="tag">暂无</span>';
+            tage='<span class="tag">暂无</span>';
             tit='';
         }else {
-            var tag='';
+            var tage='';
             var words=data.tag;
             for(var w=0;w<=3;w++){
-                tag+='<span class="tag">'+words[w]+'</span>';
+                tage+='<span class="tag">'+words[w]+'</span>';
             }
             tit=words.join(',');
         };
@@ -144,7 +144,7 @@ if (flag==1){
             '                            <span class="type">大学生</span>'+
             '                        </p>'+
             '                        <p class="tag_e" style="margin: 10px 0">'+
-            '                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>'+tag+
+            '                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>'+tage+
             '                        </p>'+
             '                        <p class="legend">'+
                               						data.des+
@@ -165,7 +165,7 @@ if (flag==1){
     }
 }else if(flag==0){
     var card='';
-    var name,photo,place,tag,tit;
+    var name,photo,place,tage,tit;
     var f = 1;//判断数据是否为空
     for (var key in cards_list){
     		f = 0;
@@ -191,13 +191,13 @@ if (flag==1){
             place=data.location;
         };
         if (data.tag==''||data.tag=='unknown'||data.tag.length==0){
-            tag='<span class="tag">暂无</span>';
+            tage='<span class="tag">暂无</span>';
             tit='';
         }else {
-            var tag='';
+            var tage='';
             var words=data.tag;
             for(var w=0;w<=3;w++){
-                tag+='<span class="tag">'+words[w]+'</span>';
+                tage+='<span class="tag">'+words[w]+'</span>';
             }
             tit=words.join(',');
         };
@@ -219,7 +219,7 @@ if (flag==1){
             '                    </div>'+
             '                </div>'+
             '                <div class="details-2">'+
-            '                    <span class="business">业务标签：</span>'+tag+
+            '                    <span class="business">业务标签：</span>'+tage+
             '                </div>'+
             '            </div>';
         $('.details-2').attr('title',tit);
@@ -239,66 +239,66 @@ $('#card_set').append(card);
 
 
 //----
-var p=1;
+//var p=1;
 $('.per_xin').on('click',function () {
-    if (p==1){
+    //if (p==1){
         $(this).attr('src','/static/images/per_focus.png');
-        p=2;
+        //p=2;
         var uid=$(this).parents('.per_card_details').find('#mid').text();
-        var user_name=$(this).parents('.per_card_details').find('.name').text();
+        var user_name=$('#name').text();
         var label=$(this).parents('.per_card_details').find('#label').text();
         var data={'user_name':user_name,'uid':uid,'label':label};
         join_del.call_request(data,'/sysadmin/add_people/',yes_no);
-    }else {
+    /*}else {
         $(this).attr('src','/static/images/per_xin.png');
         var user_name=$(this).parents('.per_card_details').find('.name').text();
         var data={'people_id':user_name};
         join_del.call_request(data,'/sysadmin/delete_focus_people/',yes_no);
         p=1;
-    }
+    }*/
 });
 //-----------
-var g=1;
+//var g=1;
 $('.org_xin').on('click',function () {
-    if (g==1){
+    //if (g==1){
         $(this).attr('src','/static/images/gov_xin.png');
-        g=2;
+        //g=2;
         //-----
         var uid=$(this).parents('.gov_card_details').find('#mid').text();
-        var user_name=$(this).parents('.gov_card_details').find('.name').text();
+        var user_name=$('#name').text();
         var label=$(this).parents('.gov_card_details').find('#label').text();
         var data={'user_name':user_name,'uid':uid,'label':label};
         join_del.call_request(data,'/sysadmin/add_org/',yes_no);
         //------
 
-    }else {
+    /*}else {
         $(this).attr('src','/static/images/gov_circle.png');
         var user_name=$(this).parents('.gov_card_details').find('.name').text();
         var data={'org_id':user_name};
         join_del.call_request(data,'/sysadmin/delete_focus_org/',yes_no);
         g=1;
-    }
+    }*/
 });
 //------
-var h=1;
+//var h=1;
 $('.evt_xin').on('click',function () {
-    if (h==1){
+    //if (h==1){
         $(this).attr('src','/static/images/gov_xin.png');
         //-----
         var uid=$(this).parents('.event_card_details').find('#mid').text();
-        var user_name=$(this).parents('.event_card_details').find('.name').text();
+        var user_name=$('#name').text();
         var label=$(this).parents('.event_card_details').find('#label').text();
         var data={'user_name':user_name,'uid':uid,'label':label};
         join_del.call_request(data,'/sysadmin/add_event/',yes_no);
         //------
-        h=2;
-    }else {
+        //h=2;
+    /*}else {
         $(this).attr('src','/static/images/gov_circle.png');
         var user_name=$(this).parents('.gov_card_details').find('.name').text();
         var data={'event_id':user_name};
         join_del.call_request(data,'/sysadmin/delete_focus_event/',yes_no);
         h=1;
-    }
+    }*/
 });
 
 //--关注成功
@@ -318,11 +318,11 @@ join_del.prototype= {
 var join_del=new join_del();
 function yes_no(data) {
     if(data=='Success'){
-        alert('加入关注');
+        alert('加入关注成功！');
     }else if (data== 'Exist'){
-        alert('已经在关注中');
-    }else if(data=='success'){
-        alert('取消关注');
+        alert('已经在我的关注中！');
+    }else{
+        alert('加入关注失败！');
     }
 };
 //-----

@@ -46,7 +46,7 @@ if (result_1.real_auth==''||result_1.real_auth=='unknown' ||result_1.real_auth==
 }else {
     var words=result_1.real_auth.split('&');
     if (words.length<=3){
-        $('.auto_tag').text(words.join(','));
+        $('.agency').text(words.join(','));
     }else {
         var key=words.splice(0,3).join(',');
         $('.agency').attr('title',key);
