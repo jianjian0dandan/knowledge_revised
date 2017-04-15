@@ -145,8 +145,10 @@ function group_overview(data) {
             group_diff.removeByValue(row[1]);
         },
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].cellIndex==0){
-                window.open('/index/person/?user_id='+row[0]);
+            if ($element[0].innerText=='群体查看') {
+                window.open('/group/result/?theme_name='+row[1]);
+            }else if ($element[0].innerText=='群体编辑') {
+                window.open('/group/modify/?theme_name='+row[1]);
             }
         }
     });

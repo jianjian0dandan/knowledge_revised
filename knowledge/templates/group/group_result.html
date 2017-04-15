@@ -233,6 +233,13 @@
         };
     }
 
+    //=======
+    $('#chart').on('click',function () {
+        window.open('/index/graph/?user_id='+group_name+'&node_type=group');
+    });
+    $('#map').on('click',function () {
+        window.open('/index/map/?user_id='+group_name+'&node_type=group');
+    });
 
 </script>
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>

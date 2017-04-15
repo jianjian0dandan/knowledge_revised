@@ -12,6 +12,7 @@ if (result_1.uname==""||result_1.uname=='NUll'||result_1.uname=='unknown'){
     name=result_1.uname
 }
 $('.user_name').text(name);
+$('.user_name').attr('title',name);
 //基本信息
 $('.ID').text(result_1.uid);
 $('.happen_time').text(result_1.uname);
