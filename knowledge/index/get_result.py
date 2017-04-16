@@ -586,6 +586,7 @@ def get_detail_org(uid_list,user_name):
     if len(uid_list) == 0:
         return {}
     result = {}
+    evaluate_max = get_evaluate_max_all()
     date = 1480176000#time.time()
     bci_date = ts2datetime(date - DAY)
     index_name = 'bci_' + ''.join(bci_date.split('-'))
@@ -620,7 +621,9 @@ def get_detail_org(uid_list,user_name):
                 else:
                     #result[uid] = {}
                     continue
-
+            importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
+            influence = normal_index(data['influence'],evaluate_max['influence'])
+            activeness = normal_index(data['activeness'],evaluate_max['activeness'])
             picture = data['photo_url']
                 
             try:
@@ -640,7 +643,7 @@ def get_detail_org(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'picture':picture,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
+            result[uid] = {'name':name,'picture':picture,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum,'importance':importance,'influence':influence,'activeness':activeness}
 
     return result
 
