@@ -20,6 +20,7 @@ call_sync_ajax_request(people_url,draw_event_table);
 
 //关注人物
 function draw_people_table(data){
+	console.log(data);
     data=eval(data);
     $('#person_table').bootstrapTable('load',data)
     $('#person_table').bootstrapTable({
@@ -73,7 +74,7 @@ function draw_people_table(data){
         },
         {
             title: "关注时间",//标题
-            field: "tmie",//键名
+            field: "time",//键名
             sortable: true,//是否可排序
             order: "desc",//默认排序方式
             align: "center",//水平
@@ -116,6 +117,7 @@ function draw_people_table(data){
 
 //关注机构
 function draw_org_table(data){
+	console.log(data);
     data=eval(data);
     $('#agencies_table').bootstrapTable('load',data)
     $('#agencies_table').bootstrapTable({
@@ -169,7 +171,7 @@ function draw_org_table(data){
         },
         {
             title: "关注时间",//标题
-            field: "tmie",//键名
+            field: "time",//键名
             sortable: true,//是否可排序
             order: "desc",//默认排序方式
             align: "center",//水平
@@ -213,6 +215,7 @@ function draw_org_table(data){
 
 //关注事件
 function draw_event_table(data){
+	console.log(data);
     data=eval(data);
     $('#events_table').bootstrapTable('load',data)
     $('#events_table').bootstrapTable({
@@ -267,7 +270,7 @@ function draw_event_table(data){
         },
         {
             title: "关注时间",//标题
-            field: "tmie",//键名
+            field: "time",//键名
             sortable: true,//是否可排序
             order: "desc",//默认排序方式
             align: "center",//水平
