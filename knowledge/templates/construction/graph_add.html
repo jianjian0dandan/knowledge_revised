@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/static/css/graph_add.css">
 <style>
     .table>thead:first-child>tr:first-child>th {
-        width: 18%;
+        width: 20%;
     }
      .item{
         padding:3px 5px;
@@ -96,8 +96,38 @@
                     <span>事件名称</span> <input type="text" class="event_name"/>
                     <span>事件关键词</span> <input type="text" class="event_key" placeholder="多个关键词用'&'隔开"/>
                     <span>事件类型</span>
-                    <select id="event_lx-1" onchange="event_lx(this.value)">
-                        <option value="1">1</option>
+                    <select id="event_lx-1">
+                        <!--onchange="event_lx(this.value)"-->
+                        <option value="" disabled selected>请选择事件类型</option>
+                        <option value='military'>军事国防</option>
+                        <option value='transport'>交通</option>
+                        <option value='resources'>国土资源</option>
+                        <option value='overseas'>境外敌对势力</option>
+                        <option value='disaster'>灾害</option>
+                        <option value='public_security'>社会公共安全</option>
+                        <option value='rights'>维权上访</option>
+                        <option value='information'>信息产业</option>
+                        <option value='information_security'>信息安全</option>
+                        <option value='industry'>工业</option>
+                        <option value='network'>网络安全</option>
+                        <option value='chinese_party'>中国共产党党务</option>
+                        <option value='national'>国家政务</option>
+                        <option value='diplomacy'>外交</option>
+                        <option value='political'>政法监察</option>
+                        <option value='comprehensive_group'>综合党团</option>
+                        <option value='health'>卫生</option>
+                        <option value='art_sports'>文化体育</option>
+                        <option value='tourism'>旅游服务</option>
+                        <option value='human_resources'>人力资源与社会保障</option>
+                        <option value='population'>人口计生</option>
+                        <option value='agriculture'>农业</option>
+                        <option value='housing'>住房与城乡建设</option>
+                        <option value='environment'>环境保护</option>
+                        <option value='energy'>能源</option>
+                        <option value='technology'>科技教育</option>
+                        <option value='business'>商业贸易</option>
+                        <option value='macro_economy'>宏观经济</option>
+                        <option value='financial_work'>财政金融</option>
                     </select>
                 </div>
                 <div class="manual-1" style="display: none;margin-top: -15px;">
@@ -134,7 +164,20 @@
                     <input type="file" class="text" multiple onchange="handleFileSelect_event(this.files)"  style="display: inline-block;padding: 0;">
                     <span>事件类型</span>
                     <select id="event_lx-2" onchange="event_lx(this.value)">
-                        <option value="1">1</option>
+                        <option value="" disabled selected>请选择事件类型</option>
+                        <option value="高校">高校</option>
+                        <option value="境内机构">境内机构</option>
+                        <option value="境外机构">境外机构</option>
+                        <option value="媒体">媒体</option>
+                        <option value="境外媒体">境外媒体</option>
+                        <option value="民间组织">民间组织</option>
+                        <option value="法律机构及人士">法律机构及人士</option>
+                        <option value="政府机构及人士">政府机构及人士</option>
+                        <option value="媒体人士">媒体人士</option>
+                        <option value="活跃人士">活跃人士</option>
+                        <option value="草根">草根</option>
+                        <option value="其他">其他</option>
+                        <option value="商业人士">商业人士</option>
                     </select>
                 </div>
                 <div class="manual-2-2" style="display: none;margin-top: -15px;">
@@ -320,9 +363,9 @@
                     <input type="text" class="other_value" style="display:none;margin: 0;padding:1px 8px;" placeholder="请输入您想添加的关系"/>
                 </div>
             </div>
-            <div class="add_plus">
-                <b class="icon icon-plus"></b>
-            </div>
+            <!--<div class="add_plus">-->
+                <!--<b class="icon icon-plus"></b>-->
+            <!--</div>-->
         </div>
         <div class="uploading" style="display: none;">
             <div class="checkbox">

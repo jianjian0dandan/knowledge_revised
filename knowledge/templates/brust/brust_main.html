@@ -11,158 +11,32 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <div class="hot_find">
-        <div id="menu-collapse">
-            <div class="weibo">
-                <h3>
-                    <span>热点1：</span>
-                    <a href="###" class="user_name">新浪娱乐</a>&nbsp;
-                    <span>于</span>
-                    <b class="time">2016-11-11 22:33:55</b>&nbsp;
-                    <span>发布</span>
-                </h3>
-                <div class="content">
-                    <div class="content-1">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="content-2">
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                        <div class="content-3">
-                            <span>关键词：</span>
-                            <a href="###" class="key_word">哈哈哈厉害了</a>
-                            <button class="judgment">热点研判</button>
-                        </div>
-                    </div>
+    <h3 class="add" style="color: white;font-weight:800;">热点发现</h3>
+    <div class="trend_line" style="margin-top:50px;">
+        <h4>时间热度图</h4>
+        <div id="trend_line" style="width: 800px;height:300px;margin:20px auto 0;"></div>
+    </div>
+    <div class="hot_find" style="margin-top:40px;">
+        <h4>微博浏览区</h4>
+        <div class="sorting" style="text-align: right;margin: 10px 0;">
+            <label class="radio-inline">
+                <input type="radio" name="event" id="retweeted" value="retweeted" checked> 按原创
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="event" id="sensitive" value="sensitive"> 按转发
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="event" id="comment" value="comment"> 按评论
+            </label>
+            &nbsp;
+            <label class="radio-inline">
+                <input type="radio" name="event" id="timestamp" value="timestamp"> 按时间
+            </label>
+        </div>
+        <div id="menu-collapse" style="margin-top:20px;">
 
-                </div>
-            </div>
-            <div class="weibo">
-                <h3>
-                    <span>热点1：</span>
-                    <a href="###" class="user_name">新浪娱乐</a>&nbsp;
-                    <span>于</span>
-                    <b class="time">2016-11-11 22:33:55</b>&nbsp;
-                    <span>发布</span>
-                </h3>
-                <div class="content">
-                    <div class="content-1">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="content-2">
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                        <div class="content-3">
-                            <span>关键词：</span>
-                            <a href="###" class="key_word">哈哈哈厉害了</a>
-                            <button class="judgment">热点研判</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="weibo">
-                <h3>
-                    <span>热点1：</span>
-                    <a href="###" class="user_name">新浪娱乐</a>&nbsp;
-                    <span>于</span>
-                    <b class="time">2016-11-11 22:33:55</b>&nbsp;
-                    <span>发布</span>
-                </h3>
-                <div class="content">
-                    <div class="content-1">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="content-2">
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                        <div class="content-3">
-                            <span>关键词：</span>
-                            <a href="###" class="key_word">哈哈哈厉害了</a>
-                            <button class="judgment">热点研判</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="weibo">
-                <h3>
-                    <span>热点1：</span>
-                    <a href="###" class="user_name">新浪娱乐</a>&nbsp;
-                    <span>于</span>
-                    <b class="time">2016-11-11 22:33:55</b>&nbsp;
-                    <span>发布</span>
-                </h3>
-                <div class="content">
-                    <div class="content-1">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="content-2">
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                        <div class="content-3">
-                            <span>关键词：</span>
-                            <a href="###" class="key_word">哈哈哈厉害了</a>
-                            <button class="judgment">热点研判</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="weibo">
-                <h3>
-                    <span>热点1：</span>
-                    <a href="###" class="user_name">新浪娱乐</a>&nbsp;
-                    <span>于</span>
-                    <b class="time">2016-11-11 22:33:55</b>&nbsp;
-                    <span>发布</span>
-                </h3>
-                <div class="content">
-                    <div class="content-1">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="content-2">
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                        <div class="content-3">
-                            <span>关键词：</span>
-                            <a href="###" class="key_word">哈哈哈厉害了</a>
-                            <button class="judgment">热点研判</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -171,10 +45,9 @@
 
 {% block my_js %}
 <script src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="/static/js/brust_main-1.js"></script>
 <script>
-    $("#menu-collapse").accordion({
-        header: "h3"
-    });
+
 </script>
 {% endblock %}
 

@@ -3,7 +3,6 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/fishBone.css" />
 <link rel="stylesheet" href="/static/css/theme_result.css">
-
 <style>
     .table>thead:first-child>tr:first-child>th {
         width: 1%;
@@ -216,7 +215,15 @@
             });
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
-    }
+    };
+    //=======
+    $('#chart').on('click',function () {
+        window.open('/index/graph/?user_id='+theme_name+'&node_type=topic');
+    });
+    $('#map').on('click',function () {
+        window.open('/index/map/?user_id='+theme_name+'&node_type=topic');
+    });
+
 </script>
 <!--<script src="/static/js/jquery-3.1.1.min.js"></script>-->
 <!--<script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>-->

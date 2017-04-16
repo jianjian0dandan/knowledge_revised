@@ -112,21 +112,21 @@ def search_user_type(uid_list):
     type_list = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, \
                 body={'ids': uid_list},_source=False, fields=['id', 'verified_type'])['docs']
     user_list = []
-    org_list = []
+    org_list1 = []
     for i in type_list:
         if i['found'] == False:
             user_list.append(i['_id'])
         else:
             # print i
-            if not i.has_key('verified_type'):
+            if not i['fields'].has_key('verified_type'):
                 user_list.append(i['_id'])
                 continue
             verified_type = i['fields']['verified_type'][0]
             if verified_type in org_list:
-                org_list.append(i['_id'])
+                org_list1.append(i['_id'])
             else:
                 user_list.append(i['_id'])
-    return user_list,org_list
+    return user_list,org_list1
 
 
 def main():

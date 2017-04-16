@@ -2,7 +2,7 @@
 
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
-from extensions import db, security, user_datastore, admin, User, Role, roles_users
+from extensions import db, security, user_datastore, admin, User, Role, roles_users, UserAdmin
 from flask.ext.security import SQLAlchemyUserDatastore
 from flask_admin.contrib import sqla
 from knowledge.index.views import mod as indexModule
@@ -66,7 +66,8 @@ def create_app():
 
     # init admin
     admin.init_app(app)
-    admin.add_view(sqla.ModelView(User, db.session))
+    admin.add_view(UserAdmin(User, db.session))
+    # admin.add_view(sqla.ModelView(User, db.session))
     admin.add_view(sqla.ModelView(Role, db.session))
     
     return app

@@ -8,35 +8,39 @@ $.ajax({
 });
 function result(data) {
     var data=eval(data);
-    console.log(data);
     for (var key in data){
         //人物
-        if (key=='User'){
+        if (node_type=='User'){
             person(data[key]);
             $('.related_person').css({display:'block'});
         };
         //机构
-        if (key=='Org'){
+        if (node_type=='Org'){
             agencies(data[key]);
             $('.related_agencies').css({display:'block'});
         };
         //事件
-        if (key=='Event'){
+        if (node_type=='Event'){
             events(data[key]);
             $('.related_events').css({display:'block'});
         };
         //专题
-        if (key=='SpecialEvent'){
-            subject(data[key]);
+        if (node_type=='SpecialEvent'){
+            events(data[key]);
             $('.related_subject').css({display:'block'});
         };
         //群体
-        if (key=='Group'){
-            subject(data[key]);
-            $('.related_subject').css({display:'block'});
+        if (node_type=='Group'){
+            if (key == 'User'){
+                person(data[key]);
+                $('.related_person').css({display:'block'});
+            }
+            if (key == 'Org'){
+                agencies(data[key]);
+                $('.related_agencies').css({display:'block'});
+            }
         };
     }
-
 }
 //相关人物
 function person(data) {
@@ -182,7 +186,8 @@ function person(data) {
                     }else if (row[1].sim==0){
                         return '尚未计算';
                     }else if (row[1].sim==1){
-                        return '计算完成';
+                        var go=row[1].uid+',User';
+                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (row[1].sim==-1){
                         return '正在计算';
                     }
@@ -190,11 +195,9 @@ function person(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            // if ($element[0].innerText=='计算完成') {
-            //     window.open('/relation/similarity_result/?node_id='+row.uid+'&node_type=User');
-            // }else {
-            //     alert('还未计算完成。')
-            // }
+            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
+                alert('还未计算完成。')
+            }
         }
     });
 };
@@ -255,70 +258,70 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].uname==''||row[1].uname=='unknown'||row[1].uname=='NULL'){
-                        return row[1].id;
+                    if (row[1].location==''||row[1].location=='unknown'||row[1].location=='NULL'){
+                        return '未知';
                     }else {
-                        return row[1].uname;
+                        return row[1].location;
                     }
                 },
             },
             {
                 title: "影响力",//标题
-                field: "influence",//键名
+                field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
+                    if (row[1].influence==''||row[1].influence=='unknown'||row[1].influence=='NULL'){
                         return 0;
                     }else {
-                        return row.influence.toFixed(2);
+                        return row[1].influence.toFixed(2);
                     }
                 },
             },
             {
                 title: "活跃度",//标题
-                field: "activeness",//键名
+                field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
+                    if (row[1].activeness==''||row[1].activeness=='unknown'||row[1].activeness=='NULL'){
                         return 0;
                     }else {
-                        return row.activeness.toFixed(2);
+                        return row[1].activeness.toFixed(2);
                     }
                 },
             },
             {
                 title: "敏感度",//标题
-                field: "sensitive",//键名
+                field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
+                    if (row[1].sensitive==''||row[1].sensitive=='unknown'||row[1].sensitive=='NULL'){
                         return 0;
                     }else {
-                        return row.sensitive.toFixed(2);
+                        return row[1].sensitive.toFixed(2);
                     }
                 },
             },
             {
                 title: "自动标签",//标题
-                field: "keywords_string",//键名
+                field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
+                    if (row[1].keywords_string==''||row[1].keywords_string=='unknown'||row[1].keywords_string=='NULL'){
                         return '暂无';
                     }else {
-                        var words=row.keywords_string.split('&');
+                        var words=row[1].keywords_string.split('&');
                         if (words.length<=5){
                             return words.join(',');
                         }else {
@@ -331,31 +334,31 @@ function agencies(data) {
             },
             {
                 title: "计算状态",//标题
-                field: "sim",//键名
+                field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value=='not exist'){
-                        var infor=row.uname+','+row.id+',Org';
+                    if (row[1].sim=='not exist'){
+                        var infor=row[1].uname+','+row[1].id+',Org';
                         return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        return '计算完成';
+                        var go=row[1].uid+',Org';
+                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
+                alert('还未计算完成。')
+            }
+        }
     });
 };
 
@@ -389,29 +392,56 @@ function events(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return index+1;
+                    if (row[1].name==''||row[1].name=='unknown'||row[1].name=='NULL'){
+                        return '暂无';
+                    }else {
+                        return row[1].name;
+                    }
                 }
             },
             {
-                title: "事件关键词",//标题
+                title: "事件类型",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1].event_type==''||row[1].event_type=='unknown'||row[1].event_type=='NULL'){
+                        return '暂无';
+                    }else {
+                        return row[1].event_type;
+                    }
                 }
             },
             {
-                title: "业务标签",//标题
+                title: "发生时间",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1].real_time==''||row[1].real_time=='unknown'||row[1].real_time=='NULL'){
+                        return '暂无';
+                    }else {
+                        return row[1].real_time;
+                    }
+                },
+            },
+            {
+                title: "发生地点",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[1].real_geo==''||row[1].real_geo=='unknown'||row[1].real_geo=='NULL'){
+                        return '暂无';
+                    }else {
+                        return row[1].real_geo;
+                    }
                 },
             },
             {
@@ -422,138 +452,177 @@ function events(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1].uid_counts==''||row[1].uid_counts=='unknown'||row[1].uid_counts=='NULL'){
+                        return 0;
+                    }else {
+                        return row[1].uid_counts;
+                    }
                 },
             },
             {
-                title: "微博数",//标题
+                title: "微博数量",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1].weibo_counts==''||row[1].weibo_counts=='unknown'||row[1].weibo_counts=='NULL'){
+                        return 0;
+                    }else {
+                        return row[1].weibo_counts;
+                    }
                 },
             },
             {
-                title: "相似度",//标题
+                title: "自动标签",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-
+                    if (row[1].keywords==''||row[1].keywords=='unknown'||row[1].keywords=='NULL'){
+                        return '暂无';
+                    }else {
+                        var words=row[1].keywords.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
+                    }
+                },
+            },
+            {
+                title: "计算状态",//标题
+                field: "",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (row[1].sim=='not exist'){
+                        var infor=row[1].name+','+row[1].id+',Event';
+                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                    }else if (value==0){
+                        return '尚未计算';
+                    }else if (value==1){
+                        var go=row[1].uid+',Event';
+                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                    }else if (value==-1){
+                        return '正在计算';
+                    }
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
+                alert('还未计算完成。')
+            }
+        }
     });
 };
 
 //相关专题
-function subject(data) {
-    var data = eval(data);
-    $('#subject').bootstrapTable('load', data);
-    $('#subject').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-            {
-                title: "专题名称",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return index+1;
-                }
-            },
-            {
-                title: "关键词",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                }
-            },
-            {
-                title: "业务标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                },
-            },
-            {
-                title: "包含事件数量",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                },
-            },
-            {
-                title: "创建时间",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                },
-            },
-            {
-                title: "相似度",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-
-                },
-            },
-        ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
-    });
-};
+// function subject(data) {
+//     var data = eval(data);
+//     $('#subject').bootstrapTable('load', data);
+//     $('#subject').bootstrapTable({
+//         data:data,
+//         search: true,//是否搜索
+//         pagination: true,//是否分页
+//         pageSize: 5,//单页记录数
+//         pageList: [5, 20, 40, 80],//分页步进值
+//         sidePagination: "client",//服务端分页
+//         searchAlign: "left",
+//         searchOnEnterKey: false,//回车搜索
+//         showRefresh: true,//刷新按钮
+//         showColumns: true,//列选择按钮
+//         buttonsAlign: "right",//按钮对齐方式
+//         locale: "zh-CN",//中文支持
+//         detailView: false,
+//         showToggle:true,
+//         sortName:'bci',
+//         sortOrder:"desc",
+//         columns: [
+//             {
+//                 title: "专题名称",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//                     return index+1;
+//                 }
+//             },
+//             {
+//                 title: "关键词",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//
+//                 }
+//             },
+//             {
+//                 title: "业务标签",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//
+//                 },
+//             },
+//             {
+//                 title: "包含事件数量",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//
+//                 },
+//             },
+//             {
+//                 title: "创建时间",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//
+//                 },
+//             },
+//             {
+//                 title: "相似度",//标题
+//                 field: "",//键名
+//                 sortable: true,//是否可排序
+//                 order: "desc",//默认排序方式
+//                 align: "center",//水平
+//                 valign: "middle",//垂直
+//                 formatter: function (value, row, index) {
+//
+//                 },
+//             },
+//         ],
+//         // onClickRow: function (row, tr) {
+//         //     if ($(tr.context).index()==2) {
+//         //         del_eventuid=row[0];
+//         //         $('#del_ject').modal("show");
+//         //     }
+//         // }
+//     });
+// };
 
 //相关组织
 // function organization(data) {
@@ -673,6 +742,10 @@ function add_new_task(row) {
     });
 }
 
+function go_jump(uid_type) {
+    var news=uid_type.split(',');
+    window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]);
+}
 
 
 

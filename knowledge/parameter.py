@@ -83,4 +83,6 @@ TOPIC_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge
 
 DOMAIN_ABS_PATH = '/home/ubuntu2/huxiaoqian/knowledge/knowledge_revised/knowledge/cron/model_file/domain'
 
+diffusion_time = 5
+diffusion_time_interval = 2*3600
 

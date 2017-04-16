@@ -24,7 +24,7 @@ function group_overview(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -138,11 +138,17 @@ function group_overview(data) {
         onUncheck:function (row) {
             group_diff.removeByValue(row[1]);
         },
+        onCheckAll:function (row) {
+            group_diff.push(row[1]);
+        },
+        onUncheckAll:function (row) {
+            group_diff.removeByValue(row[1]);
+        },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='群体查看') {
-                window.open('/group/result/?group_name='+row[1]);
+                window.open('/group/result/?theme_name='+row[1]);
             }else if ($element[0].innerText=='群体编辑') {
-                window.open('/group/modify/?group_name='+row[1]);
+                window.open('/group/modify/?theme_name='+row[1]);
             }
         }
     });

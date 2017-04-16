@@ -16,7 +16,7 @@ body {
 }
 #container {
     position: relative;
-    width: 80%;
+    width: 1000px;
     padding: 110px 50px 90px 0;
     margin: 110px auto 100px;
     background: #f3f4f5;

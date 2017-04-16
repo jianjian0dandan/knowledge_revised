@@ -12,10 +12,10 @@
 
 {% block main %}
 <div id="all_cards">
-    <div class="left"> < </div>
+    <!--<div class="left"> < </div>-->
     <div class="cards_content">
-        <div class="choose" style="padding: 5px 0 5px 100px;">
-            <label class="radio-inline">
+        <div id="cards_rank" class="choose" style="padding: 5px 0 5px 100px;">
+            <!--<label class="radio-inline">
                 <input type="radio" name="options" id="important" value="" checked> 重要度
             </label>
             <label class="radio-inline">
@@ -23,130 +23,24 @@
             </label>
             <label class="radio-inline">
                 <input type="radio" name="options" id="sensitivity" value=""> 敏感度
-            </label>
+            </label>-->
         </div>
         <div id="card_set">
-            <div id="gov_card_details" class="card" style="padding:30px 0 0 30px">
-                <div class="details-1">
-                    <div class="details-1-left">
-                        <h3 class="name" title="中华人民共和国">中华人民共和国</h3>
-                        <p>发生时间：<b class="time">2016-9-12</b></p>
-                    </div>
-                    <div class="details-1-right">
-                        <img src="/static/images/unknown.png">
-                    </div>
-                    <div class="details-1-bottom">
-                        <img src="/static/images/gov_wei.png" title="位置">&nbsp;<span class="position">山东</span>
-                        <img src="/static/images/gov_people.png" title="粉丝数">&nbsp;<span class="join">1723923</span>
-                        <img src="/static/images/gov_circle.png" class="heart">
-                    </div>
-                </div>
-                <div class="details-2">
-                    <span class="business">业务标签：</span>
-                    <span class="tag">大学生</span>
-                </div>
-            </div>
-            <div id="per_card_details" class="card" style="padding:10px 0 0 0;">
-                <div class="details-1">
-                    <div class="details-1-top">
-                        <img src="/static/images/unknown.png" class="photo">
-                        <img src="/static/images/per_xin.png" class="per_xin">
-                        <p class="name" title="中华人民共和国">中华人民共和国</p>
-                    </div>
-                    <div class="details-1-bottom-left">
-                        <p style="margin-top:12px;font-size: 8px"><b>认证类型：</b></p>
-                        <p class="attest" title="经济类 人文类">经济类 人文类</p>
-                        <img src="/static/images/position.png" title="位置"><span class="position">山东</span>
-                        <img src="/static/images/fansum.png" title="粉丝数"><span class="fansum">1723923</span>
-                    </div>
-                    <div class="details-1-bottom-right">
-                        <p style="margin-top:2px;font-size: 8px">
-                            <b>业务标签：</b>
-                            <span class="tag" title="经济类 人文类">经济类 人文类</span>
-                        </p>
-                        <p style="margin-top:2px;font-size: 8px">
-                            <b>领域：</b>
-                            <span class="field" title="经济类 人文类">民生健康</span>
-                        </p>
-                        <p class="range" style="margin-top: 5px">
-                            <img src="/static/images/influe.png" title="影响力"><span class="influe">341</span>
-                            <img src="/static/images/active.png" title="活跃度"><span class="active">213</span>
-                            <img src="/static/images/sentive.png" title="敏感度"><span class="sentive">2</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div id="event_card_details" class="card">
-                <div class="details-left">
-                    <h3 class="name" title="徐玉玉事件">徐玉玉事件</h3>
-                    <p>发生时间：<b class="time">2016-9-12</b></p>
-                </div>
-                <div class="details-right">
-                    <div class="details-right-1">
-                        <p>
-                            <img src="/static/images/gov_wei.png" title="位置"> <span class="position">山东</span>
-                            <img src="/static/images/gov_circle.png" class="heart">
-                        </p>
-                        <p>
-                            <img src="/static/images/gov_weibo.png" title="微博数"> <span class="weibonum">1223</span>
-                        </p>
-                        <p>
-                            <img src="/static/images/gov_people.png" title="参与人数"> <span class="join">17223</span>
-                        </p>
-                    </div>
-                    <img class="photo" src="/static/images/unknown.png">
-                    <div class="details-right-2">
-                        <p class="tag_e" style="margin: 10px 0">
-                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>
-                            <span class="tag">大学生</span>
-                        </p>
-                        <p class="legend" style="">
-                            悟空和唐僧一起上某卫视非诚勿扰,悟空上台,24盏灯全灭。
-                            理由:1.没房没车只有一根破棍.
-                            2.保镖职业危险.
-                            3.动不动打妖精,对女生不温柔.
-                            4.坐过牢,曾被压五指山下500年。
-                            唐僧上台，哗!灯全亮。
-                            理由:1.公务员；
-                            2.皇上兄弟，后台最硬
-                            3.精通梵文等外语
-                            4.长得帅
-                            5.最关键一点：有宝马！
-                        </p>
-                    </div>
-                </div>
 
-            </div>
         </div>
     </div>
-    <div class="right"> > </div>
+    <!--<div class="right"> > </div>-->
 </div>
 
 {% endblock %}
 
 {% block my_js %}
-<script src="/static/js/card_display-1.js"></script>
+
 <script>
-//    $('body').height($(window).height());
-    var h=1;
-    $('.heart').on('click',function () {
-        if (h==1){
-            $(this).attr('src','/static/images/gov_xin.png');
-            h=2;
-        }else {
-            $(this).attr('src','/static/images/gov_circle.png');
-            h=1;
-        }
-    });
-    var s=1;
-    $('.per_xin').on('click',function () {
-        if (s==1){
-            $(this).attr('src','/static/images/per_focus.png');
-            s=2;
-        }else {
-            $(this).attr('src','/static/images/per_xin.png');
-            s=1;
-        }
-    });
+
+    var result={{result|tojson}};
+    var flag={{flag|tojson}};
+
 </script>
+<script src="/static/js/card_display-1.js"></script>
 {% endblock %}

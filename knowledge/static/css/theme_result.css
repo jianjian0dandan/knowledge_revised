@@ -19,7 +19,7 @@ body {
     background-color:#e6e9eb;
 }
 #container {
-    width: 100%;
+    width: 1170px;
     padding: 40px 0 0 0;
     margin: 0 auto;
 }
@@ -27,7 +27,7 @@ body {
     width: 850px;
     padding: 30px;
     float: left;
-    margin:0 0 50px 100px;
+    margin:0 0 50px 0;
     background:#f3f4f5;
 }
 #container #content_left h3 {
@@ -193,7 +193,7 @@ body {
 
 /*右边栏*/
 #container #content_right {
-    width: 20%;
+    width: 300px;
     float: left;
     margin-left:20px;
 }

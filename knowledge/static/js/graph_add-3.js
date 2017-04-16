@@ -2,10 +2,12 @@
 var start_type='User',end_type='User',rel_type='friend';
 function one_type(value) {
     start_type=value;
+    $('.manone').val('');
     rel();
 };
 function two_type(value) {
     end_type=value;
+    $('.mantwo').val('');
     rel();
 };
 var other;
@@ -103,7 +105,7 @@ function class_name(input_class) {
 var uid_1,uid_2;
 
 $(document).ready(function(){
-    $('.manone').attr('disabled',false);
+    // $('.manone').attr('disabled',false);
     $(document).keydown(function(e){
         e = e || window.event;
         var keycode = e.which ? e.which : e.keyCode;
@@ -167,14 +169,14 @@ $(document).ready(function(){
             uid_1=$('.addbg').children('._id').text();
             $('#container .relation .rel_manual .one .manone').val(value);
             $('.append-1').hide().html('');
-            $('.manone').attr('disabled',true);
+            // $('.manone').attr('disabled',true);
         }else {
             $('#container .relation .rel_manual .two .mantwo').blur();
             var value = $('.addbg').text();
             uid_2=$('.addbg').children('._id').text();
             $('#container .relation .rel_manual .two .mantwo').val(value);
             $('.append-2').hide().html('');
-            $('.mantwo').attr('disabled',true);
+            // $('.mantwo').attr('disabled',true);
         }
 
     }
@@ -220,12 +222,12 @@ function getCon(obj){
         $('#container .relation .rel_manual .one .manone').val(value);
         $('.append-1').hide().html('');
         uid_1=$(obj).find('._id').text();
-        $('.manone').attr('disabled',true);
+        // $('.manone').attr('disabled',true);
     }else {
         $('#container .relation .rel_manual .two .mantwo').val(value);
         $('.append-2').hide().html('');
         uid_2=$(obj).find('._id').text();
-        $('.mantwo').attr('disabled',true);
+        // $('.mantwo').attr('disabled',true);
     }
 
 }

@@ -2,37 +2,55 @@
 @media screen and (min-width: 1366px) {
     body {
         width: 1349px;
-        height: 2950px;
         margin: 0 auto;
     }
 }
 /*内容样式*/
 body {
     width: 100%;
+    margin: 0;
     min-width: 1349px;
-    min-height: 2950px;
-    background: url("/static/images/person_body.png") no-repeat;
-    background-size: 100% 100%;
+    /*min-height: 820px;*/
+    background-color:#e6e9eb;
 }
 #organization {
-    width: 100%;
-    padding: 72px 0 0 0;
+    width: 1170px;
+    padding: 40px 0 0 0;
+    margin: 0 auto;
 }
 #organization #content_left {
-    width: 59%;
+    width: 850px;
+    padding: 30px;
     float: left;
-    margin-left: 9%;
+    margin:0 0 50px 0;
+    background:#f3f4f5;
+}
+#organization #content_left h3 {
+    width: 241px;
+    height: 49px;
+    text-align: center;
+    line-height: 49px;
+    margin-left: -40px;
+    color: white;
+    font-weight: 900;
+    background: url("/static/images/small_tit.png") no-repeat;
+    background-size: 241px 49px;
 }
 /*基本信息*/
 #organization #content_left .basic .basic-1 {
-    padding: 20px 0 0 100px;
+    padding: 20px 0 0 50px;
     position: relative;
 }
 #organization #content_left .basic .basic-1 .map_area dl {
     position: absolute;
-    top: -10px;
+    width: 79px;
+    height: 106px;
+    padding: 20px 0 0 6px;
+    top: -38px;
     text-align: center;
     cursor: pointer;
+    background: url("/static/images/e_p.png") no-repeat;
+    background-size:79px 106px;
 }
 #organization #content_left .basic .basic-1 .map_area dd {
     color: white;
@@ -65,8 +83,6 @@ body {
 }
 #organization #content_left .basic .basic-2 .information {
     width: 77%;
-    height:260px;
-    overflow: hidden;
     margin:42px 0 0 55px;
     position: relative;
 }
@@ -105,7 +121,7 @@ body {
     width: 60%;
     margin: 50px auto 0;
 }
-#organization #content_left .influnce .influ-1 h3 {
+#organization #content_left .influnce .influ-1 h4 {
     /*width: 95%;*/
     padding: 5px 20px;
     color: #676767;
@@ -120,6 +136,9 @@ body {
     margin:40px auto 0;
 }
 #organization #content_left .activity .location .message p {
+    width: 555px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 5px 10px;
     font-size: 14px;
     margin-bottom:7px;
@@ -139,7 +158,7 @@ body {
     width:70%;
     margin: 40px auto;
 }
-#organization #content_left .social .social-1 h3 {
+#organization #content_left .social .social-1 h4 {
     font-size: 24px;
     padding:20px 0;
 }
@@ -193,16 +212,56 @@ body {
     width: 80%;
     margin: 0 auto;
 }
+/*微博内容*/
+#organization #content_left .text .text_information .published {
+    padding: 10px 30px 20px;
+    border-radius: 10px;
+}
+#organization #content_left .text .text_information .published .master {
+    color: #4b4b4b;
+    font-weight: 700;
+    margin: 10px 0 20px 0;
+}
+#organization #content_left .text .text_information .published .time{
+    color: black;
+    font-size: 10px;
+}
 /*右边栏*/
 #organization #content_right {
-    width: 20%;
+    width: 300px;
     float: left;
-    margin-left:30px;
-    margin-top:16px;
+    margin-left:20px;
+}
+#organization #content_right .link_user,
+#organization #content_right .link_event,
+#organization #content_right .link_agency,
+#organization #content_right .link_knowledge,
+#organization #content_right .link_resources{
+    /*width: 417px;*/
+    /*height: 390px;*/
+    padding-bottom: 40px;
+    background: url("/static/images/xx_relation.png") no-repeat;
+    background-size: 100% 100%;
+}
+#organization #content_right .link_user h3,
+#organization #content_right .link_event h3,
+#organization #content_right .link_agency h3,
+#organization #content_right .link_knowledge h3,
+#organization #content_right .link_resources h3{
+    width: 150px;
+    height: 50px;
+    text-align: center;
+    color: white;
+    line-height: 42px;
+    margin-left: -8px;
+    font-weight: 900;
+    background: url(/static/images/result_tit.png) no-repeat;
+    background-size: 100% 100%;
 }
 #organization #content_right .link_user .users a,
 #organization #content_right .link_event .events a,
 #organization #content_right .link_agency .agencys a,
+#organization #content_right .link_knowledge .knowledge a,
 #organization #content_right .link_resources .resources a {
     width: 70%;
     display: block;
@@ -216,6 +275,7 @@ body {
 #organization #content_right .link_user .user_more,
 #organization #content_right .link_event .event_more,
 #organization #content_right .link_agency .agency_more,
+#organization #content_right .link_knowledge .knowledge_more,
 #organization #content_right .link_resources .resources_more {
     cursor: pointer;
     padding: 2px;
@@ -232,8 +292,19 @@ body {
 #organization #content_right .link_user .user_more:hover,
 #organization #content_right .link_event .event_more:hover,
 #organization #content_right .link_agency .agency_more:hover,
+#organization #content_right .link_knowledge .knowledge_more:hover,
 #organization #content_right .link_resources .resources_more:hover {
     background-color: #bcbcbc;
     color: white;
+}
+#link #link_content a {
+    display: inline-block;
+    width: 90px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    margin: 15px 0;
 }
 

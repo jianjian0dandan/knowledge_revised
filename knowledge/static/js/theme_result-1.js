@@ -153,12 +153,11 @@ function things(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
+        },
     });
 };
 
@@ -327,12 +326,6 @@ function network(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
     });
 };
 
@@ -369,7 +362,7 @@ function key_tag(data) {
         key_series.push(
             {
                 name: item[0],
-                value: item[1]*100,
+                value: item[1].toFixed(2) *100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -378,7 +371,7 @@ function key_tag(data) {
         tag_series.push(
             {
                 name: item[0],
-                value: item[1]*100,
+                value: item[1].toFixed(2) *100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -405,7 +398,7 @@ function key_tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -446,7 +439,7 @@ function key_tag(data) {
                     // name: 'Google Trends',
                     type: 'wordCloud',
                     size: ['80%', '80%'],
-                    textRotation : [0, 45, 90, -45],
+                    textRotation : [0, 0, 0, 0],
                     textPadding: 0,
                     autoSize: {
                         enable: true,
@@ -569,12 +562,11 @@ function character(data) {
                 },
             },
         ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row.id);
+            }
+        }
     });
 };
 //----人物自动标签
@@ -593,7 +585,7 @@ function user_tag(data) {
         user_key_series.push(
             {
                 name: item[0],
-                value: item[1] * 100,
+                value: item[1].toFixed(2) * 100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -602,7 +594,7 @@ function user_tag(data) {
         user_tag_series.push(
             {
                 name: item[0],
-                value: item[1] * 100,
+                value: item[1].toFixed(2)  * 100,
                 itemStyle: createRandomItemStyle()
             }
         )
@@ -618,8 +610,6 @@ require(
     function (ec) {
         // 基于准备好的dom，初始化echarts图表
         var myChart = ec.init(document.getElementById('label_left'));
-
-
         option = {
             title: {
                 // text: '关键词',
@@ -631,7 +621,7 @@ require(
                 // name: 'Google Trends',
                 type: 'wordCloud',
                 size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
+                textRotation : [0, 0, 0, 0],
                 textPadding: 0,
                 autoSize: {
                     enable: true,
@@ -670,7 +660,7 @@ require(
                 // name: 'Google Trends',
                 type: 'wordCloud',
                 size: ['80%', '80%'],
-                textRotation : [0, 45, 90, -45],
+                textRotation : [0, 0, 0, 0],
                 textPadding: 0,
                 autoSize: {
                     enable: true,

@@ -45,7 +45,9 @@ def construction_graph_add():#图谱添加
 @mod.route('/graph_modify/')
 @login_required
 def construction_graph_modify():#图谱编辑
-    return render_template('construction/graph_modify.html')
+    _type = request.args.get('_type', '')
+    _id = request.args.get('_id', '')
+    return render_template('construction/graph_modify.html',_id=_id,_type=_type)
 
 @mod.route('/node/')
 def add_node():
@@ -55,7 +57,7 @@ def add_node():
 def ajax_recommentation_in():
     #按影响力推荐，按敏感度推荐
     date = request.args.get('date', '2016-11-27') # '2013-09-01'
-    recomment_type = request.args.get('type', 'influence')  #influence  sensitive
+    recomment_type = request.args.get('type', 'sensitive')  #influence  sensitive
     submit_user = request.args.get('submit_user', 'admin') # 提交人
     node_type = request.args.get('node_type', 'user') # user  org
     input_ts = datetime2ts(date)
@@ -69,7 +71,6 @@ def ajax_recommentation_in():
     else:
         results = recommentation_in(input_ts, recomment_type, submit_user, node_type)
     return json.dumps(results)
-
 
 # show auto recommentation
 @mod.route('/show_auto_in/')
@@ -168,7 +169,8 @@ def ajax_submit_event():
 @mod.route('/event_update/')
 def ajax_event_update():
     event_id = request.args.get('event_id', 'bei-jing-fang-jia-zheng-ce-1480176000') # '0':user  '1'：org
-    update_event(event_id)
+    relation_compute = request.args.get('relation_compute', '') #User , Org
+    update_event(event_id, relation_compute)
     return '1'
 
 #上传文件方式事件入库
@@ -181,7 +183,7 @@ def ajax_submit_identify_file():
     #upload_data stucture same to detect/views/mult_person
     print 'input_data:', input_data
     results = submit_event_file(input_data)
-    print results,'===============00000000000'
+    # print results,'===============00000000000'
     return json.dumps(results)  # True, submit_num
 
 #事件任务状态
@@ -200,7 +202,7 @@ def ajax_search_node():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field,'')
+        result = search_user(item, field,'', node_type)
     if node_type == 'Event':
         field = ['en_name', 'name']  
         result = search_event(item, field,'')
@@ -223,7 +225,7 @@ def ajax_relation_edit_search():
     item = request.args.get('item', '1')
     if node_type == 'User' or node_type == 'Org':
         field = ['uid', 'uname']
-        result = search_user(item, field, '')
+        result = search_user(item, field, '', node_type)
     if node_type == 'Event':
         field = ['en_name', 'name']
         result = search_event(item, field, '')
@@ -246,13 +248,13 @@ def ajax_relation_show_edit():
 #关系编辑，添加关系
 @mod.route('/create_relation/')
 def create_relation():
-    node_key1 = request.args.get('node_key1', 'uid')  # uid,event
+    node_key1 = request.args.get('node_key1', 'uid')  # uid,org_id, event_id
     node1_id = request.args.get('node1_id', '1497035431')
-    node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', 'XXXX')
-    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
-    node2_id = request.args.get('node2_id', 'bei-jing-fang-jia-zheng-ce-1480176000')
-    node2_index_name = request.args.get('node2_index_name', 'event_index')
+    node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index , org_index,event_index
+    rel = request.args.get('rel', 'user_tag,0411')
+    node_key2 = request.args.get('node_key2', 'uid')  # event,uid
+    node2_id = request.args.get('node2_id', '2762995793')
+    node2_index_name = request.args.get('node2_index_name', 'node_index')
     flag = create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
@@ -284,7 +286,7 @@ def ajax_node_edit():
     else:
         if node_type == 'User' or node_type == 'Org':
             field = ['uid', 'uname','location', 'influence', 'activeness', 'sensitive','keywords_string', 'function_mark']
-            node_result = search_user(item, field, editor)
+            node_result = search_user(item, field, editor,node_type)
         if node_type == 'Event':
             # field = ['en_name', 'submit_ts',  'uid_counts', 'weibo_counts']
             field = ['en_name','name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag','compute_status']
@@ -295,7 +297,7 @@ def ajax_node_edit():
 @mod.route('/node_edit_show/')
 def ajax_node_edit_show():
     node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '5779325975')  #id
+    item = request.args.get('item', '5848882336')  #id
     submit_user = request.args.get('submit_user', 'admin1')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = show_node_detail(node_type, item, submit_user)
@@ -307,8 +309,8 @@ def ajax_node_edit_show():
 @mod.route('/node_delete/')
 def ajax_node_delete():
     node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '1198503091')  #id
-    submit_user = request.args.get('submit_user', 'admin1')  #admin
+    item = request.args.get('item', '2079185253')  #id
+    submit_user = request.args.get('submit_user', 'admin@qq.com')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = node_delete(node_type, item, submit_user)
     # tag = deal_user_tag(item, submit_user, tag_value)[0]
@@ -333,10 +335,10 @@ def ajax_node_edit_():
                 i_value = '&'.join(i_value.split(','))
                 es.update(index=portrait_index_name,doc_type=portrait_index_type,id=item,body={'doc':{i:i_value}})
         for i in field[1]:
-            i_value = request.args.get(i, '测试,www.baidu.com+测试2,www.weibo.com') #User , Org
+            i_value = request.args.get(i, '测试,www.baidu.com 测试2,www.weibo.com') #User , Org
             if i_value:
                 edit_num += 1
-                i_value = '+'.join(i_value.split(' '))
+                i_value = ' '.join(i_value.split(' '))
                 try:
                     es_related_docs.update(index=user_docs_name,doc_type=user_docs_type, id=item,body={'doc':{i:i_value}})
                 except:

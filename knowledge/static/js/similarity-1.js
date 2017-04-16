@@ -1,3 +1,10 @@
+var types={
+    'User':'人物',
+    'Event':'事件',
+    'Org':'机构',
+    'Group':'群体',
+    'SpecialEvent':'专题'
+}
 //计算任务
 var calculation_url='/relation/all_sim/';
 $.ajax({
@@ -9,7 +16,6 @@ $.ajax({
 });
 function calculation(data) {
     var data = eval(data);
-    console.log(data)
     $('#task').bootstrapTable('load', data);
     $('#task').bootstrapTable({
         data:data,
@@ -30,7 +36,7 @@ function calculation(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "节点名称",//标题
+                title: "任务名称",//标题
                 field: "node_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -51,9 +57,9 @@ function calculation(data) {
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
-                // formatter: function (value, row, index) {
-                //
-                // }
+                formatter: function (value, row, index) {
+                    return types[row.node_type];
+                }
             },
             {
                 title: "提交时间",//标题
@@ -66,11 +72,7 @@ function calculation(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-
-                        var to_time=getLocalTime(row.submit_ts.toString());
-                        var pattern = /[\u4e00-\u9fa5]/;
-                        var time=to_time.replace(/pattern/,'');
-                        return time;
+                        return getLocalTime(row.submit_ts);
                     }
                 },
             },
@@ -138,7 +140,11 @@ function calculation(data) {
     });
 };
 
-
 function getLocalTime(nS) {
-    return new Date(parseInt(nS) * 1000).toLocaleString();
+    var ns_len=nS.toString().length;
+    if (ns_len>10){
+        return new Date(parseInt(nS) ).toLocaleString();
+    }else {
+        return new Date(parseInt(nS) *1000 ).toLocaleString();
+    }
 };

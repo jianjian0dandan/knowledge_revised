@@ -13,7 +13,8 @@ from time_utils import ts2datetime, datetime2ts, ts2datehour, datehour2ts
 
 from elasticsearch import Elasticsearch
 from global_utils import es_flow_text as es
-from global_utils import RUN_TYPE, diffusion_time, diffusion_time_interval
+from parameter import diffusion_time, diffusion_time_interval
+from parameter import RUN_TYPE
 
 
 topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environment':5, 'medicine':6,\

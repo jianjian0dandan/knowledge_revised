@@ -8,6 +8,7 @@ function event_type_2(value) {
         $('.event .manual-2-2').hide();
         recommend_style='submit';
         tt=1;
+        $('#event_list').hide();
     }else if (value==3){
         $('.event .manual').hide();
         $('.event .manual-1').hide();
@@ -15,12 +16,15 @@ function event_type_2(value) {
         $('.event .manual-2-2').show();
         recommend_style='upload';
         tt=1;
+        $('#event_list').hide();
     }else {
         $('.event .manual').hide();
         $('.event .manual-1').hide();
         $('.event .manual-2').hide();
         $('.event .manual-2-2').hide();
         recommend_style='recommend';
+        tt=0;
+        $('#event_list').show();
     }
 }
 //-------------事件--------完----
@@ -28,8 +32,8 @@ function event_type_2(value) {
 function getLocalTime(nS) {
     return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,10)
 };
-var timestamp = Date.parse(new Date()),
-// var timestamp = 1479571200,
+// var timestamp = Date.parse(new Date()),
+var timestamp = 1479484800,
     mid,key_string,time;
 function weibo_content() {
     function place() {
@@ -52,8 +56,8 @@ function weibo_content() {
     };
     var place=new place();
     function nums() {
-        var url = '/brust/show_weibo_list/?ts='+timestamp;
-        place.call_request(url,territory);
+        var weibo_url='/brust/show_weibo_list/?ts='+timestamp+'&type=3&sort=sensitive';
+        place.call_request(weibo_url,territory);
     }
     nums();
     function Draw_weibo_table(data){
@@ -107,9 +111,9 @@ function weibo_content() {
                         name=dataArray[i].nick_name;
                     };
                     if (dataArray[i].photo_url==''||dataArray[i].photo_url=='unknown') {
-                        photo=dataArray[i].uid;
-                    }else {
                         photo='/static/images/unknown.png';
+                    }else {
+                        photo=dataArray[i].photo_url;
                     };
                     if (dataArray[i].geo==''||dataArray[i].geo=='unknown') {
                         area='未知';
@@ -206,9 +210,9 @@ function weibo_content() {
                             name=dataArray[i].nick_name;
                         };
                         if (dataArray[i].photo_url==''||dataArray[i].photo_url=='unknown') {
-                            photo=dataArray[i].uid;
-                        }else {
                             photo='/static/images/unknown.png';
+                        }else {
+                            photo=dataArray[i].photo_url
                         };
                         if (dataArray[i].geo==''||dataArray[i].geo=='unknown') {
                             area='未知';
@@ -309,9 +313,9 @@ function weibo_content() {
                         name=dataArray[i+a].nick_name;
                     };
                     if (dataArray[i+a].photo_url==''||dataArray[i+a].photo_url=='unknown') {
-                        photo=dataArray[i+a].uid;
-                    }else {
                         photo='/static/images/unknown.png';
+                    }else {
+                        photo=dataArray[i+a].photo_url
                     };
                     if (dataArray[i+a].geo==''||dataArray[i+a].geo=='unknown') {
                         area='未知';
@@ -403,9 +407,9 @@ function weibo_content() {
                         name=dataArray[i+a].nick_name;
                     };
                     if (dataArray[i+a].photo_url==''||dataArray[i+a].photo_url=='unknown') {
-                        photo=dataArray[i+a].uid;
-                    }else {
                         photo='/static/images/unknown.png';
+                    }else {
+                        photo=dataArray[i+a].photo_url;
                     };
                     if (dataArray[i+a].geo==''||dataArray[i+a].geo=='unknown') {
                         area='未知';
@@ -503,9 +507,9 @@ function weibo_content() {
                     name=dataArray[i+a].nick_name;
                 };
                 if (dataArray[i+a].photo_url==''||dataArray[i+a].photo_url=='unknown') {
-                    photo=dataArray[i+a].uid;
-                }else {
                     photo='/static/images/unknown.png';
+                }else {
+                    photo=dataArray[i+a].photo_url;
                 };
                 if (dataArray[i+a].geo==''||dataArray[i+a].geo=='unknown') {
                     area='未知';
@@ -569,7 +573,6 @@ weibo_content();
 
 function sure_task_event() {
     var submit_user=$('#name').text();
-    // var submit_user='admin';
     var status,event_rel=[];
     if($('#box1_e').is(':checked')) { status=1; };
     if($('#box2_e').is(':checked')) { status=2; };
@@ -578,7 +581,7 @@ function sure_task_event() {
     });
     var event_rel_list=event_rel.join('&');
     var input_data ;
-    if (tt=1){
+    if (tt==1){
         if (recommend_style=='upload'){
             // input_data={
                 // 'submit_ts': timestamp, 'immediate_compute':status,'event_type':event_type,
@@ -598,9 +601,9 @@ function sure_task_event() {
                 'compute_status':0, 'submit_user':submit_user,'event_ts':Date.parse(new Date())/1000,
             };
         }
-    }else {
+    }else if(tt==0) {
         input_data = {
-            'submit_ts':timestamp, 'relation_compute': event_rel_list,
+            'mid':mid,'submit_ts':timestamp, 'relation_compute': event_rel_list,
             'immediate_compute':status, 'keywords':key_string,
             'recommend_style':recommend_style, 'compute_status':0,
             'submit_user':submit_user,'event_ts':Number(time)
@@ -612,7 +615,6 @@ function sure_task_event() {
     }else {
         join_url = '/construction/submit_event/';
     }
-
     $.ajax({
         type:'POST',
         url: join_url,
@@ -626,7 +628,6 @@ function sure_task_event() {
 //创建成功与失败
 function yes_no(data) {
     var data=eval(data);
-    console.log(data)
     if (data==0){
         $('#fail_success #prompt').text('创建失败,该事件已经入库。');
     }else {
@@ -675,7 +676,7 @@ function event_task_renew() {
                     align: "center",//水平
                     valign: "middle",//垂直
                     formatter: function (value, row, index) {
-                        return value.replace(/&/,' ');
+                        return value.replace(/&/g,' ');
                     },
                 },
                 {
@@ -744,14 +745,14 @@ function event_task_renew() {
                     },
                 },
                 {
-                    title: "立即更新",//标题
+                    title: "删除",//标题
                     field: "",//键名
                     sortable: true,//是否可排序
                     order: "desc",//默认排序方式
                     align: "center",//水平
                     valign: "middle",//垂直
                     formatter: function (value, row, index) {
-                        return '<a>立即更新</a>';
+                        return '<a>删除</a>';
                     },
                 },
 
@@ -768,10 +769,10 @@ function event_task_renew() {
 event_task_renew();
 
 //--事件---推荐事件
-var event_type='政治';
-function event_lx(value) {
-
-}
+var event_type=$('#event_lx-1').val;
+// function event_lx(value) {
+//
+// }
 //----文件传输--
 var updata_file_event;
 function handleFileSelect_event(evt){

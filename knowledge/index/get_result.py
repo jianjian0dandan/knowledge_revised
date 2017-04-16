@@ -14,7 +14,7 @@ from knowledge.model import *
 from knowledge.extensions import db
 from knowledge.global_config import *
 from knowledge.global_utils import *
-from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster,get_evaluate_max as get_evaluate_max_all
 from knowledge.parameter import DAY
 from knowledge.time_utils import ts2datetime, datetime2ts
 
@@ -35,13 +35,13 @@ def uid_name(uid_list,result):
         else:
             data = item['_source']
             try:
-                result[uid]['name'] = data['uname'].encode('utf-8')
+                result[uid]['name'] = data['uname']
             except:
                 result[uid]['name'] = uid
 
     return result
 
-def uid_name_list(uid_list):
+def uid_name_list(uid_list):#以字典形式返回
 
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -55,9 +55,55 @@ def uid_name_list(uid_list):
         else:
             data = item['_source']
             try:
-                uname[uid] = data['uname'].encode('utf-8')
+                uname[uid] = data['uname']
             except:
                 uname[uid] = uid
+
+    return uname
+
+def uid_2_name_list(uid_list):#以列表形式返回
+
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return '-1'
+    uname = []
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            uname.append([uid,uid])
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['uname']
+            except:
+                name = uid
+            if name:
+                uname.append([uid,name])
+            else:
+                uname.append([uid,uid])
+
+    return uname
+
+def uid_name_type(uid_list):#获取用户的昵称和认证类型
+
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return '-1'
+    uname = dict()
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            uname[uid] = {'name':uid,'type':''}
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['uname']
+            except:
+                name = uid
+            u_type = data['verify_type']
+            uname[uid] = {'name':name,'type':u_type}
 
     return uname
 
@@ -74,9 +120,33 @@ def eventid_name(uidlist,result):
         else:
             data = item['_source']
             try:
-                result[uid]['name'] = data['name'].encode('utf-8')
+                result[uid]['name'] = data['name']
             except:
                 result[uid]['name'] = uid
+
+    return result
+
+def event_id_name_list(uidlist):#以列表形式返回
+
+    result = []
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return result
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result.append([uid,uid])
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['name']
+            except:
+                name = uid
+            if name:
+                result.append([uid,name])
+            else:
+                result.append([uid,uid])
 
     return result
             
@@ -89,7 +159,7 @@ def get_people(name,count):#获取我关注的人物
         for infor in infors:
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -98,7 +168,7 @@ def get_people(name,count):#获取我关注的人物
                 break
             uid = infor.peopleID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
@@ -115,7 +185,7 @@ def get_event(name,count):#获取我关注的事件
         for infor in infors:
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -124,7 +194,7 @@ def get_event(name,count):#获取我关注的事件
                 break
             uid = infor.eventID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = eventid_name(uid_list,result)
@@ -140,7 +210,7 @@ def get_org(name,count):#获取我关注的机构
         for infor in infors:
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
     else:
         n = 0
         for infor in infors:
@@ -149,7 +219,7 @@ def get_org(name,count):#获取我关注的机构
                 break
             uid = infor.orgID
             uid_list.append(uid)
-            result[uid] = {'label':infor.label,'time':infor.attentionTime,'name':'','uid':uid}
+            result[uid] = {'label':infor.label,'time':str(infor.attentionTime),'name':'','uid':uid}
 
     if len(uid_list) > 0:
         result = uid_name(uid_list,result)
@@ -395,10 +465,13 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
                 name = uid
             else:
                 name = data['name'].replace('&',',')
-            if not data['real_geo'] or not data['real_geo'] in set(black_location):
+            try:
+                if not data['real_geo'] or not data['real_geo'] in set(black_location):
+                    continue
+                else:
+                    location = data['real_geo']
+            except KeyError:
                 continue
-            else:
-                location = data['real_geo']
             
             result.append([name,location])
 
@@ -430,15 +503,15 @@ def get_all_geo():#地图链接：获取地址
     return event_result,peo_result,org_result
 
 def get_type_key(item):
-    if item == 1:#人物
+    if item == '1':#人物
         return people_primary
-    elif item == 2:#事件
+    elif item == '2':#事件
         return event_primary
-    elif item == 0:#机构
+    elif item == '0':#机构
         return org_primary
-    elif item == 3:#专题
+    elif item == '3':#专题
         return special_event_primary
-    elif item == 4:#群体
+    elif item == '4':#群体
         return group_primary
     else:
         return 'Not Found'
@@ -448,6 +521,11 @@ def get_detail_person(uid_list,user_name):
     if len(uid_list) == 0:
         return {}
     result = {}
+    evaluate_max = get_evaluate_max_all()
+    date = 1480176000#time.time()
+    bci_date = ts2datetime(date - DAY)
+    index_name = 'bci_' + ''.join(bci_date.split('-'))
+    index_type = 'bci'
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -456,34 +534,42 @@ def get_detail_person(uid_list,user_name):
         item = search_result[i]
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']
             if not data['uname']:
                 name = ''
             else:
-                name = data['uname'].encode('utf-8')
-            domain = data['domain'].encode('utf-8')
+                name = data['uname']
+            domain = data['domain']
             if not data['location']:
                 location = ''
             else:
-                location = data['location'].encode('utf-8')           
+                location = data['location']           
             if not data['verify_type']:
                 verified = ''
             else:
-                verified = ver_data[data['verify_type']]
-            importance = data['importance']
-            influence = data['influence']
-            activeness = data['activeness']
+                if data['verify_type'] not in org_list:
+                    verified = ver_data[data['verify_type']]
+                else:
+                    #result[uid] = {}
+                    continue
+            importance = normal_index(data['sensitive'],evaluate_max['sensitive'])
+            influence = normal_index(data['influence'],evaluate_max['influence'])
+            activeness = normal_index(data['activeness'],evaluate_max['activeness'])
+            picture = data['photo_url']
 
-            work_tag = data['function_mark'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            try:
+                work_tag = data['function_mark']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
             
             bci_dict = user_bci_result[i]
             try:
@@ -491,7 +577,7 @@ def get_detail_person(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'domain':domain,'importance':importance,'influence':round(influence,2),'activeness':activeness,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
+            result[uid] = {'name':name,'domain':domain,'picture':picture,'importance':importance,'influence':influence,'activeness':activeness,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 
@@ -500,6 +586,10 @@ def get_detail_org(uid_list,user_name):
     if len(uid_list) == 0:
         return {}
     result = {}
+    date = 1480176000#time.time()
+    bci_date = ts2datetime(date - DAY)
+    index_name = 'bci_' + ''.join(bci_date.split('-'))
+    index_type = 'bci'
     user_bci_result = es_cluster.mget(index=index_name, doc_type=index_type, body={'ids':uid_list}, _source=True)['docs']
     search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
@@ -508,31 +598,41 @@ def get_detail_org(uid_list,user_name):
         item = search_result[i]
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']
             if not data['uname']:
                 name = ''
             else:
-                name = data['uname'].encode('utf-8')
+                name = data['uname']
 
             if not data['location']:
                 location = ''
             else:
-                location = data['location'].encode('utf-8')           
+                location = data['location']          
             if not data['verify_type']:
-                verified = ''
+                #result[uid] = {}
+                continue
             else:
-                verified = ver_data[data['verify_type']]
+                if data['verify_type'] in org_list:
+                    verified = ver_data[data['verify_type']]
+                else:
+                    #result[uid] = {}
+                    continue
 
-            work_tag = data['function_mark'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            picture = data['photo_url']
+                
+            try:
+                work_tag = data['function_mark']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
 
             bci_dict = user_bci_result[i]
             try:
@@ -540,7 +640,7 @@ def get_detail_org(uid_list,user_name):
             except:
                 fansnum = 0
             
-            result[uid] = {'name':name,'location':location,'verified':verified,'tag':work_tag,'fansnum':fansnum}
+            result[uid] = {'name':name,'picture':picture,'location':location,'verified':verified,'tag':tag_list,'fansnum':fansnum}
 
     return result
 
@@ -548,39 +648,64 @@ def get_detail_event(uid_list,user_name):
 
     if len(uid_list) == 0:
         return {}
-    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    result = {}
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            result[uid] = {}
+            #result[uid] = {}
             continue
         else:
             data = item['_source']
             if not data['name']:
                 name = ''
             else:
-                name = data['name'].encode('utf-8')
-            if data['real_geo'] != 'NULL':
-                geo = data['real_geo'].encode('utf-8')
-            else:
+                name = data['name']
+            try:
+                if data['real_geo'] != 'NULL':
+                    geo = data['real_geo']
+                else:
+                    geo = ''
+            except KeyError:
                 geo = ''
-            category = data['category']
-            if data['real_time'] != 'NULL':
-                time_ts = data['real_time'].encode('utf-8')
-            else:
-                time_ts = ''
+            try:
+                category = data['event_type']
+            except KeyError:
+                category = ''
 
-            work_tag = data['work_tag'].encode('utf-8')
-            tags = work_tag.split('&')
-            tag_list = []
-            for tag in tags:
-                u,t = tag.split('_')
-                if u == user_name:
-                    tag_str.append(t)
+            time_ts = ts2date(data['start_ts'])
 
-            result[uid] = {'name':name,'geo':geo,'category':category,'time_ts':time_ts,'tag':tag_list}
+            try:
+                work_tag = data['work_tag']
+                tags = work_tag.split('&')
+                tag_list = []
+                for tag in tags:
+                    u,t = tag.split('_')
+                    if u == user_name:
+                        tag_list.append(t)
+            except:
+                tag_list = []
+
+            try:
+                weibo = data['weibo_count']
+            except KeyError:
+                weibo = 0
+
+            try:
+                people = data['uid_count']
+            except KeyError:
+                people = 0
+
+            try:
+                keywords = data['keywords']
+                ks = keywords.split('&')
+                keyword = '&'.join(ks[0:10])
+            except KeyError:
+                keyword = ''
+                
+            result[uid] = {'name':name,'geo':geo,'event_type':category,'time_ts':time_ts,'tag':tag_list,'weibo':weibo,'people':people,'des':keyword}
 
     return result
 
@@ -588,13 +713,14 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
 
     node_key = get_type_key(node_type)
     card_key = get_type_key(card_type)
+
     if node_key == 'Not Found' or card_key == 'Not Found':#未找到匹配类型
         return [],-1
     if node_key == people_primary:
         if card_key == people_primary:#uid-uid
             start_index_name = node_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -604,7 +730,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#uid-event
             start_index_name = node_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -614,7 +740,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#uid-org
             start_index_name = node_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -626,7 +752,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#event-uid
             start_index_name = event_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -636,7 +762,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#event-event
             start_index_name = event_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -646,7 +772,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#event-org
             start_index_name = event_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -658,7 +784,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#org-uid
             start_index_name = org_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -668,7 +794,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#org-event
             start_index_name = org_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -678,7 +804,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#org-org
             start_index_name = org_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -690,7 +816,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#special_event-uid
             start_index_name = node_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -700,7 +826,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#special_event-event
             start_index_name = node_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -710,7 +836,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#special_event-org
             start_index_name = node_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -722,7 +848,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         if card_key == people_primary:#group-uid
             start_index_name = group_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -732,7 +858,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#group-event
             start_index_name = group_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -742,7 +868,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#group-org
             start_index_name = group_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s("%s:*"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:

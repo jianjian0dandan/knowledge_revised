@@ -2,9 +2,11 @@
 var start_type='User',end_type='User';
 function one_type(value) {
     start_type=value;
+    $('.manone').val('');
 };
 function two_type(value) {
     end_type=value;
+    $('.mantwo').val('');
 };
 
 //类似百度搜索功能
@@ -64,7 +66,7 @@ function class_name(input_class) {
 var uid_1,uid_2,uid_1_name,uid_2_name;
 
 $(document).ready(function(){
-    $('.manone').attr('disabled',false);
+    // $('.manone').attr('disabled',false);
     $(document).keydown(function(e){
         e = e || window.event;
         var keycode = e.which ? e.which : e.keyCode;
@@ -128,14 +130,14 @@ $(document).ready(function(){
             uid_1=$('.addbg').children('._id').text();
             $('#container .rel_attributes .one .manone').val(value);
             $('.append-1').hide().html('');
-            $('.manone').attr('disabled',true);
+            // $('.manone').attr('disabled',true);
         }else {
             $('#container .rel_attributes .two .mantwo').blur();
             var value = $('.addbg').text();
             uid_2=$('.addbg').children('._id').text();
             $('#container .rel_attributes .two .mantwo').val(value);
             $('.append-2').hide().html('');
-            $('.mantwo').attr('disabled',true);
+            // $('.mantwo').attr('disabled',true);
         }
 
     }
@@ -182,24 +184,23 @@ function getCon(obj){
         $('.append-1').hide().html('');
         uid_1=$(obj).find('._id').text();
         uid_1_name=$(obj).find('._id').text();
-        $('.manone').attr('disabled',true);
+        // $('.manone').attr('disabled',true);
     }else {
         $('#container .rel_attributes .two .mantwo').val(value);
         $('.append-2').hide().html('');
         uid_2=$(obj).find('._id').text();
-        $('.mantwo').attr('disabled',true);
+        // $('.mantwo').attr('disabled',true);
     }
 
 }
 
 //---类似百度搜索功能----完---
-
+var name_type_1,name_type_2,name_index_1,name_index_2;
 $('#container .rel_submit').on('click',function () {
     if (one_value==''||two_value==''){
         alert('请输入节点。(不能为空)');
     }else {
-        var name_type_1,name_type_2,name_index_1,name_index_2;
-        var input_data=[];
+        // var input_data=[];
         if (start_type=='User'){
             name_type_1='uid';
             name_index_1='node_index';
@@ -235,15 +236,6 @@ $('#container .rel_submit').on('click',function () {
             async: true,
             success:relation_add
         });
-        // var input_url='/construction/relation_show_edit/';
-        // $.ajax({
-        //     type:'POST',
-        //     url: input_url,
-        //     contentType:"application/json",
-        //     data: JSON.stringify(input_data),
-        //     dataType: "json",
-        //     success: relation_add
-        // });
     }
 })
 var rel_table={
@@ -262,13 +254,29 @@ var rel_table={
     "ip_relation":"IP关联",
     "user_tag":"其他关系",
 };
+var rel_table_2={
+    "参与事件":"join",
+    "参与舆论":"discuss",
+    "其他关系":"other_relation",
+    "主题关联":"contain",
+    "其他关系":"event_other",
+    "交互":"friend",
+    "业务关联":"colleague",
+    "其他关系":"organization_tag",
+    "交互":"friend",
+    "亲属":"relative",
+    "上下级关系":"leader",
+    "自述关联":"colleague",
+    "IP关联":"ip_relation",
+    "其他关系":"user_tag",
+};
 function relation_add(data) {
     var data=eval(data);
     rel_list(data);
 }
+
 function rel_list(data) {
-    var data = eval(data);
-    console.log(data)
+    var show_rel=data[0].rel_list;
     var node1,node2;
     if (data[0].node1[1]==''){
         node1 = data[0].node1[0];
@@ -280,97 +288,110 @@ function rel_list(data) {
     }else {
         node2 = data[0].node2[1];
     }
-    $('#rel_list').bootstrapTable('load', data);
-    $('#rel_list').bootstrapTable({
-        data:data[0].rel_list,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-            {
-                title: "节点1",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    // if (row.node1[1]==''){
-                    //     return row.node1[0];
-                    // }else {
-                    //     return row.node1[1];
-                    // };
-                    return node1;
-                }
-            },
-            {
-                title: "节点2",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    // if (row.node2[1]==''){
-                    //     return row.node2[0];
-                    // }else {
-                    //     return row.node2[1];
-                    // };
-                    return node2;
-                },
-            },
-            {
-                title: "关系",//标题
-                field: "rel_list",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row;
-                },
-            },
-            {
-                title: "编辑",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return '编辑';
-                },
-            },
-            {
-                title: "删除",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return '删除';
-                },
-            },
-
-        ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
+    //-------------
+    if (show_rel==''||show_rel=='NULL'||show_rel=='unknown'||show_rel.length==0){
+        $('.relation .have').append('<span>暂无</span> ');
+    }else {
+        var tag='';
+        for(var t=0;t<show_rel.length;t++){
+            tag+=' <a>'+show_rel[t]+'</a> <b class="del icon icon-remove"></b>';
+        }
+        $('.relation .have').append(tag);
+    };
+    if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Event')||
+        (((end_type=='User')||(end_type=='Org'))&&start_type=='Event')){
+        $('.relation #new_rel').append(
+            '<option value="join" title="参与事件">参与事件</option>'+
+            '<option value="discuss" title="参与舆论">参与舆论</option>'+
+            '<option value="other_relation" title="其他关系">其他关系</option>'
+        );
+    }else if (start_type=='Event'&&end_type=='Event'){
+        $('.relation #new_rel').append(
+            '<option value="contain" title="主题关联">主题关联</option>'+
+            '<option value="event_other" title="其他关系">其他关系</option>'
+        );
+    }else if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Org')||
+        (((end_type=='User')||(end_type=='Org'))&&start_type=='Org')){
+        $('.relation #new_rel').append(
+            '<option value="friend" title="交互">交互</option>'+
+            '<option value="colleague" title="业务关联">业务关联</option>'+
+            '<option value="organization_tag" title="其他关系">其他关系</option>'
+        );
+    } else if (start_type=='User'&&end_type=='User'){
+        $('.relation #new_rel').append(
+            '<option value="friend" title="交互">'+'交互'+'</option>'+
+            '<option value="relative" title="亲属">亲属</option>'+
+            '<option value="leader" title="上下级关系">上下级关系</option>'+
+            '<option value="colleague" title="自述关联">自述关联</option>'+
+            '<option value="ip_relation" title="IP关联">IP关联</option>'+
+            '<option value="user_tag" title="其他关系">其他关系</option>'
+        );
+    }
+    $('.relation').show();
+    $('.del').on('click',function () {
+        $(this).prev().remove('a');
+        $(this).remove();
     });
 };
+$('.yes').on('click',function () {
+    var new_add=$('.relation #new_rel').val();
+    var rel='';
+    if (rel_table[new_add]=='其他关系'){
+        var other=$('.other_rel').val();
+        $('.relation .have').append(' <a title="'+new_add+'">'+ other +'</a> <b class="del icon icon-remove"></b>');
+        rel+=new_add+','+other;
+    }else {
+        $('.relation .have').append(' <a>'+ rel_table[new_add] +'</a> <b class="del icon icon-remove"></b>');
+        rel=new_add;
+    };
+    var creat_url='/construction/create_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
+        '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+        '&node2_index_name='+name_index_2+'&rel='+rel;
+    console.log(creat_url)
+    $.ajax({
+        url: creat_url,
+        type: 'GET',
+        dataType: 'json',
+        async: true,
+        success:yes_no
+    });
+    $('.del').on('click',function () {
+        var pre=$(this).prev();
+        var pre_tx=pre.text();
+        var delt_url;
+        if (!$(pre).attr('title')){
+            delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
+                '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+                '&node2_index_name='+name_index_2+'&rel='+rel_table_2[pre];
+        }else {
+            delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
+                '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+                '&node2_index_name='+name_index_2+'&rel='+$(pre).attr('title')+','+pre_tx;
+        }
+        $(this).prev().remove('a');
+        $(this).remove();
+        $.ajax({
+            url: delt_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:yes_no
+        });
+    });
+})
+function add_rel(value) {
+    if (value=='user_tag'||value=='organization_tag'||
+        value=='event_other'||value=='other_relation'){
+        $('.other_rel').show();
+    }else {
+        $('.other_rel').hide();
+    }
+};
+function yes_no(data) {
+    if (data== true){
+        alert('修改成功');
+    }else {
+        alert('修改失败');
+    };
+}
+

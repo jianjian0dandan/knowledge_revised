@@ -22,17 +22,18 @@ from elasticsearch import Elasticsearch
 from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
-from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2
+from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2, R_SENSITIVE_REDIS as sensitvie_r
 from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
-from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column
+from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column, es_group
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
 from knowledge.time_utils import ts2datetime, datetime2ts
-from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
-from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,\
+from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type,\
+special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list
+from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,event_primary,\
                 other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
@@ -294,7 +295,8 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
         now_ts = time.time()
         now_date = ts2datetime(now_ts)
         index_name = 'bci_' + ''.join(now_date.split('-'))
-    tmp_ts = str(datetime2ts(date) - DAY)
+    # tmp_ts = str(datetime2ts(date) - DAY)  #delete 04-11
+    tmp_ts = str(datetime2ts(date))
     sensitive_string = "sensitive_score_" + tmp_ts
     query_sensitive_body = {
         "query":{
@@ -306,6 +308,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
     try:
         top_sensitive_result = es_bci_history.search(index=sensitive_index_name, doc_type=sensitive_index_type, body=query_sensitive_body, _source=False, fields=[sensitive_string])['hits']['hits']
         top_sensitive = top_sensitive_result[0]['fields'][sensitive_string][0]
+        print top_sensitive_result,'---------'
     except Exception, reason:
         print Exception, reason
         top_sensitive = 400
@@ -360,16 +363,15 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
                 statusnum = 0
         if status == 'show_in':
             if user_type == "sensitive":
+                # print date
                 tmp_ts = datetime2ts(date) - DAY
-                tmp_data = r_cluster.hget("sensitive_"+str(tmp_ts), uid)
+                tmp_data = sensitvie_r.hget("sensitive_"+str(tmp_ts), uid)
                 if tmp_data:
                     sensitive_dict = json.loads(tmp_data)
                     sensitive_words = sensitive_dict.keys()
                 else:
                     sensitive_words = []
                 if sensitive_history_dict.get('fields',0):
-                    #print sensitive_history_dict['fields'][sensitive_string][0]
-                    #print top_sensitive
                     sensitive_value = math.log(sensitive_history_dict['fields'][sensitive_string][0]/float(top_sensitive)*9+1, 10)*100
                     #print "sensitive_value", sensitive_value
                 else:
@@ -396,7 +398,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
             in_status = input_result[uid]
             if user_type == "sensitive":
                 tmp_ts = datetime2ts(date) - DAY
-                tmp_data = r_cluster.hget("sensitive_"+str(tmp_ts), uid)
+                tmp_data = sensitvie_r.hget("sensitive_"+str(tmp_ts), uid)
                 if tmp_data:
                     sensitive_dict = json.loads(tmp_data)
                     sensitive_words = sensitive_dict.keys()
@@ -512,12 +514,13 @@ def submit_event(input_data):
             os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     return '1'
 
-def update_event(event_id):
+def update_event(event_id, relation_compute):
+    relation_compute = '&'.join(relation_compute.split(','))
     result = es_event.get(index=event_task_name, doc_type=event_task_type, id=event_id)['_source']
     # print result
     now_ts = int(time.time())
     if result['end_ts'] < now_ts:
-        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts}})
+        es_event.update(index=event_task_name, doc_type=event_task_type, id=event_id, body={'doc':{'end_ts':now_ts,'relation_compute':relation_compute}})
 
     os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
@@ -837,7 +840,26 @@ def get_evaluate_max():
         max_result[evaluate] = max_evaluate
     return max_result
 
-def search_user(item, field, submit_user):
+def search_user_type(uid_list):
+    type_list = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, \
+                body={'ids': uid_list},_source=False, fields=['id', 'verified_type'])['docs']
+    user_list1 = []
+    org_list1 = []
+    for i in type_list:
+        if i['found'] == False:
+            user_list1.append(i['_id'])
+        else:
+            if not i['fields'].has_key('verified_type'):
+                user_list1.append(i['_id'])
+                continue
+            verified_type = i['fields']['verified_type'][0]
+            if int(verified_type) in org_list:
+                org_list1.append(i['_id'])
+            else:
+                user_list1.append(i['_id'])
+    return user_list1,org_list1
+
+def search_user(item, field, submit_user, node_type):
     evaluate_max = get_evaluate_max()
     query_body = {
         "query":{
@@ -859,9 +881,20 @@ def search_user(item, field, submit_user):
                 body=query_body, fields= field)['hits']['hits']
     except:
         return 'does not exist'
+    for i in name_results:
+        only_uid.append(i['fields']['uid'][0])
+    print only_uid
+    if node_type == 'User':
+        user_uid = search_user_type(only_uid)[0]
+    elif node_type == 'Org':
+        print '--------------'
+        user_uid = search_user_type(only_uid)[1]
+        print user_uid,'=========='
     result = []
     for i in name_results:
-        print i
+        # print i,'-------------'
+        if i['fields']['uid'][0] not in user_uid:
+            continue
         event = []
         # if i['found'] == False:
         #     event.append(i['_id'])
@@ -965,6 +998,7 @@ def search_event_file(item):
 
 def show_node_detail(node_type, item, submit_user):
     if node_type == 'User' or node_type == 'Org':
+        index_key2 = group_primary
         field = p_column
         field = ['uid', 'uname','domain', 'topic_string', "function_description"]
         if node_type == 'User':
@@ -974,13 +1008,14 @@ def show_node_detail(node_type, item, submit_user):
             index_n = org_index_name
             index_key = org_primary
         node_key = group_node
-        node_result = search_user(item, field, '')[0]
+        node_result = search_user(item, field, '',node_type)[0]
         tag = deal_user_tag(item, submit_user )[0]
         node_result.append(tag)
         file_link = search_user_file(item)
         node_result.append(file_link)
 
     if node_type == 'Event':
+        index_key2 = special_event_primary
         field = ['en_name','name','real_geo','real_time','event_type', 'start_ts', 'end_ts','real_person', \
                  'real_auth','work_tag', 'description']
         node_result = search_event(item, field, submit_user)[0]
@@ -989,18 +1024,31 @@ def show_node_detail(node_type, item, submit_user):
         file_link = search_event_file(item)
         node_result.append(file_link)
         index_n = event_index_name
-        index_key = 'event'
+        index_key = event_primary
         node_key = special_event_node
 
-    s_string = 'START s3 = node:%s(%s="%s") MATCH (s0:%s)-[r]-(s3) return s0' \
+    s_string = 'START s3 = node:%s(%s="%s") MATCH (s3)-[r]-(s0:%s) return s0' \
                %(index_n, index_key, item, node_key)
+    # return s_string
     event_result = graph.run(s_string)
     events = []
     for special_event in event_result:
-        events.append(special_event[0][index_key])
+        # return special_event
+        ch_name = search_ch_name(special_event[0][index_key2], index_key2)
+        events.append(ch_name)
     # result = node_result[0]
     node_result.append(events)
     return node_result
+
+def search_ch_name(en_name, node_type):
+    # return node_type,'000000000000'
+    if node_type == group_primary:
+        result_name = es_group.get(index=group_name, doc_type=group_type, id=en_name, fields=['group_name'])['fields']['group_name'][0]
+
+    elif node_type == special_event_primary:
+        result_name = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
+                            fields=['topic_name'])['fields']['topic_name'][0]
+    return result_name
 
 def edit_node():
     pass
@@ -1036,9 +1084,9 @@ def node_delete(node_type, item, submit_user):
         # print event_result,'========'
         # for i in event_result:
         #     print i,'=------'
-        return 1
+        return '1'
     except:
-        return 0
+        return '0'
 
 
 def deal_user_tag(item ,submit_user):

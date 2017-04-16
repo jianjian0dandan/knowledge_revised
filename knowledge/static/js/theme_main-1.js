@@ -24,7 +24,7 @@ function theme_overview(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -136,6 +136,12 @@ function theme_overview(data) {
             theme_diff.push(row[1]);
         },
         onUncheck:function (row) {
+            theme_diff.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            theme_diff.push(row[1]);
+        },
+        onUncheckAll:function (row) {
             theme_diff.removeByValue(row[1]);
         },
         onClickCell: function (field, value, row, $element) {
