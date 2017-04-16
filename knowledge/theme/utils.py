@@ -201,6 +201,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
     Index = ManualIndexManager(graph) # manage index
     theme_index = Index.get_or_create_index(Node, node2_index_name)
     p_node2_id = p.get_pinyin(node2_id)
+    p_node2_id = p_node2_id.lower()
     c_string = "START end_node=node:%s(%s='%s')  RETURN end_node"\
                  % (node2_index_name, node_key2, p_node2_id)
     print c_string
