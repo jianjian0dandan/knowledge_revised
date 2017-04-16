@@ -9,6 +9,7 @@ $.ajax({
 });
 function things(data) {
     var data = eval(data);
+    console.log(data)
     $('#things').bootstrapTable('load', data);
     $('#things').bootstrapTable({
         data:data,
@@ -47,7 +48,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'||row[2]=='null'){
                         return '暂无';
                     }else {
                         return row[2];
@@ -62,7 +63,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'||row[3]=='null'){
                         return '暂无';
                     }else {
                         return row[3];
@@ -77,7 +78,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'){
+                    if (row[4]==''||row[4]=='NULL'||row[4]=='unknown'||row[4]=='null'){
                         return '暂无';
                     }else {
                         return row[4];
@@ -92,7 +93,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'||row[5]=='null'){
                         return '暂无';
                     }else {
                         return row[5];
@@ -107,7 +108,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
+                    if (row[6]==''||row[6]=='NULL'||row[6]=='unknown'||row[6]=='null'){
                         return '暂无';
                     }else {
                         return row[6];
@@ -122,7 +123,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''){
+                    if (row[7].length==0||row[7]==''||row[7]=='null'){
                         return '暂无';
                     }else {
                         var key='';
@@ -141,7 +142,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[8].length==0||row[8]==''){
+                    if (row[8].length==0||row[8]==''||row[8]=='null'){
                         return '暂无';
                     }else {
                         var tag='';
@@ -579,6 +580,7 @@ $.ajax({
     success:user_tag
 });
 var user_key_series=[],user_tag_series=[];
+
 function user_tag(data) {
     var data = eval(data);
     $.each(data.keywords, function (index, item) {
@@ -599,83 +601,91 @@ function user_tag(data) {
             }
         )
     });
+};
+if (user_key_series.length==0){
+    $('#label_left').html('暂无数据');
+}else {
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('label_left'));
+            option = {
+                title: {
+                    // text: '关键词',
+                },
+                tooltip: {
+                    show: true
+                },
+                series: [{
+                    // name: 'Google Trends',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data: user_key_series
+                }]
+            };
+
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            })
+        }
+    );
 }
 
-
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('label_left'));
-        option = {
-            title: {
-                // text: '关键词',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                // name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
-                },
-                data: user_key_series
-            }]
-        };
-
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
-
 //----人物业务标签
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('label_right'));
 
-        option = {
-            title: {
-                // text: '微话题',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                // name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
+if (user_tag_series.length==0){
+    $('#label_right').html('暂无数据');
+}else {
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('label_right'));
+
+            option = {
+                title: {
+                    // text: '微话题',
                 },
-                data:user_tag_series
-            }]
-        };
+                tooltip: {
+                    show: true
+                },
+                series: [{
+                    // name: 'Google Trends',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data:user_tag_series
+                }]
+            };
 
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            });
+        }
+    );
+}
+
 
 

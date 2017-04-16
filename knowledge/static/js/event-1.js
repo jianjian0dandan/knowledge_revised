@@ -1,4 +1,5 @@
 $('.event_name').text(result_1.name);
+$('.event_name').attr('title',result_1.name);
 if (result_1.real_geo==''||result_1.real_geo=='unknown' ||result_1.real_geo=='NULL'){
     $('.area').text('未知');
 }else {

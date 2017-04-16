@@ -573,65 +573,85 @@ function keywords_include(data) {
             }
         );
     };
-    require(
-        [
-            'echarts',
-            'echarts/chart/wordCloud'
-        ],
-        function (ec) {
-            // 基于准备好的dom，初始化echarts图表
-            var myChart = ec.init(document.getElementById('list-1-words'));
 
-            option = {
-                title: {
-                    text: '',
-                },
-                tooltip: {
-                    show: true
-                },
-                series: [{
-                    // name: 'Google Trends',
-                    type: 'wordCloud',
-                    size: ['80%', '80%'],
-                    textRotation : [0, 0, 0, 0],
-                    textPadding: 0,
-                    autoSize: {
-                        enable: true,
-                        minSize: 14
-                    },
-                    data:series_1,
-                }]
-            };
-            myChart.setOption(option);
-            // var ecConfig = require('echarts/config');
-            // myChart.on(ecConfig.EVENT.HOVER, function (param){
-            //     var selected = param.name;
-            // });
-            var myChart = ec.init(document.getElementById('list-2-words'));
+    if(series_1.length==0){
+        $('#list-1-words').html('暂无数据');
+    }else {
+        require(
+            [
+                'echarts',
+                'echarts/chart/wordCloud'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('list-1-words'));
 
-            option = {
-                title: {
-                    text: '',
-                },
-                tooltip: {
-                    show: true
-                },
-                series: [{
-                    // name: 'Google Trends',
-                    type: 'wordCloud',
-                    size: ['80%', '80%'],
-                    textRotation : [0, 0, 0, 0],
-                    textPadding: 0,
-                    autoSize: {
-                        enable: true,
-                        minSize: 14
+                option = {
+                    title: {
+                        text: '',
                     },
-                    data:series_2,
-                }]
-            };
-            myChart.setOption(option);
-        }
-    );
+                    tooltip: {
+                        show: true
+                    },
+                    series: [{
+                        // name: 'Google Trends',
+                        type: 'wordCloud',
+                        size: ['80%', '80%'],
+                        textRotation : [0, 0, 0, 0],
+                        textPadding: 0,
+                        autoSize: {
+                            enable: true,
+                            minSize: 14
+                        },
+                        data:series_1,
+                    }]
+                };
+                myChart.setOption(option);
+                // var ecConfig = require('echarts/config');
+                // myChart.on(ecConfig.EVENT.HOVER, function (param){
+                //     var selected = param.name;
+                // });
+
+            }
+        );
+    };
+
+    if(series_2.length==0){
+        $('#list-2-words').html('暂无数据');
+    }else {
+        require(
+            [
+                'echarts',
+                'echarts/chart/wordCloud'
+            ],
+            function (ec) {
+                var myChart = ec.init(document.getElementById('list-2-words'));
+
+                option = {
+                    title: {
+                        text: '',
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    series: [{
+                        // name: 'Google Trends',
+                        type: 'wordCloud',
+                        size: ['80%', '80%'],
+                        textRotation : [0, 0, 0, 0],
+                        textPadding: 0,
+                        autoSize: {
+                            enable: true,
+                            minSize: 14
+                        },
+                        data:series_2,
+                    }]
+                };
+                myChart.setOption(option);
+            }
+        );
+    }
+
 
 
 };
@@ -689,65 +709,85 @@ function tag(data) {
             }
         );
     };
-    require(
-        [
-            'echarts',
-            'echarts/chart/wordCloud'
-        ],
-        function (ec) {
-            // 基于准备好的dom，初始化echarts图表
-            var myChart = ec.init(document.getElementById('list-1-tags'));
 
-            option = {
-                title: {
-                    text: '',
-                },
-                tooltip: {
-                    show: true
-                },
-                series: [{
-                    // name: 'Google Trends',
-                    type: 'wordCloud',
-                    size: ['80%', '80%'],
-                    textRotation : [0, 0, 0, 0],
-                    textPadding: 0,
-                    autoSize: {
-                        enable: true,
-                        minSize: 14
-                    },
-                    data:series_1,
-                }]
-            };
-            myChart.setOption(option);
-            // var ecConfig = require('echarts/config');
-            // myChart.on(ecConfig.EVENT.HOVER, function (param){
-            //     var selected = param.name;
-            // });
-            var myChart = ec.init(document.getElementById('list-2-tags'));
+    if (series_1.length==0){
+        $('#list-1-tags').html('暂无数据');
+    }else {
+        require(
+            [
+                'echarts',
+                'echarts/chart/wordCloud'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('list-1-tags'));
 
-            option = {
-                title: {
-                    text: '',
-                },
-                tooltip: {
-                    show: true
-                },
-                series: [{
-                    // name: 'Google Trends',
-                    type: 'wordCloud',
-                    size: ['80%', '80%'],
-                    textRotation : [0, 0, 0, 0],
-                    textPadding: 0,
-                    autoSize: {
-                        enable: true,
-                        minSize: 14
+                option = {
+                    title: {
+                        text: '',
                     },
-                    data:series_2,
-                }]
-            };
-            myChart.setOption(option);
-        }
-    );
+                    tooltip: {
+                        show: true
+                    },
+                    series: [{
+                        // name: 'Google Trends',
+                        type: 'wordCloud',
+                        size: ['80%', '80%'],
+                        textRotation : [0, 0, 0, 0],
+                        textPadding: 0,
+                        autoSize: {
+                            enable: true,
+                            minSize: 14
+                        },
+                        data:series_1,
+                    }]
+                };
+                myChart.setOption(option);
+                // var ecConfig = require('echarts/config');
+                // myChart.on(ecConfig.EVENT.HOVER, function (param){
+                //     var selected = param.name;
+                // });
+            }
+        );
+    }
+
+    if (series_2.length==0){
+        $('#list-2-tags').html('暂无数据');
+    }else {
+        require(
+            [
+                'echarts',
+                'echarts/chart/wordCloud'
+            ],
+            function (ec) {
+
+                var myChart = ec.init(document.getElementById('list-2-tags'));
+
+                option = {
+                    title: {
+                        text: '',
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    series: [{
+                        // name: 'Google Trends',
+                        type: 'wordCloud',
+                        size: ['80%', '80%'],
+                        textRotation : [0, 0, 0, 0],
+                        textPadding: 0,
+                        autoSize: {
+                            enable: true,
+                            minSize: 14
+                        },
+                        data:series_2,
+                    }]
+                };
+                myChart.setOption(option);
+            }
+        );
+    }
+
 
 
 };

@@ -199,7 +199,6 @@
 <script>
     var group_name='{{group_name}}';
     var submit_user=$('#name').text();
-    $('#container #content_left .basic-1 .user_name').text(group_name);
     var basic_url='/group/group_basic/?g_name='+group_name+'&submit_user='+submit_user;
     $.ajax({
         url: basic_url,
@@ -210,6 +209,7 @@
     });
     function basic(data) {
         var data=eval(data);
+        $('#container #content_left .basic-1 .user_name').text(data[0][1]);
         $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
         $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
         if (data[0][3]==0){
@@ -231,15 +231,17 @@
             });
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
+
+        //=======
+        $('#chart').on('click',function () {
+            window.open('/index/graph/?user_id='+data[0][0]+'&node_type=group');
+        });
+        $('#map').on('click',function () {
+            window.open('/index/map/?user_id='+data[0][0]+'&node_type=group');
+        });
     }
 
-    //=======
-    $('#chart').on('click',function () {
-        window.open('/index/graph/?user_id='+group_name+'&node_type=group');
-    });
-    $('#map').on('click',function () {
-        window.open('/index/map/?user_id='+group_name+'&node_type=group');
-    });
+
 
 </script>
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>

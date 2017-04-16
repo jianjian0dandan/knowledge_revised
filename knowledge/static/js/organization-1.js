@@ -11,7 +11,7 @@ if (result_1.uname==""||result_1.uname=='NUll'||result_1.uname=='unknown'){
 }else {
     name=result_1.uname
 }
-$('.user_name').text(name);
+$('.org_name').text(name);
 $('.org_name').text(name);
 //基本信息
 $('.ID').text(result_1.uid);
