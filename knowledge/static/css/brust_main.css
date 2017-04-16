@@ -58,8 +58,7 @@ h4 {
 #container .hot_find .weibo .content .content-1 {
     border: 5px solid #eee;
     position: absolute;
-    left:3%;
-    top:14%;
+    left:30px;
 }
 #container .hot_find .weibo .content .content-1 img {
     width: 60px;

@@ -924,7 +924,7 @@ function pass() {
                 '&related_docs='+related_docs;
         }
         $.ajax({
-            url: event_pass_url,
+            url: pass_url,
             type: 'GET',
             dataType: 'json',
             async: true,
