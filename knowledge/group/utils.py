@@ -224,7 +224,11 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
         # node1 = node_index.get(node_key1, node1_id)
         try:
             node1 = node_index.get(node_key1, node1_id)[0]
+            # print node1, node1_id,'node1 hey2222!!'
+
         except:
+            # continue
+            print node1, node1_id,'node1 hey!!'
             return 'uid1 not exist'
         node2 = group_index.get(node_key2, node2_id)[0]
         if not (node1 and node2):
@@ -264,6 +268,7 @@ def del_u_group_rel(g_name, uid):
     en_name = p.get_pinyin(g_name)
     s_string = 'START s0 = node:'+group_index_name+'('+group_primary+'="'+en_name+'"),'\
                +'s3 = node:'+node_index_name+'('+people_primary+'="'+uid+'") MATCH (s0)-[r:'+group_rel+']-(s3) DELETE r' 
+    
     print s_string
     graph.run(s_string)
 

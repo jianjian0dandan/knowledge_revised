@@ -18,7 +18,7 @@ from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
                   deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
-                  node_delete, delete_relation, deal_event_tag
+                  node_delete, delete_relation, deal_event_tag, show_weibo_list
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -151,7 +151,18 @@ def ajax_show_user_task_status():
             continue
     return json.dumps(result_list)
 
-#事件提交任务,推荐方式或手写
+# show ts weibo
+@mod.route("/show_weibo_list/")
+def ajax_show_weibo_list():
+    ts = request.args.get("ts", "1479571200")
+    message_type = request.args.get("type", "1") # 1: origin, 3:retweet
+    sort_item = request.args.get("sort", "retweeted") # 排序, retweeted, comment, timestamp, sensitive
+
+    results = show_weibo_list(message_type,ts,sort_item)
+
+    return json.dumps(results)
+
+#事件提交任务,或手写
 @mod.route('/submit_event/', methods=['GET', 'POST'])
 def ajax_submit_event():
     input_data = dict()
@@ -190,7 +201,7 @@ def ajax_submit_identify_file():
 #事件任务状态
 @mod.route('/show_event_task/')
 def ajax_show_event_task():
-    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}}})['hits']['hits']
+    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}},"size":10000})['hits']['hits']
     result_list = []
     for i in results:
         result_list.append(i['_source'])
@@ -266,7 +277,7 @@ def ajax_delete_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1565668374')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', u'relative')
+    rel = request.args.get('rel', u'friend')
     node_key2 = request.args.get('node_key2', 'uid')  # event,uid
     node2_id = request.args.get('node2_id', '2626682903')
     node2_index_name = request.args.get('node2_index_name', 'node_index')

@@ -93,7 +93,7 @@ def create_new_relation():
 @mod.route('/create_relation/')#添加到已有群体
 def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
-    node1_id = request.args.get('node1_id', '2288486705,5014862797,1653076903')
+    node1_id = request.args.get('node1_id', '5014862797,2288486705,5848882336,1663072851,1649173367,1738004582,2803301701,1653076903')
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
@@ -119,7 +119,7 @@ def del_user_in_group():  #群体编辑-删除用户
     g_name = request.args.get('g_name', u'美选群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
-    uid = request.args.get('uid', u'1895431523')
+    uid = request.args.get('uid', u'1799791715')
     flag = del_u_group_rel(g_name, uid)
     return json.dumps(flag)
 
