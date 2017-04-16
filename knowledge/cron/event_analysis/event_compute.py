@@ -43,16 +43,17 @@ def get_task():
 
 
 def immediate_compute(task_id):
-    try:
-        task = es_event.get(index=event_task_name,doc_type=event_task_type,id=task_id)
-        compute_task(task)
-    except:
-        return None
+    # try:
+    task = es_event.get(index=event_task_name,doc_type=event_task_type,id=task_id)
+    compute_task(task)
+    # except:
+        # return None
 
 
 def compute_topic_task():
     print time.time()
     tasks = get_task()
+    print 'len tasks:',len(tasks)
     if not tasks:
         return None
     for task in tasks:
@@ -74,6 +75,7 @@ def compute_task(task):
     task = task['_source']
     topic = task['name']#task[0]#['name']
     #en_name = task['en_name']
+    RUN_TYPE = 1
     if RUN_TYPE == 0:
         start_ts = 1480003200#task['start_ts']
         begin_ts = 1480003200
@@ -134,7 +136,7 @@ def compute_task(task):
         cityTopic(en_name, start_ts, end_ts)
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-2}})
         print 'finish geo analyze'
-        #language  重头算
+        #language
         compute_real_info(en_name, begin_ts, end_ts,relation,task['submit_user'],task['submit_ts'])
         es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-3}})
         print 'finish language analyze'
@@ -151,6 +153,7 @@ def compute_task(task):
 
         print es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':1,'finish_ts':int(time.time())}})
         print 'finish change status done'
+        print time.time()
         
         if('contain' in relation.split('&')):
             #计算关系
@@ -173,6 +176,7 @@ def compute_task(task):
             #get_attr(en_name, start_ts, end_ts)
         # else:
         #     pass
+    return 1
 
 def exist(task_id):
     #print task_id
@@ -218,11 +222,11 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords,mid):
     index_names = get_day_zero(start_ts,end_ts)
     #mid = re.compile('^\d{16}$')
     if len(keywords) ==0 and len(mid)==0:
-        query_body = {'query':{'wildcard':{'text':'*'+topic+'*'}}}
+        query_body = {'query':{'wildcard':{'text':'*'+topic+'*'}},'size':100000}
     elif len(mid) == 16:
     #elif len(mid.findall(keywords))>0:
         # query_body = {'query':{'term':{'root_mid':mid}}}
-        query_body = {'query':{'bool':{'should':[{'term':{'root_mid':mid}},{'term':{'mid':mid}}]}}}
+        query_body = {'query':{'bool':{'should':[{'term':{'root_mid':mid}},{'term':{'mid':mid}}]}},'size':100000}
     else:
     #keywords_list = [{'wildcard':{'text':'*'+topic+'*'}}]
         keywords_list = []
@@ -232,43 +236,21 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords,mid):
             # keywords_list.append({'term':{'keywords_string':i}})
             keywords_list.append({'wildcard':{'keywords_string':'*'+i+'*'}})
 
-        query_body = {'query':{'bool':{'should':keywords_list,'minimum_should_match':'60%'}}}
+        query_body = {'query':{'bool':{'should':keywords_list,'minimum_should_match':'70%'}},'size':100000}
     
     print query_body
     result = []
     index_list = []
     for index_name in index_names:
         index_list.append(flow_text_index_name_pre+index_name)
-    s_re = scan(es_flow_text,index=index_list,doc_type=flow_text_index_type,query=query_body)
-    bulk_action = []
-    count = 0
-    tb = time.time()
-    while True:
+    for i in index_list:
         try:
-            if count > 100000:
-                break
-            scan_re = s_re.next()
-            _id = scan_re['_id']
-            source = scan_re['_source']
-            source['en_name'] = en_name
-            action = {"index":{"_id":_id}}
-            bulk_action.extend([action, source])
-            count += 1
-            if count % 1000 == 0:
-                es_event.bulk(bulk_action, index=en_name, doc_type=event_text_type, timeout=100)
-                bulk_action = []
-                print count
-                if count % 10000 == 0:
-                    te = time.time()
-                    print "index 10000 per %s second" %(te - tb)
-                    tb = te
-        except StopIteration:
-            print "all done"
-            break
-    if bulk_action:
-        es_event.bulk(bulk_action, index=en_name, doc_type=event_text_type, timeout=100)
-
-    return 1
+            result = es_flow_text.search(index=i,doc_type=flow_text_index_type,body=query_body)['hits']['hits']
+            print i,es_flow_text,len(result)
+            if result:
+                save_es(en_name,result)
+        except:
+            continue
 
 
 def counts(start_ts,end_ts,topic,en_name,keywords):
@@ -278,11 +260,12 @@ def counts(start_ts,end_ts,topic,en_name,keywords):
             # 'term':{'en_name':topic}
         },
         'aggs':{'diff_uids':{'cardinality':{'field':'uid'}}},
-        'size':999999999
+        'size':999999
     }
     result = []
     index_list = []
     weibo_count = 0
+    print es_event,en_name,event_text_type,query_body
     result = es_event.search(index=en_name ,doc_type=event_text_type,body=query_body)
     #print result
     weibo_counts=result['hits']['total']
@@ -313,6 +296,7 @@ def save_es(en_name,result):
     for weibos in result:
         #try:
         source = weibos['_source']
+        source['en_name'] = en_name
         action = {'index':{'_id':weibos['_id']}}
         bulk_action.extend([action,source])
         count += 1
@@ -323,7 +307,7 @@ def save_es(en_name,result):
             if count % 10000 == 0:
                 te = time.time()
                 print "index 10000 per %s second" %(te - tb)
-                tb = ts
+                tb = te
     print "all done"
     if bulk_action:
         es_event.bulk(bulk_action, index=en_name, doc_type=event_type, timeout=100)
