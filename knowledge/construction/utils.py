@@ -674,12 +674,14 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
         if relation in [other_rel, event_other, organization_tag, user_tag]:
             relation_name = dict(item)['r']['name']
             relaiton_name_list = relation_name.split(',')
+            # print relaiton_name_list, 'relaiton_name_list,99999999999999'
             for i_name in relaiton_name_list:
                 relation_ch2 = relation_ch+ '-' +i_name
                 relation = relation +'&' + relation_name
                 rel_list.append(relation_ch2)
         else:
             rel_list.append(relation_ch)
+    rel_list = [i for i in set(rel_list)]
     if node_key1 == 'uid' or node_key1 == 'org_id':
         node1_name = user_name_search(node1_id)
     else:
@@ -710,7 +712,7 @@ def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2,
         rel_name = rel_union.split(',')[1:]
         # print rel_name, '=============='
         c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
-                    MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
+                    MATCH (start_node)-[r:%s]-(end_node) RETURN type(r), r.name" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
         result = graph.run(c_string)
         exist_relation = []
@@ -722,13 +724,17 @@ def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2,
                    MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
             result = graph.run(del_string)
-        exist_relation = set(exist_relation)-set(rel_name)
-        print exist_relation,'00000000000'
-        exist_relation2 = [i for i in exist_relation]
+        exist_relation3 = set(exist_relation)-set(rel_name)
+        print exist_relation3,'1111100000000000'
+        exist_relation2 = [i for i in exist_relation3]
         add_relation_string = ','.join(exist_relation2)
+        print add_relation_string,'add_relation_string'
+        if add_relation_string == '':
+            return '1'
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
                 create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
                 node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
+        print c_string
         try:
             result = graph.run(c_string)
         except:
