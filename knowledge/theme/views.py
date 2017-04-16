@@ -126,7 +126,7 @@ def create_new_relation():
     node1_index_name = request.args.get('node1_index_name', 'event_index')  # node_index event_index
     rel = request.args.get('rel', 'special_event')
     node_key2 = request.args.get('node_key2', 'event')  # event,uid
-    node2_name = request.args.get('node2_id', u'政治专题r')
+    node2_name = request.args.get('node2_id', u'政治专题RR')
     submit_user = request.args.get('submit_user', 'admin@qq.com')
     node2_id = node2_name + '_' + submit_user
     node2_index_name = request.args.get('node2_index_name', 'special_event_index')

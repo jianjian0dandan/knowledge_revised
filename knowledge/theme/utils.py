@@ -201,6 +201,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
     Index = ManualIndexManager(graph) # manage index
     theme_index = Index.get_or_create_index(Node, node2_index_name)
     p_node2_id = p.get_pinyin(node2_id)
+    p_node2_id = p_node2_id.lower()
     c_string = "START end_node=node:%s(%s='%s')  RETURN end_node"\
                  % (node2_index_name, node_key2, p_node2_id)
     print c_string
@@ -619,7 +620,12 @@ def get_theme_net(theme_name, submit_user):
         relation_degree = float(relation_set_count)/total_count
     except:
         relation_degree = 0
-    conclusion = u'联系紧密'##未定义！！
+    if relation_degree <0.33:
+        conclusion = u'关联度较低'
+    elif relation_degree >= 0.33 and relation_degree <0.66:
+        conclusion = u'关联度适中'
+    elif relation_degree >= 0.66:
+        conclusion = u'联系紧密'##未定义！！
     return {'relation_table':exist_relation, 'relation_count':relation_set_count,\
         'conclusion':conclusion, 'relation_degree':relation_degree}
 

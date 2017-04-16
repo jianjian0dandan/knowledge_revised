@@ -101,7 +101,7 @@ def submit_identify_in_uid(input_data):
     compute_status = str(input_data['compute_status'])
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
-    node_type = input_data['node_type']
+    node_type = str(input_data['node_type'])
     hashname_submit = 'submit_recomment_' + in_date
     hashname_influence = 'recomment_' + in_date + '_influence'
     hashname_sensitive = 'recomment_' + in_date + '_sensitive'
@@ -308,7 +308,7 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
     try:
         top_sensitive_result = es_bci_history.search(index=sensitive_index_name, doc_type=sensitive_index_type, body=query_sensitive_body, _source=False, fields=[sensitive_string])['hits']['hits']
         top_sensitive = top_sensitive_result[0]['fields'][sensitive_string][0]
-        print top_sensitive_result,'---------'
+        # print top_sensitive_result,'---------'
     except Exception, reason:
         print Exception, reason
         top_sensitive = 400
@@ -363,11 +363,12 @@ def get_user_detail(date, input_result, status, user_type="influence", auth=""):
                 statusnum = 0
         if status == 'show_in':
             if user_type == "sensitive":
-                # print date
                 tmp_ts = datetime2ts(date) - DAY
+                print "sensitive_"+str(tmp_ts)
                 tmp_data = sensitvie_r.hget("sensitive_"+str(tmp_ts), uid)
                 if tmp_data:
                     sensitive_dict = json.loads(tmp_data)
+                    # print uid, sensitive_dict,'============'
                     sensitive_words = sensitive_dict.keys()
                 else:
                     sensitive_words = []
@@ -494,6 +495,7 @@ def submit_event(input_data):
         e_name = input_data['name']
         e_name_string = ''.join(e_name.split('&'))
         event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
+        event_id = event_id.lower()
         input_data['en_name'] = event_id
 
     if not input_data.has_key('start_ts'):
@@ -880,10 +882,13 @@ def search_user(item, field, submit_user, node_type):
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
+        print '00000'
         return 'does not exist'
     for i in name_results:
         only_uid.append(i['fields']['uid'][0])
     print only_uid
+    if not only_uid:
+        return 'does not exist'
     if node_type == 'User':
         user_uid = search_user_type(only_uid)[0]
     elif node_type == 'Org':

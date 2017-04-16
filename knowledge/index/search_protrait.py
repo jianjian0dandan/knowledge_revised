@@ -511,7 +511,84 @@ def search_related_docs(uid,es_host,es_name,es_type):
 
     return result
 
+def rank_people_card_data(rank_data,rank_type):#对人物数据排序
 
+    new_dict = []
+    if rank_type == 'peo_influence':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['influence'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'peo_activity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['activeness'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'peo_sensitivity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['importance'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
 
-    
-    
+    return new_dict
+
+def rank_event_card_data(rank_data,rank_type):#对事件数据排序
+
+    new_dict = []
+    if rank_type == 'event_weibo':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['weibo'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'event_people':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['people'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'event_time':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            ts = date2ts(v['time_ts'])
+            keyword.Push((ts,k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+
+    return new_dict    
+
+def rank_org_card_data(rank_data,rank_type):#对机构数据排序
+
+    new_dict = []
+    if rank_type == 'org_influence':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['influence'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'org_activity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['activeness'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'org_sensitivity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['importance'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+
+    return new_dict
