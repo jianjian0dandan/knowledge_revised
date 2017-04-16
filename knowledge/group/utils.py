@@ -36,11 +36,31 @@ from knowledge.global_config import special_event_name, special_event_type
 from knowledge.global_config import event_index_name, special_event_node, group_node, people_primary,\
                             event_node, event_primary, event_index_name, org_primary, people_node, org_node, event_node,\
                             group_name, group_type, group_index_name, group_primary, node_index_name, people_primary,\
-                            group_rel, relation_dict
+                            group_rel, relation_dict,org_list, org_index_name
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
+
+
+def search_user_type(uid_list):
+    type_list = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, \
+                body={'ids': uid_list},_source=False, fields=['id', 'verified_type'])['docs']
+    user_list1 = []
+    org_list1 = []
+    for i in type_list:
+        if i['found'] == False:
+            user_list1.append(i['_id'])
+        else:
+            if not i['fields'].has_key('verified_type'):
+                user_list1.append(i['_id'])
+                continue
+            verified_type = i['fields']['verified_type'][0]
+            if int(verified_type) in org_list:
+                org_list1.append(i['_id'])
+            else:
+                user_list1.append(i['_id'])
+    return user_list1,org_list1
 
 def deal_user_tag(tag ,submit_user):
     tag_list = tag.split('&')
@@ -75,6 +95,7 @@ def get_evaluate_max():
 
 def search_related_u_auto(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id, fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     related_list = []
@@ -98,6 +119,7 @@ def search_related_u_card(item, submit_user, g_name):
     if g_name:
         g_name = g_name + '_' + submit_user
         g_name_pinyin = p.get_pinyin(g_name)
+        g_name_pinyin = g_name_pinyin.lower()
         user_list_string = es_group.get(index=group_name, doc_type=group_type, id=g_name_pinyin,\
                             fields=['people'])
         uid_list = []
@@ -179,6 +201,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
     Index = ManualIndexManager(graph) # manage index
     group_index = Index.get_or_create_index(Node, node2_index_name)
     p_node2_id = p.get_pinyin(node2_id)
+    p_node2_id = p_node2_id.lower()
     c_string = "START end_node=node:%s(%s='%s')  RETURN end_node"\
                  % (node2_index_name, node_key2, p_node2_id)
     print c_string
@@ -200,6 +223,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
         group_dict['user'] = submit_user
         group_dict['k_label'] = '&'.join(k_label.split(','))
         group_id = p.get_pinyin(node2_id)
+        group_id = group_id.lower()
         labels = get_special_labels(node1_list)
         group_dict['label'] = labels
         wiki_link = getUrlByKeyWordList(labels)
@@ -210,7 +234,13 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
         graph.create(new_group)
         group_index.add("group", group_id, new_group)
         # return 'succeed'
-    info = create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, group_id, node2_index_name, submit_user)
+    user_org = search_user_type(node1_list)
+    user_id = user_org[0]
+    org_id = user_org[1]
+    flag = create_rel(node_key1, user_id, node1_index_name, rel, node_key2, group_id, node2_index_name, submit_user)
+    node_key11 = org_primary
+    node11_index_name = org_index_name
+    info = create_rel(node_key1, org_id, node1_index_name, rel, node_key2, group_id, node2_index_name, submit_user)
     return info
 
 def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id, node2_index_name, submit_user):
@@ -224,10 +254,10 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
         # node1 = node_index.get(node_key1, node1_id)
         try:
             node1 = node_index.get(node_key1, node1_id)[0]
-            # print node1, node1_id,'node1 hey2222!!'
+            print node1, node1_id,'node1 hey2222!!'
 
         except:
-            # continue
+            continue
             print node1, node1_id,'node1 hey!!'
             return 'uid1 not exist'
         node2 = group_index.get(node_key2, node2_id)[0]
@@ -251,6 +281,7 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
 
 def create_group_relation(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id, node2_index_name, submit_user):
     node2_id_pinyin = p.get_pinyin(node2_id)
+    node2_id_pinyin = node2_id_pinyin.lower()
     user_list_string = es_group.get(index=group_name, doc_type=group_type, id=node2_id_pinyin,\
                                 fields=['people'])
     uid_list = []
@@ -261,11 +292,19 @@ def create_group_relation(node_key1, node1_list, node1_index_name, rel, node_key
     # print eid_string
     es_group.update(index=group_name, doc_type=group_type, id=node2_id_pinyin,\
             body={'doc':{'people':eid_string, 'people_count':len(uid_list)}})
-    flag = create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id_pinyin, node2_index_name, submit_user)
+    user_org = search_user_type(uid_list)
+    user_id = user_org[0]
+    org_id = user_org[1]
+    flag = create_rel(node_key1, user_id, node1_index_name, rel, node_key2, node2_id_pinyin, node2_index_name, submit_user)
+    node_key11 = org_primary
+    node11_index_name = org_index_name
+    flag = create_rel(node_key11, org_id, node11_index_name, rel, node_key2, node2_id_pinyin, node2_index_name, submit_user)
+    
     return flag
 
 def del_u_group_rel(g_name, uid):
     en_name = p.get_pinyin(g_name)
+    en_name = en_name.lower()
     s_string = 'START s0 = node:'+group_index_name+'('+group_primary+'="'+en_name+'"),'\
                +'s3 = node:'+node_index_name+'('+people_primary+'="'+uid+'") MATCH (s0)-[r:'+group_rel+']-(s3) DELETE r' 
     
@@ -278,7 +317,7 @@ def del_u_group_rel(g_name, uid):
     new_uid_list = [i for i in new_uid_list]
     uid_string = '&'.join(new_uid_list)
     if len(new_uid_list) == 0:
-        s_string = 'START s0 = node:'+group_index_name+'('+group_primary+'='+en_name+') DELETE s0' 
+        s_string = 'START s0 = node:'+group_index_name+'('+group_primary+'="'+en_name+'") DELETE s0' 
         graph.run(s_string)
         es_group.delete(index=group_name, doc_type=group_type, id=en_name)
     else:
@@ -289,6 +328,7 @@ def del_u_group_rel(g_name, uid):
 def add_group_k_label(g_name, k_label,operation):
     new_label = k_label.split('&')
     en_name = p.get_pinyin(g_name)
+    en_name = en_name.lower()
     print en_name
     group_label = es_group.get(index=group_name, doc_type=group_type, id=en_name,\
             fields=['k_label'])
@@ -310,6 +350,7 @@ def add_group_k_label(g_name, k_label,operation):
 def add_group_file_link(g_name, file_name,operation):
     new_label = file_name.split('+')
     en_name = p.get_pinyin(g_name)
+    en_name = en_name.lower()
     print en_name
     group_label = es_group.get(index=group_name, doc_type=group_type, id=en_name,\
             fields=['file_link'])
@@ -330,6 +371,7 @@ def add_group_file_link(g_name, file_name,operation):
 
 def query_detail_group(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     try:
         uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     except:
@@ -346,9 +388,11 @@ def compare_group_user(g_name1, g_name2, submit_user, flag):
         return {'detail_result1':detail_result1,'detail_result2':detail_result2}
     else:
         topic_id1 = p.get_pinyin(g_name1)
+        topic_id1 = topic_id1.lower()
         eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['people'])
         event_list1 = eid_string1['fields']['people'][0].split('&')
         topic_id2 = p.get_pinyin(g_name2)
+        topic_id2 = topic_id2.lower()
         eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['people'])
         event_list2 = eid_string2['fields']['people'][0].split('&')
         if flag == 'same':
@@ -367,10 +411,12 @@ def compare_group_user(g_name1, g_name2, submit_user, flag):
 
 def compare_group_event(g_name1, g_name2, submit_user, flag):
     group_id1 = p.get_pinyin(g_name1)
+    group_id1 = group_id1.lower()
     uid_string1 = es_group.get(index=group_name, doc_type=group_type, id=group_id1,  fields=['people'])
     uid_list1 = uid_string1['fields']['people'][0].split('&')
 
     group_id2 = p.get_pinyin(g_name2)
+    group_id2 = group_id2.lower()
     uid_string2 = es_group.get(index=group_name, doc_type=group_type, id=group_id2,  fields=['people'])
     uid_list2 = uid_string2['fields']['people'][0].split('&')
     
@@ -412,10 +458,12 @@ def compare_group_event(g_name1, g_name2, submit_user, flag):
 
 def compare_group_keywords(g_name1, g_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(g_name1)
+    topic_id1 = topic_id1.lower()
     eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['label'])
     label_list1 = eid_string1['fields']['label'][0].split('&')
     
     topic_id2 = p.get_pinyin(g_name2)
+    topic_id2 = topic_id2.lower()
     eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['label'])
     label_list2 = eid_string2['fields']['label'][0].split('&')
     if flag == 'all':
@@ -439,10 +487,12 @@ def compare_group_keywords(g_name1, g_name2, submit_user, flag):
 
 def compare_group_k_label(g_name1, g_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(g_name1)
+    topic_id1 = topic_id1.lower()
     eid_string1 = es_group.get(index=group_name, doc_type=group_type, id=topic_id1,  fields=['k_label'])
     label_list1 = eid_string1['fields']['k_label'][0].split('&')
     
     topic_id2 = p.get_pinyin(g_name2)
+    topic_id2 = topic_id2.lower()
     eid_string2 = es_group.get(index=group_name, doc_type=group_type, id=topic_id2,  fields=['k_label'])
     label_list2 = eid_string2['fields']['k_label'][0].split('&')
     if flag == 'all':
@@ -531,6 +581,7 @@ def get_group_location(city, direction, g_name, submit_user):
 def group_map(g_name, submit_user):
     result = {}
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     source = group_geo_vary(g_name, submit_user)
@@ -561,6 +612,7 @@ def group_map(g_name, submit_user):
 
 def group_geo_vary(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     activity_geo_vary={}
@@ -685,6 +737,7 @@ def get_group_user_track(uid):
 
 def group_event_rank(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     related_event_list = []
@@ -733,6 +786,7 @@ def group_event_rank(g_name, submit_user):
 
 def group_user_tag(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     event_list = ['te-lang-pu-1480176000']
@@ -781,6 +835,7 @@ def group_user_tag(g_name, submit_user):
 
 def group_user_keyowrds(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
 
@@ -826,6 +881,8 @@ def group_user_keyowrds(g_name, submit_user):
 
 def group_user_rank(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
+    print group_id
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
 
@@ -859,7 +916,9 @@ def group_user_rank(g_name, submit_user):
         relation_degree = float(relation_set_count)/total_count
     except:
         relation_degree = 0
-    if relation_degree <0.33:
+    if relation_degree == 0:
+        conclusion = u'无关联'
+    elif relation_degree <0.33 and relation_degree >0:
         conclusion = u'关联度较低'
     elif relation_degree >= 0.33 and relation_degree <0.66:
         conclusion = u'关联度适中'
@@ -870,6 +929,7 @@ def group_user_rank(g_name, submit_user):
 
 def show_file_link(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people', 'file_link', 'wiki_link'])
     uid_list = uid_string['fields']['people'][0].split('&')
     origin_list = []
@@ -884,6 +944,7 @@ def show_file_link(g_name, submit_user):
 
 def group_related(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
+    group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people', 'file_link', 'wiki_link'])
     uid_list = uid_string['fields']['people'][0].split('&')
     origin_list = []
@@ -943,8 +1004,8 @@ def group_related(g_name, submit_user):
     except:
         user_result = []
     try:
-        org_list = [i for i in set(node_dict['org'])]
-        org_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':org_list}, fields=['uname', 'uid'])['docs']
+        org_list_ = [i for i in set(node_dict['org'])]
+        org_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':org_list_}, fields=['uname', 'uid'])['docs']
     except:
         org_result = []
     try:
