@@ -50,7 +50,7 @@ sensitive_score_dict = {
 IP_TIME_SEGMENT = 4*3600
 #人物推荐
 #recommend in
-RECOMMEND_IN_SENSITIVE_TOP = 2000
+RECOMMEND_IN_SENSITIVE_TOP = 1000
 RECOMMEND_IN_BLACK_USER1 = '/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/blacklist_2.csv'
 RECOMMEND_IN_BLACK_USER2 = '/home/ubuntu2/zxy/revised_knowledge/knowledge_revised/knowledge/cron/recommentation_in/blacklist_0808.txt'
 RECOMMEND_IN_ACTIVITY_THRESHOLD = 50
