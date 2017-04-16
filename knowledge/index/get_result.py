@@ -895,7 +895,11 @@ def event_id_name(uidlist):
         else:
             data = item['_source']
             try:
-                result[uid] = data['name'].encode('utf-8')
+                name = data['name'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
             except:
                 result[uid] = uid
 
@@ -915,7 +919,11 @@ def peo_id_name(uidlist):
         else:
             data = item['_source']
             try:
-                result[uid] = data['uname'].encode('utf-8')
+                name = data['uname'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
             except:
                 result[uid] = uid
 
@@ -935,7 +943,11 @@ def top_id_name(uidlist):
         else:
             data = item['_source']
             try:
-                result[uid] = data['topic_name'].encode('utf-8')
+                name = data['topic_name'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
             except:
                 result[uid] = uid
 
@@ -955,7 +967,11 @@ def group_id_name(uidlist):
         else:
             data = item['_source']
             try:
-                result[uid] = data['group_name'].encode('utf-8')
+                name = data['group_name'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
             except:
                 result[uid] = uid
 
