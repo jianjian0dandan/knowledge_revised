@@ -101,7 +101,7 @@ def submit_identify_in_uid(input_data):
     compute_status = str(input_data['compute_status'])
     relation_string = input_data['relation_string'] 
     recommend_style = input_data['recommend_style']
-    node_type = input_data['node_type']
+    node_type = str(input_data['node_type'])
     hashname_submit = 'submit_recomment_' + in_date
     hashname_influence = 'recomment_' + in_date + '_influence'
     hashname_sensitive = 'recomment_' + in_date + '_sensitive'
@@ -882,10 +882,13 @@ def search_user(item, field, submit_user, node_type):
         name_results = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields= field)['hits']['hits']
     except:
+        print '00000'
         return 'does not exist'
     for i in name_results:
         only_uid.append(i['fields']['uid'][0])
     print only_uid
+    if not only_uid:
+        return 'does not exist'
     if node_type == 'User':
         user_uid = search_user_type(only_uid)[0]
     elif node_type == 'Org':
