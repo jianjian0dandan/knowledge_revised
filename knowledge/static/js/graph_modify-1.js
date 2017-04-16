@@ -1,8 +1,17 @@
+//节点编辑
+var node_type='User',item;
+function type_node(value) {
+    node_type=value;
+};
+
 if (!!_id){
     $('#container .attributes .node_name').val(_id);
     $('#node_type').val(_type);
+    node_type=_type;
+    item=_id;
     var node_url='/construction/node_edit_search/?item='+_id+'&node_type='+_type+
         '&submit_user='+submit_user;
+    console.log(node_type)
     if (_type=='Event'){
         $('.node_list').hide();
         $('.event_list').show();
@@ -24,15 +33,9 @@ if (!!_id){
             success:node
         });
     }
-}
-
-//节点编辑
-var node_type='User';
-function type_node(value) {
-    node_type=value;
-}
+};
 $('#container .attributes .submit').on('click',function () {
-    var item=$('#container .attributes .node_name').val();
+    item=$('#container .attributes .node_name').val();
     if (item==''){
         alert('请输入节点。(不能为空)');
     }else {

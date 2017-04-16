@@ -3,7 +3,14 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/organization.css">
 <style>
-
+    .org_name {
+        font-weight:900;
+        display:inline-block;
+        max-width: 400px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
 {% endblock %}
 
@@ -13,7 +20,7 @@
     <div id="content_left">
         <div class="basic" style="padding-bottom:1%">
             <div class="basic-1">
-                <h1 class="user_name" style="font-weight:900;display:inline-block;"></h1>
+                <h1 class="org_name" style="font-weight:900;display:inline-block;"></h1>
                 <img src="/static/images/gov_circle.png" alt="" id="focus">
                 <button class="edit">编&nbsp;辑</button>
                 <div class="map_area">
@@ -248,9 +255,8 @@
     $('#map').on('click',function () {
         window.open('/index/map/?user_id='+user_id+'&node_type=org');
     });
-
     $('#organization #content_left .basic .basic-1 .edit').on('click',function () {
-        window.open('/construction/graph_modify/?_id='+$('.user_name').text()+'&_type=Org');
+        window.open('/construction/graph_modify/?_id='+user_id+'&_type=Org');
     });
 </script>
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>

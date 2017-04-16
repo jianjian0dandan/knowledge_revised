@@ -164,8 +164,10 @@ body {
 }
 #container #content_left .topic_analysis .topic_left #tag_left,
 #container #content_left .topic_analysis .topic_right #tag_right {
-    width: 100%;
-    height: 100%;
+    width: 355px;
+    height: 330px;
+    line-height: 330px;
+    text-align: center;
 }
 /*人物分析*/
 #container #content_left .character_analysis {
@@ -191,8 +193,10 @@ body {
 }
 #container #content_left .character_analysis .character_left #label_left,
 #container #content_left .character_analysis .character_right #label_right {
-    width: 100%;
-    height: 100%;
+    width: 355px;
+    height: 330px;
+    line-height: 330px;
+    text-align: center;
 }
 
 /*右边栏*/

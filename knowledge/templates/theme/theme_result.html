@@ -183,7 +183,7 @@
 <script>
     var theme_name='{{theme_name}}';
     var submit_user=$('#name').text();
-    $('#container #content_left .basic-1 .user_name').text(theme_name);
+
     var basic_url='/theme/theme_analysis_basic/?theme_name='+theme_name+'&submit_user='+submit_user;
     $.ajax({
         url: basic_url,
@@ -194,6 +194,7 @@
     });
     function basic(data) {
         var data=eval(data);
+        $('#container #content_left .basic-1 .user_name').text(data[0][1]);
         $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
         $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
         if (data[0][3]==0){
@@ -215,14 +216,16 @@
             });
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
+
+        //=======
+        $('#chart').on('click',function () {
+            window.open('/index/graph/?user_id='+data[0][0]+'&node_type=topic');
+        });
+        $('#map').on('click',function () {
+            window.open('/index/map/?user_id='+data[0][0]+'&node_type=topic');
+        });
     };
-    //=======
-    $('#chart').on('click',function () {
-        window.open('/index/graph/?user_id='+theme_name+'&node_type=topic');
-    });
-    $('#map').on('click',function () {
-        window.open('/index/map/?user_id='+theme_name+'&node_type=topic');
-    });
+
 
 </script>
 <!--<script src="/static/js/jquery-3.1.1.min.js"></script>-->

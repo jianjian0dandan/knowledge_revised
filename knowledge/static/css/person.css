@@ -268,7 +268,7 @@ body {
 #person_content #content_right .link_resources .resources a {
     width: 70%;
     display: block;
-    margin: 10px 0;
+    margin: 10px 0 0 15px;
     color:#676767;
     font-weight: 700;
     white-space: nowrap;
