@@ -94,7 +94,7 @@ body {
 /*自动标签*/
 #container .key_words {
     width:100%;
-    /*margin-top:6;*/
+    margin-top:60px;
 }
 #container .key_words .edit-words {
     float: right;
@@ -120,8 +120,10 @@ body {
 }
 #container .key_words .words_list .list-1-words #list-1-words,
 #container .key_words .words_list .list-2-words #list-2-words{
-    width: 100%;
+    width: 440px;
     height: 300px;
+    line-height: 300px;
+    text-align: center;
 }
 /*标签*/
 #container .tags {
@@ -144,8 +146,10 @@ body {
 }
 #container .tags .tags_list .list-1-tags #list-1-tags,
 #container .tags .tags_list .list-2-tags #list-2-tags{
-    width: 100%;
+    width: 440px;
     height: 300px;
+    line-height: 300px;
+    text-align: center;
 }
 /**/
 h3 {
