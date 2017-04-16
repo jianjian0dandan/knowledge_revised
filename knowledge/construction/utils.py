@@ -23,7 +23,7 @@ from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2, R_SENSITIVE_REDIS as sensitvie_r
-from knowledge.global_utils import es_user_portrait as es
+from knowledge.global_utils import es_user_portrait as es, es_prediction
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
@@ -496,6 +496,7 @@ def submit_event(input_data):
         e_name_string = ''.join(e_name.split('&'))
         event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
         event_id = event_id.lower()
+        print event_id,'event_id,000000000'
         input_data['en_name'] = event_id
 
     if not input_data.has_key('start_ts'):
@@ -527,6 +528,62 @@ def update_event(event_id, relation_compute):
     os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
 
+def show_weibo_list(message_type,ts,sort_item):
+    event_id_all = es_event.search(index=event_analysis_name, doc_type=event_text_type,\
+                   body={"query":{"match_all":{}},"size":10000},fields=['_id'])['hits']['hits']
+    # print event_id_all,'all event id'
+    event_ids = []
+    for i in event_id_all:
+        print i
+        event_ids.append(i['_id'])
+    query_body = {
+        "query": {
+            "bool":{
+                "must":[
+                    {"term":{"type": int(message_type)}},
+                    {"term": {"detect_ts": int(ts)}}
+                ]
+            }
+        },
+        "size": 100,
+        "sort":{sort_item:{"order": "desc"}}
+    }
+
+    text_results = []
+    uid_list = []
+    text_keys = ["text", "retweeted","keywords_string","mid", "comment", "user_fansnum", "timestamp", "geo", "uid"]
+    es_results = es_prediction.search(index="social_sensing_text",doc_type="text", body=query_body)["hits"]["hits"]
+    if not es_results:
+        return []
+
+    for item in es_results:
+        if item['_source']['mid'] in event_ids:
+            print item['_source']['mid']
+            continue
+        item = item["_source"]
+        tmp = dict()
+        for key in text_keys:
+            tmp[key] = item[key]
+        text_results.append(tmp)
+        uid_list.append(item["uid"])
+
+    profile_results = es_user_profile.mget(index=profile_index_name,doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+    for i in range(len(uid_list)):
+        tmp_profile = profile_results[i]
+        if tmp_profile["found"]:
+            tmp = dict()
+            tmp["photo_url"] = tmp_profile["_source"]["photo_url"]
+            tmp["nick_name"] = tmp_profile["_source"]["nick_name"]
+            if not tmp["nick_name"]:
+                tmp["nick_name"] = uid_list[i]
+            text_results[i].update(tmp)
+        else:
+            tmp = dict()
+            tmp["photo_url"] = ""
+            tmp["nick_name"] = tmp_profile["_id"]
+            text_results[i].update(tmp)
+
+    return text_results
 
 def submit_event_file(input_data):
     submit_ts = input_data['submit_ts']
@@ -678,15 +735,16 @@ def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2,
             return 0
     else:
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
-                match (start_node)-[r:%s]->(end_node) delete r " %(node1_index_name,\
+                match (start_node)-[r:%s]-(end_node) delete r " %(node1_index_name,\
                 node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        print c_string
         try:
             result = graph.run(c_string)
         except:
-            return 0
+            return '0'
         # for i in result:
         #     print i
-    return 1
+    return '1'
 
     #     rel = Relationship(node1, rel, node2)
     #     graph.create(rel)
@@ -1077,6 +1135,7 @@ def node_delete(node_type, item, submit_user):
     if node_type == 'Event':
         try:
             es_event.delete(index=event_analysis_name,doc_type=event_text_type, id=item)
+            es_event.delete(index=event_task_name, doc_type=event_task_type, id=item)
         except:
             return 'not in es'
         index_n = event_index_name
