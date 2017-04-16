@@ -328,6 +328,28 @@ function yes_no(data) {
 };
 //-----
 
+//详情页面跳转
+$('.name').on('click',function () {
+		flag = $(this).parents().parents().parents().attr('class');
+		if(flag=='per_card_details card'){//人物
+			mid=$(this).parents().parents().parents().find('#mid').text();
+			window.open('/index/person/?user_id='+mid);
+		}
+		else if(flag=='gov_card_details card'){//机构
+			mid=$(this).parents().parents().parents().find('#mid').text();
+			window.open('/index/organization/?user_id='+mid);
+		}
+		else{
+			flag = $(this).parents().parents().attr('class');
+			if(flag=='event_card_details card'){//事件
+				mid=$(this).parents().parents().find('#mid').text();
+				window.open('/index/event/?user_id='+mid);
+			}
+		}
+
+})
+
+//卡片页面排序
 $('#peo_influence').on('click',function () {
     var uid=$(this).attr("id");
     var r_data=JSON.stringify(cards_list);
