@@ -162,25 +162,37 @@
             .enter().append("circle")
             .style("fill",function(node){
                 var color="#F6E8E9";//圆圈背景色
-                var link=links[node.index];
+                var link=links[0];
                 if(link.type1=='event'){
                     color="#F6E8E9";
                 }else if(link.type1=='org'){
                     color="rgb(243, 25, 47)";
                 }else if(link.type1=="people"){
                     color="#00d464";
+                }else if(link.type1=='topic'){
+                    color="#03A9F4";
+                }else if(link.type1=="group"){
+                    color="#e457a7";
+                }else {
+                    color="#ff9800";
                 }
                 return color;
             })
             .style('stroke',function(node){
                 var color;//圆圈线条的颜色
-                var link=links[node.index];
+                var link=links[0];
                 if(link.type1=='event'){
-                    color="#B43232";
+                    color="#e457a7";
                 }else if(link.type1=='org'){
-                    color="#A254A2";
+                    color="#00d464";
                 }else if(link.type1=='people'){
-                    color="#795548";
+                    color="#F6E8E9";
+                }else if(link.type1=='topic'){
+                    color="#03A9F4";
+                }else if(link.type1=="group"){
+                    color="#e457a7";
+                }else {
+                    color="#ff9800";
                 }
                 return color;
             })
@@ -209,10 +221,10 @@
     //圆圈的提示文字
     circle.append("svg:title")
             .text(function(node) {
-                var link=links[node.index];
-                if(node.name==link.source.name && link.rela=="主营产品"){
-                    return "双击可查看详情"
-                }
+                var link=links[0];
+//                if(node.name==link.source.name && link.rela=="主营产品"){
+//                    return "双击可查看详情"
+//                }
             });
     /* 矩形
      var rect=svg.append("rect")
@@ -235,7 +247,7 @@
             .attr("text-anchor", "middle")//在圆圈中加上数据
             .style('fill',function(node){
                 var color;//文字颜色
-                var link=links[node.index];
+                var link=links[0];
                 if(node.name==link.source.name){
                     color="#B43232";
                 }else{
