@@ -1080,7 +1080,7 @@ def get_people_graph(uid):#获取人物节点图谱
     else:
         result_eve = {}
     if len(gro_list) > 0:
-        result_gro = gro_id_name(gro_list)
+        result_gro = group_id_name(gro_list)
     else:
         result_gro = {}
 
@@ -1189,8 +1189,8 @@ def get_event_graph(uid):#获取事件节点图谱
     return relation
 
 def get_org_graph(uid):#获取机构节点图谱
-
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return u.org_id,r,m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
+    
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.org_id,r,m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1232,7 +1232,7 @@ def get_org_graph(uid):#获取机构节点图谱
     else:
         result_eve = {}
     if len(gro_list) > 0:
-        result_gro = gro_id_name(gro_list)
+        result_gro = group_id_name(gro_list)
     else:
         result_gro = {}
 
@@ -1318,7 +1318,7 @@ def get_group_graph(uid):#获取群体节点图谱
     r_relation = []
     for item in p_result:
         node1 = item[0]
-        if node1 not in top_list:
+        if node1 not in gro_list:
             gro_list.append(node1)
         node2_k = item[3][0]
         node2_v = dict(item[2]).values()[0]
@@ -1335,7 +1335,7 @@ def get_group_graph(uid):#获取群体节点图谱
     else:
         result_peo = {}
     if len(gro_list) > 0:
-        result_gro = gro_id_name(gro_list)
+        result_gro = group_id_name(gro_list)
     else:
         result_gro = {}
 
@@ -1373,8 +1373,8 @@ def get_people_geo(uid):#根据人物id查询人物的地图
             continue
 
     event_result = get_detail_event_map(event_list)
-    people_result = get_detail_peo_org_map(peo_list)
-    org_relation = get_detail_peo_org_map(org_list)
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 
@@ -1398,8 +1398,8 @@ def get_event_geo(uid):#根据事件id查询事件的地图
             continue
 
     event_result = get_detail_event_map(event_list)
-    people_result = get_detail_peo_org_map(peo_list)
-    org_relation = get_detail_peo_org_map(org_list)
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 
@@ -1423,8 +1423,8 @@ def get_org_geo(uid):#根据机构id查询机构的地图
             continue
 
     event_result = get_detail_event_map(event_list)
-    people_result = get_detail_peo_org_map(peo_list)
-    org_relation = get_detail_peo_org_map(org_list)
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 
@@ -1464,8 +1464,8 @@ def get_group_geo(uid):#根据群体id查询群体的地图
             continue
 
     event_result = []
-    people_result = get_detail_peo_org_map(peo_list)
-    org_relation = get_detail_peo_org_map(org_list)
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 
