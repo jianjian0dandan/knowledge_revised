@@ -40,7 +40,7 @@ function theme_overview(data) {
                 }
             },
             {
-                title: "包含人数",//标题
+                title: "包含事件",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
