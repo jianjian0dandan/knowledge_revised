@@ -363,7 +363,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>删除</a>';
+                    return '<a style="cursor: pointer;">删除</a>';
                 },
             },
             //多选框
@@ -471,7 +471,6 @@ function event_list(data) {
         null;
     }else {
         var data = eval(data);
-        console.log(data)
         $('#event_list').bootstrapTable('load', data);
         $('#event_list').bootstrapTable({
             data:data,
