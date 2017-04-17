@@ -65,7 +65,7 @@ def search_related_event_item():  #群体编辑-增加前先搜索人物,如果�
 
 @mod.route('/search_related_people_auto/')
 def search_related_people_auto():  #群体编辑-推荐一跳
-    g_name = request.args.get('g_name', u'政治群体')
+    g_name = request.args.get('g_name', u'媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     user_card = search_related_u_auto(g_name, submit_user)

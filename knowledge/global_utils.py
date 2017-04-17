@@ -332,6 +332,20 @@ def get_evaluate_max():
         max_result[evaluate] = max_evaluate
     return max_result
 
+def deal_user_tag(tag,submit_user):
+    # tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    # print tag,'======!!=========='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
+
 def user_detail_search(uid_list,submit_user):
     evaluate_max = get_evaluate_max()
     if not uid_list:
