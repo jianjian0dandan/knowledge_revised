@@ -48,18 +48,19 @@ h4 {
 }
 /*用户发的微博*/
 #container .hot_find .weibo {
-    /*padding-top:3%;*/
-    /*border-bottom: 1px dashed silver;*/
+    margin-top: 10px;
+    padding-bottom:20px;
+    border-bottom: 1px dashed silver;
     position: relative;
 }
 #container .hot_find .weibo h3 {
     padding: 1% 3%;
+    font-size: 14px;
 }
 #container .hot_find .weibo .content .content-1 {
     border: 5px solid #eee;
     position: absolute;
-    left:3%;
-    top:14%;
+    left:30px;
 }
 #container .hot_find .weibo .content .content-1 img {
     width: 60px;

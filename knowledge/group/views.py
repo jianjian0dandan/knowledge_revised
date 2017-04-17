@@ -74,14 +74,14 @@ def search_related_people_auto():  #群体编辑-推荐一跳
 @mod.route('/create_new_relation/')#添加到新群体
 def create_new_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
-    node1_id = request.args.get('node1_id', '5848882336,1799791715')
+    node1_id = request.args.get('node1_id', '5848882336,1799791715,5014862797')
     if node1_id == '':
     	return 'must add user'
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
     node_key2 = request.args.get('node_key2', 'group')  # event,uid
-    node2_name = request.args.get('node2_id', u'美选群体')
+    node2_name = request.args.get('node2_id', u'X美选群体xx')
     submit_user = request.args.get('submit_user', 'admin@qq.com')
     node2_id = node2_name + '_' + submit_user
     node2_index_name = request.args.get('node2_index_name', 'group_index')
@@ -93,7 +93,7 @@ def create_new_relation():
 @mod.route('/create_relation/')#添加到已有群体
 def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
-    node1_id = request.args.get('node1_id', '2288486705,5014862797,1653076903')
+    node1_id = request.args.get('node1_id', '5014862797,2288486705,5848882336,1663072851,1649173367,1738004582,2803301701,1653076903')
     node1_list = node1_id.split(',')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
@@ -119,7 +119,7 @@ def del_user_in_group():  #群体编辑-删除用户
     g_name = request.args.get('g_name', u'美选群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
-    uid = request.args.get('uid', u'1895431523')
+    uid = request.args.get('uid', u'1799791715')
     flag = del_u_group_rel(g_name, uid)
     return json.dumps(flag)
 
@@ -233,6 +233,7 @@ def ajax_group_user_rank():  #群体用户联系
     g_name = request.args.get('g_name', u'美选群体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
+    print g_name
     detail_t = group_user_rank(g_name, submit_user)
     return json.dumps(detail_t)
 

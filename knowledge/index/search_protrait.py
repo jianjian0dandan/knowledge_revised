@@ -324,7 +324,19 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
             data = item['_source']
             for k,v in data.iteritems():
                 if k in event_es_dict:
-                    result[k] = json.loads(v)
+                    if k == 'topics':#lda运行结果
+                        topic_list = []
+                        topics = json.loads(v)
+                        for topic in topics:
+                            row = []
+                            words = topic[1].split(' + ')
+                            for word in words:
+                                w,t = word.split('*')
+                                row.append(t)
+                            topic_list.append(row)
+                        result[k] = topic_list
+                    else:
+                        result[k] = json.loads(v)
                 elif k == event_tag:
                     flag = 1
                     work_tag = v
@@ -511,7 +523,84 @@ def search_related_docs(uid,es_host,es_name,es_type):
 
     return result
 
+def rank_people_card_data(rank_data,rank_type):#对人物数据排序
 
+    new_dict = []
+    if rank_type == 'peo_influence':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['influence'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'peo_activity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['activeness'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'peo_sensitivity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['importance'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
 
-    
-    
+    return new_dict
+
+def rank_event_card_data(rank_data,rank_type):#对事件数据排序
+
+    new_dict = []
+    if rank_type == 'event_weibo':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['weibo'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'event_people':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['people'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'event_time':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            ts = date2ts(v['time_ts'])
+            keyword.Push((ts,k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+
+    return new_dict    
+
+def rank_org_card_data(rank_data,rank_type):#对机构数据排序
+
+    new_dict = []
+    if rank_type == 'org_influence':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['influence'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'org_activity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['activeness'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+    elif rank_type == 'org_sensitivity':
+        keyword = TopkHeap(len(rank_data))
+        for k,v in rank_data.iteritems():
+            keyword.Push((v['importance'],k,v))
+        keyword_data = keyword.TopK()        
+        for item in keyword_data:
+            new_dict.append([item[1],item[2]])
+
+    return new_dict

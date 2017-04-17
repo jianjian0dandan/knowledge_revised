@@ -8,10 +8,6 @@
 }
 /*内容样式*/
 body {
-    /*width: 100%;*/
-    /*min-width: 1349px;*/
-    /*min-height: 3108px;*/
-    /*background: url("/static/images/xxx_result.png") no-repeat;*/
     width: 100%;
     margin: 0;
     min-width: 1349px;
@@ -84,6 +80,7 @@ body {
 }
 #container #content_left .basic .basic-2 p span {
     color: #676767;
+    font-weight: 600;
     display: inline-block;
     width: 100px;
     white-space: nowrap;
@@ -181,14 +178,16 @@ body {
 #container #content_left .character_analysis .character_left,
 #container #content_left .character_analysis .character_right {
     display: inline-block;
-    width: 45%;
+    width: 355px;
     height: 330px;
     text-align: left;
 }
 #container #content_left .character_analysis .character_left #label_left,
 #container #content_left .character_analysis .character_right #label_right {
-    width: 100%;
-    height: 100%;
+    width: 355px;
+    height: 330px;
+    line-height: 330px;
+    text-align: center;
 }
 
 /*右边栏*/

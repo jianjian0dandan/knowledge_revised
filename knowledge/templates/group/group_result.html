@@ -31,21 +31,21 @@
             <div class="basic-2">
                 <div class="information">
                     <p class="in_one">
-                        <span>包含人物数量</span> <span class="nums crude"></span>
-                        <span>创建时间</span><span class="time crude" style="width: 140px;"></span>
+                        <span><b>包含人物数量：</b></span> <span class="nums crude"></span>
+                        <span><b>创建时间：</b></span><span class="time crude" style="width: 140px;"></span>
                     </p>
                     <p class="in_two">
-                        <span>自动标签：</span>
+                        <span><b>自动标签：</b></span>
                         <span class="tag_2 crude"></span>
                         <a class="more_2">更多</a>
                     </p>
                     <p class="in_three">
-                        <span>业务标签：</span>
+                        <span><b>业务标签：</b></span>
                         <span class="tag_3 crude"></span>
                         <a class="more_3">更多</a>
                     </p>
                     <p class="in_four">
-                        <span>创建人</span> <span class="name crude">admin</span>
+                        <span><b>创建人：</b></span> <span class="name crude"></span>
                         <a href="###">相似专题计算</a>
                     </p>
                 </div>
@@ -90,7 +90,7 @@
                 <div class="detail-1">
                     <img src="/static/images/structure.png"/> <span>内部关联事件</span><span class="det-1"></span>
                     <img src="/static/images/top.png"/> <span>内部关联度</span><span class="det-2"></span>
-                    <img src="/static/images/note.png"/> <span>该专题内部事件联系</span><span class="det-3"></span>
+                    <img src="/static/images/note.png"/> <span>该专题内部事件</span><span class="det-3"></span>
                 </div>
                 <div id="network_list" style="width: 100%"></div>
             </div>
@@ -199,7 +199,7 @@
 <script>
     var group_name='{{group_name}}';
     var submit_user=$('#name').text();
-    $('#container #content_left .basic-1 .user_name').text(group_name);
+    $('.basic-2 .in_four .name').text(submit_user);
     var basic_url='/group/group_basic/?g_name='+group_name+'&submit_user='+submit_user;
     $.ajax({
         url: basic_url,
@@ -210,6 +210,8 @@
     });
     function basic(data) {
         var data=eval(data);
+        console.log(data)
+        $('#container #content_left .basic-1 .user_name').text(data[0][1]);
         $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
         $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
         if (data[0][3]==0){
@@ -231,15 +233,17 @@
             });
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
+
+        //=======
+        $('#chart').on('click',function () {
+            window.open('/index/graph/?user_id='+data[0][0]+'&node_type=group');
+        });
+        $('#map').on('click',function () {
+            window.open('/index/map/?user_id='+data[0][0]+'&node_type=group');
+        });
     }
 
-    //=======
-    $('#chart').on('click',function () {
-        window.open('/index/graph/?user_id='+group_name+'&node_type=group');
-    });
-    $('#map').on('click',function () {
-        window.open('/index/map/?user_id='+group_name+'&node_type=group');
-    });
+
 
 </script>
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>

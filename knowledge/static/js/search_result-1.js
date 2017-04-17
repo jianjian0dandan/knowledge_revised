@@ -450,12 +450,12 @@ function person(p_data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.uname+','+row.uid+',User';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.uid+',User';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -607,12 +607,12 @@ function agencies(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.uname+','+row.id+',Org';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Org';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -764,12 +764,12 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.name+','+row.id+',Event';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Event';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -903,12 +903,12 @@ function organization(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.group_name+','+row.id+',Group';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Group';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -1033,12 +1033,12 @@ function subject(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.event+','+row.id+',SpecialEvent';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row[1].uid+',SpecialEvent';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -1068,7 +1068,6 @@ function add_new_task(row) {
         async: true,
         success:function (data) {
             var data=eval(data)
-            console.log(data)
             if (data=='yes'){
                 alert('创建成功。');
             }else {
@@ -1083,7 +1082,7 @@ function go_jump(uid_type) {
     window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]);
 };
 
-// setTimeout(function () {
-//     localStorage.removeItem('temp');
-// },60000);
+setTimeout(function () {
+    localStorage.removeItem('temp');
+},60000);
 

@@ -210,12 +210,13 @@ body {
 #event_content #content_right .link_resources .resources a {
     width: 70%;
     display: block;
-    margin: 10px 0;
+    margin: 10px 0 0 15px;
     color:#676767;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 #event_content #content_right .link_user .user_more,
 #event_content #content_right .link_event .event_more,

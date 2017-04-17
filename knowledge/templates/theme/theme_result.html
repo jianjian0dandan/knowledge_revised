@@ -1,11 +1,77 @@
 {% extends "public_nav.html" %}
 {% block title %}<title>知识图谱 - 专题查看</title>{% endblock %}
 {% block my_css %}
-<link rel="stylesheet" href="/static/css/fishBone.css" />
+<!--<link rel="stylesheet" href="/static/css/fishBone.css" />-->
 <link rel="stylesheet" href="/static/css/theme_result.css">
 <style>
     .table>thead:first-child>tr:first-child>th {
         width: 1%;
+    }
+    .fishBone {
+        position: relative;
+        margin-top: 20px;
+    }
+    .fishBone .fish_box {
+        width:540px;
+        margin: 0 auto;
+        transition: all linear 0.7s;
+    }
+    .fishBone .fish_item {
+        position: relative;
+        left: 10px;
+        width:170px;
+        overflow: hidden;
+        margin-right: 10px;
+        float: left;
+        padding: 12px;
+    }
+    .fishBone .fish_item li {
+        padding: 5px;
+    }
+    .fishBone .fish_item .weibo {
+        width:170px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .fishBone .fish_item .line-point {
+        position: absolute;
+        left: 4px;
+        bottom:0;
+        display: block;
+        height: 18px;
+        width: 18px;
+        background: url(/static/images/line-point.png) no-repeat 0 0;
+    }
+    .fishBone .fish_item .top .line-point {
+        top:0;
+    }
+    .fishBone .next,.fishBone .prev {
+        position: absolute;
+        top: 82px;
+        display: inline-block;
+        width: 20px;
+        height: 40px;
+        cursor: pointer;
+        z-index: 5;
+    }
+    .fishBone .prev {
+        left: 0;
+        background: url(/static/images/arrow.png) no-repeat -1px 13px;
+    }
+    .fishBone .next {
+        right: 0;
+        background: url(/static/images/arrow.png) no-repeat -19px 13px;
+    }
+    .fishBone .prev:hover,.fishBone .next:hover{
+        background-position-y: -28px;
+    }
+    .fishBone .line {
+        position: absolute;
+        top: 103px;
+        height: 1px;
+        width: 100%;
+        border-bottom: 2px dashed #7E899D;
     }
 </style>
 {% endblock %}
@@ -31,21 +97,21 @@
             <div class="basic-2">
                 <div class="information">
                     <p class="in_one">
-                        <span>包含事件数量</span> <span class="nums crude"></span>
-                        <span>创建时间</span><span class="time crude" style="width: 140px;"></span>
+                        <span><b>包含事件数量:</b></span> <span class="nums crude"></span>
+                        <span><b>创建时间:</b></span><span class="time crude" style="width: 140px;"></span>
                     </p>
                     <p class="in_two">
-                        <span>自动标签：</span>
+                        <span><b>自动标签：</b></span>
                         <span class="tag_2 crude"></span>
                         <a class="more_2">更多</a>
                     </p>
                     <p class="in_three">
-                        <span>业务标签：</span>
+                        <span><b>业务标签：</b></span>
                         <span class="tag_3 crude"></span>
                         <a class="more_3">更多</a>
                     </p>
                     <p class="in_four">
-                        <span>创建人</span> <span class="name crude">admin</span>
+                        <span><b>创建人：</b></span> <span class="name crude"></span>
                         <a href="###">相似专题计算</a>
                     </p>
                 </div>
@@ -60,7 +126,28 @@
             <div class="time">
                 <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
                 <span>时间分析</span>
-                <div class="fishBone"></div>
+                <div class="fishBone" style="width: 630px;height:220px;overflow: hidden;">
+                    <!--<div class="fish_item">-->
+                        <!--<ul class="top">-->
+                            <!--<li style="border-left: 1px solid rgb(248, 151, 130);">事件ID：te-lang-pu-1480176000</li>-->
+                            <!--<li style="border-left: 1px solid rgb(248, 151, 130);">微博内容：里在靠电n/RfOR78O</li>-->
+                            <!--<li style="border-left: 1px solid rgb(248, 151, 130);">时间：2016-11-27 08:10:44</li>-->
+                            <!--<li class="line-last line-point" style="background-position: 0px 0px;"></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <!--<div class="fish_item">-->
+                        <!--<ul class="bottom">-->
+                            <!--<li style="border-left: 1px solid rgb(26, 132, 206);">事件ID：lu-han-1480176000</li>-->
+                            <!--<li style="border-left: 1px solid rgb(26, 132, 206);">微博内容：！定由]</li>-->
+                            <!--<li style="border-left: 1px solid rgb(26, 132, 206);">时间：2016-11-25 20:37:49</li>-->
+                            <!--<li class="line-last line-point" style="background-position: 0px -20px;"></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <a class="prev"></a>
+                    <a class="next"></a>
+                    <div class="line"></div>
+                    <div class="fish_box"></div>
+                </div>
             </div>
             <div class="place">
                 <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
@@ -183,7 +270,7 @@
 <script>
     var theme_name='{{theme_name}}';
     var submit_user=$('#name').text();
-    $('#container #content_left .basic-1 .user_name').text(theme_name);
+    $('.basic-2 .in_four .name').text(submit_user);
     var basic_url='/theme/theme_analysis_basic/?theme_name='+theme_name+'&submit_user='+submit_user;
     $.ajax({
         url: basic_url,
@@ -194,6 +281,7 @@
     });
     function basic(data) {
         var data=eval(data);
+        $('#container #content_left .basic-1 .user_name').text(data[0][1]);
         $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
         $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
         if (data[0][3]==0){
@@ -215,21 +303,21 @@
             });
             $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
         };
+
+        //=======
+        $('#chart').on('click',function () {
+            window.open('/index/graph/?user_id='+data[0][0]+'&node_type=topic');
+        });
+        $('#map').on('click',function () {
+            window.open('/index/map/?user_id='+data[0][0]+'&node_type=topic');
+        });
     };
-    //=======
-    $('#chart').on('click',function () {
-        window.open('/index/graph/?user_id='+theme_name+'&node_type=topic');
-    });
-    $('#map').on('click',function () {
-        window.open('/index/map/?user_id='+theme_name+'&node_type=topic');
-    });
 
 </script>
 <!--<script src="/static/js/jquery-3.1.1.min.js"></script>-->
 <!--<script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>-->
-<script type="text/javascript" src="/static/js/fishBone.js"></script>
-<script type="text/javascript" src="/static/js/jquery.SuperSlide.2.1.1.js"></script>
-
+<!--<script type="text/javascript" src="/static/js/fishBone.js"></script>-->
+<!--<script type="text/javascript" src="/static/js/jquery.SuperSlide.2.1.1.js"></script>-->
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 <script src="/static/js/theme_result-1.js"></script>
 <script src="/static/js/theme_result-2.js"></script>

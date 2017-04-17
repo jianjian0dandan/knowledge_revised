@@ -302,7 +302,6 @@ $('#container .relation .upload-2').on('click',function () {
 })
 function relation_add(data) {
     var data=eval(data);
-    console.log(data)
     if (data[0]==true){
         alert('关系添加成功。');
     }else {

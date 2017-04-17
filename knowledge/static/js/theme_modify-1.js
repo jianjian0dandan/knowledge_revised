@@ -321,11 +321,14 @@ function things(data) {
                     if (row[7].length==0||row[7]==''||row[7]=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
+                        var words=row[7];
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
 
                 },
@@ -341,11 +344,14 @@ function things(data) {
                     if (row[8].length==0||row[8]==''||row[8]=='NULL'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var words=row[8];
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return tag;
                     }
                 },
             },
@@ -374,6 +380,12 @@ function things(data) {
             theme_diff.push(row[1]);
         },
         onUncheck:function (row) {
+            theme_diff.removeByValue(row[1]);
+        },
+        onCheckAll:function (row) {
+            theme_diff.push(row[1]);
+        },
+        onUncheckAll:function (row) {
             theme_diff.removeByValue(row[1]);
         },
         onClickCell: function (field, value, row, $element) {
@@ -583,11 +595,14 @@ function event_list(data) {
                     if (row[7].length==0||row[7]==''||row[7]=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
+                        var words=row[7];
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
 
                 },
@@ -603,11 +618,14 @@ function event_list(data) {
                     if (row[8].length==0||row[8]==''||row[8]=='NULL'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var words=row[8];
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return tag;
                     }
                 },
             },
@@ -626,6 +644,12 @@ function event_list(data) {
         },
         onUncheck:function (row) {
             thing_list.removeByValue(row[0]);
+        },
+        onCheckAll:function (row) {
+            thing_list.push(row[1]);
+        },
+        onUncheckAll:function (row) {
+            thing_list.removeByValue(row[1]);
         },
     });
 };

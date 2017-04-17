@@ -313,6 +313,32 @@ def get_card():#卡片罗列页面
 
     return render_template('index/card_display.html', result = result, flag = flag)
 
+@mod.route('/card_rank/', methods=['GET','POST'])
+def card_rank():#卡片罗列页面
+
+    rank_data = request.form['r_data']
+    node_type = request.form['node_type']
+    rank_type = request.form['rank_type']
+
+    if rank_data:
+        if node_type == '1':#人物节点
+            result = rank_people_card_data(eval(rank_data),rank_type)
+            flag = 1
+        elif node_type == '2':#事件节点
+            result = rank_event_card_data(eval(rank_data),rank_type)
+            flag = 2
+        elif node_type == '0':#事件节点
+            result = rank_org_card_data(eval(rank_data),rank_type)
+            flag = 0
+        else:#其他关联
+            result = {}
+            flag = -1
+    else:
+        result = {}
+        flag = -1
+
+    return json.dumps(result)
+
 @mod.route('/show_attention/', methods=['GET','POST'])
 def show_attention():
 

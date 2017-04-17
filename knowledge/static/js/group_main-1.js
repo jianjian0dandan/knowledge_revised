@@ -72,11 +72,15 @@ function group_overview(data) {
                     if (row[3].length==0){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[3].length;k++){
-                            key+=row[3][k]+' ';
+                        var words=row[3];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
 
                 },
@@ -92,11 +96,15 @@ function group_overview(data) {
                     if (row[4].length==0){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[4].length;k++){
-                            tag+=row[3][k]+' ';
+                        var words=row[4];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return tag;
                     }
                 },
             },
@@ -108,7 +116,7 @@ function group_overview(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '群体查看';
+                    return '<a style="cursor: pointer;">群体查看</a>';
                 },
             },
             {
@@ -119,7 +127,7 @@ function group_overview(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '群体编辑';
+                    return '<a style="cursor: pointer;">群体编辑</a>';
                 },
             },
             //多选框
@@ -134,33 +142,53 @@ function group_overview(data) {
         ],
         onCheck:function (row) {
             group_diff.push(row[1]);
+            if (group_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onUncheck:function (row) {
             group_diff.removeByValue(row[1]);
+            if (group_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onCheckAll:function (row) {
             group_diff.push(row[1]);
+            if (group_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }
         },
         onUncheckAll:function (row) {
             group_diff.removeByValue(row[1]);
+            if (group_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }
         },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='群体查看') {
-                window.open('/group/result/?theme_name='+row[1]);
+                window.open('/group/result/?group_name='+row[1]);
             }else if ($element[0].innerText=='群体编辑') {
-                window.open('/group/modify/?theme_name='+row[1]);
+                window.open('/group/modify/?group_name='+row[1]);
             }
         }
     });
 };
 
 var group_diff=[];
+
 $('#container .group_operating .operating .compared').on('click',function () {
-    if (group_diff.length==2){
-        window.open('/group/compare/?group_name1='+group_diff[0]+'&group_name2='+group_diff[1]);
-    }else {
-        alert('请您注意选择的专题，您只能选择2个。(请检查您勾选的专题)')
+    if ($(this).css('color')=='rgb(51, 122, 183)'){
+        if (group_diff.length==2){
+            window.open('/group/compare/?group_name1='+group_diff[0]+'&group_name2='+group_diff[1]);
+        }else {
+            alert('请您注意选择的专题，您只能选择2个。(请检查您勾选的专题)')
+        }
     }
+
 });
 
 //删除指定项

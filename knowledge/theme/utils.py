@@ -75,6 +75,7 @@ def search_related_e_card(item, submit_user, theme_name):
     if theme_name:
         theme_name = theme_name + '_' + submit_user
         theme_name_pinyin = p.get_pinyin(theme_name)
+        theme_name_pinyin = theme_name_pinyin.lower()
         event_list_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=theme_name_pinyin,\
                             fields=['event'])
         eid_list = []
@@ -139,6 +140,7 @@ def search_related_e_card(item, submit_user, theme_name):
 
 def create_theme_relation(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id, node2_index_name, submit_user):
     node2_id_pinyin = p.get_pinyin(node2_id)
+    node2_id_pinyin = node2_id_pinyin.lower()
     event_list_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=node2_id_pinyin,\
                                 fields=['event'])
     eid_list = []
@@ -201,6 +203,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
     Index = ManualIndexManager(graph) # manage index
     theme_index = Index.get_or_create_index(Node, node2_index_name)
     p_node2_id = p.get_pinyin(node2_id)
+    p_node2_id = p_node2_id.lower()
     c_string = "START end_node=node:%s(%s='%s')  RETURN end_node"\
                  % (node2_index_name, node_key2, p_node2_id)
     print c_string
@@ -225,6 +228,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
             k_label = '&'.join(k_label.split(','))
             theme_dict['k_label'] = k_label
         topic_id = p.get_pinyin(node2_id)
+        topic_id = topic_id.lower()
         labels = get_special_labels(node1_list)
         theme_dict['label'] = labels
         wiki_link = getUrlByKeyWordList(labels)
@@ -240,6 +244,7 @@ def create_node_and_rel(node_key1, node1_list, node1_index_name, rel, node_key2,
 
 def query_detail_theme(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     # topic_id = topic_id + '_' + submit_user
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     eid_list = eid_string['fields']['event'][0].split('&')
@@ -300,6 +305,7 @@ def query_detail_theme(theme_name, submit_user):
 
 def del_e_theme_rel(theme_name, event_id):
     en_name = p.get_pinyin(theme_name)
+    en_name = en_name.lower()
     s_string = 'START s0 = node:special_event_index(event="%s"),s3 = node:event_index(event_id="%s")\
                 MATCH (s0)-[r:special_event]-(s3) DELETE r' %(en_name, event_id)
     print s_string
@@ -323,6 +329,7 @@ def del_e_theme_rel(theme_name, event_id):
 def add_theme_k_label(theme_name, k_label,operation):
     new_label = k_label.split('&')
     en_name = p.get_pinyin(theme_name)
+    en_name = en_name.lower()
     print en_name
     theme_label = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
             fields=['k_label'])
@@ -344,6 +351,7 @@ def add_theme_k_label(theme_name, k_label,operation):
 def add_theme_file_link(theme_name, file_name,operation):
     new_label = file_name.split('+')
     en_name = p.get_pinyin(theme_name)
+    en_name = en_name.lower()
     print en_name
     theme_label = es_event.get(index=special_event_name, doc_type=special_event_type, id=en_name,\
             fields=['file_link'])
@@ -369,9 +377,11 @@ def compare_theme(theme_name1, theme_name2, submit_user, flag):
         return {'detail_result1':detail_result1,'detail_result2':detail_result2}
     else:
         topic_id1 = p.get_pinyin(theme_name1)
+        topic_id1 = topic_id1.lower()
         eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['event'])
         event_list1 = eid_string1['fields']['event'][0].split('&')
         topic_id2 = p.get_pinyin(theme_name2)
+        topic_id2 = topic_id2.lower()
         eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['event'])
         event_list2 = eid_string2['fields']['event'][0].split('&')
         if flag == 'same':
@@ -390,10 +400,12 @@ def compare_theme(theme_name1, theme_name2, submit_user, flag):
 
 def compare_theme_user(theme_name1, theme_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(theme_name1)
+    topic_id1 = topic_id1.lower()
     eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['event'])
     event_list1 = eid_string1['fields']['event'][0].split('&')
     
     topic_id2 = p.get_pinyin(theme_name2)
+    topic_id2 = topic_id2.lower()
     eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['event'])
     event_list2 = eid_string2['fields']['event'][0].split('&')
     
@@ -438,10 +450,12 @@ def compare_theme_user(theme_name1, theme_name2, submit_user, flag):
 
 def compare_theme_keywords(theme_name1, theme_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(theme_name1)
+    topic_id1 = topic_id1.lower()
     eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['label'])
     label_list1 = eid_string1['fields']['label'][0].split('&')
     
     topic_id2 = p.get_pinyin(theme_name2)
+    topic_id2 = topic_id2.lower()
     eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['label'])
     label_list2 = eid_string2['fields']['label'][0].split('&')
     if flag == 'all':
@@ -465,10 +479,12 @@ def compare_theme_keywords(theme_name1, theme_name2, submit_user, flag):
 
 def compare_theme_k_label(theme_name1, theme_name2, submit_user, flag):
     topic_id1 = p.get_pinyin(theme_name1)
+    topic_id1 = topic_id1.lower()
     eid_string1 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id1,  fields=['k_label'])
     label_list1 = eid_string1['fields']['k_label'][0].split('&')
     
     topic_id2 = p.get_pinyin(theme_name2)
+    topic_id2 = topic_id2.lower()
     eid_string2 = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id2,  fields=['k_label'])
     label_list2 = eid_string2['fields']['k_label'][0].split('&')
     if flag == 'all':
@@ -492,6 +508,7 @@ def compare_theme_k_label(theme_name1, theme_name2, submit_user, flag):
 
 def search_related_event(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     related_list = []
@@ -511,6 +528,7 @@ def search_related_event(theme_name, submit_user):
 # def theme_analysis_basic(theme_name, submit_user):
 def get_theme_flow(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     query_body = {
@@ -543,6 +561,7 @@ def get_theme_flow(theme_name, submit_user):
 
 def get_theme_geo(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
@@ -581,6 +600,7 @@ def get_theme_geo(theme_name, submit_user):
 
 def get_theme_net(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
@@ -619,12 +639,20 @@ def get_theme_net(theme_name, submit_user):
         relation_degree = float(relation_set_count)/total_count
     except:
         relation_degree = 0
-    conclusion = u'联系紧密'##未定义！！
+    if relation_degree == 0:
+        conclusion = u'无关联'
+    elif relation_degree <0.33 and relation_degree >0:
+        conclusion = u'关联度较低'
+    elif relation_degree >= 0.33 and relation_degree <0.66:
+        conclusion = u'关联度适中'
+    elif relation_degree >= 0.66:
+        conclusion = u'联系紧密'##未定义！！
     return {'relation_table':exist_relation, 'relation_count':relation_set_count,\
         'conclusion':conclusion, 'relation_degree':relation_degree}
 
 def get_theme_keywords(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
@@ -666,6 +694,7 @@ def get_theme_keywords(theme_name, submit_user):
 
 def get_theme_user_rank(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     user_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
@@ -705,6 +734,7 @@ def get_theme_user_rank(theme_name, submit_user):
 
 def get_theme_user_tag(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event'])
     event_list = eid_string['fields']['event'][0].split('&')
     user_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
@@ -763,6 +793,7 @@ def get_theme_user_tag(theme_name, submit_user):
 
 def show_theme_file_link(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
     event_list = eid_string['fields']['event'][0].split('&')
     origin_event = event_list
@@ -777,6 +808,7 @@ def show_theme_file_link(theme_name, submit_user):
         
 def get_theme_related(theme_name, submit_user):
     topic_id = p.get_pinyin(theme_name)
+    topic_id = topic_id.lower()
     eid_string = es_event.get(index=special_event_name, doc_type=special_event_type, id=topic_id,  fields=['event','wiki_link', 'file_link'])
     event_list = eid_string['fields']['event'][0].split('&')
     origin_event = event_list
@@ -871,7 +903,11 @@ def get_theme_related(theme_name, submit_user):
         if i['_id'] in origin_event:
             continue
         if i['found'] == True:
-            final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+            print i,'-----------'
+            try:
+                final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+            except:
+                final_event.append([i['_id'],i['_id']])
         else:
             final_event.append([i['_id'],i['_id']])
     # final_event2 = set(final_event) - set(origin_event)

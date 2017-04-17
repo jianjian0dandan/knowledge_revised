@@ -162,7 +162,7 @@ function include_user(data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if ($element[0].cellIndex==0){
-                window.open('/index/event/?user_id='+row[0]);
+                window.open('/index/person/?user_id='+row[0]);
             }
         },
     });
@@ -208,12 +208,12 @@ function network(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -338,12 +338,15 @@ function key_tag(data) {
             }
         )
     });
+};
+if (key_series.length==0){
+    $('#tag_left').html('暂无数据');
+}else {
     require(
         [
             'echarts',
             'echarts/chart/wordCloud'
         ],
-
         //关键词
         function (ec) {
             // 基于准备好的dom，初始化echarts图表
@@ -376,8 +379,11 @@ function key_tag(data) {
                 var selected = param.name;
             });
         }
-
     );
+}
+if (tag_series.length==0){
+    $('#tag_right').html('暂无数据');
+}else {
     require(
         [
             'echarts',
@@ -432,22 +438,23 @@ $.ajax({
 });
 function character(data) {
     var data = eval(data);
+    console.log(data)
     $('#ranking').bootstrapTable('load', data);
     $('#ranking').bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 10,],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -497,11 +504,17 @@ function character(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row.user==''||row.user=='NULL'){
+                    if (row.user==''||row.user=='NULL'||row.user.length=='NULL'){
                         return '暂无';
                     }else {
-                        var user=row.user.splice(' ');
-                        return row.user.length;
+                        var words=row.user;
+                        if (words.length<=5){
+                            return words.join('\n');
+                        }else {
+                            var key=words.splice(0,5).join('\n');
+                            var tit=words.splice(5).join('\n');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
                     }
                 },
             },
@@ -514,6 +527,7 @@ function character(data) {
         },
     });
 };
+
 
 //----人物自动标签
 var user_tag_url='/group/group_user_tag/?g_name='+group_name+'&submit_user='+submit_user;
@@ -546,83 +560,90 @@ function user_tag(data) {
         )
     });
 }
+if (user_key_series.length==0){
+    $('#label_left').html('暂无数据');
+}else {
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('label_left'));
 
 
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('label_left'));
-
-
-        option = {
-            title: {
-                // text: '关键词',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                // name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
+            option = {
+                title: {
+                    // text: '关键词',
                 },
-                data: user_key_series
-            }]
-        };
-
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
-
-//----人物业务标签
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('label_right'));
-
-        option = {
-            title: {
-                // text: '微话题',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                // name: 'Google Trends',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
+                tooltip: {
+                    show: true
                 },
-                data:user_tag_series
-            }]
-        };
+                series: [{
+                    // name: 'Google Trends',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data: user_key_series
+                }]
+            };
 
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            });
+        }
+    );
+}
+
+if (user_tag_series.length==0){
+    $('#label_right').html('暂无数据');
+}else {
+    //----人物业务标签
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('label_right'));
+
+            option = {
+                title: {
+                    // text: '微话题',
+                },
+                tooltip: {
+                    show: true
+                },
+                series: [{
+                    // name: 'Google Trends',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data:user_tag_series
+                }]
+            };
+
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            });
+        }
+    );
+}
+
 

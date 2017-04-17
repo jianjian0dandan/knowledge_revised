@@ -18,7 +18,7 @@ from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
                   deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
-                  node_delete, delete_relation, deal_event_tag
+                  node_delete, delete_relation, deal_event_tag, show_weibo_list
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -57,7 +57,7 @@ def add_node():
 def ajax_recommentation_in():
     #按影响力推荐，按敏感度推荐
     date = request.args.get('date', '2016-11-27') # '2013-09-01'
-    recomment_type = request.args.get('type', 'sensitive')  #influence  sensitive
+    recomment_type = request.args.get('type', 'influence')  #influence  sensitive
     submit_user = request.args.get('submit_user', 'admin') # 提交人
     node_type = request.args.get('node_type', 'user') # user  org
     input_ts = datetime2ts(date)
@@ -99,6 +99,7 @@ def ajax_admin_identify_in():
     data = []
     if date and uid_list:
         for uid in uid_list:
+            print uid,'uid here!!!!!!!!'
             data.append([date, uid, status, relation_string, recommend_style, submit_user,node_type])
         results = identify_in(data,uid_list)
     else:
@@ -150,7 +151,18 @@ def ajax_show_user_task_status():
             continue
     return json.dumps(result_list)
 
-#事件提交任务,推荐方式或手写
+# show ts weibo
+@mod.route("/show_weibo_list/")
+def ajax_show_weibo_list():
+    ts = request.args.get("ts", "1479571200")
+    message_type = request.args.get("type", "1") # 1: origin, 3:retweet
+    sort_item = request.args.get("sort", "retweeted") # 排序, retweeted, comment, timestamp, sensitive
+
+    results = show_weibo_list(message_type,ts,sort_item)
+
+    return json.dumps(results)
+
+#事件提交任务,或手写
 @mod.route('/submit_event/', methods=['GET', 'POST'])
 def ajax_submit_event():
     input_data = dict()
@@ -189,7 +201,7 @@ def ajax_submit_identify_file():
 #事件任务状态
 @mod.route('/show_event_task/')
 def ajax_show_event_task():
-    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}}})['hits']['hits']
+    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}},"size":10000})['hits']['hits']
     result_list = []
     for i in results:
         result_list.append(i['_source'])
@@ -263,12 +275,12 @@ def create_relation():
 @mod.route('/delete_relation/')
 def ajax_delete_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
-    node1_id = request.args.get('node1_id', '2705119801')
+    node1_id = request.args.get('node1_id', '1565668374')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', u'other_relationship,测试3')
-    node_key2 = request.args.get('node_key2', 'event_id')  # event,uid
-    node2_id = request.args.get('node2_id', 'xi-la-li-1480176000')
-    node2_index_name = request.args.get('node2_index_name', 'event_index')
+    rel = request.args.get('rel', u'friend')
+    node_key2 = request.args.get('node_key2', 'uid')  # event,uid
+    node2_id = request.args.get('node2_id', '2626682903')
+    node2_index_name = request.args.get('node2_index_name', 'node_index')
     flag = delete_relation(node_key1, node1_id, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name)
     return json.dumps(flag)
@@ -296,9 +308,9 @@ def ajax_node_edit():
 #特定节点编辑，先查找，展示
 @mod.route('/node_edit_show/')
 def ajax_node_edit_show():
-    node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '5848882336')  #id
-    submit_user = request.args.get('submit_user', 'admin1')  #admin
+    node_type = request.args.get('node_type', 'Org') #User , Org, Event
+    item = request.args.get('item', '3230122083')  #id
+    submit_user = request.args.get('submit_user', 'admin@qq.com')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = show_node_detail(node_type, item, submit_user)
     # tag = deal_user_tag(item, submit_user, tag_value)[0]
@@ -308,8 +320,8 @@ def ajax_node_edit_show():
 #特定节点删除
 @mod.route('/node_delete/')
 def ajax_node_delete():
-    node_type = request.args.get('node_type', 'User') #User , Org, Event
-    item = request.args.get('item', '2079185253')  #id
+    node_type = request.args.get('node_type', 'Event') #User , Org, Event
+    item = request.args.get('item', '-1490615666')  #id
     submit_user = request.args.get('submit_user', 'admin@qq.com')  #admin
     # item = request.args.get('item', 'ma-lai-xi-ya-zhua-huo-dian-xin-qi-zha-an-fan-1482126431')  #id
     result = node_delete(node_type, item, submit_user)
