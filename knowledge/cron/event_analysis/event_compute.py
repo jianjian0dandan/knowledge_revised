@@ -37,7 +37,8 @@ r=redis.StrictRedis(host=redis_host, port=redis_port, db=10)
 
 
 def get_task():
-    query_body = {'query':{'term':{'compute_status':0}},'sort':{'submit_ts':{'order':'asc'}}}
+    #加个结束时间大于当前时间的判断  要不要更新
+    query_body = {'query':{'term':{'compute_status':0}},'sort':{'submit_ts':{'order':'asc'}},'size':100000}
     result = es_event.search(index=event_task_name,doc_type=event_task_type,body=query_body)
     return result['hits']['hits']
 
@@ -119,6 +120,7 @@ def compute_task(task):
         if resu == 'Node Wrong':
             return 'Node Wrong'
         weibo_counts,uid_counts=counts(start_ts,end_ts,topic,en_name,keywords)
+
         es_event.update(index=event_task_name,doc_type=event_task_type,id=task_id,body={'doc':{'compute_status':-1}})
 
         # es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body={'name':topic,'start_ts':start_ts,'end_ts':end_ts,'submit_ts':submit_ts,'compute_status':0,'en_name':task_id,'relation_compute':relation})
@@ -126,11 +128,19 @@ def compute_task(task):
         task['weibo_counts']=weibo_counts
         task['uid_counts']=uid_counts
         try:
-            flag = es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)
-            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-1}})
+            flag = es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)['_source']
+            w_counts = flag['weibo_counts']+weibo_counts
+            u_counts = flag['uid_counts']+uid_counts
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-1,'weibo_counts':w_counts,'uid_counts':u_counts}})
         except:
             es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'hashtag_dict':'','topics':'','geo_results':'','real_geo':'','real_auth':'','sentiment_results':'','time_results':'','hashtag':'','real_time':'','user_results':'','real_person':'','keywords_list:''}})
+
         print 'finish change status'
+        
+        if es_event.get(index=event_analysis_name,doc_type=event_type,id=task_id)['_source']['weibo_counts'] == 0:
+            return 1
+
         #geo
         
         cityTopic(en_name, start_ts, end_ts)
@@ -237,7 +247,10 @@ def find_flow_texts_scan(start_ts,end_ts,topic,en_name,keywords,mid):
             keywords_list.append({'wildcard':{'keywords_string':'*'+i+'*'}})
 
         query_body = {'query':{'bool':{'should':keywords_list,'minimum_should_match':'70%'}},'size':100000}
-    
+        if len(keywords)==2:
+            query_body = {'query':{'bool':{'should':keywords_list,'minimum_should_match':2}},'size':100000}
+
+
     print query_body
     result = []
     index_list = []

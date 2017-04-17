@@ -554,7 +554,7 @@ def search_data(input_data):
     if input_data['limit']:
         limit = 'limit '+input_data['limit']
     else:
-        limit = ''
+        limit = 'limit 200'
     if len(start_id) == 0:
         start_id = '*'
     else:
@@ -813,7 +813,8 @@ def simple_search(keywords_list,submit_user):
                         ],
                         'minimum_should_match':1
                     }
-                }
+                },
+                'size':99999
             }
             if i == 0:
                 query_body['query']['bool']['must'] = [{'terms':{'verify_type':peo_list}}]
@@ -824,6 +825,7 @@ def simple_search(keywords_list,submit_user):
             print query_body
             print es_list[i],es_index_list[i],es_type_list[i]
             result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
+            print 'len:',len(result)
             if result:
                 for j in result:
                     f_result = {}

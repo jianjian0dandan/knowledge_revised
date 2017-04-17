@@ -129,7 +129,7 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
             mtype_ccount = {}  # mtype为message_type，ccount为{city：count}
             begin_ts = over_ts - during * i
             end_ts = begin_ts + during
-            print begin_ts,end_ts,topic
+            # print begin_ts,end_ts,topic
             weibos = []
             first_item = {}
             
@@ -144,7 +144,7 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
                         'bool':{
                             'must':[
                                 {'term':{'message_type':v}},  
-                                {'term':{'en_name':topic}},
+                                # {'term':{'en_name':topic}},
                                 {'range':{
                                     'timestamp':{'gte': begin_ts, 'lt':end_ts} 
                                 }
@@ -154,7 +154,9 @@ def cityTopic(topic,start_ts,over_ts,during=Fifteenminutes, n_limit=TOP_WEIBOS_L
                     'sort':{SORT_FIELD:{"order":"desc"}},
                     'size':n_limit
                     }
+                # print topic,event_text_type,query_body
                 mtype_weibo = es_event.search(index=topic,doc_type=event_text_type,body=query_body)['hits']['hits']
+                # print len(mtype_weibo)
                 #save_ws_results(topic, end_ts, during, n_limit, mtype_weibo)    
                 #微博直接保存下来
                 # print '160',es_event,event_text,event_text_type,query_body,len(mtype_weibo)
@@ -228,9 +230,9 @@ if __name__ == '__main__':
     #print 'topic: ', topic.encode('utf8')
     #cityCronTopic(topic, xapian_search_weibo, start_ts=START_TS, over_ts=END_TS, during=Fifteenminutes)
     topic='laohu'
-    topic = 'zui_gao_fa_di_zhi_yan_se_ge_ming'
-    start_date = 1484323200#'2017-01-14'
-    end_date = 1484582400#'2017-01-17'
+    topic = 'tian-tian-kuai-di-luan-xiang-1492166854'
+    start_date = 1478966400#'2017-01-14'
+    end_date = 1480258800#'2017-01-17'
     cityTopic(topic, start_ts=start_date, over_ts=end_date, during=Fifteenminutes)
     """
     item_exist = db.session.query(CityWeibos).filter(CityWeibos.topic==topic).all()
