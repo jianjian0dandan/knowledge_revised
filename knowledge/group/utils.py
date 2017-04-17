@@ -107,8 +107,8 @@ def search_related_u_auto(g_name, submit_user):
         for item in result:
             item_dict = dict(item)
             related_list.append(item_dict['s3']['uid'])
-    print related_list, '---------'
-    print uid_list, '---------'
+    # print related_list, '---------'
+    # print uid_list, '---------'
     related_list = set(related_list) - set(uid_list)
     related_list = [i for i in related_list]
     result = user_detail_search(related_list, submit_user)
@@ -249,16 +249,16 @@ def create_rel(node_key1, node1_list, node1_index_name, rel, node_key2, node2_id
     group_index = Index.get_index(Node, node2_index_name)
     tx = graph.begin()
     for node1_id in node1_list:
-        print node2_id
-        print node1_id,'-----'
+        # print node2_id
+        # print node1_id,'-----'
         # node1 = node_index.get(node_key1, node1_id)
         try:
             node1 = node_index.get(node_key1, node1_id)[0]
-            print node1, node1_id,'node1 hey2222!!'
+            # print node1, node1_id,'node1 hey2222!!'
 
         except:
             continue
-            print node1, node1_id,'node1 hey!!'
+            # print node1, node1_id,'node1 hey!!'
             return 'uid1 not exist'
         node2 = group_index.get(node_key2, node2_id)[0]
         if not (node1 and node2):
@@ -766,12 +766,20 @@ def group_event_rank(g_name, submit_user):
         k_dict['event_id'] = k
         k_dict['event_name'] = event_name
         k_dict['user'] = v
+        k_dict['influ'] = 0
+        print k
         for u in v:
+            print u
+            # if not user_results.has_key(u):
+            #     continue
             try:
-                k_dict['influ'] += user_results[u]['influ']
+                influ_val = user_results[u]['influ']
             except:
-                k_dict['influ'] = user_results[u]['influ']
+                print u,'00000'
+                influ_val = 10.0
+            k_dict['influ'] += influ_val
         event_rank_list.append(k_dict)
+    print event_rank_list,'event_rank_list'
     sorted_event = sorted(event_rank_list, key=lambda x:x['influ'], reverse=True)
     try:
         max_value = sorted_event[0]['influ']
@@ -946,8 +954,8 @@ def group_related(g_name, submit_user):
     group_id = p.get_pinyin(g_name)
     group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people', 'file_link', 'wiki_link'])
-    uid_list = uid_string['fields']['people'][0].split('&')
-    origin_list = []
+    origin_list = uid_string['fields']['people'][0].split('&')
+    # origin_list = []
 
     try:
         file_link = uid_string['fields']['file_link'][0].split('+')
@@ -961,7 +969,7 @@ def group_related(g_name, submit_user):
     except:
         final_wiki = []
     event_graph_id = []
-    for i in uid_list:
+    for i in origin_list:
         a = graph.run('start n=node:'+node_index_name+'("'+people_primary+':'+str(i)+'") return id(n)')
         for j in a:
             event_graph_id.append(str(dict(j)['id(n)']))
@@ -1028,6 +1036,8 @@ def group_related(g_name, submit_user):
 
     final_org = []
     for i in org_result:
+        if i['_id'] in origin_list:
+            continue
         if i['found'] == True:
             if i['fields']['uname'][0] == '':
                 uname_s = i['fields']['uid'][0]
