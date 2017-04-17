@@ -55,7 +55,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation,submit_user,submit_ts):
 		info_dict['real_time'] = event['real_time']
 		info_dict['real_person'] = event['real_person']
 	except:
-		info_dict = get_real(info_dict)
+		info_dict = get_real(info_dict,topic,begin_ts,end_ts,relation)
 
 
 	info_dict['topics'] = json.dumps(get_topic_word(text_list,10))
@@ -76,7 +76,7 @@ def compute_real_info(topic,begin_ts,end_ts,relation,submit_user,submit_ts):
 	get_users(topic,begin_ts,end_ts,relation,submit_user,submit_ts)
 
 
-def get_real(info_dict):
+def get_real(info_dict,topic,begin_ts,end_ts,relation):
 	query_body = {   
 		'query':{
 			'bool':{
