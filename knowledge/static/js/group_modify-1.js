@@ -8,7 +8,9 @@ $.ajax({
     success:tag
 });
 function tag(data) {
+    console.log(data)
     var data=eval(data);
+    console.log(data)
     if (data[0][4].length==0||data[0][4]==''||data[0][4]=='NULL'){
         $('#container .theme .tag .tags').html('暂无'+' <b class="add icon icon-plus"></b>');
         //添加
@@ -467,6 +469,7 @@ $('#container .event .event-1 .sure').on('click',function () {
 });
 
 function event_list(data) {
+    console.log(data)
     if (data.length==0){
         null;
     }else {
@@ -655,8 +658,9 @@ $('#add_theme').on('click',function () {
     if(node_ids==''){
         alert('请检查您要加入的群体。(不能为空)')
     }else {
-        var new_thing_url='/group/create_new_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
+        var new_thing_url='/group/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
+        console.log(new_thing_url)
         $.ajax({
             url:new_thing_url,
             type: 'GET',
