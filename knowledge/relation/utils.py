@@ -728,7 +728,7 @@ def get_node_id(start_node):
             primary = group_primary
             neo_index = group_index_name
         try:
-            id_list = node['ids']
+            id_list = node['ids'][0].split(',')
         except:#属性搜索
             # condition={'must/should/must_not':{'key1':'value1','key2':'value2'}}
             condition = node['conditions']
