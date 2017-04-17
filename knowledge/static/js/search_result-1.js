@@ -20,7 +20,6 @@ $.ajax({
     success:result
 });
 function result(data) {
-    console.log(data)
     var data=eval(data);
     if (simple_advanced=='s'){
         $('.related_network').hide();
@@ -306,6 +305,7 @@ function network(n_data) {
 //相关人物
 function person(p_data) {
     var p_data = eval(p_data);
+    $('.person_1').css({display:'none'});
     $('#person').bootstrapTable('load', p_data);
     $('#person').bootstrapTable({
         data:p_data,
@@ -463,6 +463,7 @@ function person(p_data) {
 //相关机构
 function agencies(data) {
     var data = eval(data);
+    $('.agencies_1').css({display:'none'});
     $('#agencies').bootstrapTable('load', data);
     $('#agencies').bootstrapTable({
         data:data,
@@ -620,6 +621,7 @@ function agencies(data) {
 //相关事件
 function events(e_data) {
     var e_data = eval(e_data);
+    $('.events_1').css({display:'none'});
     $('#events').bootstrapTable('load', e_data);
     $('#events').bootstrapTable({
         data:e_data,
@@ -777,6 +779,7 @@ function events(e_data) {
 //相关群体
 function organization(data) {
     var data = eval(data);
+    $('.organization_1').css({display:'none'});
     $('#organization').bootstrapTable('load', data);
     $('#organization').bootstrapTable({
         data:data,
@@ -916,6 +919,7 @@ function organization(data) {
 //相关专题
 function subject(data) {
     var data = eval(data);
+    $('.subject_1').css({display:'none'});
     $('#subject').bootstrapTable('load', data);
     $('#subject').bootstrapTable({
         data:data,

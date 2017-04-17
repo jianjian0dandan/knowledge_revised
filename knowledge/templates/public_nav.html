@@ -69,6 +69,17 @@
 <script src="/static/js/bootstrap-table-zh-CN.min.js"></script>
 <script src="/static/echarts/echarts.min.js"></script>
 <script src="/static/echarts/china.js"></script>
+<script>
+    //删除指定项
+    Array.prototype.removeByValue = function(val) {
+        for(var i=0; i<this.length; i++) {
+            if(this[i] == val) {
+                this.splice(i, 1);
+                break;
+            }
+        }
+    };
+</script>
 {% endblock %}
 {% block write_js %}
 <script>
