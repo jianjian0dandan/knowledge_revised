@@ -710,6 +710,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
 def get_node_id(start_node):
     input_id = []
     for node in start_node:
+        print node
         node_type = node['node_type']
         if node_type == people_node:
             primary = people_primary
