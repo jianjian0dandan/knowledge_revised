@@ -28,7 +28,7 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
-from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
+from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,search_type
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2date
 from knowledge.global_utils import event_detail_search, user_name_search, user_detail_search
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
@@ -709,6 +709,7 @@ def get_theme_user_rank(theme_name, submit_user):
             user_influence[k] = {}
             user_influence[k]['id']= k
             user_influence[k]['name']= user_name_search(k)
+            user_influence[k]['node_type'] = search_type(k)
 
     for i in user_result:
         event_name = i['fields']['name'][0]
