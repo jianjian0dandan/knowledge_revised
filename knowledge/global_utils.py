@@ -293,6 +293,9 @@ def event_detail_search(eid_list, submit_user):
     result = []
     for i in event_result:
         event = []
+        # print i
+        if not i['found']:
+            continue
         i_fields = i['fields']
         for j in fields_list:
             if not i_fields.has_key(j):
@@ -364,8 +367,34 @@ def user_detail_search(uid_list,submit_user):
                 event.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
             else:
                 event.append(i_fields[j][0])
+        event.append(search_type(i['_id']))
         result.append(event)
     return result
+
+def search_type(uid):
+    try:
+        type_list = es_user_profile.get(index=profile_index_name, doc_type=profile_index_type, \
+                id=uid,fields=['id', 'verified_type'])
+    except:
+        return 'user'
+    user_list1 = []
+    org_list1 = []
+    # print type_list
+    type_name = ''
+
+    if type_list['found'] == False:
+        return 'user'
+        # user_list1.append(i['_id'])
+    else:
+        if not type_list['fields'].has_key('verified_type'):
+            return 'user'
+        verified_type = type_list['fields']['verified_type'][0]
+        if int(verified_type) in org_list:
+            type_name = 'org'
+        else:
+            type_name = 'user'
+    return type_name
+
 
 def get_group(g_name, submit_user):
     if g_name == '': 

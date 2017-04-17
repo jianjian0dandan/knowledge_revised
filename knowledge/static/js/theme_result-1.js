@@ -465,7 +465,7 @@ function key_tag(data) {
 
             option = {
                 title: {
-                    text: '关键词',
+                    text: '',
                 },
                 tooltip: {
                     show: true
@@ -506,7 +506,7 @@ function key_tag(data) {
 
             option = {
                 title: {
-                    text: '微话题',
+                    text: '',
                 },
                 tooltip: {
                     show: true
