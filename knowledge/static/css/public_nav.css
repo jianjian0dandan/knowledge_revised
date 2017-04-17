@@ -32,7 +32,6 @@ a,a:link,a:hover,a:visited,a:active {
     float: left;
 }
 #nav .nav_list li a {
-    font-family: '微软雅黑';
     display: block;
     width: 140px;
     height: 80px;
@@ -41,6 +40,7 @@ a,a:link,a:hover,a:visited,a:active {
     font-size: 16px;
     color: white;
     font-weight: 900;
+    cursor: pointer;
 }
 #nav .username {
     width: 50%;

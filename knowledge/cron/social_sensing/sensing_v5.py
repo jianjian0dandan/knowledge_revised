@@ -11,7 +11,7 @@ from elasticsearch import Elasticsearch
 from  mappings_social_sensing import mappings_sensing_task
 from text_classify.test_topic import topic_classfiy
 from duplicate import duplicate
-from extract_feature_0312 import organize_feature, trendline_list
+from extract_feature_update import organize_feature, trendline_list
 import pickle
 reload(sys)
 sys.path.append("../../")
@@ -171,6 +171,19 @@ def query_mid_list(ts, social_sensors, time_segment, message_type=1):
             else:
                 origin_mid_list.add(item['_source']['root_mid'])
                 mid_dict[item['_source']['root_mid']] = item["_id"] # 源头微博和当前转发微博的mid
+
+    if message_type != 1:
+    # 保证获取的源头微博能在最近两天内找到
+        filter_list = []
+        filter_mid_dict = dict()
+        for iter_index in index_list:
+            exist_es = es_text.mget(index=iter_index, doc_type="text", body={"ids":list(origin_mid_list)})["docs"]
+            for item in exist_es:
+                if item["found"]:
+                    filter_list.append(item["_id"])
+                    filter_mid_dict[item["_id"]] = mid_dict[item["_id"]]
+    origin_mid_list = filter_list
+    mid_dict = filter_mid_dict
     return list(origin_mid_list), mid_dict
 
 
@@ -460,7 +473,7 @@ def social_sensing(task_detail):
     if exist_es:
         index_list.append(index_name_2)
     if es_text.indices.exists(index=flow_text_index_name_pre+ts2datetime(ts-2*DAY)):
-        index_list.append(flow_text_index_name_pre+ts2datetime(ts-2*DAY))
+        index_list.append(flow_text_index_name_pre+ts2datetime(ts2datetime(ts-2*DAY)))
 
     # PART 1
     
@@ -573,6 +586,7 @@ def social_sensing(task_detail):
             classify_uid_list = []
             duplicate_text_list = []
             sensitive_words_dict = dict()
+            mid_ts_dict = dict() # 文本发布时间
             uid_prediction_dict = dict()
             weibo_prediction_dict = dict()
             trendline_dict = dict()
@@ -582,6 +596,7 @@ def social_sensing(task_detail):
                 for item in search_results:
                     iter_uid = item['_source']['uid']
                     iter_mid = item['_source']['mid']
+                    mid_ts_dict[iter_mid] = item["_source"]["timestamp"]
                     iter_text = item['_source']['text'].encode('utf-8', 'ignore')
                     iter_sensitive = item['_source'].get('sensitive', 0)
                     tmp_text = get_weibo(item['_source'])
@@ -617,7 +632,7 @@ def social_sensing(task_detail):
                     #print "classify_results: ", classify_results
                     for k,v in classify_results.iteritems(): # mid:value
                         mid_value[k] = topic_value_dict[v[0]]
-                        feature_list = organize_feature(k, v[0])
+                        feature_list = organize_feature(k, mid_ts_dict[k])
                         feature_prediction_list.append(feature_list) # feature list
                         mid_prediction_list.append(k) # corresponding 
 
@@ -630,7 +645,7 @@ def social_sensing(task_detail):
                         print i
                     uid_prediction_dict[mid_prediction_list[i]] = uid_prediction_result[i]
                     weibo_prediction_dict[mid_prediction_list[i]] = weibo_prediction_result[i]
-                    tmp_trendline = trendline_list(mid_prediction_list[i], weibo_prediction_result[i])
+                    tmp_trendline = trendline_list(mid_prediction_list[i], weibo_prediction_result[i], mid_ts_dict[mid_prediction_list[i]])
                     trendline_dict[mid_prediction_list[i]] = tmp_trendline
 
     # organize data

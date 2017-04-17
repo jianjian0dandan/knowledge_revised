@@ -327,6 +327,19 @@ function end_node() {
         //此处要对起始节点进行判断，只能输入一个节点
         if( $('.end .options-1-value').val()=='' || $('.start .options-1-value').val()==''){
             alert('因为您选择的是最短路径，所以起始节点和终止节点每项只能一个具体的节点。');
+        }else {
+            input_data={
+                'start_nodes':starts_nodes,
+                'end_nodes':end_nodes,
+                'relation':relation,
+                'step':step,
+                'limit':limit,
+                'submit_user':submit_user,
+                'short_path':short_path,
+            };
+            input_data=JSON.stringify(input_data);
+            localStorage.setItem('temp',input_data);
+            window.open('/relation/search_result/?simple_advanced='+simple_advanced);
         }
     }else {
         input_data={
@@ -338,7 +351,6 @@ function end_node() {
             'submit_user':submit_user,
             'short_path':short_path,
         };
-        // console.log('跳')
         input_data=JSON.stringify(input_data);
         localStorage.setItem('temp',input_data);
         window.open('/relation/search_result/?simple_advanced='+simple_advanced);

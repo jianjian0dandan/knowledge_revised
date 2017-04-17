@@ -42,6 +42,7 @@ function result(data) {
 }
 //相关网络
 function network(n_data) {
+    $('.network_1').css({display:'none'});
     var n_data = eval(n_data);
     var links = [];
     $.each(n_data,function (index,item) {
@@ -262,17 +263,6 @@ function network(n_data) {
         //path.attr("d", linkArc);//连接线
         circle.attr("transform", transform1);//圆圈
         text.attr("transform", transform2);//顶点文字
-        //edges_text.attr("transform", transform3);
-        //text2.attr("d", linkArc);//连接线文字
-        //console.log("text2...................");
-        //console.log(text2);
-        //edges_line.attr("x1",function(d){ return d.source.x; });
-        //edges_line.attr("y1",function(d){ return d.source.y; });
-        //edges_line.attr("x2",function(d){ return d.target.x; });
-        //edges_line.attr("y2",function(d){ return d.target.y; });
-
-        //edges_line.attr("x",function(d){ return (d.source.x + d.target.x) / 2 ; });
-        //edges_line.attr("y",function(d){ return (d.source.y + d.target.y) / 2 ; });
 
 
         edges_line.attr('d', function(d) {
@@ -331,7 +321,7 @@ function person(p_data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -463,8 +453,8 @@ function person(p_data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='uid'){
+                window.open('/index/person/?user_id='+value)
             }
         }
     });
@@ -488,7 +478,7 @@ function agencies(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -620,8 +610,8 @@ function agencies(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='id'){
+                window.open('/index/organization/?user_id='+value)
             }
         }
     });
@@ -640,12 +630,12 @@ function events(e_data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -777,8 +767,8 @@ function events(e_data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='name'){
+                window.open('/index/event/?user_id='+row.id);
             }
         }
     });
@@ -797,12 +787,12 @@ function organization(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -916,8 +906,8 @@ function organization(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='group_name'){
+                window.open('/group/result/?group_name='+row.id);
             }
         }
     });
@@ -936,12 +926,12 @@ function subject(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -1046,8 +1036,8 @@ function subject(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='event'){
+                window.open('/theme/result/?theme_name='+row.id);
             }
         }
     });
