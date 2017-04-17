@@ -310,7 +310,7 @@ def delete_theme(theme_name, submit_user):
     try:
         es_event.delete(index=special_event_name, doc_type=special_event_type, id=en_name)
         s_string = 'START s0 = node:special_event_index(event="%s") \
-                MATCH (s0)-[r]-(s3) DELETE r' %(en_name)
+                MATCH (s0)-[r]-(s) delete r,s0' %(en_name)
         graph.run(s_string)
     except:
         return '0'
@@ -584,11 +584,13 @@ def get_theme_geo(theme_name, submit_user):
     event_city = {}
     event_name_list = []
     for i in event_result:
+        if not i['found']:
+            continue
         event_name = i['fields']['name'][0]
         event_city[event_name] = {}
         event_name_list.append(event_name)
         geo_event = json.loads(i['fields']['geo_results'][0])
-        print geo_event
+        # print geo_event
         for k,v in geo_event.iteritems():
             for province_k, city_v in v.iteritems():
                 for city_name, city_count in city_v.iteritems():

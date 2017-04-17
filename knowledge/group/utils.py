@@ -305,13 +305,13 @@ def create_group_relation(node_key1, node1_list, node1_index_name, rel, node_key
 def delete_group(g_name, submit_user):
     en_name = p.get_pinyin(g_name)
     en_name = en_name.lower()
-    # try:
-    es_group.delete(index=group_name, doc_type=group_type, id=en_name)
-    s_string = 'start s0=node:'+group_index_name+'('+group_primary+'="'+en_name+'") '\
-            + 'MATCH (s0)-[r]-(s3) delete r'
-    graph.run(s_string)
-    # except:
-    #     return '0'
+    try:
+        es_group.delete(index=group_name, doc_type=group_type, id=en_name)
+        s_string = 'start s0=node:'+group_index_name+'('+group_primary+'="'+en_name+'") '\
+            + 'MATCH (s0) delete r,s0'
+        graph.run(s_string)
+    except:
+        return '0'
     return '1'
 
 
@@ -792,7 +792,7 @@ def group_event_rank(g_name, submit_user):
                 influ_val = 10.0
             k_dict['influ'] += influ_val
         event_rank_list.append(k_dict)
-    print event_rank_list,'event_rank_list'
+    # print event_rank_list,'event_rank_list'
     sorted_event = sorted(event_rank_list, key=lambda x:x['influ'], reverse=True)
     try:
         max_value = sorted_event[0]['influ']
