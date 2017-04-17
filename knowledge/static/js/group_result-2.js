@@ -22,11 +22,13 @@ function link_source(data) {
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
                 )
             }
-            if(!isNaN(item[0]))
-						{
-   						user.push(item[0]);
-						}
+            if(!isNaN(item[0])) {
+                user.push(item[0]);
+            }
         });
+        $('.link_user .users a').on('click',function () {
+            window.open('/index/person/?user_id='+$(this).find('b').text());
+        })
     }
     //关联事件
     var event=[];
@@ -43,6 +45,9 @@ function link_source(data) {
             }
             event.push(item[0]);
         });
+        $('.link_event .events a').on('click',function () {
+            window.open('/index/event/?user_id='+$(this).find('b').text());
+        })
     }
 
     //关联机构
@@ -58,11 +63,13 @@ function link_source(data) {
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
                 )
             }
-            if(!isNaN(item[0]))
-						{
-   			  		org.push(item[0]);
-						}
+            if(!isNaN(item[0])) {
+                org.push(item[0]);
+            }
         });
+        $('.link_agency .agencys a').on('click',function () {
+            window.open('/index/organization/?user_id='+$(this).find('b').text());
+        })
     }
 
     //关联知识

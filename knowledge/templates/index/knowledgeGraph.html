@@ -41,6 +41,7 @@
 <script>
     var relation={{relation|tojson}};
     var links = [];
+    console.log(relation)
     $.each(relation,function (index,item) {
         var source,target;
         if (item[0]==''){
@@ -97,16 +98,6 @@
                     .attr("d", "M0,-5L10,0L0,5")//箭头的路径
                     .attr('fill','#000000');//箭头颜色
 
-    //    将连接线设置为曲线
-    //     var path = svg.append("g").selectAll("path")
-    //     .data(force.links())
-    //     .enter().append("path")
-    //     .attr("class", function(d) { return "link " + d.type; })
-    //     .style("stroke",function(d){
-    //     //console.log(d);
-    //     return "#A254A2";//连接线的颜色
-    //     })
-    //     .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 
     //设置连接线
     var edges_line = svg.selectAll(".edgepath")
@@ -125,9 +116,11 @@
                 var lineColor;
                 //根据关系的不同设置线条颜色
                 if(d.rela=="discuss"){
-                    lineColor="#A254A2";
-                }else {
+                    lineColor="#8B00FF ";
+                }else if (d.rela=="join"){
                     lineColor="#B43232";
+                }else {
+                    lineColor="#FF0000 ";
                 }
                 return lineColor;
             })
@@ -208,6 +201,11 @@
                 });
                 //d3.select(this).style('stroke-width',2);
             })
+            .on("dblclick",function(node) { //把偏移量设为圆心
+                var link=links[0];
+                console.log(link);
+                console.log(node);
+            })
             .call(force.drag);//将当前选中的元素传到drag函数中，使顶点可以被拖动
     /*
      circle.append("text")
@@ -226,18 +224,6 @@
 //                    return "双击可查看详情"
 //                }
             });
-    /* 矩形
-     var rect=svg.append("rect")
-     .attr({"x":100,"y":100,
-     "width":100,"height":50,
-     "rx":5,//水平圆角
-     "ry":10//竖直圆角
-     })
-     .style({
-     "stroke":"red",
-     "stroke-width":1,
-     "fill":"yellow"
-     });*/
     var text = svg.append("g").selectAll("text")
             .data(force.nodes())
             //返回缺失元素的占位对象（placeholder），指向绑定的数据中比选定元素集多出的一部分元素。
@@ -286,42 +272,12 @@
                             .attr('y',10)
                             .text(function(){return bot;});
                 }
-                //直接显示文字
-                /*.text(function(d) {
-                 return d.name; */
             });
-
-    /*  将文字显示在圆圈的外面
-     var text2 = svg.append("g").selectAll("text")
-     .data(force.links())
-     //返回缺失元素的占位对象（placeholder），指向绑定的数据中比选定元素集多出的一部分元素。
-     .enter()
-     .append("text")
-     .attr("x", 150)//设置文字坐标
-     .attr("y", ".50em")
-     .text(function(d) {
-     //console.log(d);
-     //return d.name;
-     //return d.rela;
-     console.log(d);
-     return  '1111';
-     });*/
 
     function tick() {
         //path.attr("d", linkArc);//连接线
         circle.attr("transform", transform1);//圆圈
         text.attr("transform", transform2);//顶点文字
-        //edges_text.attr("transform", transform3);
-        //text2.attr("d", linkArc);//连接线文字
-        //console.log("text2...................");
-        //console.log(text2);
-        //edges_line.attr("x1",function(d){ return d.source.x; });
-        //edges_line.attr("y1",function(d){ return d.source.y; });
-        //edges_line.attr("x2",function(d){ return d.target.x; });
-        //edges_line.attr("y2",function(d){ return d.target.y; });
-
-        //edges_line.attr("x",function(d){ return (d.source.x + d.target.x) / 2 ; });
-        //edges_line.attr("y",function(d){ return (d.source.y + d.target.y) / 2 ; });
 
 
         edges_line.attr('d', function(d) {

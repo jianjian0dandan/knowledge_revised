@@ -220,7 +220,7 @@ function things(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -318,15 +318,17 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[6].length==0||row[6]==''||row[6]=='NULL'){
+                    if (row[6].length==0||row[6]==''||row[6]=='NULL'||row[6]=='null'){
                         return '暂无';
                     }else {
-                        var key='';
                         var words=row[6].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
 
                 },
@@ -342,12 +344,14 @@ function things(data) {
                     if (row[7].length==0||row[7]==''||row[7]=='NULL'){
                         return '暂无';
                     }else {
-                        var key='';
                         var words=row[7].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -359,7 +363,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '删除';
+                    return '<a>删除</a>';
                 },
             },
             //多选框
@@ -372,12 +376,6 @@ function things(data) {
             // },
 
         ],
-        onCheck:function (row) {
-            theme_diff.push(row[1]);
-        },
-        onUncheck:function (row) {
-            theme_diff.removeByValue(row[1]);
-        },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='删除') {
                 $('#fail').modal('show');
@@ -386,6 +384,7 @@ function things(data) {
         }
     });
 };
+
 var event_id;
 function del() {
     var del_url='/group/del_user_in_group/?g_name='+theme_name+'&submit_user='+submit_user+
@@ -415,6 +414,7 @@ function del() {
 //群体下----人物
 var way='r';
 function add_way(value) {
+    thing_list=[];
     if (value=='r'){
         way='r';
         $('.hands').hide();
@@ -431,7 +431,7 @@ function add_way(value) {
         });
     }else {
         way='m';
-        $('.event_list').hide();
+        $('.event_list').css({display:'none'});
         $('.hands').show();
     }
 };
@@ -464,173 +464,188 @@ $('#container .event .event-1 .sure').on('click',function () {
         });
         $('.event_list').show();
     }
-})
+});
 
 function event_list(data) {
-    var data = eval(data);
-    $('#event_list').bootstrapTable('load', data);
-    $('#event_list').bootstrapTable({
-        data:data,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: false,//回车搜索
-        showRefresh: false,//刷新按钮
-        showColumns: false,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-            {
-                title: "人物ID",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    return row[0];
-                }
-            },
-            {
-                title: "昵称",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[1]==''||row[1]=='NULL'){
+    if (data.length==0){
+        null;
+    }else {
+        var data = eval(data);
+        $('#event_list').bootstrapTable('load', data);
+        $('#event_list').bootstrapTable({
+            data:data,
+            search: true,//是否搜索
+            pagination: true,//是否分页
+            pageSize: 5,//单页记录数
+            pageList: [5, 20, 40, 80],//分页步进值
+            sidePagination: "client",//服务端分页
+            searchAlign: "left",
+            searchOnEnterKey: false,//回车搜索
+            showRefresh: false,//刷新按钮
+            showColumns: false,//列选择按钮
+            buttonsAlign: "right",//按钮对齐方式
+            locale: "zh-CN",//中文支持
+            detailView: false,
+            showToggle:false,
+            sortName:'bci',
+            sortOrder:"desc",
+            columns: [
+                {
+                    title: "人物ID",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
                         return row[0];
-                    }else{
-                        return row[1];
-                    }
-                }
-            },
-            {
-                title: "注册地",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
-                        return '未知';
-                    }else{
-                        return row[2];
                     }
                 },
-            },
-            {
-                title: "影响力",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
-                        return 0;
-                    }else{
-                        return row[3].toFixed(2);
-                    }
-                },
-            },
-            {
-                title: "参与人数",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[4]==''||row[4]=='NULL'){
-                        return 0;
-                    }else{
-                        return row[4];
-                    }
-                },
-            },
-            {
-                title: "微博数量",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
-                        return 0;
-                    }else{
-                        return row[5];
-                    }
-                },
-            },
-            {
-                title: "自动标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[6].length==0||row[6]==''||row[6]=='NULL'){
-                        return '暂无';
-                    }else {
-                        var key='';
-                        var words=row[6].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                {
+                    title: "昵称",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[1]==''||row[1]=='NULL'){
+                            return row[0];
+                        }else{
+                            return row[1];
                         }
-                        return key;
                     }
-
                 },
-            },
-            {
-                title: "业务标签",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[7].length==0||row[7]==''||row[7]=='NULL'){
-                        return '暂无';
-                    }else {
-                        var key='';
-                        var words=row[7].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                {
+                    title: "注册地",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'){
+                            return '未知';
+                        }else{
+                            return row[2];
                         }
-                        return key;
-                    }
+                    },
                 },
-            },
-            //多选框
-            {
-                title: "加入群体",//标题
-                field: "select",
-                checkbox: true,
-                align: "center",//水平
-                valign: "middle"//垂直
-            },
+                {
+                    title: "影响力",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[3]==''||row[3]=='NULL'||row[3]=='unknown'){
+                            return 0;
+                        }else{
+                            return row[3].toFixed(2);
+                        }
+                    },
+                },
+                {
+                    title: "参与人数",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[4]==''||row[4]=='NULL'){
+                            return 0;
+                        }else{
+                            return row[4];
+                        }
+                    },
+                },
+                {
+                    title: "微博数量",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
+                            return 0;
+                        }else{
+                            return row[5];
+                        }
+                    },
+                },
+                {
+                    title: "自动标签",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[6].length==0||row[6]==''||row[6]=='NULL'){
+                            return '暂无';
+                        }else {
+                            var words=row[6].split('&');
+                            if (words.length<=5){
+                                return words.join(',');
+                            }else {
+                                var key=words.splice(0,5).join(',');
+                                var tit=words.splice(5).join(',');
+                                return '<p title="'+tit+'">'+key+'</p> ';
+                            }
+                        }
 
-        ],
-        onCheck:function (row) {
-            thing_list.push(row[0]);
-        },
-        onUncheck:function (row) {
-            thing_list.removeByValue(row[0]);
-        },
-    });
+                    },
+                },
+                {
+                    title: "业务标签",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[7].length==0||row[7]==''||row[7]=='NULL'){
+                            return '暂无';
+                        }else {
+                            var words=row[7].split('&');
+                            if (words.length<=5){
+                                return words.join(',');
+                            }else {
+                                var key=words.splice(0,5).join(',');
+                                var tit=words.splice(5).join(',');
+                                return '<p title="'+tit+'">'+key+'</p> ';
+                            }
+                        }
+                    },
+                },
+                //多选框
+                {
+                    title: "加入群体",//标题
+                    field: "select",
+                    checkbox: true,
+                    align: "center",//水平
+                    valign: "middle"//垂直
+                },
+
+            ],
+            onCheck:function (row) {
+                thing_list.push(row[0]);
+            },
+            onUncheck:function (row) {
+                thing_list.removeByValue(row[0]);
+            },
+            onCheckAll:function (row) {
+                thing_list.push(row[0]);
+            },
+            onUncheckAll:function (row) {
+                thing_list.removeByValue(row[0]);
+            },
+        });
+        $('.event_list').css({display:'block'});
+    };
 };
 
 var thing_list=[];
@@ -652,7 +667,7 @@ $('#add_theme').on('click',function () {
 });
 
 function new_thing(data) {
-    if (data=='1'){
+    if (data==1){
         alert('添加成功。');
         $.ajax({
             url: things_url,

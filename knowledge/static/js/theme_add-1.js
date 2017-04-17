@@ -14,7 +14,6 @@ $('#container .new_property .pro_sure').on('click',function () {
 
 function search(data) {
     var data=eval(data);
-    console.log(data);
     $('#special_topic').bootstrapTable('load', data);
     $('#special_topic').bootstrapTable({
         data:data,
@@ -173,6 +172,12 @@ function search(data) {
         },
         onUncheck:function (row) {
             theme_list.removeByValue(row[0]);
+        },
+        onCheckAll:function (row) {
+            theme_list.push(row[1]);
+        },
+        onUncheckAll:function (row) {
+            theme_list.removeByValue(row[1]);
         },
         // onClickCell: function (field, value, row, $element) {
         //     if ($element[0].innerText=='查看专题') {

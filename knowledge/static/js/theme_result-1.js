@@ -9,7 +9,6 @@ $.ajax({
 });
 function things(data) {
     var data = eval(data);
-    console.log(data)
     $('#things').bootstrapTable('load', data);
     $('#things').bootstrapTable({
         data:data,
@@ -126,11 +125,15 @@ function things(data) {
                     if (row[7].length==0||row[7]==''||row[7]=='null'){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[7].length;k++){
-                            key+=row[7][k]+' ';
+                        var words=row[7];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -145,11 +148,15 @@ function things(data) {
                     if (row[8].length==0||row[8]==''||row[8]=='null'){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[8].length;k++){
-                            tag+=row[8][k]+' ';
+                        var words=row[8];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return tag;
                     }
                 },
             },
@@ -161,6 +168,16 @@ function things(data) {
         },
     });
 };
+//删除指定项
+Array.prototype.removeByValue = function(val) {
+    for(var i=0; i<this.length; i++) {
+        if(this[i] == val) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+};
+
 
 //时间分析--鱼骨图
 var fish_url='/theme/theme_analysis_flow/?theme_name='+theme_name+'&submit_user='+submit_user;
@@ -171,15 +188,73 @@ $.ajax({
     async: true,
     success:fish
 });
-var finshdata = [];
+
 function fish(data) {
     var data=eval(data);
+    console.log(data)
+    var finshdata = '';
     $.each(data,function (index,item) {
-        finshdata.push(
-            {'事件ID':item[0],'微博内容':item[1],'时间':item[2]}
-        );
+        if (index%2 == 0){
+            finshdata+=
+                '<div class="fish_item">'+
+                '   <ul class="top">'+
+                '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(248, 151, 130);">事件ID：'+item[0]+'</li>'+
+                '       <li class="weibo" title="'+item[1]+'" style="border-left: 1px solid rgb(248, 151, 130);">微博内容：'+item[1]+'</li>'+
+                '       <li class="weibo" title="'+item[2]+'" style="border-left: 1px solid rgb(248, 151, 130);">时间：'+item[2]+'</li>'+
+                '       <li class="line-last line-point" style="background-position: 0px 0px;"></li>'+
+                '   </ul>'+
+                '</div>';
+        }else {
+            finshdata+=
+                '<div class="fish_item" style="top: 95px;">'+
+                '   <ul class="bottom">'+
+                '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(26, 132, 206);">事件ID：'+item[0]+'</li>'+
+                '       <li class="weibo" title="'+item[1]+'" style="border-left: 1px solid rgb(26, 132, 206);">微博内容：'+item[1]+'</li>'+
+                '       <li class="weibo" title="'+item[2]+'" style="border-left: 1px solid rgb(26, 132, 206);">时间：'+item[2]+'</li>'+
+                '       <li class="line-last line-point" style="background-position: 0px -20px;"></li>'+
+                '   </ul>'+
+                '</div>';
+        }
     })
-    $(".fishBone").fishBone(finshdata);
+    $(".fishBone .fish_box").append(finshdata);
+
+    var go=1;
+    var fish_length=data.length;
+    $('#container .fishBone .fish_box').width(fish_length*180);
+    $('#container .fishBone .prev').on('click',function () {
+        if (fish_length<=3){
+            alert('没有其他卡片内容了。');
+        }else {
+            if (go==1){
+                var fishbone=$(".fishBone .fish_box");
+                $(fishbone).css({
+                    "-webkit-transform":"translateX(180px)",
+                    "-moz-transform":"translateX(180px)",
+                    "-ms-transform":"translateX(180px)",
+                    "-o-transform":"translateX(180px)",
+                    "transform":"translateX(180px)",
+                });
+            }
+
+        }
+    });
+    $('#container .fishBone .next').on('click',function () {
+        if (fish_length<=3){
+            alert('没有其他卡片内容了。');
+        }else {
+            go=1;
+            var fishbone=$(".fishBone .fish_box");
+            $(fishbone).css({
+                "-webkit-transform":"translateX(-180px)",
+                "-moz-transform":"translateX(-180px)",
+                "-ms-transform":"translateX(-180px)",
+                "-o-transform":"translateX(-180px)",
+                "transform":"translateX(-180px)",
+            });
+        }
+    });
+
+
 }
 
 
@@ -284,12 +359,12 @@ function network(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -481,12 +556,12 @@ function character(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [

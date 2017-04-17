@@ -8,10 +8,6 @@
 }
 /*内容样式*/
 body {
-    /*width: 100%;*/
-    /*min-width: 1349px;*/
-    /*min-height: 3108px;*/
-    /*background: url("/static/images/xxx_result.png") no-repeat;*/
     width: 100%;
     margin: 0;
     min-width: 1349px;
@@ -84,6 +80,7 @@ body {
 }
 #container #content_left .basic .basic-2 p span {
     color: #676767;
+    font-weight: 600;
     display: inline-block;
     width: 100px;
     white-space: nowrap;

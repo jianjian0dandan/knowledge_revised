@@ -111,7 +111,7 @@ function calculation(data) {
                     }else if (value== -1){
                         return '正在计算';
                     }else if (value==1){
-                        return '计算完成';
+                        return '<a style="cursor: pointer;">计算完成</a>';
                     }
                 },
             },
@@ -123,7 +123,7 @@ function calculation(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>查看</a>';
+                    return '<a style="cursor: pointer;">查看</a>';
                 },
             },
         ],
