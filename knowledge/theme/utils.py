@@ -303,6 +303,20 @@ def query_detail_theme(theme_name, submit_user):
 #         theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
 #     return theme_result
 
+def delete_theme(theme_name, submit_user):
+    en_name = p.get_pinyin(theme_name)
+    en_name = en_name.lower()
+    print en_name,'000000000'
+    try:
+        es_event.delete(index=special_event_name, doc_type=special_event_type, id=en_name)
+        s_string = 'START s0 = node:special_event_index(event="%s") \
+                MATCH (s0)-[r]-(s3) DELETE r' %(en_name)
+        graph.run(s_string)
+    except:
+        return '0'
+    return '1'
+
+
 def del_e_theme_rel(theme_name, event_id):
     en_name = p.get_pinyin(theme_name)
     en_name = en_name.lower()
@@ -701,6 +715,7 @@ def get_theme_user_rank(theme_name, submit_user):
                 body={'ids':event_list}, fields=['user_results','name'])['docs']
     user_influence ={}
     for i in user_result:
+        # print i
         event_name = i['fields']['name'][0]
         user_dict = json.loads(i['fields']['user_results'][0])
         for k,v in user_dict.iteritems():

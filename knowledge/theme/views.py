@@ -12,7 +12,7 @@ from datetime import datetime
 from utils import search_related_e_card,  create_node_and_rel, create_rel,query_detail_theme, create_theme_relation,\
                   del_e_theme_rel, add_theme_k_label, add_theme_file_link, compare_theme, compare_theme_user, compare_theme_keywords,\
                   compare_theme_k_label, search_related_event, get_theme_flow, get_theme_geo, get_theme_net,\
-                  get_theme_keywords, get_theme_user_rank, get_theme_user_tag, get_theme_related, show_theme_file_link
+                  get_theme_keywords, get_theme_user_rank, get_theme_user_tag, get_theme_related, show_theme_file_link, delete_theme
 from knowledge.global_utils import get_theme
 p = Pinyin()
 
@@ -151,6 +151,19 @@ def create_relation():
     flag = create_theme_relation(node_key1, node1_list, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name, submit_user)
     return json.dumps(flag)
+
+@mod.route('/delete_theme/')
+def ajax_delete_theme():  #专题编辑-添加资源文档链接
+    theme_name = request.args.get('theme_name', u'政治专题RR') #split ,
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    theme_name_list = theme_name.split(',')
+    print theme_name_list
+    for i in theme_name_list:
+        theme_name = i + '_' + submit_user
+        result = delete_theme(theme_name, submit_user)
+        if result == '0':
+            return json.dumps(result)
+    return json.dumps(result)
 
 @mod.route('/get_difference_event/')  #对比,包含事件
 def ajax_get_difference():

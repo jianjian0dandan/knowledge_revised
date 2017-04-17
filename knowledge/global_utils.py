@@ -293,7 +293,9 @@ def event_detail_search(eid_list, submit_user):
     result = []
     for i in event_result:
         event = []
-        print i
+        # print i
+        if not i['found']:
+            continue
         i_fields = i['fields']
         for j in fields_list:
             if not i_fields.has_key(j):
