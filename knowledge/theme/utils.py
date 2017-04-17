@@ -903,7 +903,11 @@ def get_theme_related(theme_name, submit_user):
         if i['_id'] in origin_event:
             continue
         if i['found'] == True:
-            final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+            print i,'-----------'
+            try:
+                final_event.append([i['fields']['en_name'][0], i['fields']['name'][0]])
+            except:
+                final_event.append([i['_id'],i['_id']])
         else:
             final_event.append([i['_id'],i['_id']])
     # final_event2 = set(final_event) - set(origin_event)
