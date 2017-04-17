@@ -112,7 +112,7 @@
                     </p>
                     <p class="in_four">
                         <span><b>创建人：</b></span> <span class="name crude"></span>
-                        <a href="###">相似专题计算</a>
+                        <a href="###" id="simlar">相似专题计算</a>
                     </p>
                 </div>
             </div>
@@ -263,6 +263,24 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="more" tabindex="-1" role="dialog" aria-labelledby="myLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title tit_h4" id="myLabel"></h4>
+            </div>
+            <div class="modal-body" id="more_content">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 <!------JS-------->
@@ -279,30 +297,39 @@
         async: true,
         success:basic
     });
+    var _id,key,tag;
     function basic(data) {
         var data=eval(data);
+        _id=data[0][0];
         $('#container #content_left .basic-1 .user_name').text(data[0][1]);
         $('#container #content_left .basic .basic-2 .nums').text(data[0][2]);
         $('#container #content_left .basic .basic-2 .time').text(data[0][5]);
-        if (data[0][3]==0){
+        if (data[0][3].length==0){
             $('#container #content_left .basic .basic-2 .information .tag_2').text('暂无数据');
         }else {
-            var key='';
-            $.each(data[0][3],function (index,item) {
-                key+=item+' ';
-            });
+            key=data[0][3].join(',');
             $('#container #content_left .basic .basic-2 .information .tag_2').text(key);
         };
 
-        if (data[0][4]==0){
+        $('.more_2').on('click',function () {
+            $('#more h4').empty().text('自动标签');
+            $('#more #more_content').empty().append(key);
+            $('#more').modal('show');
+        });
+
+
+        if (data[0][4].length==0){
             $('#container #content_left .basic .basic-2 .information .tag_3').text('暂无数据');
         }else {
-            var key='';
-            $.each(data[0][4],function (index,item) {
-                key+=item+' ';
-            });
-            $('#container #content_left .basic .basic-2 .information .tag_3').text(key);
+            tag=data[0][4][0];
+            $('#container #content_left .basic .basic-2 .information .tag_3').text(tag);
         };
+
+        $('.more_3').on('click',function () {
+            $('#more h4').empty().text('业务标签');
+            $('#more #more_content').empty().append(tag);
+            $('#more').modal('show');
+        });
 
         //=======
         $('#chart').on('click',function () {
@@ -312,6 +339,24 @@
             window.open('/index/map/?user_id='+data[0][0]+'&node_type=topic');
         });
     };
+    $('#simlar').on('click',function () {
+        var time=Date.parse(new Date());
+        var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
+                '&node_name='+theme_name+'&node_id='+_id+'&node_type=SpecialEvent';
+        $.ajax({
+            url: creat_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:function (data) {
+                if (data=='yes'){
+                    alert('创建成功。');
+                }else {
+                    alert('创建失败。');
+                }
+            }
+        });
+    });
 
 </script>
 <!--<script src="/static/js/jquery-3.1.1.min.js"></script>-->
