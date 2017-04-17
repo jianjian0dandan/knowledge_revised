@@ -42,6 +42,12 @@ def get_task():
     result = es_event.search(index=event_task_name,doc_type=event_task_type,body=query_body)
     return result['hits']['hits']
 
+def continue_compute():
+    ts = time.time()
+    query_body = {'query':{'term':{'range':{'end_ts':{'gte':time.time()}}}},'sort':{'submit_ts':{'order':'asc'}},'size':100000}
+    result = es_event.search(index=event_task_name,doc_type=event_task_type,body=query_body)
+    return result['hits']['hits']
+
 
 def immediate_compute(task_id):
     # try:
