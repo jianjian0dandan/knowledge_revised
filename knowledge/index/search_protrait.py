@@ -324,7 +324,19 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
             data = item['_source']
             for k,v in data.iteritems():
                 if k in event_es_dict:
-                    result[k] = json.loads(v)
+                    if k == 'topics':#lda运行结果
+                        topic_list = []
+                        topics = json.loads(v)
+                        for topic in topics:
+                            row = []
+                            words = topic[1].split(' + ')
+                            for word in words:
+                                w,t = word.split('*')
+                                row.append(t)
+                            topic_list.append(row)
+                        result[k] = topic_list
+                    else:
+                        result[k] = json.loads(v)
                 elif k == event_tag:
                     flag = 1
                     work_tag = v
