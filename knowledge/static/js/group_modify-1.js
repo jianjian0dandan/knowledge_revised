@@ -468,7 +468,6 @@ $('#container .event .event-1 .sure').on('click',function () {
 });
 
 function event_list(data) {
-    console.log(data)
     if (data.length==0){
         null;
     }else {
@@ -655,7 +654,7 @@ $('#add_theme').on('click',function () {
     if(node_ids==''){
         alert('请检查您要加入的群体。(不能为空)')
     }else {
-        var new_thing_url='/group/create_new_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
+        var new_thing_url='/group/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
         $.ajax({
             url:new_thing_url,

@@ -551,31 +551,33 @@ function keywords_include(data) {
     var data = eval(data);
     var data1=data[0];
     var data2=data[1];
-    // $('#list-1-words')
-    //
-    // $('#list-2-words')
     var series_1=[],series_2=[];
     for (var a=0;a<data1.length;a++){
-        series_1.push(
-            {
-                name: data1[a],
-                value: 20,
-                itemStyle: createRandomItemStyle()
-            }
-        );
+        if (data1[a] !=''){
+            series_1.push(
+                {
+                    name: data1[a],
+                    value: 20,
+                    itemStyle: createRandomItemStyle()
+                }
+            );
+        }
+
     };
     for (var b=0;b<data2.length;b++){
-        series_2.push(
-            {
-                name: data2[b],
-                value: 20,
-                itemStyle: createRandomItemStyle()
-            }
-        );
+        if (data2[b]!=''){
+            series_2.push(
+                {
+                    name: data2[b],
+                    value: 20,
+                    itemStyle: createRandomItemStyle()
+                }
+            );
+        }
     };
 
     if(series_1.length==0){
-        $('#list-1-words').html('暂无数据');
+        $('#list-1-words').html('暂无数据').css({'lineHeight':'300px','textAlign':'center'});;
     }else {
         require(
             [
@@ -617,7 +619,7 @@ function keywords_include(data) {
     };
 
     if(series_2.length==0){
-        $('#list-2-words').html('暂无数据');
+        $('#list-2-words').html('暂无数据').css({'lineHeight':'300px','textAlign':'center'});;
     }else {
         require(
             [
@@ -687,31 +689,34 @@ function tag(data) {
     var data = eval(data);
     var data1=data[0];
     var data2=data[1];
-    // $('#list-1-words')
-    //
-    // $('#list-2-words')
     var series_1=[],series_2=[];
     for (var a=0;a<data1.length;a++){
-        series_1.push(
-            {
-                name: data1[a],
-                value: 20,
-                itemStyle: createRandomItemStyle()
-            }
-        );
+        if (data1[a]!=''){
+            series_1.push(
+                {
+                    name: data1[a],
+                    value: 20,
+                    itemStyle: createRandomItemStyle()
+                }
+            );
+        }
+
     };
     for (var b=0;b<data2.length;b++){
-        series_2.push(
-            {
-                name: data2[b],
-                value: 20,
-                itemStyle: createRandomItemStyle()
-            }
-        );
+        if(data2[b]!=''){
+            series_2.push(
+                {
+                    name: data2[b],
+                    value: 20,
+                    itemStyle: createRandomItemStyle()
+                }
+            );
+        }
+
     };
 
     if (series_1.length==0){
-        $('#list-1-tags').html('暂无数据');
+        $('#list-1-tags').html('暂无数据').css({'lineHeight':'300px','textAlign':'center'});
     }else {
         require(
             [
@@ -752,7 +757,7 @@ function tag(data) {
     }
 
     if (series_2.length==0){
-        $('#list-2-tags').html('暂无数据');
+        $('#list-2-tags').html('暂无数据').css({'lineHeight':'300px','textAlign':'center'});
     }else {
         require(
             [
