@@ -14,7 +14,7 @@ from utils import search_related_u_card, create_node_and_rel, create_group_relat
      add_group_k_label, add_group_file_link, query_detail_group, compare_group_user,compare_group_event,\
      compare_group_keywords, compare_group_k_label, group_geo_vary, get_group_user_track, group_event_rank,\
      group_user_rank, group_user_keyowrds, group_related,group_user_tag, show_file_link, group_map, \
-     search_related_u_auto, get_group_location
+     search_related_u_auto, get_group_location, delete_group
 
 mod = Blueprint('group', __name__, url_prefix='/group')
 
@@ -105,6 +105,14 @@ def create_relation():
     flag = create_group_relation(node_key1, node1_list, node1_index_name, rel, \
                                 node_key2, node2_id, node2_index_name, submit_user)
     return json.dumps(flag)
+
+@mod.route('/group_delete/')
+def ajax_group_delete():  #删除群体
+    g_name = request.args.get('g_name', u'媒体')
+    submit_user = request.args.get('submit_user', u'admin@qq.com')
+    g_name = g_name + '_' + submit_user
+    detail_t = delete_group(g_name, submit_user)
+    return json.dumps(detail_t)
 
 @mod.route('/group_detail/')
 def detail_group():  #群体包含人物
