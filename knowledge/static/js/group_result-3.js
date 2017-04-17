@@ -599,79 +599,84 @@ function area_table(data) {
         this_list.push(data[key])
         data_tab.push(this_list);
     }
-    $('#area_table').bootstrapTable('load', data_tab);
-    $('#area_table').bootstrapTable({
-        data:data_tab,
-        search: true,//是否搜索
-        pagination: true,//是否分页
-        pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
-        sidePagination: "client",//服务端分页
-        searchAlign: "left",
-        searchOnEnterKey: false,//回车搜索
-        showRefresh: false,//刷新按钮
-        showColumns: true,//列选择按钮
-        buttonsAlign: "right",//按钮对齐方式
-        locale: "zh-CN",//中文支持
-        detailView: false,
-        showToggle:true,
-        sortName:'bci',
-        sortOrder:"desc",
-        columns: [
-            {
-                title: "起始地",//标题
-                field: "",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[0]==''||row[0]=='NULL'){
-                        return '未知';
-                    }else {
-                        return row[0].split('\t').pop();
-                    }
-                }
-            },
-            {
-                title: "目的地",//标题
-                field: "user",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[1]==''||row[1]=='NULL'){
-                        return '未知';
-                    }else {
-                        return row[1].split('\t').pop();
-                    }
-                }
-            },
-            {
-                title: "人次",//标题
-                field: "influ",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (row[2]==''||row[2]=='NULL'){
-                        return 0;
-                    }else {
-                        return row[2];
+    if (data_tab.length==0){
+        $('#area_table').css({display:'none'})
+    }else {
+        $('#area_table').bootstrapTable('load', data_tab);
+        $('#area_table').bootstrapTable({
+            data:data_tab,
+            search: true,//是否搜索
+            pagination: true,//是否分页
+            pageSize: 5,//单页记录数
+            pageList: [5, 10, 20],//分页步进值
+            sidePagination: "client",//服务端分页
+            searchAlign: "left",
+            searchOnEnterKey: false,//回车搜索
+            showRefresh: false,//刷新按钮
+            showColumns: false,//列选择按钮
+            buttonsAlign: "right",//按钮对齐方式
+            locale: "zh-CN",//中文支持
+            detailView: false,
+            showToggle:false,
+            sortName:'bci',
+            sortOrder:"desc",
+            columns: [
+                {
+                    title: "起始地",//标题
+                    field: "",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[0]==''||row[0]=='NULL'){
+                            return '未知';
+                        }else {
+                            return row[0].split('\t').pop();
+                        }
                     }
                 },
-            },
+                {
+                    title: "目的地",//标题
+                    field: "user",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[1]==''||row[1]=='NULL'){
+                            return '未知';
+                        }else {
+                            return row[1].split('\t').pop();
+                        }
+                    }
+                },
+                {
+                    title: "人次",//标题
+                    field: "influ",//键名
+                    sortable: true,//是否可排序
+                    order: "desc",//默认排序方式
+                    align: "center",//水平
+                    valign: "middle",//垂直
+                    formatter: function (value, row, index) {
+                        if (row[2]==''||row[2]=='NULL'){
+                            return 0;
+                        }else {
+                            return row[2];
+                        }
+                    },
+                },
 
-        ],
-        // onClickRow: function (row, tr) {
-        //     if ($(tr.context).index()==2) {
-        //         del_eventuid=row[0];
-        //         $('#del_ject').modal("show");
-        //     }
-        // }
-    });
+            ],
+            // onClickRow: function (row, tr) {
+            //     if ($(tr.context).index()==2) {
+            //         del_eventuid=row[0];
+            //         $('#del_ject').modal("show");
+            //     }
+            // }
+        });
+    }
+
 };
 
 //

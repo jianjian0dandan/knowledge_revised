@@ -130,12 +130,14 @@ function search(data) {
                     if (row[6].length==0||row[6]==''||row[6]=='NULL'||row[6]=='unknown'){
                         return '暂无';
                     }else {
-                        var key='';
                         var words=row[6].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },
@@ -150,12 +152,14 @@ function search(data) {
                     if (row[7].length==0||row[7]==''||row[7]=='NULL'||row[7]=='unknown'){
                         return '暂无';
                     }else {
-                        var key='';
                         var words=row[7].split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
                 },
             },

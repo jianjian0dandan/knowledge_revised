@@ -289,7 +289,6 @@ function rel_list(data) {
         node2 = data[0].node2[1];
     }
     //-------------
-    console.log(show_rel)
     $('#new_rel').empty();
     if (show_rel==''||show_rel=='NULL'||show_rel=='unknown'||show_rel.length==0){
         $('.relation .have').append('<span>暂无</span> ');
@@ -347,8 +346,6 @@ function rel_list(data) {
                 '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
                 '&node2_index_name='+name_index_2+'&rel='+rel_table_2[pre];
         }
-
-        console.log(delt_url)
         $.ajax({
             url: delt_url,
             type: 'GET',
@@ -368,7 +365,15 @@ $('.yes').on('click',function () {
         $('.relation .have').append(' <a title="'+new_add+'">其他关系-'+ other +'</a> <b class="del icon icon-remove"></b>');
         rel+=new_add+','+other;
     }else {
-        $('.relation .have').append(' <a>'+ rel_table[new_add] +'</a> <b class="del icon icon-remove"></b>');
+        if (new_add=='colleague'){
+            if (start_type=='User'&&end_type=='User'){
+                $('.relation .have').append(' <a>业务关联</a> <b class="del icon icon-remove"></b>');
+            }else {
+                $('.relation .have').append(' <a>自述关联</a> <b class="del icon icon-remove"></b>');
+            }
+        }else {
+            $('.relation .have').append(' <a>'+ rel_table[new_add] +'</a> <b class="del icon icon-remove"></b>');
+        }
         rel=new_add;
     };
     var creat_url='/construction/create_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
