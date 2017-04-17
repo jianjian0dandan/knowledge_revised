@@ -283,7 +283,7 @@ function things(data) {
                 },
             },
             {
-                title: "参与人数",//标题
+                title: "活跃度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -293,12 +293,12 @@ function things(data) {
                     if (row[4]==''||row[4]=='NULL'){
                         return 0;
                     }else{
-                        return row[4];
+                        return row[4].toFixed(2);
                     }
                 },
             },
             {
-                title: "微博数量",//标题
+                title: "敏感度",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -308,7 +308,7 @@ function things(data) {
                     if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
                         return 0;
                     }else{
-                        return row[5];
+                        return row[5].toFixed(2);
                     }
                 },
             },
@@ -474,6 +474,7 @@ function event_list(data) {
         null;
     }else {
         var data = eval(data);
+        console.log(data)
         $('#event_list').bootstrapTable('load', data);
         $('#event_list').bootstrapTable({
             data:data,
