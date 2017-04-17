@@ -153,8 +153,8 @@ def create_relation():
     return json.dumps(flag)
 
 @mod.route('/delete_theme/')
-def ajax_delete_theme():  #专题编辑-添加资源文档链接
-    theme_name = request.args.get('theme_name', u'政治专题RR') #split ,
+def ajax_delete_theme():  #专题删除
+    theme_name = request.args.get('theme_name', u'测试专题') #split ,
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     theme_name_list = theme_name.split(',')
     print theme_name_list
