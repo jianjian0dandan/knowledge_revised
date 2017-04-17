@@ -28,7 +28,7 @@ from knowledge.global_utils import es_user_portrait as es
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
 from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
-from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type
+from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,search_type
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2date
 from knowledge.global_utils import event_detail_search, user_name_search, user_detail_search
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type
@@ -302,6 +302,20 @@ def query_detail_theme(theme_name, submit_user):
 #         submit_ts = ts2date(i['_source']['create_ts'])
 #         theme_result.append([topic_id, theme_name, contain_event, auto_label, work_tag, submit_ts])
 #     return theme_result
+
+def delete_theme(theme_name, submit_user):
+    en_name = p.get_pinyin(theme_name)
+    en_name = en_name.lower()
+    print en_name,'000000000'
+    try:
+        es_event.delete(index=special_event_name, doc_type=special_event_type, id=en_name)
+        s_string = 'START s0 = node:special_event_index(event="%s") \
+                MATCH (s0)-[r]-(s3) DELETE r' %(en_name)
+        graph.run(s_string)
+    except:
+        return '0'
+    return '1'
+
 
 def del_e_theme_rel(theme_name, event_id):
     en_name = p.get_pinyin(theme_name)
@@ -701,6 +715,7 @@ def get_theme_user_rank(theme_name, submit_user):
                 body={'ids':event_list}, fields=['user_results','name'])['docs']
     user_influence ={}
     for i in user_result:
+        # print i
         event_name = i['fields']['name'][0]
         user_dict = json.loads(i['fields']['user_results'][0])
         for k,v in user_dict.iteritems():
@@ -709,6 +724,7 @@ def get_theme_user_rank(theme_name, submit_user):
             user_influence[k] = {}
             user_influence[k]['id']= k
             user_influence[k]['name']= user_name_search(k)
+            user_influence[k]['node_type'] = search_type(k)
 
     for i in user_result:
         event_name = i['fields']['name'][0]
