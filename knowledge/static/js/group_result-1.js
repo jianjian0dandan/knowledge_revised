@@ -208,12 +208,12 @@ function network(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -438,22 +438,23 @@ $.ajax({
 });
 function character(data) {
     var data = eval(data);
+    console.log(data)
     $('#ranking').bootstrapTable('load', data);
     $('#ranking').bootstrapTable({
         data:data,
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 10,],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -503,11 +504,17 @@ function character(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row.user==''||row.user=='NULL'){
+                    if (row.user==''||row.user=='NULL'||row.user.length=='NULL'){
                         return '暂无';
                     }else {
-                        var user=row.user.splice(' ');
-                        return row.user.length;
+                        var words=row.user;
+                        if (words.length<=5){
+                            return words.join('\n');
+                        }else {
+                            var key=words.splice(0,5).join('\n');
+                            var tit=words.splice(5).join('\n');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
                     }
                 },
             },
@@ -553,7 +560,6 @@ function user_tag(data) {
         )
     });
 }
-console.log(user_key_series,user_tag_series)
 if (user_key_series.length==0){
     $('#label_left').html('暂无数据');
 }else {

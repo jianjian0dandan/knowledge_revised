@@ -442,7 +442,7 @@ def get_detail_per_org_map(uid_list):#根据id查询人物和机构的location
                 else:
                     continue                    
             
-            result.append([name,location])
+            result.append([uid,name,location])
 
     return result
 
@@ -473,7 +473,7 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             except KeyError:
                 continue
             
-            result.append([name,location])
+            result.append([uid,name,location])
 
     return result 
 
@@ -1030,22 +1030,22 @@ def get_all_graph():#获取首页图谱
         flag = item[2]
         if flag == 'people':
             try:
-                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'org':
             try:
-                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'event':
             try:
-                relation.append([result_eve[item[0]],'event',result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_eve[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'topic':
             try:
-                relation.append([result_eve[item[0]],'event',result_top[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_top[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1105,22 +1105,22 @@ def get_people_graph(uid):#获取人物节点图谱
         flag = item[2]
         if flag == 'people':
             try:
-                relation.append([result_peo[item[0]],'people',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'people',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'org':
             try:
-                relation.append([result_peo[item[0]],'people',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'people',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'event':
             try:
-                relation.append([result_peo[item[0]],'people',result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'people',item[1],result_eve[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'group':
             try:
-                relation.append([result_peo[item[0]],'people',result_gro[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'people',item[1],result_gro[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1181,22 +1181,22 @@ def get_event_graph(uid):#获取事件节点图谱
         flag = item[2]
         if flag == 'people':
             try:
-                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'org':
             try:
-                relation.append([result_eve[item[0]],'event',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'event':
             try:
-                relation.append([result_eve[item[0]],'event',result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_eve[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'topic':
             try:
-                relation.append([result_eve[item[0]],'event',result_top[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_top[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1257,22 +1257,22 @@ def get_org_graph(uid):#获取机构节点图谱
         flag = item[2]
         if flag == 'people':
             try:
-                relation.append([result_peo[item[0]],'org',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'org',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'org':
             try:
-                relation.append([result_peo[item[0]],'org',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'org',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'event':
             try:
-                relation.append([result_peo[item[0]],'org',result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'org',item[1],result_eve[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'group':
             try:
-                relation.append([result_peo[item[0]],'org',result_gro[item[1]],item[2],item[3]])
+                relation.append([item[0],result_peo[item[0]],'org',item[1],result_gro[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1316,7 +1316,7 @@ def get_special_event_graph(uid):#获取专题节点图谱
         flag = item[2]
         if flag == 'event':
             try:
-                relation.append([result_top[item[0]],'topic',result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_top[item[0]],'topic',item[1],result_eve[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1360,7 +1360,7 @@ def get_group_graph(uid):#获取群体节点图谱
         flag = item[2]
         if flag == 'people':
             try:
-                relation.append([result_gro[item[0]],'group',result_peo[item[1]],item[2],item[3]])
+                relation.append([item[0],result_gro[item[0]],'group',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:

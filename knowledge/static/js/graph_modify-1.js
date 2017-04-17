@@ -230,9 +230,9 @@ function node(data) {
                     align: "center",//水平
                     valign: "middle",//垂直
                     formatter: function (value, row, index) {
-                        return '<a onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
-                            '<a type="button" data-toggle="modal" data-target="#complie" onclick="go(\''+row[0]+'\')">编辑</a><br/>' +
-                            '<a onclick="del(\''+row[0]+'\')">删除</a>';
+                        return '<a style="cursor: pointer;" onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
+                            '<a style="cursor: pointer;" type="button" data-toggle="modal" data-target="#complie" onclick="go(\''+row[0]+'\')">编辑</a><br/>' +
+                            '<a style="cursor: pointer;" onclick="del(\''+row[0]+'\')">删除</a>';
                     },
                 },
             ],
@@ -708,7 +708,7 @@ function event(data) {
                         if (row[9] < 0){
                             return '正在计算';
                         }else if (row[9]= 1){
-                            return '计算完成';
+                            return '<a style="cursor: pointer;">计算完成</a>';
                         }else if (row[9]= 0){
                             return '尚未计算';
                         }
@@ -722,11 +722,11 @@ function event(data) {
                     align: "center",//水平
                     valign: "middle",//垂直
                     formatter: function (value, row, index) {
-                        return '<a onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
-                            '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
+                        return '<a style="cursor: pointer;" onclick="rel_new(\''+row[0]+'\')">立即更新</a><br/>' +
+                            '<a style="cursor: pointer;" onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
 
                             // '<a onclick="run(\''+row[0]+'\')">编辑</a><br/>' +
-                            '<a onclick="del(\''+row[0]+'\')">删除</a>';
+                            '<a style="cursor: pointer;" onclick="del(\''+row[0]+'\')">删除</a>';
                     },
                 },
             ],

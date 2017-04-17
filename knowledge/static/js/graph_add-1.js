@@ -1238,7 +1238,7 @@ function task_list(data) {
                     }else if (row[2]==3){
                         return '正在计算';
                     }else if (row[2]==4){
-                        return '计算完成';
+                        return '<a style="cursor: pointer;">计算完成</a>';
                     }
 
                 },
@@ -1251,7 +1251,7 @@ function task_list(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a>';
+                    return '<a style="cursor: pointer;">立即更新</a>';
                 },
             },
 
@@ -1355,7 +1355,7 @@ function task_list_2(data) {
                     }else if (row[2]==3){
                         return '正在计算';
                     }else if (row[2]==4){
-                        return '计算完成';
+                        return '<a style="cursor: pointer;">计算完成</a>';
                     }
 
                 },
@@ -1368,7 +1368,7 @@ function task_list_2(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>立即更新</a>';
+                    return '<a style="cursor: pointer;">立即更新</a>';
                 },
             },
 

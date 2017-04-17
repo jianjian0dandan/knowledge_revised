@@ -200,7 +200,7 @@ function createRandomItemStyle() {
 var topics=result_1.topics;
 var topics_list='';
 $.each(topics,function (index,item) {
-    topics_list+='<p><b>话题'+item[0]+'：</b><span>'+item[1]+'</span></p>';
+    topics_list+='<p><b>话题'+(index+1)+'：</b><span>'+item+'</span></p>';
 });
 $('#topic_trend').html(topics_list);
 
@@ -714,17 +714,17 @@ function weibo(data){
 }
 weibo(result_3.all);
 $('.text_info .button_list #all').on('click',function () {
-    $(this).css({backgroundColor:'#8bc34a'}).siblings('button').css({backgroundColor:'#02aacf'});
+    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.all);
 });
 $('.text_info .button_list #media').on('click',function () {
-    $(this).css({backgroundColor:'#8bc34a'}).siblings('button').css({backgroundColor:'#02aacf'});
+    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.media);
 });
 $('.text_info .button_list #internet_users').on('click',function () {
-    $(this).css({backgroundColor:'#8bc34a'}).siblings('button').css({backgroundColor:'#02aacf'});
+    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.people);
 });

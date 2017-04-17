@@ -103,29 +103,65 @@ $('.weibo_link a').text(link);
 
 $('.influ-1 .active0').text(result_1.activeness.toFixed(2));
 if (result_1.activeness <= 33&&result_1.activeness >= 0) {
-    $('.influ-1 .level0').text('低');
+    $('.influ-1 .level0').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if (result_1.activeness <= 66 &&result_1.activeness > 33) {
-    $('.influ-1 .level0').text('中');
+    $('.influ-1 .level0').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if(result_1.activeness <= 100&&result_1.activeness > 66) {
-    $('.influ-1 .level0').text('高');
+    $('.influ-1 .level0').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'
+    );
 };
 
 $('.influ-1 .active1').text(result_1.influence.toFixed(2));
 if (result_1.influence <= 33&&result_1.influence >= 0) {
-    $('.influ-1 .level1').text('低');
+    $('.influ-1 .level1').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if (result_1.influence <= 66 &&result_1.influence > 33) {
-    $('.influ-1 .level1').text('中');
+    $('.influ-1 .level1').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if(result_1.influence <= 100 &&result_1.influence > 66) {
-    $('.influ-1 .level1').text('高');
+    $('.influ-1 .level1').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'
+    );
 };
 
 $('.influ-1 .active2').text(result_1.sensitive.toFixed(2));
 if (result_1.sensitive <= 33&&result_1.sensitive >= 0) {
-    $('.influ-1 .level2').text('低');
+    $('.influ-1 .level2').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if (result_1.sensitive <= 66 &&result_1.sensitive > 33) {
-    $('.influ-1 .level2').text('中');
+    $('.influ-1 .level2').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
 }else if(result_1.sensitive <= 100 &&result_1.sensitive > 66) {
-    $('.influ-1 .level2').text('高');
+    $('.influ-1 .level2').append(
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'+
+        '<img src="/static/images/wuxing-2.png"/>'
+    );
 }
 
 if (result_1.activity_geo==''||result_1.activity_geo=='unknown'
@@ -169,60 +205,111 @@ var retweet=result_3.retweet;
 var retweet_1=[],retweet_2=[];
 for (var r in retweet){
     if (retweet[r]==''||retweet[r]=='NULL'||retweet[r]=='unknown'){
-        retweet_1.push('<a uid="'+r+'">'+r+'</a> ');
+        retweet_1.push('<a uid="'+r+'">'+r+'</a>&nbsp;');
         retweet_2.push(r);
     }else {
-        retweet_1.push('<a uid="'+r+'">'+retweet[r]+'</a> ');
+        retweet_1.push('<a uid="'+r+'">'+retweet[r]+'</a>&nbsp;');
         retweet_2.push(retweet[r]);
     };
 };
 $('#person_content #content_left .social .soc_one .user').attr('title',retweet_2.join(','));
 $('#person_content #content_left .social .soc_one .user').html(retweet_1);
+$('#one').on('click',function () {
+    $('#link .tit_h4').empty().text('转发');
+    $('#link #link_content').empty();
+    if (retweet_1.length==0||retweet_2.length==0){
+        $('#link #link_content').text('没有数据');
+    }else {
+        for (var w=0;w<retweet_1.length;w++){
+            $('#link #link_content').append(retweet_1[w]);
+        }
+    }
+    $('#link').modal('show');
+})
 
 var beretweet=result_3.beretweet;
 var beretweet_1=[],beretweet_2=[];
 for (var r in beretweet){
     if (beretweet[r]==''||beretweet[r]=='NULL'||beretweet[r]=='unknown'){
-        beretweet_1.push('<a uid="'+r+'">'+r+'</a> ');
+        beretweet_1.push('<a uid="'+r+'">'+r+'</a>&nbsp;');
         beretweet_2.push(r);
     }else {
-        beretweet_1.push('<a uid="'+r+'">'+beretweet[r]+'</a> ');
+        beretweet_1.push('<a uid="'+r+'">'+beretweet[r]+'</a>&nbsp;');
         beretweet_2.push(beretweet[r]);
     };
 };
 $('#person_content #content_left .social .soc_two .user').attr('title',beretweet_2.join(','));
 $('#person_content #content_left .social .soc_two .user').html(beretweet_1);
+$('#two').on('click',function () {
+    $('#link .tit_h4').empty().text('转发');
+    $('#link #link_content').empty();
+    if (beretweet_1.length==0||beretweet_1.length==0){
+        $('#link #link_content').text('没有数据');
+    }else {
+        for (var w=0;w<beretweet_1.length;w++){
+            $('#link #link_content').append(beretweet_1[w]);
+        }
+    }
+    $('#link').modal('show');
+})
 
 var comment=result_3.comment;
 var comment_1=[];
 var comment_2=[];
 for (var r in comment){
     if (comment[r]==''||comment[r]=='NULL'||comment[r]=='unknown'){
-        comment_1.push('<a uid="'+r+'">'+r+'</a> ');
+        comment_1.push('<a uid="'+r+'">'+r+'</a>&nbsp;');
         comment_2.push(r);
     }else {
-        comment_1.push('<a uid="'+r+'">'+comment[r]+'</a> ');
+        comment_1.push('<a uid="'+r+'">'+comment[r]+'</a>&nbsp;');
         comment_2.push(comment[r]);
     };
 };
 $('#person_content #content_left .social .soc_three .user').attr('title',comment_2.join(','));
 $('#person_content #content_left .social .soc_three .user').html(comment_1);
+$('#three').on('click',function () {
+    $('#link .tit_h4').empty().text('转发');
+    $('#link #link_content').empty();
+    if (comment_1.length==0||comment_1.length==0){
+        $('#link #link_content').text('没有数据');
+    }else {
+        for (var w=0;w<comment_1.length;w++){
+            $('#link #link_content').append(comment_1[w]);
+        }
+    }
+    $('#link').modal('show');
+})
 
 var becomment=result_3.becomment;
 var becomment_1=[],becomment_2=[];
 for (var r in becomment){
     if (becomment[r]==''||becomment[r]=='NULL'||becomment[r]=='unknown'){
-        becomment_1.push('<a uid="'+r+'">'+r+'</a> ');
+        becomment_1.push('<a uid="'+r+'">'+r+'</a>&nbsp;');
         becomment_2.push(r);
     }else {
-        becomment_1.push('<a uid="'+r+'">'+becomment[r]+'</a> ');
+        becomment_1.push('<a uid="'+r+'">'+becomment[r]+'</a>&nbsp;');
         becomment_2.push(becomment[r]);
     };
 };
 $('#person_content #content_left .social .soc_four .user').attr('title',becomment_2.join(','));
 $('#person_content #content_left .social .soc_four .user').html(becomment_1);
+$('#four').on('click',function () {
+    $('#link .tit_h4').empty().text('转发');
+    $('#link #link_content').empty();
+    if (becomment_1.length==0||becomment_1.length==0){
+        $('#link #link_content').text('没有数据');
+    }else {
+        for (var w=0;w<becomment_1.length;w++){
+            $('#link #link_content').append(becomment_1[w]);
+        }
+    }
+    $('#link').modal('show');
+})
 
 $('#person_content #content_left .social .user a').on('click',function () {
+    window.open('/index/person/?user_id='+$(this).attr('uid'));
+});
+$('#link #link_content a').on('click',function () {
     window.open('/index/person/?user_id='+$(this).attr('uid'));
 });
 //文本信息
@@ -289,7 +376,7 @@ function weibo(){
                     '          <span class="master1">'+text+'</span>'+
                     '     </p>'+
                     '     <p class="time">'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
@@ -352,7 +439,7 @@ function weibo(){
                         '          <span class="master1">'+text+'</span>'+
                         '     </p>'+
                         '     <p class="time">'+
-                        '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                        '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                         '        <span style="display: inline-block;float:right;">'+
                         '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
                         '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
@@ -420,7 +507,7 @@ function weibo(){
                     '          <span class="master1">'+text+'</span>'+
                     '     </p>'+
                     '     <p class="time">'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
@@ -478,7 +565,7 @@ function weibo(){
                     '          <span class="master1">'+text+'</span>'+
                     '     </p>'+
                     '     <p class="time">'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
@@ -542,7 +629,7 @@ function weibo(){
                 '          <span class="master1">'+text+'</span>'+
                 '     </p>'+
                 '     <p class="time">'+
-                '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                 '        <span style="display: inline-block;float:right;">'+
                 '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                 '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+

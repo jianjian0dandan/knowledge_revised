@@ -738,7 +738,7 @@ function event_task_renew() {
                             if (row.end_ts > Date.parse(new Date())){
                                 return '正在跟踪';
                             }else if (row.end_ts <= Date.parse(new Date())){
-                                return '计算完成';
+                                return '<a style="cursor: pointer;">计算完成</a>';
                             }
                         }
 
@@ -752,7 +752,7 @@ function event_task_renew() {
                     align: "center",//水平
                     valign: "middle",//垂直
                     formatter: function (value, row, index) {
-                        return '<a>删除</a>';
+                        return '<a style="cursor: pointer;">删除</a>';
                     },
                 },
 
