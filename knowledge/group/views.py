@@ -267,7 +267,7 @@ def ajax_group_user_keywords():  #群体用户的关键词和话题
 
 @mod.route('/group_user_tag/')
 def ajax_group_user_tag():  #群体用户关联事件的自动标签和业务标签
-    g_name = request.args.get('g_name', u'美选群体')
+    g_name = request.args.get('g_name', u'媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     detail_t = group_user_tag(g_name, submit_user)
