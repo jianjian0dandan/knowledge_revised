@@ -55,9 +55,42 @@ def uid_name_list(uid_list):#以字典形式返回
         else:
             data = item['_source']
             try:
-                uname[uid] = data['uname']
-            except:
+                if not data['uname']:
+                    uname[uid] = uid
+                else:
+                    uname[uid] = data['uname']
+            except KeyError:
                 uname[uid] = uid
+
+    return uname
+
+def uid_name_list_withtype(uid_list):#以字典形式返回uname和type
+
+    search_result = es_user_portrait.mget(index=portrait_name, doc_type=portrait_type, body={"ids": uid_list})["docs"]
+    if len(search_result) == 0:
+        return '-1'
+    uname = dict()
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            uname[uid] = uid
+            continue
+        else:
+            data = item['_source']
+            u_type = data['verify_type']
+            if u_type in org_list:
+                user_type = 'org'
+            else:
+                user_type = 'people'
+                
+            try:
+                if not data['uname']:
+                    name = uid
+                else:
+                    name = data['uname']
+            except KeyError:
+                name = uid
+            uname[uid] = [name,user_type]
 
     return uname
 
@@ -76,7 +109,7 @@ def uid_2_name_list(uid_list):#以列表形式返回
             data = item['_source']
             try:
                 name = data['uname']
-            except:
+            except KeyError:
                 name = uid
             if name:
                 uname.append([uid,name])
@@ -100,7 +133,11 @@ def uid_name_type(uid_list):#获取用户的昵称和认证类型
             data = item['_source']
             try:
                 name = data['uname']
-            except:
+                if not name:
+                    name = uid
+                else:
+                    pass
+            except KeyError:
                 name = uid
             u_type = data['verify_type']
             uname[uid] = {'name':name,'type':u_type}
@@ -657,15 +694,21 @@ def get_detail_event(uid_list,user_name):
         return result
     for item in search_result:
         uid = item['_id']
+
         if not item['found']:
             #result[uid] = {}
             continue
         else:
             data = item['_source']
-            if not data['name']:
-                name = ''
-            else:
-                name = data['name']
+            
+            try:
+                if not data['name']:
+                    name = uid
+                else:
+                    name = data['name']
+            except KeyError:
+                name = uid
+            
             try:
                 if data['real_geo'] != 'NULL':
                     geo = data['real_geo']
@@ -678,7 +721,10 @@ def get_detail_event(uid_list,user_name):
             except KeyError:
                 category = ''
 
-            time_ts = ts2date(data['start_ts'])
+            try:
+                time_ts = ts2date(data['start_ts'])
+            except KeyError:
+                time_ts = ts2date(time.time())
 
             try:
                 work_tag = data['work_tag']

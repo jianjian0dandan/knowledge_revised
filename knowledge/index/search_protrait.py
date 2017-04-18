@@ -10,7 +10,7 @@ import heapq
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
-from get_result import uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
+from get_result import uid_name_list_withtype,uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
 import knowledge.model
 from knowledge.model import *
 from knowledge.extensions import db
@@ -227,32 +227,32 @@ def get_interaction(uid):#获取用户的交互情况
                 becomment_uid.append(item[1])
 
     if len(retweet_uid):
-        retweet_list = uid_name_list(retweet_uid)
+        retweet_list = uid_name_list_withtype(retweet_uid)
         if retweet_list == '-1':
-            retweet_list = []
+            retweet_list = {}
     else:
-        retweet_list = []
+        retweet_list = {}
 
     if len(beretweet_uid):
-        beretweet_list = uid_name_list(beretweet_uid)
+        beretweet_list = uid_name_list_withtype(beretweet_uid)
         if beretweet_list == '-1':
-            beretweet_list = []
+            beretweet_list = {}
     else:
-        beretweet_list = []
+        beretweet_list = {}
 
     if len(comment_uid):
-        comment_list = uid_name_list(comment_uid)
+        comment_list = uid_name_list_withtype(comment_uid)
         if comment_list == '-1':
-            comment_list = []
+            comment_list = {}
     else:
-        comment_list = []
+        comment_list = {}
 
     if len(becomment_uid):
-        becomment_list = uid_name_list(becomment_uid)
+        becomment_list = uid_name_list_withtype(becomment_uid)
         if becomment_list == '-1':
-            becomment_list = []
+            becomment_list = {}
     else:
-        becomment_list = []
+        becomment_list = {}
 
     return {'retweet':retweet_list,'beretweet':beretweet_list,'comment':comment_list,'becomment':becomment_list}
 
