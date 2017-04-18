@@ -52,6 +52,7 @@ def update_prediction(ts): # current ts
         mid_ts_list.append(mid_ts)
         count += 1
         if count % 100 == 0:
+            """
             weibo_prediction_result = weibo_model.predict(feature_list)
             uid_prediction_result = uid_model.predict(feature_list)
             print "finish prediction"
@@ -65,20 +66,33 @@ def update_prediction(ts): # current ts
                 bulk_action.extend([{"update":{"_id":mid_list[i]}}, {"doc":iter_dict}])
                 print uid_prediction_result[i], weibo_prediction_result[i],mid_list[i]
             print es_prediction.bulk(bulk_action,index="social_sensing_text",doc_type="text",timeout=600)
+            """
             bulk_action = []
             mid_list = []
             mid_ts_list = []
             feature_list = []
             print "iter count: ",count
-    if bulk_action:
+    if mid_list:
+        weibo_prediction_result = weibo_model.predict(feature_list)
+        uid_prediction_result = uid_model.predict(feature_list)
+        print "finish prediction"
+        for i in range(len(mid_list)):
+            iter_dict = dict()
+            iter_dict["mid"] = mid_list[i]
+            iter_dict["uid_prediction"] = uid_prediction_result[i]
+            iter_dict["weibo_prediction"] = weibo_prediction_result[i]
+            tmp_trendline = trendline_list(mid_list[i], weibo_prediction_result[i],mid_ts_list[i])
+            iter_dict["trendline"] = json.dumps(tmp_trendline)
+            bulk_action.extend([{"update":{"_id":mid_list[i]}}, {"doc":iter_dict}])
+            print uid_prediction_result[i], weibo_prediction_result[i],mid_list[i]
         es_prediction.bulk(bulk_action,index="social_sensing_text",doc_type="text",timeout=600)
 
 
 if __name__ == "__main__":
-    ts = 1511020800
+    ts =  1479398400
+    update_prediction(ts+10*3600)
     while 1:
         update_prediction(ts+10*3600)
         ts += 10*3600
-        if ts-10*3600 > 1479571200:
+        if ts-10*3600 > 1479484800:
             break
-

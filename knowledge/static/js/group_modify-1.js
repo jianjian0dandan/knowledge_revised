@@ -8,9 +8,7 @@ $.ajax({
     success:tag
 });
 function tag(data) {
-    console.log(data)
     var data=eval(data);
-    console.log(data)
     if (data[0][4].length==0||data[0][4]==''||data[0][4]=='NULL'){
         $('#container .theme .tag .tags').html('暂无'+' <b class="add icon icon-plus"></b>');
         //添加
@@ -365,7 +363,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>删除</a>';
+                    return '<a style="cursor: pointer;">删除</a>';
                 },
             },
             //多选框
@@ -420,9 +418,8 @@ function add_way(value) {
     if (value=='r'){
         way='r';
         $('.hands').hide();
-        $('.event_list').css({display:'block'});
         // 群体下--------关联添加
-        var event_list_url='/group/group_event_rank/?g_name='+theme_name
+        var event_list_url='/group/search_related_people_auto/?g_name='+theme_name
             +'&submit_user='+submit_user;
         $.ajax({
             url:event_list_url,
@@ -431,15 +428,17 @@ function add_way(value) {
             async: true,
             success:event_list
         });
+        $('.event_list').css({display:'block'});
     }else {
         way='m';
         $('.event_list').css({display:'none'});
         $('.hands').show();
     }
 };
+
 if (way=='r') {
     // 群体下--------关联添加
-    var event_list_url='/group/group_event_rank/?g_name='+theme_name
+    var event_list_url='/group/search_related_people_auto/?g_name='+theme_name
         +'&submit_user='+submit_user;
     $.ajax({
         url:event_list_url,
@@ -464,17 +463,15 @@ $('#container .event .event-1 .sure').on('click',function () {
             async: true,
             success:event_list
         });
-        $('.event_list').show();
+        $('.event_list').css({display:'block'});
     }
 });
 
 function event_list(data) {
-    console.log(data)
     if (data.length==0){
         null;
     }else {
         var data = eval(data);
-        console.log(data)
         $('#event_list').bootstrapTable('load', data);
         $('#event_list').bootstrapTable({
             data:data,
@@ -551,7 +548,7 @@ function event_list(data) {
                     },
                 },
                 {
-                    title: "参与人数",//标题
+                    title: "活跃度",//标题
                     field: "",//键名
                     sortable: true,//是否可排序
                     order: "desc",//默认排序方式
@@ -561,12 +558,12 @@ function event_list(data) {
                         if (row[4]==''||row[4]=='NULL'){
                             return 0;
                         }else{
-                            return row[4];
+                            return row[4].toFixed(2);
                         }
                     },
                 },
                 {
-                    title: "微博数量",//标题
+                    title: "敏感度",//标题
                     field: "",//键名
                     sortable: true,//是否可排序
                     order: "desc",//默认排序方式
@@ -576,7 +573,7 @@ function event_list(data) {
                         if (row[5]==''||row[5]=='NULL'||row[5]=='unknown'){
                             return 0;
                         }else{
-                            return row[5];
+                            return row[5].toFixed(2);
                         }
                     },
                 },
@@ -648,7 +645,6 @@ function event_list(data) {
                 thing_list.removeByValue(row[0]);
             },
         });
-        $('.event_list').css({display:'block'});
     };
 };
 
@@ -660,7 +656,6 @@ $('#add_theme').on('click',function () {
     }else {
         var new_thing_url='/group/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
-        console.log(new_thing_url)
         $.ajax({
             url:new_thing_url,
             type: 'GET',

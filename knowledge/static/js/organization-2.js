@@ -374,47 +374,52 @@ $.each(key_words,function (index,item) {
     )
 })
 
+if (key_list.length==0){
+    $('#key_words').html('关键词无数据');
+}else {
+    //字符云 ---关键词
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('key_words'));
 
-//字符云 ---关键词
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('key_words'));
-
-        option = {
-            title: {
-                text: '关键词',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                name: '关键词',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
+            option = {
+                title: {
+                    text: '关键词',
                 },
-                data: key_list
-            }]
-        };
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
+                tooltip: {
+                    show: true
+                },
+                series: [{
+                    name: '关键词',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data: key_list
+                }]
+            };
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            });
+        }
+    );
+}
+
 
 
 var topic_words=result_1.hashtag.split('&');
+topic_words.removeByValue('');
 var topic_list=[];
 $.each(topic_words,function (index,item) {
     topic_list.push(
@@ -425,51 +430,55 @@ $.each(topic_words,function (index,item) {
         }
     )
 })
+console.log(topic_list)
+if (topic_list.length==0){
+    $('#micro_topic').html('<h4>微话题无数据</h4>');
+}else {
+    // 字符云 ---微话题
+    require(
+        [
+            'echarts',
+            'echarts/chart/wordCloud'
+        ],
+        function (ec) {
+            // 基于准备好的dom，初始化echarts图表
+            var myChart = ec.init(document.getElementById('micro_topic'));
 
-// 字符云 ---微话题
-require(
-    [
-        'echarts',
-        'echarts/chart/wordCloud'
-    ],
-    function (ec) {
-        // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('micro_topic'));
-
-        option = {
-            title: {
-                text: '微话题',
-            },
-            tooltip: {
-                show: true
-            },
-            series: [{
-                name: '微话题',
-                type: 'wordCloud',
-                size: ['80%', '80%'],
-                textRotation : [0, 0, 0, 0],
-                textPadding: 0,
-                autoSize: {
-                    enable: true,
-                    minSize: 14
+            option = {
+                title: {
+                    text: '微话题',
                 },
-                data: topic_list,
-            }],
-            noDataLoadingOption :{
-                text: '暂无数据',
-                effect:'bubble',
-                effectOption : {
-                    effect: {
-                        n: 0, //气泡个数为0
+                tooltip: {
+                    show: true
+                },
+                series: [{
+                    name: '微话题',
+                    type: 'wordCloud',
+                    size: ['80%', '80%'],
+                    textRotation : [0, 0, 0, 0],
+                    textPadding: 0,
+                    autoSize: {
+                        enable: true,
+                        minSize: 14
+                    },
+                    data: topic_list,
+                }],
+                noDataLoadingOption :{
+                    text: '暂无数据',
+                    effect:'bubble',
+                    effectOption : {
+                        effect: {
+                            n: 0, //气泡个数为0
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        myChart.setOption(option);
-        var ecConfig = require('echarts/config');
-        myChart.on(ecConfig.EVENT.HOVER, function (param){
-            var selected = param.name;
-        });
-    }
-);
+            myChart.setOption(option);
+            var ecConfig = require('echarts/config');
+            myChart.on(ecConfig.EVENT.HOVER, function (param){
+                var selected = param.name;
+            });
+        }
+    );
+}
