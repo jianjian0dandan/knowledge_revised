@@ -68,8 +68,8 @@ def search_person_by_id(uid,user_name):#根据uid查询用户属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[people_tag] = tag_str
+                            tag_list.append(t)
+                    result[people_tag] = tag_list
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -111,8 +111,8 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[people_tag] = tag_str
+                            tag_list.append(t)
+                    result[people_tag] = tag_list
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -345,8 +345,8 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[event_tag] = tag_str
+                            tag_list.append(t)
+                    result[event_tag] = tag_list
                 else:
                     if v == 'NULL':
                         result[k] = ''
