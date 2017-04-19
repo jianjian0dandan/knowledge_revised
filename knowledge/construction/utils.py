@@ -32,10 +32,11 @@ from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_ty
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type,\
-special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list
+special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list,\
+              key_type_dict
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,event_primary,\
                 other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name, wiki_type_name,\
-                wiki_index_name
+                wiki_index_name, wiki_url_index_name, wiki_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 from knowledge.extensions import db
 from knowledge.model import PeopleHistory, EventHistory
@@ -1217,7 +1218,18 @@ def deal_editor_tag(tag ,submit_user):
 
 def show_wiki(data):
     print data,'data'
-    url = data['url']
+    name = data['name']
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    if data.has_key('url'):
+        url = data['url']
     result = {}
     # return url
     try:
@@ -1229,8 +1241,6 @@ def show_wiki(data):
     result['content'] = search_results['content']
     result['name'] = search_results['name']
     result['url'] = search_results['url']
-    conn = getconn()
-    cur = conn.cursor()
     sql = "select WikiID from wiki where Url=%s "
     html_id = cur.execute(sql, (url,))
     print html_id,'----------'
@@ -1242,11 +1252,101 @@ def show_wiki(data):
         f = open('/media/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
         html_code = f.read()
     result['html'] = html_code
+    return result['html']
+
+def show_wiki_basic(data):
+    conn = getconn()
+    cur = conn.cursor()
+    name = data['name']
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    # if data.has_key('url'):
+    #     url = data['url']
+    result = {}
+    # return url
+    try:
+        search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
+        print search_results
+        # return search_results['content']
+    except:
+        return ''
+    result['content'] = search_results['content']
+    result['name'] = search_results['name']
+    result['url'] = search_results['url']
+    closeAll(conn, cur)
     return result
 
+def search_user_idname(uid_list):
+    result = []
+    exist_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uid','uname'], _source=False)['docs']
+    for i in exist_portrait_result:
+        if i['found'] == False:
+            result.append([i['_id'], i['_id']])
+        else:
+            name = i['fields']['uname']
+            if name == '':
+                name = i['_id']
+            result.append([i['_id'], name])
+    return result
 
-
+def search_event_idname(uid_list):
+    result = []
+    exist_portrait_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={'ids':uid_list}, fields=['en_name','name'], _source=False)['docs']
+    for i in exist_portrait_result:
+        if i['found'] == False:
+            result.append([i['_id'], i['_id']])
+        else:
+            name = i['fields']['name']
+            if name == '':
+                name = i['_id']
+            result.append([i['_id'], name])
+    return result
 
 def show_wiki_related(data):
+    conn = getconn()
+    cur = conn.cursor()
+    name = data['name']
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    # if data.has_key('url'):
+    #     url = data['url']
+    result = {}
+    
     url = data['url']
-    s_string = 'start d=node:'+  +'('+event_id_string+') match (d)-[r]-(e) return labels(e), e'
+    s_string = 'start d=node:'+ wiki_url_index_name +'('+wiki_primary+ '="' + url +'") match (d)-[r]-(e) return labels(e), e'
+    print s_string
+    result = graph.run(s_string)
+    node_result = {}
+    for i in result:
+        ii = dict(i)
+        node_label = ii['labels(e)'][0]
+        basic_key = key_type_dict[node_label]
+        node_id = ii['e'][basic_key]
+        try:
+            node_result[node_label].append(node_id)
+        except:
+            node_result[node_label] = []
+            node_result[node_label].append(node_id)
+    final_result = {}
+    final_result['User'] = []
+    final_result['Org'] = []
+    final_result['Event'] = []
+    for k,v in node_result.iteritems():
+        if k == 'User':
+            final_result[k] = search_user_idname(v)
+        if k == 'Org':
+            final_result[k] = search_user_idname(v)
+        if k == 'Event':
+            final_result[k] = search_event_idname(v)
+    return final_result
+
