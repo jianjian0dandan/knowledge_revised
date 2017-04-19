@@ -31,18 +31,21 @@ org_index_name = "org_index" # primary_key: org_id
 tag_index_name = "tag_index" # primary_key: tag
 special_event_index_name = "special_event_index" # primary_key: event
 group_index_name = "group_index" # primary_key: group
+wiki_url_index_name = 'wiki_index'
 #neo4j node_type
 people_node = "User"
 org_node = "Org"
 event_node = "Event"
 special_event_node = "SpecialEvent"
 group_node = "Group"
+wiki_node = 'Wiki'
 #neo4j node primary_key
 people_primary = "uid"
 org_primary = "org_id"
 event_primary = "event_id"
 special_event_primary = "event"
 group_primary = "group"
+wiki_primary = 'url'
 # 港澳台，电信诈骗
 event_type_index_name = "event_type_index" # primary: type
 group_index_name = "group_index" # primary: group, rel: group
@@ -99,6 +102,10 @@ organization_tag = "organization_tag"#其他
 organization_relation_list = ['friend','colleague','organization_tag']
 
 group_rel = "group"
+
+
+#Relationship:
+wiki_realtion = 'wiki_link'
 
 # For User Portrait Computing
 ALL_PERSON_RELATION_LIST = ['friend','colleague','ip_relation']

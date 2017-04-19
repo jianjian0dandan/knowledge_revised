@@ -808,7 +808,7 @@ def search_event(item, field, submit_user):
                 'should':[
                     {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
                     {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
-                    # {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
+                    {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
             }
 
