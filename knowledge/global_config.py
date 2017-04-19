@@ -20,6 +20,15 @@ wiki_host="219.224.134.216:9201"
 neo4j_host = "219.224.134.213"
 neo4j_port = "7474"
 
+#wiki mysql
+mysql_host="219.224.134.227"
+mysql_port=3306
+mysql_user='root'
+mysql_passwd='123456'
+mysql_db='knowledge'
+mysql_charset='utf8'
+
+
 
 # neo4j 索引(index)
 node_index_name = "node_index" # primary_key: uid
