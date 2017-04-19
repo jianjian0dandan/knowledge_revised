@@ -953,8 +953,8 @@ $('.add_sure').on('click',function () {
 //创建任务
 function calculate_rel() {
     if (node_type=='user'){
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="friend" checked> 交互'+
             '</label>'+
@@ -972,8 +972,8 @@ function calculate_rel() {
             '</label>'
         );
     }else if (node_type=='event'){
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="join" checked> 参与事件'+
             '</label>'+
@@ -985,8 +985,8 @@ function calculate_rel() {
             '</label>'
         )
     }else {
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="friend" checked> 交互'+
             '</label>'+
@@ -1000,8 +1000,8 @@ function calculate_rel() {
             '   <input type="checkbox" value="discuss" checked> 参与讨论'+
             '</label>'
         )
-    }
-    $('#relation').modal('show');
+    };
+    $('#relation_node').modal('show');
 }
 $('#container .node #node_list .node_join').on('click',function () {
     calculate_rel();
