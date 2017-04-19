@@ -1023,6 +1023,30 @@ def group_id_name(uidlist):
 
     return result
 
+def wiki_id_name(uidlist):
+
+    result = dict()
+    search_result = es_wiki.mget(index=wiki_index_name, doc_type=wiki_type_name, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = uid
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['name'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
+            except:
+                result[uid] = uid
+
+    return result
+
 def get_all_graph():#获取首页图谱
 
     p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 100' % (event_index_name,event_primary)
@@ -1106,6 +1130,7 @@ def get_people_graph(uid):#获取人物节点图谱
     peo_list = []
     eve_list = []
     gro_list = []
+    wiki_list = []
     r_relation = []
     for item in p_result:
         node1 = item[0]
@@ -1130,6 +1155,10 @@ def get_people_graph(uid):#获取人物节点图谱
             if node2_v not in gro_list:
                 gro_list.append(node2_v)
             r_relation.append([node1,node2_v,'group',r])
+        elif node2_k == wiki_node:#维基
+            if node2_v not in wiki_list:
+                wiki_list.append(node2_v)
+            r_relation.append([node1,node2_v,'wiki',r])
         else:
             continue
 
@@ -1145,6 +1174,10 @@ def get_people_graph(uid):#获取人物节点图谱
         result_gro = group_id_name(gro_list)
     else:
         result_gro = {}
+    if len(wiki_list) > 0:
+        result_wiki = wiki_id_name(wiki_list)
+    else:
+        result_wiki = {}
 
     relation = []
     for item in r_relation:
@@ -1169,6 +1202,11 @@ def get_people_graph(uid):#获取人物节点图谱
                 relation.append([item[0],result_peo[item[0]],'people',item[1],result_gro[item[1]],item[2],item[3]])
             except KeyError:
                 continue
+        elif flag == 'wiki':
+            try:
+                relation.append([item[0],result_peo[item[0]],'people',item[1],result_wiki[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
         else:
             continue
 
@@ -1182,6 +1220,7 @@ def get_event_graph(uid):#获取事件节点图谱
     peo_list = []
     eve_list = []
     top_list = []
+    wiki_list = []
     r_relation = []
     for item in p_result:
         node1 = item[0]
@@ -1206,6 +1245,10 @@ def get_event_graph(uid):#获取事件节点图谱
             if node2_v not in top_list:
                 top_list.append(node2_v)
             r_relation.append([node1,node2_v,'topic',r])
+        elif node2_k == wiki_node:#维基
+            if node2_v not in wiki_list:
+                wiki_list.append(node2_v)
+            r_relation.append([node1,node2_v,'wiki',r])
         else:
             continue
 
@@ -1221,6 +1264,10 @@ def get_event_graph(uid):#获取事件节点图谱
         result_top = top_id_name(top_list)
     else:
         result_top = {}
+    if len(wiki_list) > 0:
+        result_wiki = wiki_id_name(wiki_list)
+    else:
+        result_wiki = {}
 
     relation = []
     for item in r_relation:
@@ -1245,6 +1292,11 @@ def get_event_graph(uid):#获取事件节点图谱
                 relation.append([item[0],result_eve[item[0]],'event',item[1],result_top[item[1]],item[2],item[3]])
             except KeyError:
                 continue
+        elif flag == 'wiki':
+            try:
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_wiki[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
         else:
             continue
 
@@ -1258,6 +1310,7 @@ def get_org_graph(uid):#获取机构节点图谱
     peo_list = []
     eve_list = []
     gro_list = []
+    wiki_list = []
     r_relation = []
     for item in p_result:
         node1 = item[0]
@@ -1282,6 +1335,10 @@ def get_org_graph(uid):#获取机构节点图谱
             if node2_v not in gro_list:
                 gro_list.append(node2_v)
             r_relation.append([node1,node2_v,'group',r])
+        elif node2_k == wiki_node:#维基
+            if node2_v not in wiki_list:
+                wiki_list.append(node2_v)
+            r_relation.append([node1,node2_v,'wiki',r])
         else:
             continue
 
@@ -1297,6 +1354,10 @@ def get_org_graph(uid):#获取机构节点图谱
         result_gro = group_id_name(gro_list)
     else:
         result_gro = {}
+    if len(wiki_list) > 0:
+        result_wiki = wiki_id_name(wiki_list)
+    else:
+        result_wiki = {}
 
     relation = []
     for item in r_relation:
@@ -1319,6 +1380,11 @@ def get_org_graph(uid):#获取机构节点图谱
         elif flag == 'group':
             try:
                 relation.append([item[0],result_peo[item[0]],'org',item[1],result_gro[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'wiki':
+            try:
+                relation.append([item[0],result_peo[item[0]],'org',item[1],result_wiki[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1385,10 +1451,14 @@ def get_group_graph(uid):#获取群体节点图谱
         node2_k = item[3][0]
         node2_v = dict(item[2]).values()[0]
         r = item[1].type()
-        if node2_k == people_node:#事件
+        if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
             r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_node:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
         else:
             continue
 
@@ -1409,11 +1479,82 @@ def get_group_graph(uid):#获取群体节点图谱
                 relation.append([item[0],result_gro[item[0]],'group',item[1],result_peo[item[1]],item[2],item[3]])
             except KeyError:
                 continue
+        elif flag == 'org':
+            try:
+                relation.append([item[0],result_gro[item[0]],'group',item[1],result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
         else:
             continue
 
     return relation
-            
+
+def get_wiki_graph(uid):#获取维基节点图谱
+
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.url,r,m,labels(m) LIMIT 100' % (wiki_url_index_name,wiki_primary,uid)
+
+    p_result = graph.run(p_string)
+    peo_list = []
+    event_list = []
+    wiki_list = []
+    r_relation = []
+    for item in p_result:
+        node1 = item[0]
+        if node1 not in wiki_list:
+            wiki_list.append(node1)
+        node2_k = item[3][0]
+        node2_v = dict(item[2]).values()[0]
+        r = item[1].type()
+        if node2_k == people_node:#人物
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'people',r])
+        elif node2_k == org_node:#机构
+            if node2_v not in peo_list:
+                peo_list.append(node2_v)
+            r_relation.append([node1,node2_v,'org',r])
+        elif node2_k == event_node:#事件
+            if node2_v not in event_list:
+                event_list.append(node2_v)
+            r_relation.append([node1,node2_v,'event',r])
+        else:
+            continue
+
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
+    if len(event_list) > 0:
+        result_eve = event_id_name(event_list)
+    else:
+        result_eve = {}
+    if len(wiki_list) > 0:
+        result_wiki = wiki_id_name(wiki_list)
+    else:
+        result_wiki = {}
+
+    relation = []
+    for item in r_relation:
+        flag = item[2]
+        if flag == 'people':
+            try:
+                relation.append([item[0],result_wiki[item[0]],'wiki',item[1],result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'org':
+            try:
+                relation.append([item[0],result_wiki[item[0]],'wiki',item[1],result_peo[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'event':
+            try:
+                relation.append([item[0],result_wiki[item[0]],'wiki',item[1],result_eve[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        else:
+            continue
+
+    return relation            
             
 def get_people_geo(uid):#根据人物id查询人物的地图
 
