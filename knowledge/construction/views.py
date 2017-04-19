@@ -18,7 +18,7 @@ from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
                   deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
-                  node_delete, delete_relation, deal_event_tag, show_weibo_list
+                  node_delete, delete_relation, deal_event_tag, show_weibo_list, show_wiki, show_wiki_related
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -650,6 +650,27 @@ def delete_nodes():
 
 #少一个添加！！一会写上。
 
+
+@mod.route('/show_wiki/', methods=['GET', 'POST'])
+def ajax_show_wiki():
+    #按关注用户推荐
+    input_data = request.get_json()
+    input_data = {'url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    print '0000000000000'
+    results = show_wiki(input_data)
+    # if not results:
+    #     results = ''
+    return json.dumps(results)
+
+@mod.route('/show_wiki_related/', methods=['GET', 'POST'])
+def ajax_show_wiki_related():
+    #按关注用户推荐
+    input_data = request.get_json()
+    input_data = {'url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    results = show_wiki_related(input_data)
+    # if not results:
+    #     results = ''
+    return json.dumps(results)
 
 # 对2个节点的关系进行模糊查询
 @mod.route('/node_or_node_query/')

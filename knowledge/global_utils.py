@@ -6,6 +6,8 @@ from elasticsearch import Elasticsearch
 from global_config import *
 import math
 from time_utils import ts2datetime, datetime2ts, ts2date
+import MySQLdb
+# from config import mysql_charset, mysql_db, mysql_host, mysql_passwd, mysql_port, mysql_user
 
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
@@ -140,6 +142,25 @@ sensitive_index_type = 'sensitive'
 
 #neo4j
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
+
+#wiki   mysql
+def getconn():
+    conn = MySQLdb.connect(
+        host=mysql_host,
+        port=mysql_port,
+        user=mysql_user,
+        passwd=mysql_passwd,
+        db=mysql_db,
+        charset=mysql_charset
+    )
+    return conn
+
+def closeAll(conn, cur):
+    cur.close()
+    conn.commit()
+    conn.close()
+
+
 
 #neo4j查询事件名
 

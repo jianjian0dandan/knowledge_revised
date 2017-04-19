@@ -23,10 +23,10 @@ from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2, R_SENSITIVE_REDIS as sensitvie_r
-from knowledge.global_utils import es_user_portrait as es, es_prediction
+from knowledge.global_utils import es_user_portrait as es, es_prediction, getconn, closeAll
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
-from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster, es_wiki
 from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column, es_group
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
@@ -34,8 +34,11 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type,\
 special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,event_primary,\
-                other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name
+                other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name, wiki_type_name,\
+                wiki_index_name
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
+from knowledge.extensions import db
+from knowledge.model import PeopleHistory, EventHistory
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
@@ -808,7 +811,7 @@ def search_event(item, field, submit_user):
                 'should':[
                     {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
                     {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
-                    # {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
+                    {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
             }
 
@@ -1211,3 +1214,39 @@ def deal_editor_tag(tag ,submit_user):
     return [keep_tag, left_tag]
 
 
+
+def show_wiki(data):
+    print data,'data'
+    url = data['url']
+    result = {}
+    # return url
+    try:
+        search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
+        print search_results
+        # return search_results['content']
+    except:
+        return ''
+    result['content'] = search_results['content']
+    result['name'] = search_results['name']
+    result['url'] = search_results['url']
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "select WikiID from wiki where Url=%s "
+    html_id = cur.execute(sql, (url,))
+    print html_id,'----------'
+    if not html_id:
+        html_code = ''
+    else:
+        html_id_sql = cur.fetchmany(html_id)
+        closeAll(conn, cur)
+        f = open('/media/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
+        html_code = f.read()
+    result['html'] = html_code
+    return result
+
+
+
+
+def show_wiki_related(data):
+    url = data['url']
+    s_string = 'start d=node:'+  +'('+event_id_string+') match (d)-[r]-(e) return labels(e), e'
