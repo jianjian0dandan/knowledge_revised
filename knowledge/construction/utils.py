@@ -40,6 +40,7 @@ from knowledge.global_config import node_index_name, event_index_name, special_e
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
 from knowledge.extensions import db
 from knowledge.model import PeopleHistory, EventHistory
+from BeautifulSoup import BeautifulSoup
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
@@ -1223,6 +1224,7 @@ def show_wiki(data):
     cur = conn.cursor()
     sql = "select Url from wiki where Name=%s "
     html_id = cur.execute(sql, (name,))
+    print html_id,'-----------'
     if html_id:
         html_id_sql = cur.fetchmany(html_id)
         url = html_id_sql[0][0]
@@ -1230,29 +1232,34 @@ def show_wiki(data):
         return ''
     if data.has_key('url'):
         url = data['url']
-    result = {}
+    # result = {}
     # return url
-    try:
-        search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
-        print search_results
-        # return search_results['content']
-    except:
-        return ''
-    result['content'] = search_results['content']
-    result['name'] = search_results['name']
-    result['url'] = search_results['url']
+    # try:
+    #     search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
+    #     print search_results
+    #     # return search_results['content']
+    # except:
+    #     return ''
+    # result['content'] = search_results['content']
+    # result['name'] = search_results['name']
+    # result['url'] = search_results['url']
+    print url
     sql = "select WikiID from wiki where Url=%s "
     html_id = cur.execute(sql, (url,))
-    print html_id,'----------'
+    # print html_id,'----------'
     if not html_id:
         html_code = ''
     else:
         html_id_sql = cur.fetchmany(html_id)
         closeAll(conn, cur)
         f = open('/mnt/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
-        html_code = f.read()
-    result['html'] = html_code
-    return result['html']
+        content_text = f.read()
+    soup = BeautifulSoup(content_text)
+    content_text = soup.find('div', {'id': 'mw-content-text'})
+    # print type(content_text),'000999'
+    # result['html'] = str(content_text)
+    # print content_text,'============'
+    return str(content_text)
 
 def show_wiki_basic(data):
     conn = getconn()
@@ -1286,9 +1293,10 @@ def search_user_idname(uid_list):
     exist_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uid','uname'], _source=False)['docs']
     for i in exist_portrait_result:
         if i['found'] == False:
-            result.append([i['_id'], i['_id']])
+            continue
+            # result.append([i['_id'], i['_id']])
         else:
-            name = i['fields']['uname']
+            name = i['fields']['uname'][0]
             if name == '':
                 name = i['_id']
             result.append([i['_id'], name])
@@ -1299,9 +1307,10 @@ def search_event_idname(uid_list):
     exist_portrait_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={'ids':uid_list}, fields=['en_name','name'], _source=False)['docs']
     for i in exist_portrait_result:
         if i['found'] == False:
-            result.append([i['_id'], i['_id']])
+            continue
+            # result.append([i['_id'], i['_id']])
         else:
-            name = i['fields']['name']
+            name = i['fields']['name'][0]
             if name == '':
                 name = i['_id']
             result.append([i['_id'], name])
