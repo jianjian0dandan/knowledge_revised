@@ -1,5 +1,5 @@
 var wiki_url='/construction/show_wiki/';
-var input_data = {'name':'日常生活'};
+var input_data = {'name':user_id};
 $.ajax({
     url: wiki_url,
     type: 'POST',
@@ -9,11 +9,31 @@ $.ajax({
     async: true,
     success:wiki_body
 });
+var txt;
 function wiki_body(data) {
-    console.log(data)
     $('#content').html(data);
+    $('#content a').on('click',function () {
+        var _href=$(this).attr('href');
+        $(this).attr('href','javascript:void(0);');
+        if (_href.substr(0,5)=='/wiki'){
+            txt=$(this).text();
+            var wiki_exit_url = '/construction/wikinode_exist/';
+            wiki.call_request(wiki_exit_url,wiki_exit);
+        }else {
+            alert('该词条暂未收录。');
+        };
+        if ($(this).text()=='编辑'){
+            alert('暂时无法操作，给您带来不便，请谅解。')
+        }
+    })
 }
-
+function wiki_exit(data) {
+    if (data=='1'){
+        window.open('/construction/wiki/?_id='+txt);
+    }else {
+        alert('该词条暂未收录。');
+    }
+}
 
 function wiki() {};
 wiki.prototype= {
@@ -109,5 +129,19 @@ function wiki_related(data) {
         $('.link_agency .agencys a').on('click',function () {
             window.open('/index/organization/?user_id='+$(this).find('b').text());
         })
-    }
+    };
+    //-------人物------
+    $('#container #content_right .link_user .user_more').on('click',function () {
+        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=1');
+    });
+
+    //------事件-----
+    $('#container #content_right .link_event .event_more').on('click',function () {
+        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=2');
+    });
+
+    //-----机构-----
+    $('#container #content_right .link_agency .agency_more').on('click',function () {
+        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=0');
+    });
 }

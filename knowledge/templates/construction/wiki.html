@@ -3,7 +3,9 @@
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/wiki.css">
 <style>
-    
+    #content h2 .mw-editsection,#content h3 .mw-editsection {
+       font-size: 14px;
+    }
 </style>
 {% endblock %}
 
@@ -63,6 +65,7 @@
 {% block my_js %}
 <script>
     var submit_user=$('#name').text();
+    var user_id='{{_id}}';
 
 </script>
 <script src="/static/js/wiki-1.js"></script>
