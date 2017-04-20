@@ -104,10 +104,13 @@ def get_graph():#图谱页面
     elif node_type == 'group':#群体节点图谱
         relation = get_group_graph(user_id)
         flag = 'Success'
+    elif node_type == 'wiki':#维基节点图谱
+        relation = get_wiki_graph(user_id)
+        flag = 'Success'
     else:
         relation = []
         flag = 'Wrong Type'
-
+    print relation
     return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
@@ -218,7 +221,7 @@ def get_event_atr():#事件属性页面
     
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
-
+    
     text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
 
     return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
@@ -344,7 +347,7 @@ def show_attention():
 
     user_name = request.form['user_name']
     s_type = request.form['s_type']
-    
+
     if s_type == 'people':
         infors = get_people(user_name,2)
     elif s_type == 'event':
