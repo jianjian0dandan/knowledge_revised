@@ -10,15 +10,15 @@
 body {
     width: 100%;
     min-width: 1349px;
-    /* min-height: 970px; */
+    height:100%;
     background: url(/static/images/graph_add.png) no-repeat;
     background-size: 100% 100%;
 }
 #container {
     position: relative;
     width: 70%;
-    padding: 110px 50px 90px 100px;
-    margin: 110px auto 100px;
+    padding:80px 50px 90px 100px;
+    margin: 50px auto 100px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
@@ -28,13 +28,9 @@ body {
     left: -15px;
     width: 225px;
     height: 78px;
-    line-height: 70px;
+    line-height: 78px;
     text-align: center;
-    color: white;
     font-weight:900;
-    font-size: 34px;
-    background: url(/static/images/xxx_add.png) no-repeat;
-    background-size: 100% 100%;
 }
 #container .new_property b {
     display: inline-block;

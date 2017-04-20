@@ -16,8 +16,8 @@ body {
 #container {
     position: relative;
     width: 70%;
-    padding:110px 50px 90px 100px;
-    margin:110px auto 100px;
+    padding:80px 50px 90px 100px;
+    margin:50px auto 100px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
@@ -29,8 +29,7 @@ body {
     height:78px;
     line-height: 70px;
     text-align: center;
-    background: url("/static/images/xxx_add.png") no-repeat;
-    background-size: 100% 100%;
+    font-weight: 900;
 }
 #container .edit input {
     position: relative;
@@ -53,19 +52,17 @@ body {
 #container .attributes .submit,#container .rel .rel_submit {
     padding: 0.3% 2%;
     color: white;
-    margin-right:18%;
-    margin-top: 1.5%;
+    /*margin-right:18%;*/
+    /*margin-top: 1.5%;*/
     background-color: #1ab5e2;
     border-radius: 5px;
     box-shadow: 2px 2px 2px #838383;
     cursor: pointer;
-    float: right;
+    /*float: right;*/
+    margin-left: 500px;
 }
 #container .attributes .submit:hover,#container .rel .rel_submit:hover {
     background-color: #176de2;
-}
-#container .rel .rel_attributes {
-    margin-top: 20px;
 }
 .add_minus,.add_plus {
     cursor: pointer;

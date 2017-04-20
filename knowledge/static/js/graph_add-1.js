@@ -28,7 +28,7 @@ function recommend_1(data1) {
     $('#recommend').bootstrapTable('load', data1);
     $('#recommend').bootstrapTable({
         data:data1,
-        search: false,//是否搜索
+        search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -40,8 +40,7 @@ function recommend_1(data1) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
-        sortName:'',
+        showToggle:false,
         sortOrder:"desc",
         columns: [
             {
@@ -161,7 +160,7 @@ function recommend_2(data2) {
     $('#recommend2').bootstrapTable('load', data2);
     $('#recommend2').bootstrapTable({
         data:data2,
-        search: false,//是否搜索
+        search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -320,7 +319,7 @@ function recommend_3(data3) {
     $('#recommend3').bootstrapTable('load', data3);
     $('#recommend3').bootstrapTable({
         data:data3,
-        search: false,//是否搜索
+        search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -475,7 +474,7 @@ function recommend_4(data4) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -608,7 +607,7 @@ function recommend_5(data5) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -953,8 +952,8 @@ $('.add_sure').on('click',function () {
 //创建任务
 function calculate_rel() {
     if (node_type=='user'){
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="friend" checked> 交互'+
             '</label>'+
@@ -972,8 +971,8 @@ function calculate_rel() {
             '</label>'
         );
     }else if (node_type=='event'){
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="join" checked> 参与事件'+
             '</label>'+
@@ -985,8 +984,8 @@ function calculate_rel() {
             '</label>'
         )
     }else {
-        $('#relation .rel_list').empty();
-        $('#relation .rel_list').append(
+        $('#relation_node .rel_list').empty();
+        $('#relation_node .rel_list').append(
             '<label class="checkbox-inline">'+
             '   <input type="checkbox" value="friend" checked> 交互'+
             '</label>'+
@@ -1000,8 +999,8 @@ function calculate_rel() {
             '   <input type="checkbox" value="discuss" checked> 参与讨论'+
             '</label>'
         )
-    }
-    $('#relation').modal('show');
+    };
+    $('#relation_node').modal('show');
 }
 $('#container .node #node_list .node_join').on('click',function () {
     calculate_rel();
@@ -1153,7 +1152,7 @@ function task_list(data) {
     $('#count').bootstrapTable('load', data);
     $('#count').bootstrapTable({
         data:data,
-        search: false,//是否搜索
+        search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
         pageList: [5, 20, 40, 80],//分页步进值
@@ -1282,7 +1281,7 @@ function task_list_2(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [

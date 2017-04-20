@@ -17,7 +17,7 @@ body {
     position: relative;
     width: 70%;
     padding:50px;
-    margin:110px auto 100px;
+    margin:50px auto 100px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
@@ -28,21 +28,18 @@ body {
     width: 225px;
     height:78px;
     text-align: center;
-    line-height: 74px;
-    font-size: 32px;
-    background: url("/static/images/result_tit.png") no-repeat;
-    background-size: 100% 100%;
+    line-height: 78px;
+    font-weight: 900;
 }
 #container .group_operating {
     width: 100%;
-    padding-top: 40px;
-    margin: 30px auto 0;
+    margin:30px auto 0;
     position: relative;
 }
 #container .group_operating .operating {
     position: absolute;
     right: 0;
-    top:0;
+    top:20px;
 }
 #container .group_operating a {
     font-size: 12px;

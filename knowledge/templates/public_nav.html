@@ -23,34 +23,72 @@
     <link rel="stylesheet" href="/static/css/public_nav.css">
     {% endblock %}
     <!-- css结束 -->
+
+    <!-- 自己的css -->
+    {% block my_css %}
+    {% endblock %}
 </head>
-
-<!-- 自己的css -->
-{% block my_css %}
-{% endblock %}
-
-
 <body>
 <!-- 导航开始 -->
+
 {% block header %}
 <div id="nav">
-    <ul class="nav_list">
-        <li><a id="theme">专题探索</a></li>
-        <li><a id="group">群体探索</a></li>
-        <li><a id="brust" style="margin-left: 20px">突发探索</a></li>
-        <li><a id="relation" style="margin-left: 290px">图谱探索</a></li>
-        <li><a id="construction">图谱管理</a></li>
-        <li><a id="sysadmin">我的图谱</a></li>
-    </ul>
+    <div class="nav_top">
+        <i class="icon "></i>
+        <h1 style='margin-left:40px;font-family: cursive;'>舆情知识图谱</h1>
+    </div>
+    <div class="nav_bottom">
+        <ul class="list">
+            <li class="main_li">
+                <a class="list_one li_a" id="relation">图谱探索</a>
+                <p class="line"></p>
+            </li>
+            <li class="main_li">
+                <a class="list_two li_a" id="construction">图谱管理</a>
+                <p class="line"></p>
+            </li>
+            <li class="main_li">
+                <a class="list_three li_a" id="sysadmin">我的图谱</a>
+                <p class="line"></p>
+            </li>
+            <li class="main_li">
+                <a class="list_four li_a" id="theme">专题探索</a>
+                <p class="line"></p>
+            </li>
+            <li class="main_li main_4">
+                <a class="list_five li_a" id="group">群体探索</a>
+                <p class="line"></p>
+            </li>
+            <li class="main_li main_4">
+                <a class="list_six li_a" id="brust">突发探索</a>
+                <p class="line"></p>
+            </li>
+        </ul>
+    </div>
     <div class="username">
         <b>当前用户：</b><b id="name">{{g.user}}</b>
         <button class="sign_out">登 出</button>
     </div>
-</div>
+    <div class="find" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
+    position:relative;top: -10px;z-index: 10">
+        <a href="/relation/search/" class="search">图谱搜索</a>
+        <a href="/relation/similarity/" class="simliar">相似搜索</a>
+    </div>
+    <div class="graph" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
+    position:relative;top: -10px;z-index: 10">
+        <a href="/construction/graph_add/" class="add">图谱添加</a>
+        <a href="/construction/graph_modify/" class="modify">图谱编辑</a>
+    </div>
 
+    <div class="mygraph" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
+    position:relative;top: -10px;z-index: 10">
+        <a href="/sysadmin/topic/" class="topic">我的专题</a>
+        <a href="/sysadmin/group/" class="group">我的群体</a>
+        <a href="/sysadmin/focus/" class="focus">我的关注</a>
+    </div>
+</div>
 {% endblock %}
 <!-- 导航结束 -->
-
 
 <!-- 主要内容 -->
 {% block main %}
@@ -79,10 +117,6 @@
             }
         }
     };
-</script>
-{% endblock %}
-{% block write_js %}
-<script>
     $('#theme').on('click',function () {
         window.open('/theme/');
     });
@@ -92,21 +126,80 @@
     $('#brust').on('click',function () {
         window.open('/brust/');
     });
-    $('#relation').on('click',function () {
-        window.open('/relation/');
-    });
-    $('#construction').on('click',function () {
-        window.open('/construction/');
-    });
-    $('#sysadmin').on('click',function () {
-        window.open('/sysadmin/index/');
-    });
 </script>
-
 {% endblock %}
+
+
+{% block write_js %}
+<script>
+    //导航栏鼠标滑过，显示下拉菜单
+    $("#relation").on('mouseover',function () {
+        $('.find').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.find').css({display:'none'});
+    });
+    $(".find").on('mouseover',function () {
+        $(this).css({display:'block'});
+        $(".nav_bottom .list .list_one").css({borderBottom:'2px solid #2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+        $(".nav_bottom .list .list_one").css({borderBottom:'none'});
+    });
+
+    $("#construction").on('mouseover',function () {
+        $('.graph').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.graph').css({display:'none'});
+    });
+    $(".graph").on('mouseover',function () {
+        $(this).css({display:'block'});
+        $(".nav_bottom .list .list_two").css({borderBottom:'2px solid #2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+        $(".nav_bottom .list .list_two").css({borderBottom:'none'});
+    });
+
+    $("#sysadmin").on('mouseover',function () {
+        $('.mygraph').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.mygraph').css({display:'none'});
+    });
+    $(".mygraph").on('mouseover',function () {
+        $(this).css({display:'block'});
+        $(".nav_bottom .list .list_three").css({borderBottom:'2px solid #2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+        $(".nav_bottom .list .list_three").css({borderBottom:'none'});
+    });
+
+
+    $('#nav .nav_bottom .list .main_li .li_a').on('mouseover',function () {
+        $(this).siblings('.line').css({left:'0%'});
+    }).on('mouseout',function () {
+        $(this).siblings('.line').css({left:'-100%'});
+    });
+
+//    window.onscroll=function () {
+//        $('#nav').css({backgroundColor:'#777'});
+//        $('#nav .nav_top').css({color:'white'});
+//        $('#nav .nav_bottom .list .main_li .line').css({backgroundColor:'#fff'});
+//        $('#nav .nav_bottom .list .main_li .li_a').css({color:'white'});
+//        $('#nav .setting a').css({color:'white'});
+//        if ($(document).scrollTop()==0){
+//            $('#nav').css({backgroundColor:'#fff'});
+//            $('#nav .nav_top').css({color:'black'});
+//            $('#nav .nav_bottom .list .main_li .line').css({backgroundColor:'#2e90e6'});
+//            $('#nav .nav_bottom .list .main_li .li_a').css({color:'black'});
+////            $('#nav .setting a').css({color:'black'});
+//        }
+//    };
+</script>
+{% endblock %}
+
 <!-- 自己的JS -->
 {% block my_js %}
 
 {% endblock %}
+
 </body>
 </html>
