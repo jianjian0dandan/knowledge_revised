@@ -18,5 +18,16 @@
 {% block my_js %}
 <script>
     var submit_user=$('#name').text();
+    var url='/construction/show_wiki/';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'string',
+        async: true,
+        success:function (data) {
+            console.log(data)
+            $('#container').html(data);
+        }
+    });
 </script>
 {% endblock %}

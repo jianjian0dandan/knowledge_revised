@@ -53,9 +53,9 @@ def construction_graph_modify():#图谱编辑
 def add_node():
     return render_template('construction/addmap.html')
 
-@mod.route('/weiki/')
+@mod.route('/wiki/')
 def weiki():
-    return render_template('construction/weiki.html')
+    return render_template('construction/wiki.html')
 
 @mod.route('/show_in/')
 def ajax_recommentation_in():
