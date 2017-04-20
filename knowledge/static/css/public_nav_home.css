@@ -61,7 +61,6 @@ a,a:link,a:hover,a:visited,a:active {
 #nav .username .sign_out:hover {
     background-color: #176de2;
 }
-
 #nav .find li,#nav .graph li,#nav .mygraph li {
     float: none;
 }
@@ -70,7 +69,7 @@ a,a:link,a:hover,a:visited,a:active {
     font-size: 12px;
     height: 30px;
     line-height: 30px;
-    background-color:#494949;
+    background-color:#1d1a27;
 }
 #nav .find a:hover,#nav .graph a:hover,#nav .mine a:hover {
     background-color: #7c7c7c;
