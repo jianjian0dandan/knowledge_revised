@@ -6,6 +6,7 @@ import os
 import time
 import math
 import re
+import heapq
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
@@ -21,6 +22,23 @@ from knowledge.time_utils import ts2datetime, datetime2ts
 org_list = [1,2,3,4,5,6,7,8]
 black_location = [u'北京',u'天津',u'上海',u'重庆',u'河北',u'山西',u'辽宁',u'吉林',u'黑龙江',u'江苏',u'浙江',u'安徽',u'福建',u'江西',u'山东',u'河南',\
                     u'湖北',u'湖南',u'广东',u'海南',u'四川',u'贵州',u'云南',u'陕西',u'甘肃',u'青海',u'台湾',u'内蒙古',u'广西',u'西藏',u'宁夏',u'新疆',u'香港',u'澳门']
+
+class TopkHeap(object):
+    def __init__(self, k):
+        self.k = k
+        self.data = []
+ 
+    def Push(self, elem):
+        if len(self.data) < self.k:
+            heapq.heappush(self.data, elem)
+        else:
+            topk_small = self.data[0][0]
+            if elem[0] > topk_small:
+                heapq.heapreplace(self.data, elem)
+ 
+    def TopK(self):
+        return [x for x in reversed([heapq.heappop(self.data) for x in xrange(len(self.data))])]
+
 
 def uid_name(uid_list,result):
 
@@ -413,7 +431,7 @@ def get_hot_people():#获取热门人物
     results = recommentation_in(input_ts, 'influence')
     return results
 
-def get_map_count():#获取地图统计
+def get_map_count(max_count):#获取地图统计
 
     location_result = dict()
     no_location_count = 0
@@ -422,7 +440,7 @@ def get_map_count():#获取地图统计
     while True:
         try:
             count = count + 1
-            if count > 500:
+            if count > max_count:
                 break
             scan_re = s_re.next()['_source']
             try:
@@ -517,21 +535,21 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
 def get_all_geo():#地图链接：获取地址
 
     event_list = []
-    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 50' % (event_index_name,event_primary)
+    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 200' % (event_index_name,event_primary)
     result = graph.run(p_string)
     for item in result:
         event_list.append(item[0])
     event_result = get_detail_event_map(event_list)
     
     peo_list = []
-    p_string = 'START n=node:%s("%s:*") return n.uid LIMIT 100' % (node_index_name,people_primary)
+    p_string = 'START n=node:%s("%s:*") return n.uid LIMIT 300' % (node_index_name,people_primary)
     result = graph.run(p_string)
     for item in result:
         peo_list.append(item[0])
     peo_result = get_detail_per_org_map(peo_list)
 
     org_list = []
-    p_string = 'START n=node:%s("%s:*") return n.org_id LIMIT 100' % (org_index_name,org_primary)
+    p_string = 'START n=node:%s("%s:*") return n.org_id LIMIT 300' % (org_index_name,org_primary)
     result = graph.run(p_string)
     for item in result:
         org_list.append(item[0])
@@ -550,6 +568,8 @@ def get_type_key(item):
         return special_event_primary
     elif item == '4':#群体
         return group_primary
+    elif item == '5':#群体
+        return wiki_primary
     else:
         return 'Not Found'
 
@@ -816,7 +836,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_event(uid_list,user_name)#获取用户详细信息
+            result = get_detail_event(uid_list,user_name)#获取事件详细信息
             flag = 2
         else:#event-org
             start_index_name = event_index_name
@@ -826,7 +846,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list,user_name)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取机构详细信息
             flag = 0
 
     elif node_key == org_primary:
@@ -848,7 +868,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_event(uid_list,user_name)#获取用户详细信息
+            result = get_detail_event(uid_list,user_name)#获取事件详细信息
             flag = 2
         else:#org-org
             start_index_name = org_index_name
@@ -858,12 +878,11 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list,user_name)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取机构详细信息
             flag = 0
-
-    elif node_key == special_event_primary:
-        if card_key == people_primary:#special_event-uid
-            start_index_name = node_index_name
+    elif node_key == wiki_primary:
+        if card_key == people_primary:#wiki-uid
+            start_index_name = wiki_url_index_name
             end_index_name = node_index_name
             c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
@@ -872,58 +891,93 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
                 uid_list.append(item[0])
             result = get_detail_person(uid_list,user_name)#获取用户详细信息
             flag = 1
-        elif card_key == event_primary:#special_event-event
-            start_index_name = node_index_name
+        elif card_key == event_primary:#wiki-event
+            start_index_name = wiki_url_index_name
             end_index_name = event_index_name
             c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_person(uid_list,user_name)#获取用户详细信息
+            result = get_detail_event(uid_list,user_name)#获取事件详细信息
             flag = 2
-        else:#special_event-org
-            start_index_name = node_index_name
+        else:#wiki-org
+            start_index_name = wiki_url_index_name
             end_index_name = org_index_name
             c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
                 uid_list.append(item[0])
-            result = get_detail_org(uid_list,user_name)#获取用户详细信息
+            result = get_detail_org(uid_list,user_name)#获取机构详细信息
             flag = 0
-
     else:
-        if card_key == people_primary:#group-uid
-            start_index_name = group_index_name
-            end_index_name = node_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
-            p_result = graph.run(c_string)
-            uid_list = []
-            for item in p_result:
-                uid_list.append(item[0])
-            result = get_detail_person(uid_list,user_name)#获取用户详细信息
-            flag = 1
-        elif card_key == event_primary:#group-event
-            start_index_name = group_index_name
-            end_index_name = event_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
-            p_result = graph.run(c_string)
-            uid_list = []
-            for item in p_result:
-                uid_list.append(item[0])
-            result = get_detail_person(uid_list,user_name)#获取用户详细信息
-            flag = 2
-        else:#group-org
-            start_index_name = group_index_name
-            end_index_name = org_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
-            p_result = graph.run(c_string)
-            uid_list = []
-            for item in p_result:
-                uid_list.append(item[0])
-            result = get_detail_org(uid_list,user_name)#获取用户详细信息
-            flag = 0
+        result = {}
+        flag = -1
+##    elif node_key == special_event_primary:
+##        if card_key == people_primary:#special_event-uid
+##            start_index_name = node_index_name
+##            end_index_name = node_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_person(uid_list,user_name)#获取用户详细信息
+##            flag = 1
+##        elif card_key == event_primary:#special_event-event
+##            start_index_name = node_index_name
+##            end_index_name = event_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_person(uid_list,user_name)#获取用户详细信息
+##            flag = 2
+##        else:#special_event-org
+##            start_index_name = node_index_name
+##            end_index_name = org_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_org(uid_list,user_name)#获取用户详细信息
+##            flag = 0
+##
+##    elif node_key == group_primary:
+##        if card_key == people_primary:#group-uid
+##            start_index_name = group_index_name
+##            end_index_name = node_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_person(uid_list,user_name)#获取用户详细信息
+##            flag = 1
+##        elif card_key == event_primary:#group-event
+##            start_index_name = group_index_name
+##            end_index_name = event_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_person(uid_list,user_name)#获取用户详细信息
+##            flag = 2
+##        else:#group-org
+##            start_index_name = group_index_name
+##            end_index_name = org_index_name
+##            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+##            p_result = graph.run(c_string)
+##            uid_list = []
+##            for item in p_result:
+##                uid_list.append(item[0])
+##            result = get_detail_org(uid_list,user_name)#获取用户详细信息
+##            flag = 0
+    
 
     return result,flag
 
@@ -1047,53 +1101,104 @@ def wiki_id_name(uidlist):
 
     return result
 
+def event2time(uidlist):#获取最新加入图谱的事件
+
+    result = dict()
+    event_time = TopkHeap(5)
+    search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uidlist})["docs"]
+    if len(search_result) == 0:
+        return {}
+    for item in search_result:
+        uid = item['_id']
+        if not item['found']:
+            result[uid] = uid
+            continue
+        else:
+            data = item['_source']
+            try:
+                name = data['name'].encode('utf-8')
+                if not name:
+                    result[uid] = uid
+                else:
+                    result[uid] = name
+            except:
+                result[uid] = uid
+            ts = data['finish_ts']
+            event_time.Push((ts,uid))
+
+    event_data = event_time.TopK()
+    event_list = []
+    for item in event_data:
+        event_list.append(item[1])
+    return event_list,result
+
 def get_all_graph():#获取首页图谱
 
-    p_string = 'START n=node:%s("%s:*") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 100' % (event_index_name,event_primary)
-
+    total_event = []
+    p_string = 'START n=node:%s("%s:*") return n.event_id' % (event_index_name,event_primary)
     p_result = graph.run(p_string)
-    peo_list = []
-    eve_list = []
-    top_list = []
-    r_relation = []
     for item in p_result:
         node1 = item[0]
-        if node1 not in eve_list:
-            eve_list.append(node1)
-        node2_k = item[3][0]
-        node2_v = dict(item[2]).values()[0]
-        r = item[1].type()
-        if node2_k == people_node:#人物
-            if node2_v not in peo_list:
-                peo_list.append(node2_v)
-            r_relation.append([node1,node2_v,'people',r])
-        elif node2_k == org_node:#机构
-            if node2_v not in peo_list:
-                peo_list.append(node2_v)
-            r_relation.append([node1,node2_v,'org',r])
-        elif node2_k == event_node:#事件
-            if node2_v not in eve_list:
-                eve_list.append(node2_v)
-            r_relation.append([node1,node2_v,'event',r])
-        elif node2_k == special_event_node:#专题
-            if node2_v not in top_list:
-                top_list.append(node2_v)
-            r_relation.append([node1,node2_v,'topic',r])
-        else:
-            continue
+        if node1 not in total_event:
+            total_event.append(node1)
+
+    if len(total_event) > 0:
+        total_list,result_eve = event2time(total_event)
+    else:
+        total_list = []
+        result_eve = {}
+        
+    peo_list = []
+    eve_end_list = []
+    top_list = []
+    wiki_list = []
+    r_relation = []
+    for e_id in total_list:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return r,m,labels(m) LIMIT 200' % (event_index_name,event_primary,e_id)
+        p_result = graph.run(p_string)    
+        for item in p_result:
+            node2_k = item[2][0]
+            node2_v = dict(item[1]).values()[0]
+            r = item[0].type()
+            if node2_k == people_node:#人物
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([node1,node2_v,'people',r])
+            elif node2_k == org_node:#机构
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([node1,node2_v,'org',r])
+            elif node2_k == event_node:#事件
+                if node2_v not in eve_end_list:
+                    eve_end_list.append(node2_v)
+                r_relation.append([node1,node2_v,'event',r])
+            elif node2_k == special_event_node:#专题
+                if node2_v not in top_list:
+                    top_list.append(node2_v)
+                r_relation.append([node1,node2_v,'topic',r])
+            elif node2_k == wiki_node:#维基
+                if node2_v not in wiki_list:
+                    wiki_list.append(node2_v)
+                r_relation.append([node1,node2_v,'wiki',r])
+            else:
+                continue
 
     if len(peo_list) > 0:
         result_peo = peo_id_name(peo_list)
     else:
         result_peo = {}
-    if len(eve_list) > 0:
-        result_eve = event_id_name(eve_list)
-    else:
-        result_eve = {}
     if len(top_list) > 0:
         result_top = top_id_name(top_list)
     else:
         result_top = {}
+    if len(eve_end_list) > 0:
+        result_eve_end = event_id_name(eve_end_list)
+    else:
+        result_eve_end = {}
+    if len(wiki_list) > 0:
+        result_wiki = wiki_id_name(wiki_list)
+    else:
+        result_wiki = {}
 
     relation = []
     for item in r_relation:
@@ -1110,12 +1215,17 @@ def get_all_graph():#获取首页图谱
                 continue
         elif flag == 'event':
             try:
-                relation.append([item[0],result_eve[item[0]],'event',item[1],result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_eve_end[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         elif flag == 'topic':
             try:
                 relation.append([item[0],result_eve[item[0]],'event',item[1],result_top[item[1]],item[2],item[3]])
+            except KeyError:
+                continue
+        elif flag == 'wiki':
+            try:
+                relation.append([item[0],result_eve[item[0]],'event',item[1],result_wiki[item[1]],item[2],item[3]])
             except KeyError:
                 continue
         else:
@@ -1125,7 +1235,7 @@ def get_all_graph():#获取首页图谱
 
 def get_people_graph(uid):#获取人物节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m,labels(m) LIMIT 100' % (node_index_name,people_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m,labels(m) LIMIT 200' % (node_index_name,people_primary,uid)
     p_result = graph.run(c_string)
     peo_list = []
     eve_list = []
@@ -1214,7 +1324,7 @@ def get_people_graph(uid):#获取人物节点图谱
 
 def get_event_graph(uid):#获取事件节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 100' % (event_index_name,event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event_id,r,m,labels(m) LIMIT 200' % (event_index_name,event_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1304,7 +1414,7 @@ def get_event_graph(uid):#获取事件节点图谱
 
 def get_org_graph(uid):#获取机构节点图谱
     
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.org_id,r,m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.org_id,r,m,labels(m) LIMIT 200' % (org_index_name,org_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1394,7 +1504,7 @@ def get_org_graph(uid):#获取机构节点图谱
 
 def get_special_event_graph(uid):#获取专题节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event,r,m,labels(m) LIMIT 100' % (special_event_index_name,special_event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.event,r,m,labels(m) LIMIT 200' % (special_event_index_name,special_event_primary,uid)
 
     p_result = graph.run(p_string)
     eve_list = []
@@ -1438,7 +1548,7 @@ def get_special_event_graph(uid):#获取专题节点图谱
 
 def get_group_graph(uid):#获取群体节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.group,r,m,labels(m) LIMIT 100' % (group_index_name,group_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.group,r,m,labels(m) LIMIT 200' % (group_index_name,group_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1491,7 +1601,7 @@ def get_group_graph(uid):#获取群体节点图谱
 
 def get_wiki_graph(uid):#获取维基节点图谱
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.url,r,m,labels(m) LIMIT 100' % (wiki_url_index_name,wiki_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.url,r,m,labels(m) LIMIT 200' % (wiki_url_index_name,wiki_primary,uid)
 
     p_result = graph.run(p_string)
     peo_list = []
@@ -1558,7 +1668,7 @@ def get_wiki_graph(uid):#获取维基节点图谱
             
 def get_people_geo(uid):#根据人物id查询人物的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (node_index_name,node_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (node_index_name,node_primary,uid)
     p_result = graph.run(p_string)
     peo_list = [uid]
     org_list = []
@@ -1583,7 +1693,7 @@ def get_people_geo(uid):#根据人物id查询人物的地图
 
 def get_event_geo(uid):#根据事件id查询事件的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (event_index_name,event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (event_index_name,event_primary,uid)
     p_result = graph.run(p_string)
     peo_list = []
     org_list = []
@@ -1608,7 +1718,7 @@ def get_event_geo(uid):#根据事件id查询事件的地图
 
 def get_org_geo(uid):#根据机构id查询机构的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (org_index_name,org_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (org_index_name,org_primary,uid)
     p_result = graph.run(p_string)
     peo_list = []
     org_list = [uid]
@@ -1633,7 +1743,7 @@ def get_org_geo(uid):#根据机构id查询机构的地图
 
 def get_topic_geo(uid):#根据专题id查询专题的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (special_event_index_name,special_event_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (special_event_index_name,special_event_primary,uid)
     p_result = graph.run(p_string)
     event_list = []    
     for item in p_result:
@@ -1652,7 +1762,7 @@ def get_topic_geo(uid):#根据专题id查询专题的地图
 
 def get_group_geo(uid):#根据群体id查询群体的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 100' % (group_index_name,group_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (group_index_name,group_primary,uid)
     p_result = graph.run(p_string)
     peo_list = []
     org_list = []
