@@ -121,6 +121,15 @@ def get_graph():#图谱页面
     
     return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
+@mod.route('/graph_index/')
+@login_required
+def get_graph_index():#首页图谱页面
+
+    relation = get_all_graph()
+    flag = 'Success'
+    
+    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
+
 @mod.route('/map/', methods=['GET','POST'])
 @login_required
 def get_map():#地图页面
