@@ -63,7 +63,15 @@ def index():#首页
     except:
         group_count = 0
 
-    neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count}
+    try:
+        wiki_string = 'START start_node=node:'+wiki_url_index_name+'("'+wiki_primary+':*") return count(start_node)'
+        wiki_object = graph.run(wiki_string)
+        for item in wiki_object:
+            wiki_count = item['count(start_node)']
+    except:
+        wiki_count = 0
+
+    neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count, 'wiki':wiki_count}
     
     weibo_list = get_hot_weibo()
 
@@ -75,7 +83,7 @@ def index():#首页
 @mod.route('/get_index_map/')
 def get_index_map():#地图
 
-    map_count = get_map_count()
+    map_count = get_map_count(5000)
 
     return json.dumps(map_count)
 
@@ -110,7 +118,16 @@ def get_graph():#图谱页面
     else:
         relation = []
         flag = 'Wrong Type'
-    print relation
+    
+    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
+
+@mod.route('/graph_index/')
+@login_required
+def get_graph_index():#首页图谱页面
+
+    relation = get_all_graph()
+    flag = 'Success'
+    
     return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
@@ -317,7 +334,7 @@ def get_card():#卡片罗列页面
     return render_template('index/card_display.html', result = result, flag = flag)
 
 @mod.route('/card_rank/', methods=['GET','POST'])
-def card_rank():#卡片罗列页面
+def card_rank():#卡片罗列页面排序
 
     rank_data = request.form['r_data']
     node_type = request.form['node_type']

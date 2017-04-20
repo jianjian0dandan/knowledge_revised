@@ -654,19 +654,20 @@ def delete_nodes():
 def ajax_show_wiki():
     #
     input_data = request.get_json()
-    input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
     # print '0000000000000'
     results = show_wiki(input_data)
-    html = "'''"
-    html += results.encode("utf-8")
-    html += "'''"
+    # html = "'''"
+    html = results.encode("utf-8")
+    # html += "'''"
+    # print html
     return html
 
 @mod.route('/show_wiki_basic/', methods=['GET', 'POST'])
 def ajax_show_wiki_basic():
     #展示基本的
     input_data = request.get_json()
-    input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
     results = show_wiki_basic(input_data)
     # if not results:
     #     results = ''
@@ -676,7 +677,7 @@ def ajax_show_wiki_basic():
 def ajax_show_wiki_related():
     #展示关联用户、机构、事件
     input_data = request.get_json()
-    input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E6%96%AF%E5%B8%8C%E6%B2%83%E9%87%8C%E7%BA%B3%E6%8B%89%E5%BB%B6'}
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E6%96%AF%E5%B8%8C%E6%B2%83%E9%87%8C%E7%BA%B3%E6%8B%89%E5%BB%B6'}
     results = show_wiki_related(input_data)
     # if not results:
     #     results = ''
