@@ -6,6 +6,8 @@ from elasticsearch import Elasticsearch
 from global_config import *
 import math
 from time_utils import ts2datetime, datetime2ts, ts2date
+import MySQLdb
+# from config import mysql_charset, mysql_db, mysql_host, mysql_passwd, mysql_port, mysql_user
 
 # user profile info
 es_user_profile = Elasticsearch(user_profile_host, timeout=600)
@@ -140,6 +142,25 @@ sensitive_index_type = 'sensitive'
 
 #neo4j
 graph = Graph(neo4j_data_path, user=neo4j_name, password=neo4j_password)
+
+#wiki   mysql
+def getconn():
+    conn = MySQLdb.connect(
+        host=mysql_host,
+        port=mysql_port,
+        user=mysql_user,
+        passwd=mysql_passwd,
+        db=mysql_db,
+        charset=mysql_charset
+    )
+    return conn
+
+def closeAll(conn, cur):
+    cur.close()
+    conn.commit()
+    conn.close()
+
+
 
 #neo4j查询事件名
 
@@ -293,6 +314,9 @@ def event_detail_search(eid_list, submit_user):
     result = []
     for i in event_result:
         event = []
+        # print i
+        if not i['found']:
+            continue
         i_fields = i['fields']
         for j in fields_list:
             if not i_fields.has_key(j):
@@ -329,6 +353,20 @@ def get_evaluate_max():
         max_result[evaluate] = max_evaluate
     return max_result
 
+def deal_user_tag(tag,submit_user):
+    # tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
+    # print tag,'======!!=========='
+    tag_list = tag.split('&')
+    left_tag = []
+    keep_tag = []
+    for i in tag_list:
+        user_tag = i.split('_')
+        if user_tag[0] == submit_user:
+            keep_tag.append(user_tag[1])
+        else:
+            left_tag.append(i)
+    return [keep_tag, left_tag]
+
 def user_detail_search(uid_list,submit_user):
     evaluate_max = get_evaluate_max()
     if not uid_list:
@@ -364,8 +402,34 @@ def user_detail_search(uid_list,submit_user):
                 event.append(math.log(i_fields[j][0] / (evaluate_max[j] * 9+1) + 1, 10) * 100)
             else:
                 event.append(i_fields[j][0])
+        event.append(search_type(i['_id']))
         result.append(event)
     return result
+
+def search_type(uid):
+    try:
+        type_list = es_user_profile.get(index=profile_index_name, doc_type=profile_index_type, \
+                id=uid,fields=['id', 'verified_type'])
+    except:
+        return 'user'
+    user_list1 = []
+    org_list1 = []
+    # print type_list
+    type_name = ''
+
+    if type_list['found'] == False:
+        return 'user'
+        # user_list1.append(i['_id'])
+    else:
+        if not type_list['fields'].has_key('verified_type'):
+            return 'user'
+        verified_type = type_list['fields']['verified_type'][0]
+        if int(verified_type) in org_list:
+            type_name = 'org'
+        else:
+            type_name = 'user'
+    return type_name
+
 
 def get_group(g_name, submit_user):
     if g_name == '': 

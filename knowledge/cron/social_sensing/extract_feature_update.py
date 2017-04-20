@@ -13,8 +13,7 @@ from time_utils import ts2datetime, datetime2ts, ts2datehour, datehour2ts
 
 from elasticsearch import Elasticsearch
 from global_utils import es_flow_text as es
-from parameter import diffusion_time, diffusion_time_interval
-from parameter import RUN_TYPE
+from parameter import RUN_TYPE,diffusion_time, diffusion_time_interval
 
 
 topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environment':5, 'medicine':6,\
@@ -24,24 +23,14 @@ topic_field_dict = {'art':1,'computer':2,'economic':3, 'education':4,'environmen
 
 
 
-def organize_feature(mid, topic):
-    if RUN_TYPE:
-        ts = time.time()
-    else:
-        ts = datetime2ts("2016-11-21")
+def organize_feature(mid, ts):
     index_list = []
-    for i in range(7):
-        index_list.append("flow_text_"+ts2datetime(ts-i*24*3600))
-
-    result = dict()
-    for iter_index in index_list:
-        if not es.indices.exists(index=iter_index):
-            continue
-        try:
-            result = es.get(index=iter_index, doc_type="text", id=mid)["_source"]
-            break
-        except:
-            pass
+    single_index = "flow_text_"+ts2datetime(ts)
+    index_list.append("flow_text_"+ts2datetime(ts))
+    next_index = "flow_text_"+ts2datetime(ts+24*3600)
+    if es.indices.exists(next_index):
+        index_list.append(next_index)
+    result = es.get(index=single_index, doc_type="text", id=mid)["_source"]
     if not result:
         return [0, 0, 0, 0, 0, 0,0]
 
@@ -132,13 +121,13 @@ def organize_feature(mid, topic):
     return feature_list
 
 
-def trendline_list(mid, total_value):
+def trendline_list(mid, total_value, mid_ts):
     if RUN_TYPE:
         ts = time.time()
     else:
-        ts = datetime2ts("2016-11-19")
+        ts = datetime2ts("2016-11-20")
+    """
     index_list = []
-    nn = 24*3600/diffusion_time_interval ###
     for i in range(diffusion_time):
         index_list.append("flow_text_"+ts2datetime(ts-i*24*3600))
 
@@ -154,16 +143,17 @@ def trendline_list(mid, total_value):
 
     if not result:
         return []
+    """
 
-
+    nn = 24*3600/diffusion_time_interval ###
     current_list = []
     rising_list = []
     falling_list = []
     exist_time_list = []
     total_time_list = []
 
-    timestamp = result["timestamp"]
-    start_ts = timestamp
+    timestamp = mid_ts
+    start_ts = mid_ts
     timestamp = datehour2ts(ts2datehour(timestamp))
     for i in range(diffusion_time*nn):
         total_time_list.append(timestamp+i*diffusion_time_interval)

@@ -26,12 +26,12 @@ function calculation(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -111,7 +111,7 @@ function calculation(data) {
                     }else if (value== -1){
                         return '正在计算';
                     }else if (value==1){
-                        return '计算完成';
+                        return '<a style="cursor: pointer;">计算完成</a>';
                     }
                 },
             },
@@ -123,7 +123,7 @@ function calculation(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '<a>查看</a>';
+                    return '<a style="cursor: pointer;">查看</a>';
                 },
             },
         ],

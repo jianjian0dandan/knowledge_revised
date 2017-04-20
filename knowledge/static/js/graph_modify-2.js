@@ -263,8 +263,7 @@ var rel_table_2={
     "交互":"friend",
     "业务关联":"colleague",
     "其他关系":"organization_tag",
-    "交互":"friend",
-    "亲属":"relative",
+    "亲属关系":"relative",
     "上下级关系":"leader",
     "自述关联":"colleague",
     "IP关联":"ip_relation",
@@ -274,10 +273,11 @@ function relation_add(data) {
     var data=eval(data);
     rel_list(data);
 }
-
+var _other;
 function rel_list(data) {
     var show_rel=data[0].rel_list;
     var node1,node2;
+    $('.relation .have').empty();
     if (data[0].node1[1]==''){
         node1 = data[0].node1[0];
     }else {
@@ -289,6 +289,7 @@ function rel_list(data) {
         node2 = data[0].node2[1];
     }
     //-------------
+    $('#new_rel').empty();
     if (show_rel==''||show_rel=='NULL'||show_rel=='unknown'||show_rel.length==0){
         $('.relation .have').append('<span>暂无</span> ');
     }else {
@@ -300,24 +301,28 @@ function rel_list(data) {
     };
     if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Event')||
         (((end_type=='User')||(end_type=='Org'))&&start_type=='Event')){
+        _other='other_relation';
         $('.relation #new_rel').append(
             '<option value="join" title="参与事件">参与事件</option>'+
             '<option value="discuss" title="参与舆论">参与舆论</option>'+
             '<option value="other_relation" title="其他关系">其他关系</option>'
         );
     }else if (start_type=='Event'&&end_type=='Event'){
+        _other='event_other';
         $('.relation #new_rel').append(
             '<option value="contain" title="主题关联">主题关联</option>'+
             '<option value="event_other" title="其他关系">其他关系</option>'
         );
     }else if ((((start_type=='User')||(start_type=='Org'))&&end_type=='Org')||
         (((end_type=='User')||(end_type=='Org'))&&start_type=='Org')){
+        _other='organization_tag';
         $('.relation #new_rel').append(
             '<option value="friend" title="交互">交互</option>'+
             '<option value="colleague" title="业务关联">业务关联</option>'+
             '<option value="organization_tag" title="其他关系">其他关系</option>'
         );
     } else if (start_type=='User'&&end_type=='User'){
+        _other='user_tag';
         $('.relation #new_rel').append(
             '<option value="friend" title="交互">'+'交互'+'</option>'+
             '<option value="relative" title="亲属">亲属</option>'+
@@ -329,6 +334,25 @@ function rel_list(data) {
     }
     $('.relation').show();
     $('.del').on('click',function () {
+        var pre=$(this).prev('a')[0].innerText;
+        var delt_url;
+        var reg=new RegExp("其他关系");
+        if (reg.test(pre.toString())){
+            delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
+                    '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+                    '&node2_index_name='+name_index_2+'&rel='+_other+','+pre.toString().substr(5);
+        }else {
+            delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
+                '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
+                '&node2_index_name='+name_index_2+'&rel='+rel_table_2[pre];
+        }
+        $.ajax({
+            url: delt_url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:yes_no
+        });
         $(this).prev().remove('a');
         $(this).remove();
     });
@@ -338,16 +362,23 @@ $('.yes').on('click',function () {
     var rel='';
     if (rel_table[new_add]=='其他关系'){
         var other=$('.other_rel').val();
-        $('.relation .have').append(' <a title="'+new_add+'">'+ other +'</a> <b class="del icon icon-remove"></b>');
+        $('.relation .have').append(' <a title="'+new_add+'">其他关系-'+ other +'</a> <b class="del icon icon-remove"></b>');
         rel+=new_add+','+other;
     }else {
-        $('.relation .have').append(' <a>'+ rel_table[new_add] +'</a> <b class="del icon icon-remove"></b>');
+        if (new_add=='colleague'){
+            if (start_type=='User'&&end_type=='User'){
+                $('.relation .have').append(' <a>业务关联</a> <b class="del icon icon-remove"></b>');
+            }else {
+                $('.relation .have').append(' <a>自述关联</a> <b class="del icon icon-remove"></b>');
+            }
+        }else {
+            $('.relation .have').append(' <a>'+ rel_table[new_add] +'</a> <b class="del icon icon-remove"></b>');
+        }
         rel=new_add;
     };
     var creat_url='/construction/create_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
         '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
         '&node2_index_name='+name_index_2+'&rel='+rel;
-    console.log(creat_url)
     $.ajax({
         url: creat_url,
         type: 'GET',
@@ -356,20 +387,18 @@ $('.yes').on('click',function () {
         success:yes_no
     });
     $('.del').on('click',function () {
-        var pre=$(this).prev();
-        var pre_tx=pre.text();
+        var pre=$(this).prev('a')[0].innerText;
         var delt_url;
-        if (!$(pre).attr('title')){
+        var reg=new RegExp("其他关系");
+        if (reg.test(pre.toString())){
             delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
                 '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
-                '&node2_index_name='+name_index_2+'&rel='+rel_table_2[pre];
+                '&node2_index_name='+name_index_2+'&rel='+_other+','+pre.toString().substr(5);
         }else {
             delt_url='/construction/delete_relation/?node_key1='+name_type_1+'&node1_id='+uid_1+
                 '&node1_index_name='+name_index_1+'&node_key2='+name_type_2+'&node2_id='+uid_2+
-                '&node2_index_name='+name_index_2+'&rel='+$(pre).attr('title')+','+pre_tx;
+                '&node2_index_name='+name_index_2+'&rel='+rel_table_2[pre];
         }
-        $(this).prev().remove('a');
-        $(this).remove();
         $.ajax({
             url: delt_url,
             type: 'GET',
@@ -377,6 +406,8 @@ $('.yes').on('click',function () {
             async: true,
             success:yes_no
         });
+        $(this).prev().remove('a');
+        $(this).remove();
     });
 })
 function add_rel(value) {
@@ -388,7 +419,7 @@ function add_rel(value) {
     }
 };
 function yes_no(data) {
-    if (data== true){
+    if (data== 1){
         alert('修改成功');
     }else {
         alert('修改失败');

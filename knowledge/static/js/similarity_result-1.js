@@ -55,12 +55,12 @@ function person(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -182,12 +182,12 @@ function person(data) {
                 formatter: function (value, row, index) {
                     if (row[1].sim=='not exist'){
                         var infor=row[1].uname+','+row[1].uid+',User';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (row[1].sim==0){
                         return '尚未计算';
                     }else if (row[1].sim==1){
                         var go=row[1].uid+',User';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (row[1].sim==-1){
                         return '正在计算';
                     }
@@ -215,12 +215,12 @@ function agencies(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -342,12 +342,12 @@ function agencies(data) {
                 formatter: function (value, row, index) {
                     if (row[1].sim=='not exist'){
                         var infor=row[1].uname+','+row[1].id+',Org';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row[1].uid+',Org';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -375,12 +375,12 @@ function events(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -506,12 +506,12 @@ function events(data) {
                 formatter: function (value, row, index) {
                     if (row[1].sim=='not exist'){
                         var infor=row[1].name+','+row[1].id+',Event';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row[1].uid+',Event';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }

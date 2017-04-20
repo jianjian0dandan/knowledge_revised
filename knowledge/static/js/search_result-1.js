@@ -20,7 +20,6 @@ $.ajax({
     success:result
 });
 function result(data) {
-    console.log(data)
     var data=eval(data);
     if (simple_advanced=='s'){
         $('.related_network').hide();
@@ -42,6 +41,7 @@ function result(data) {
 }
 //相关网络
 function network(n_data) {
+    $('.network_1').css({display:'none'});
     var n_data = eval(n_data);
     var links = [];
     $.each(n_data,function (index,item) {
@@ -262,17 +262,6 @@ function network(n_data) {
         //path.attr("d", linkArc);//连接线
         circle.attr("transform", transform1);//圆圈
         text.attr("transform", transform2);//顶点文字
-        //edges_text.attr("transform", transform3);
-        //text2.attr("d", linkArc);//连接线文字
-        //console.log("text2...................");
-        //console.log(text2);
-        //edges_line.attr("x1",function(d){ return d.source.x; });
-        //edges_line.attr("y1",function(d){ return d.source.y; });
-        //edges_line.attr("x2",function(d){ return d.target.x; });
-        //edges_line.attr("y2",function(d){ return d.target.y; });
-
-        //edges_line.attr("x",function(d){ return (d.source.x + d.target.x) / 2 ; });
-        //edges_line.attr("y",function(d){ return (d.source.y + d.target.y) / 2 ; });
 
 
         edges_line.attr('d', function(d) {
@@ -316,6 +305,7 @@ function network(n_data) {
 //相关人物
 function person(p_data) {
     var p_data = eval(p_data);
+    $('.person_1').css({display:'none'});
     $('#person').bootstrapTable('load', p_data);
     $('#person').bootstrapTable({
         data:p_data,
@@ -331,7 +321,7 @@ function person(p_data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -450,12 +440,12 @@ function person(p_data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.uname+','+row.uid+',User';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.uid+',User';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -463,8 +453,8 @@ function person(p_data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='uid'){
+                window.open('/index/person/?user_id='+value)
             }
         }
     });
@@ -473,6 +463,7 @@ function person(p_data) {
 //相关机构
 function agencies(data) {
     var data = eval(data);
+    $('.agencies_1').css({display:'none'});
     $('#agencies').bootstrapTable('load', data);
     $('#agencies').bootstrapTable({
         data:data,
@@ -488,7 +479,7 @@ function agencies(data) {
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -607,12 +598,12 @@ function agencies(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.uname+','+row.id+',Org';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Org';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -620,8 +611,8 @@ function agencies(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='id'){
+                window.open('/index/organization/?user_id='+value)
             }
         }
     });
@@ -630,6 +621,7 @@ function agencies(data) {
 //相关事件
 function events(e_data) {
     var e_data = eval(e_data);
+    $('.events_1').css({display:'none'});
     $('#events').bootstrapTable('load', e_data);
     $('#events').bootstrapTable({
         data:e_data,
@@ -640,12 +632,12 @@ function events(e_data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -764,12 +756,12 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.name+','+row.id+',Event';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Event';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -777,8 +769,8 @@ function events(e_data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='name'){
+                window.open('/index/event/?user_id='+row.id);
             }
         }
     });
@@ -787,6 +779,7 @@ function events(e_data) {
 //相关群体
 function organization(data) {
     var data = eval(data);
+    $('.organization_1').css({display:'none'});
     $('#organization').bootstrapTable('load', data);
     $('#organization').bootstrapTable({
         data:data,
@@ -797,12 +790,12 @@ function organization(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -903,12 +896,12 @@ function organization(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.group_name+','+row.id+',Group';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row.id+',Group';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -916,8 +909,8 @@ function organization(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='group_name'){
+                window.open('/group/result/?group_name='+row.id);
             }
         }
     });
@@ -926,6 +919,7 @@ function organization(data) {
 //相关专题
 function subject(data) {
     var data = eval(data);
+    $('.subject_1').css({display:'none'});
     $('#subject').bootstrapTable('load', data);
     $('#subject').bootstrapTable({
         data:data,
@@ -936,12 +930,12 @@ function subject(data) {
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -1033,12 +1027,12 @@ function subject(data) {
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
                         var infor=row.event+','+row.id+',SpecialEvent';
-                        return '无相似计算任务'+'<br/><a onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
+                        return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
                         var go=row[1].uid+',SpecialEvent';
-                        return '<a onclick="go_jump(\''+ go +'\')">计算完成</a>';
+                        return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
                     }
@@ -1046,8 +1040,8 @@ function subject(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
-                alert('还未计算完成。')
+            if (field=='event'){
+                window.open('/theme/result/?theme_name='+row.id);
             }
         }
     });
@@ -1068,7 +1062,6 @@ function add_new_task(row) {
         async: true,
         success:function (data) {
             var data=eval(data)
-            console.log(data)
             if (data=='yes'){
                 alert('创建成功。');
             }else {
@@ -1083,7 +1076,7 @@ function go_jump(uid_type) {
     window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]);
 };
 
-// setTimeout(function () {
-//     localStorage.removeItem('temp');
-// },60000);
+setTimeout(function () {
+    localStorage.removeItem('temp');
+},60000);
 

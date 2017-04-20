@@ -50,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div id="statis-3" style="margin:30px 90px 0 0;"></div>
+        <div id="statis-3" style="margin:0 90px 0 0;height: 350px;"></div>
     </div>
     <div id="my_hot">
         <div class="hot_event" style="margin-left: 80px">
@@ -77,40 +77,6 @@
                 <button class="event_more" style="margin-top: 6px">+查看更多</button>
             </div>
         </div>
-
-        <div class="hot_user" style="padding-top: 5px">
-            <h3>
-                <p style="width: 10px;height: 20px;background-color: #df504c;display: inline-block;"></p>
-                <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">热点人物</span>
-            </h3>
-            <div class="user_details" style="margin-top: 12px">
-                <div class="details-1" style="text-align: center;color: white">
-                    <span>昵称</span>
-                    <span>粉丝</span>
-                    <span>微博</span>
-                    <span>影响力</span>
-                </div>
-                {% if people_list %}
-                {% for people in people_list %}
-                <div class="details-2">
-                    <span>{{people['uname']}}</span>
-                    <span>{{people['fansnum']}}</span>
-                    <span>{{people['statusnum']}}</span>
-                    <span>{{people['influence']}}</span>
-                </div>
-                {% endfor %}
-                {% else %}
-                <div class="details-2">
-                    <span>暂无数据</span>
-                    <span>暂无数据</span>
-                    <span>暂无数据</span>
-                    <span>暂无数据</span>
-                </div>
-                {% endif %}
-                <button class="user_more">+查看更多</button>
-            </div>
-        </div>
-
         <div class="my_focus">
             <h3>
                 <p style="width: 10px;height: 20px;background-color: #62c14d;display: inline-block;"></p>
@@ -145,9 +111,44 @@
                     <span>暂无数据</span>
                 </div>
                 {% endif %}
-                <button class="focus_more">+查看更多</button>
+                <button class="focus_more" style="margin-right: -20px;">+查看更多</button>
             </div>
         </div>
+
+        <div class="hot_user" style="padding-top: 5px">
+            <h3>
+                <p style="width: 10px;height: 20px;background-color: #df504c;display: inline-block;"></p>
+                <span style="font-size: 22px;color:#a9f0ff;font-weight: 900">热点人物</span>
+            </h3>
+            <div class="user_details" style="margin-top: 12px">
+                <div class="details-1" style="text-align: center;color: white">
+                    <span>昵称</span>
+                    <span>粉丝</span>
+                    <span>微博</span>
+                    <span>影响力</span>
+                </div>
+                {% if people_list %}
+                {% for people in people_list %}
+                <div class="details-2">
+                    <span>{{people['uname']}}</span>
+                    <span>{{people['fansnum']}}</span>
+                    <span>{{people['statusnum']}}</span>
+                    <span>{{people['influence']}}</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="details-2">
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                    <span>暂无数据</span>
+                </div>
+                {% endif %}
+                <button class="user_more" style="margin-right: -25px;">+查看更多</button>
+            </div>
+        </div>
+
+
     </div>
 </div>
 {% endblock %}

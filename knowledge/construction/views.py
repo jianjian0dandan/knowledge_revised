@@ -18,7 +18,7 @@ from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
                   deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
-                  node_delete, delete_relation, deal_event_tag
+                  node_delete, delete_relation, deal_event_tag, show_weibo_list, show_wiki, show_wiki_related,show_wiki_basic
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -52,6 +52,10 @@ def construction_graph_modify():#图谱编辑
 @mod.route('/node/')
 def add_node():
     return render_template('construction/addmap.html')
+
+@mod.route('/wiki/')
+def weiki():
+    return render_template('construction/wiki.html')
 
 @mod.route('/show_in/')
 def ajax_recommentation_in():
@@ -151,7 +155,18 @@ def ajax_show_user_task_status():
             continue
     return json.dumps(result_list)
 
-#事件提交任务,推荐方式或手写
+# show ts weibo
+@mod.route("/show_weibo_list/")
+def ajax_show_weibo_list():
+    ts = request.args.get("ts", "1479571200")
+    message_type = request.args.get("type", "1") # 1: origin, 3:retweet
+    sort_item = request.args.get("sort", "retweeted") # 排序, retweeted, comment, timestamp, sensitive
+
+    results = show_weibo_list(message_type,ts,sort_item)
+
+    return json.dumps(results)
+
+#事件提交任务,或手写
 @mod.route('/submit_event/', methods=['GET', 'POST'])
 def ajax_submit_event():
     input_data = dict()
@@ -190,7 +205,7 @@ def ajax_submit_identify_file():
 #事件任务状态
 @mod.route('/show_event_task/')
 def ajax_show_event_task():
-    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}}})['hits']['hits']
+    results = es_event.search(index=event_task_name, doc_type=event_task_type, body={"query":{"match_all":{}},"size":10000})['hits']['hits']
     result_list = []
     for i in results:
         result_list.append(i['_source'])
@@ -266,7 +281,7 @@ def ajax_delete_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event
     node1_id = request.args.get('node1_id', '1565668374')
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
-    rel = request.args.get('rel', u'relative')
+    rel = request.args.get('rel', u'friend')
     node_key2 = request.args.get('node_key2', 'uid')  # event,uid
     node2_id = request.args.get('node2_id', '2626682903')
     node2_index_name = request.args.get('node2_index_name', 'node_index')
@@ -633,7 +648,40 @@ def delete_nodes():
         print "node_type is error"
         return "0"
 
-#少一个添加！！一会写上。
+
+
+@mod.route('/show_wiki/', methods=['GET', 'POST'])
+def ajax_show_wiki():
+    #
+    input_data = request.get_json()
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    # print '0000000000000'
+    results = show_wiki(input_data)
+    # html = "'''"
+    html = results.encode("utf-8")
+    # html += "'''"
+    # print html
+    return html
+
+@mod.route('/show_wiki_basic/', methods=['GET', 'POST'])
+def ajax_show_wiki_basic():
+    #展示基本的
+    input_data = request.get_json()
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E4%B8%AD%E5%9B%BD%E5%9F%8E%E5%B8%82%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0%E5%88%97%E8%A1%A8'}
+    results = show_wiki_basic(input_data)
+    # if not results:
+    #     results = ''
+    return json.dumps(results)
+
+@mod.route('/show_wiki_related/', methods=['GET', 'POST'])
+def ajax_show_wiki_related():
+    #展示关联用户、机构、事件
+    input_data = request.get_json()
+    # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E6%96%AF%E5%B8%8C%E6%B2%83%E9%87%8C%E7%BA%B3%E6%8B%89%E5%BB%B6'}
+    results = show_wiki_related(input_data)
+    # if not results:
+    #     results = ''
+    return json.dumps(results)
 
 
 # 对2个节点的关系进行模糊查询

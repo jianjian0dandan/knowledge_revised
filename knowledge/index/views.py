@@ -63,7 +63,15 @@ def index():#首页
     except:
         group_count = 0
 
-    neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count}
+    try:
+        wiki_string = 'START start_node=node:'+wiki_url_index_name+'("'+wiki_primary+':*") return count(start_node)'
+        wiki_object = graph.run(wiki_string)
+        for item in wiki_object:
+            wiki_count = item['count(start_node)']
+    except:
+        wiki_count = 0
+
+    neo_count = {'people':peo_count, 'org':org_count, 'event':event_count, 'special_event':special_event_count, 'group':group_count, 'wiki':wiki_count}
     
     weibo_list = get_hot_weibo()
 
@@ -75,7 +83,7 @@ def index():#首页
 @mod.route('/get_index_map/')
 def get_index_map():#地图
 
-    map_count = get_map_count()
+    map_count = get_map_count(5000)
 
     return json.dumps(map_count)
 
@@ -104,10 +112,22 @@ def get_graph():#图谱页面
     elif node_type == 'group':#群体节点图谱
         relation = get_group_graph(user_id)
         flag = 'Success'
+    elif node_type == 'wiki':#维基节点图谱
+        relation = get_wiki_graph(user_id)
+        flag = 'Success'
     else:
         relation = []
         flag = 'Wrong Type'
+    
+    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
+@mod.route('/graph_index/')
+@login_required
+def get_graph_index():#首页图谱页面
+
+    relation = get_all_graph()
+    flag = 'Success'
+    
     return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
@@ -218,7 +238,7 @@ def get_event_atr():#事件属性页面
     
     relation_dict['wiki'] = wiki_list[0:10]
     relation_dict['doc'] = doc_list[0:10]
-
+    
     text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
 
     return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
@@ -314,7 +334,7 @@ def get_card():#卡片罗列页面
     return render_template('index/card_display.html', result = result, flag = flag)
 
 @mod.route('/card_rank/', methods=['GET','POST'])
-def card_rank():#卡片罗列页面
+def card_rank():#卡片罗列页面排序
 
     rank_data = request.form['r_data']
     node_type = request.form['node_type']
@@ -344,7 +364,7 @@ def show_attention():
 
     user_name = request.form['user_name']
     s_type = request.form['s_type']
-    
+
     if s_type == 'people':
         infors = get_people(user_name,2)
     elif s_type == 'event':

@@ -23,19 +23,24 @@ from knowledge.global_utils import es_event, graph, R_RECOMMENTATION as r
 # from knowledge.global_utils import R_RECOMMENTATION_OUT as r_out
 from knowledge.global_utils import R_CLUSTER_FLOW3 as r_cluster
 from knowledge.global_utils import R_CLUSTER_FLOW2 as r_cluster2, R_SENSITIVE_REDIS as sensitvie_r
-from knowledge.global_utils import es_user_portrait as es
+from knowledge.global_utils import es_user_portrait as es, es_prediction, getconn, closeAll
 from knowledge.global_utils import es_recommendation_result, recommendation_index_name, recommendation_index_type
 from knowledge.global_utils import es_user_profile, portrait_index_name, portrait_index_type, profile_index_name, profile_index_type
-from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster
+from knowledge.global_utils import ES_CLUSTER_FLOW1 as es_cluster, es_wiki
 from knowledge.global_utils import p_column, o_column, e_column, s_column, g_column, es_group
 from knowledge.global_utils import es_related_docs, user_docs_name, user_docs_type, event_docs_name, event_docs_type
 from knowledge.global_utils import es_bci_history, sensitive_index_name, sensitive_index_type,event_name_search,user_name_search
 from knowledge.time_utils import ts2datetime, datetime2ts
 from knowledge.global_config import event_task_name, event_task_type, event_analysis_name, event_text_type,\
-special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list
+special_event_primary, group_primary, special_event_name, special_event_type, group_name, group_type,org_list,peo_list,\
+              key_type_dict
 from knowledge.global_config import node_index_name, event_index_name, special_event_node, group_node, people_primary,event_primary,\
-                other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name
+                other_rel, event_other, user_tag, organization_tag, relation_dict, org_primary, org_index_name, wiki_type_name,\
+                wiki_index_name, wiki_url_index_name, wiki_primary
 from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sensitive_score_dict
+from knowledge.extensions import db
+from knowledge.model import PeopleHistory, EventHistory
+from BeautifulSoup import BeautifulSoup
 # from knowledge.cron.event_analysis.event_compute import immediate_compute
 p = Pinyin()
 WEEK = 7
@@ -496,6 +501,7 @@ def submit_event(input_data):
         e_name_string = ''.join(e_name.split('&'))
         event_id = p.get_pinyin(e_name_string)+'-'+str(input_data['event_ts'])  #+str(int(time.time()))
         event_id = event_id.lower()
+        print event_id,'event_id,000000000'
         input_data['en_name'] = event_id
 
     if not input_data.has_key('start_ts'):
@@ -527,6 +533,62 @@ def update_event(event_id, relation_compute):
     os.system("nohup python ./knowledge/cron/event_analysis/event_compute.py imme %s &" % event_id)
     # immediate_compute(event_id)
 
+def show_weibo_list(message_type,ts,sort_item):
+    event_id_all = es_event.search(index=event_analysis_name, doc_type=event_text_type,\
+                   body={"query":{"match_all":{}},"size":10000},fields=['_id'])['hits']['hits']
+    # print event_id_all,'all event id'
+    event_ids = []
+    for i in event_id_all:
+        print i
+        event_ids.append(i['_id'])
+    query_body = {
+        "query": {
+            "bool":{
+                "must":[
+                    {"term":{"type": int(message_type)}},
+                    {"term": {"detect_ts": int(ts)}}
+                ]
+            }
+        },
+        "size": 100,
+        "sort":{sort_item:{"order": "desc"}}
+    }
+
+    text_results = []
+    uid_list = []
+    text_keys = ["text", "retweeted","keywords_string","mid", "comment", "user_fansnum", "timestamp", "geo", "uid"]
+    es_results = es_prediction.search(index="social_sensing_text",doc_type="text", body=query_body)["hits"]["hits"]
+    if not es_results:
+        return []
+
+    for item in es_results:
+        if item['_source']['mid'] in event_ids:
+            print item['_source']['mid']
+            continue
+        item = item["_source"]
+        tmp = dict()
+        for key in text_keys:
+            tmp[key] = item[key]
+        text_results.append(tmp)
+        uid_list.append(item["uid"])
+
+    profile_results = es_user_profile.mget(index=profile_index_name,doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+    for i in range(len(uid_list)):
+        tmp_profile = profile_results[i]
+        if tmp_profile["found"]:
+            tmp = dict()
+            tmp["photo_url"] = tmp_profile["_source"]["photo_url"]
+            tmp["nick_name"] = tmp_profile["_source"]["nick_name"]
+            if not tmp["nick_name"]:
+                tmp["nick_name"] = uid_list[i]
+            text_results[i].update(tmp)
+        else:
+            tmp = dict()
+            tmp["photo_url"] = ""
+            tmp["nick_name"] = tmp_profile["_id"]
+            text_results[i].update(tmp)
+
+    return text_results
 
 def submit_event_file(input_data):
     submit_ts = input_data['submit_ts']
@@ -617,12 +679,14 @@ def show_relation(node_key1, node1_id, node1_index_name, node_key2, node2_id, no
         if relation in [other_rel, event_other, organization_tag, user_tag]:
             relation_name = dict(item)['r']['name']
             relaiton_name_list = relation_name.split(',')
+            # print relaiton_name_list, 'relaiton_name_list,99999999999999'
             for i_name in relaiton_name_list:
                 relation_ch2 = relation_ch+ '-' +i_name
                 relation = relation +'&' + relation_name
                 rel_list.append(relation_ch2)
         else:
             rel_list.append(relation_ch)
+    rel_list = [i for i in set(rel_list)]
     if node_key1 == 'uid' or node_key1 == 'org_id':
         node1_name = user_name_search(node1_id)
     else:
@@ -653,7 +717,7 @@ def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2,
         rel_name = rel_union.split(',')[1:]
         # print rel_name, '=============='
         c_string = "START start_node=node:%s(%s='%s'), end_node=node:%s(%s='%s') \
-                    MATCH (start_node)-[r:%s]->(end_node) RETURN type(r), r.name" % (node1_index_name,\
+                    MATCH (start_node)-[r:%s]-(end_node) RETURN type(r), r.name" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
         result = graph.run(c_string)
         exist_relation = []
@@ -665,28 +729,33 @@ def delete_relation(node_key1, node1_id, node1_index_name, rel_union, node_key2,
                    MATCH (start_node)-[r:%s]->(end_node) delete r" % (node1_index_name,\
                     node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
             result = graph.run(del_string)
-        exist_relation = set(exist_relation)-set(rel_name)
-        print exist_relation,'00000000000'
-        exist_relation2 = [i for i in exist_relation]
+        exist_relation3 = set(exist_relation)-set(rel_name)
+        print exist_relation3,'1111100000000000'
+        exist_relation2 = [i for i in exist_relation3]
         add_relation_string = ','.join(exist_relation2)
+        print add_relation_string,'add_relation_string'
+        if add_relation_string == '':
+            return '1'
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
                 create (start_node)-[r:%s {name:'%s'} ]->(end_node)  " %(node1_index_name,\
                 node_key1, node1_id, node2_index_name, node_key2, node2_id, rel, add_relation_string)
+        print c_string
         try:
             result = graph.run(c_string)
         except:
             return 0
     else:
         c_string = "START start_node=node:%s(%s='%s'),end_node=node:%s(%s='%s')\
-                match (start_node)-[r:%s]->(end_node) delete r " %(node1_index_name,\
+                match (start_node)-[r:%s]-(end_node) delete r " %(node1_index_name,\
                 node_key1, node1_id, node2_index_name, node_key2, node2_id, rel)
+        print c_string
         try:
             result = graph.run(c_string)
         except:
-            return 0
+            return '0'
         # for i in result:
         #     print i
-    return 1
+    return '1'
 
     #     rel = Relationship(node1, rel, node2)
     #     graph.create(rel)
@@ -744,7 +813,7 @@ def search_event(item, field, submit_user):
                 'should':[
                     {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
                     {"wildcard":{'en_name':'*'+str(item.encode('utf-8'))+'*'}},            
-                    # {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
+                    {"wildcard":{'name':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
             }
 
@@ -1077,6 +1146,7 @@ def node_delete(node_type, item, submit_user):
     if node_type == 'Event':
         try:
             es_event.delete(index=event_analysis_name,doc_type=event_text_type, id=item)
+            es_event.delete(index=event_task_name, doc_type=event_task_type, id=item)
         except:
             return 'not in es'
         index_n = event_index_name
@@ -1145,4 +1215,147 @@ def deal_editor_tag(tag ,submit_user):
             left_tag.append(i)
     return [keep_tag, left_tag]
 
+
+
+def show_wiki(data):
+    print data,'data'
+    name = data['name']
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    print html_id,'-----------'
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    if data.has_key('url'):
+        url = data['url']
+    # result = {}
+    # return url
+    # try:
+    #     search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
+    #     print search_results
+    #     # return search_results['content']
+    # except:
+    #     return ''
+    # result['content'] = search_results['content']
+    # result['name'] = search_results['name']
+    # result['url'] = search_results['url']
+    print url
+    sql = "select WikiID from wiki where Url=%s "
+    html_id = cur.execute(sql, (url,))
+    # print html_id,'----------'
+    if not html_id:
+        html_code = ''
+    else:
+        html_id_sql = cur.fetchmany(html_id)
+        closeAll(conn, cur)
+        f = open('/mnt/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
+        content_text = f.read()
+    soup = BeautifulSoup(content_text)
+    content_text = soup.find('div', {'id': 'mw-content-text'})
+    # print type(content_text),'000999'
+    # result['html'] = str(content_text)
+    # print content_text,'============'
+    return str(content_text)
+
+def show_wiki_basic(data):
+    conn = getconn()
+    cur = conn.cursor()
+    name = data['name']
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    # if data.has_key('url'):
+    #     url = data['url']
+    result = {}
+    # return url
+    try:
+        search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
+        print search_results
+        # return search_results['content']
+    except:
+        return ''
+    result['content'] = search_results['content']
+    result['name'] = search_results['name']
+    result['url'] = search_results['url']
+    closeAll(conn, cur)
+    return result
+
+def search_user_idname(uid_list):
+    result = []
+    exist_portrait_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, body={'ids':uid_list}, fields=['uid','uname'], _source=False)['docs']
+    for i in exist_portrait_result:
+        if i['found'] == False:
+            continue
+            # result.append([i['_id'], i['_id']])
+        else:
+            name = i['fields']['uname'][0]
+            if name == '':
+                name = i['_id']
+            result.append([i['_id'], name])
+    return result
+
+def search_event_idname(uid_list):
+    result = []
+    exist_portrait_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={'ids':uid_list}, fields=['en_name','name'], _source=False)['docs']
+    for i in exist_portrait_result:
+        if i['found'] == False:
+            continue
+            # result.append([i['_id'], i['_id']])
+        else:
+            name = i['fields']['name'][0]
+            if name == '':
+                name = i['_id']
+            result.append([i['_id'], name])
+    return result
+
+def show_wiki_related(data):
+    conn = getconn()
+    cur = conn.cursor()
+    name = data['name']
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        return ''
+    # if data.has_key('url'):
+    #     url = data['url']
+    result = {}
+    
+    url = data['url']
+    s_string = 'start d=node:'+ wiki_url_index_name +'('+wiki_primary+ '="' + url +'") match (d)-[r]-(e) return labels(e), e'
+    print s_string
+    result = graph.run(s_string)
+    node_result = {}
+    for i in result:
+        ii = dict(i)
+        node_label = ii['labels(e)'][0]
+        basic_key = key_type_dict[node_label]
+        node_id = ii['e'][basic_key]
+        try:
+            node_result[node_label].append(node_id)
+        except:
+            node_result[node_label] = []
+            node_result[node_label].append(node_id)
+    final_result = {}
+    final_result['User'] = []
+    final_result['Org'] = []
+    final_result['Event'] = []
+    for k,v in node_result.iteritems():
+        if k == 'User':
+            final_result[k] = search_user_idname(v)
+        if k == 'Org':
+            final_result[k] = search_user_idname(v)
+        if k == 'Event':
+            final_result[k] = search_event_idname(v)
+    return final_result
 

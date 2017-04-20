@@ -15,7 +15,7 @@ function theme_overview(data) {
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5,10,15],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
@@ -40,7 +40,7 @@ function theme_overview(data) {
                 }
             },
             {
-                title: "包含人数",//标题
+                title: "包含事件",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -72,11 +72,15 @@ function theme_overview(data) {
                     if (row[3].length==0){
                         return '暂无';
                     }else {
-                        var key='';
-                        for (var k=0;k<row[3].length;k++){
-                            key+=row[3][k]+' ';
+                        var words=row[3];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return key;
                     }
 
                 },
@@ -92,11 +96,15 @@ function theme_overview(data) {
                     if (row[4].length==0){
                         return '暂无';
                     }else {
-                        var tag='';
-                        for (var k=0;k<row[4].length;k++){
-                            tag+=row[4][k]+' ';
+                        var words=row[4];
+                        words.removeByValue('');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return tag;
                     }
                 },
             },
@@ -108,7 +116,7 @@ function theme_overview(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '查看专题';
+                    return '<a style="cursor: pointer;">查看专题</a>';
                 },
             },
             {
@@ -119,7 +127,7 @@ function theme_overview(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '编辑专题';
+                    return '<a style="cursor: pointer;">编辑专题</a>';
                 },
             },
             //多选框
@@ -134,15 +142,35 @@ function theme_overview(data) {
         ],
         onCheck:function (row) {
             theme_diff.push(row[1]);
+            if (theme_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onUncheck:function (row) {
             theme_diff.removeByValue(row[1]);
+            if (theme_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onCheckAll:function (row) {
             theme_diff.push(row[1]);
+            if (theme_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onUncheckAll:function (row) {
             theme_diff.removeByValue(row[1]);
+            if (theme_diff.length>1){
+                $('#container .group_operating .compared').css({color:'#337ab7'});
+            }else {
+                $('#container .group_operating .compared').css({color:'#9c9c9c'});
+            }
         },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='查看专题') {
@@ -156,10 +184,12 @@ function theme_overview(data) {
 
 var theme_diff=[];
 $('#container .group_operating .operating .compared').on('click',function () {
-    if (theme_diff.length==2){
-        window.open('/theme/compare/?theme_name1='+theme_diff[0]+'&theme_name2='+theme_diff[1]);
-    }else {
-        alert('请您注意选择的专题，您只能选择2个。(请检查您勾选的专题)')
+    if ($(this).css('color')=='rgb(51, 122, 183)'){
+        if (theme_diff.length==2){
+            window.open('/theme/compare/?theme_name1='+theme_diff[0]+'&theme_name2='+theme_diff[1]);
+        }else {
+            alert('请您注意选择的专题，您只能选择2个。(请检查您勾选的专题)')
+        }
     }
 });
 

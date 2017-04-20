@@ -10,7 +10,7 @@ import heapq
 from datetime import date
 from datetime import datetime
 from elasticsearch.helpers import scan
-from get_result import uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
+from get_result import uid_name_list_withtype,uid_name_list,event_id_name,uid_name_type,uid_2_name_list,event_id_name_list
 import knowledge.model
 from knowledge.model import *
 from knowledge.extensions import db
@@ -68,8 +68,8 @@ def search_person_by_id(uid,user_name):#根据uid查询用户属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[people_tag] = tag_str
+                            tag_list.append(t)
+                    result[people_tag] = tag_list
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -111,8 +111,8 @@ def search_org_by_id(uid,user_name):#根据uid查询用户属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[people_tag] = tag_str
+                            tag_list.append(t)
+                    result[people_tag] = tag_list
                 elif k in people_normal_dict:
                     result[k] = normal_index(v,evaluate_max[k])
                 elif k == 'activity_geo_dict':
@@ -227,32 +227,32 @@ def get_interaction(uid):#获取用户的交互情况
                 becomment_uid.append(item[1])
 
     if len(retweet_uid):
-        retweet_list = uid_name_list(retweet_uid)
+        retweet_list = uid_name_list_withtype(retweet_uid)
         if retweet_list == '-1':
-            retweet_list = []
+            retweet_list = {}
     else:
-        retweet_list = []
+        retweet_list = {}
 
     if len(beretweet_uid):
-        beretweet_list = uid_name_list(beretweet_uid)
+        beretweet_list = uid_name_list_withtype(beretweet_uid)
         if beretweet_list == '-1':
-            beretweet_list = []
+            beretweet_list = {}
     else:
-        beretweet_list = []
+        beretweet_list = {}
 
     if len(comment_uid):
-        comment_list = uid_name_list(comment_uid)
+        comment_list = uid_name_list_withtype(comment_uid)
         if comment_list == '-1':
-            comment_list = []
+            comment_list = {}
     else:
-        comment_list = []
+        comment_list = {}
 
     if len(becomment_uid):
-        becomment_list = uid_name_list(becomment_uid)
+        becomment_list = uid_name_list_withtype(becomment_uid)
         if becomment_list == '-1':
-            becomment_list = []
+            becomment_list = {}
     else:
-        becomment_list = []
+        becomment_list = {}
 
     return {'retweet':retweet_list,'beretweet':beretweet_list,'comment':comment_list,'becomment':becomment_list}
 
@@ -324,7 +324,19 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
             data = item['_source']
             for k,v in data.iteritems():
                 if k in event_es_dict:
-                    result[k] = json.loads(v)
+                    if k == 'topics':#lda运行结果
+                        topic_list = []
+                        topics = json.loads(v)
+                        for topic in topics:
+                            row = []
+                            words = topic[1].split(' + ')
+                            for word in words:
+                                w,t = word.split('*')
+                                row.append(t)
+                            topic_list.append(row)
+                        result[k] = topic_list
+                    else:
+                        result[k] = json.loads(v)
                 elif k == event_tag:
                     flag = 1
                     work_tag = v
@@ -333,8 +345,8 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                     for tag in tags:
                         u,t = tag.split('_')
                         if u == user_name:
-                            tag_str.append(t)
-                    result[event_tag] = tag_str
+                            tag_list.append(t)
+                    result[event_tag] = tag_list
                 else:
                     if v == 'NULL':
                         result[k] = ''

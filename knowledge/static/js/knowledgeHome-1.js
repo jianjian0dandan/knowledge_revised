@@ -37,6 +37,8 @@
                 type: 'map',
                 mapType: 'china',
                 roam: true,
+                zoom:1.3,
+                aspectScale: 1,
                 label: {
                     normal: {
                         show: false,
