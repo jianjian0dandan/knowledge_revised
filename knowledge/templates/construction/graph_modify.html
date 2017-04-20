@@ -37,7 +37,7 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 class="graph_modify" style="color: white;font-weight: 900;">图谱编辑</h1>
+    <h1 class="graph_modify">图谱编辑</h1>
     <div class="edit">
         <label class="radio-inline">
             <input type="radio" name="complie" id="node" value="1" checked> 节点编辑
@@ -47,9 +47,8 @@
             <input type="radio" name="complie" id="relation" value="2"> 关系编辑
         </label>
     </div>
-    <div class="node">
-        <div class="attributes" style="margin-top: 3%">
-
+    <div class="node" style="padding: 10px 20px;border: 1px solid #9c9c9c;border-radius: 10px;margin-top:20px;">
+        <div class="attributes">
             <span>节点类型</span>
             <select id="node_type" onchange="type_node(this.value)">
                 <option value="User">人物</option>
@@ -59,7 +58,7 @@
             <span>节点名称</span><input type="text" class="node_name">
             <div style="display: inline">
                 <!--<span>入库日期</span><input type="text" class="warehousing">-->
-                <button class="submit">确 定</button>
+                <button class="submit" style="float: right;margin: 10px 200px 0 0;">确 定</button>
             </div>
         </div>
         <div class="node_list">
@@ -73,7 +72,8 @@
 
 
     <!--关系编辑-->
-    <div class="rel" style="display: none;">
+    <div class="rel" style="display: none;padding: 10px 20px;margin-top: 30px;
+    border: 1px solid #9c9c9c;border-radius: 10px;">
         <div class="rel_attributes">
             <div class="one">
                 <span>节点一</span>

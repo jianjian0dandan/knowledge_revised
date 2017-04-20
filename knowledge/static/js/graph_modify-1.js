@@ -11,7 +11,6 @@ if (!!_id){
     item=_id;
     var node_url='/construction/node_edit_search/?item='+_id+'&node_type='+_type+
         '&submit_user='+submit_user;
-    console.log(node_type)
     if (_type=='Event'){
         $('.node_list').hide();
         $('.event_list').show();
@@ -544,12 +543,12 @@ function event(data) {
             sidePagination: "client",//服务端分页
             searchAlign: "left",
             searchOnEnterKey: false,//回车搜索
-            showRefresh: true,//刷新按钮
-            showColumns: true,//列选择按钮
+            showRefresh: false,//刷新按钮
+            showColumns: false,//列选择按钮
             buttonsAlign: "right",//按钮对齐方式
             locale: "zh-CN",//中文支持
             detailView: false,
-            showToggle:true,
+            showToggle:false,
             sortName:'bci',
             sortOrder:"desc",
             columns: [

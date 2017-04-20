@@ -1,9 +1,10 @@
-/*清除初始的样式*/
+/*清除默认样式*/
 html,body,div,img,h1,h2,h3,h4,h5,h6,input,button,span,p,b,strong,em,li,ul,ol,dl,dt,dd,
-th,textarea,select,table,form {
+th,tr,td,textarea,select,table,form {
     margin: 0;
     padding: 0;
     font-family: '微软雅黑';
+    /*font:  12px/1.14 "Microsoft YaHei","微软雅黑","宋体",helvetica,"Hiragino Sans GB";*/
 }
 ul,li,ol {
     list-style: none;
@@ -11,7 +12,7 @@ ul,li,ol {
 img {
     border:none;
 }
-button,input,select,textarea {
+input,select,textarea,button {
     outline: none;
     border: none;
 }
@@ -20,34 +21,76 @@ a,a:link,a:hover,a:visited,a:active {
 }
 /*内容样式*/
 #nav {
-    position: relative;
-    width: 1349px;
-    height: 135px;
-    padding:20px 0 0 100px;
-    margin: 10px auto 0;
-    background: url("/static/images/nav.png") no-repeat;
-    background-size: 100% 100%;
+    /*position: fixed;*/
+    /*z-index: 2000;*/
+    width: 100%;
+    /*height: 70px;*/
+    background-color: white;
+    padding: 10px 30px;
+    box-shadow: 0 2px 5px rgba(41,46,51,0.15);
 }
-#nav .nav_list li {
+#nav .nav_top {
+    /*width: 50%;*/
+    padding: 20px;
+    margin-left:30px;
+    /*text-align: center;*/
+    color: black;
+    display: inline-block;
+    background: url("/static/images/policy.png") no-repeat left center;
+    background-size:50px 50px ;
+}
+#nav .nav_top h3 {
+    margin-left: 6px;
+    font-size: 27px;
+    margin-top: -5px;
+}
+#nav .nav_bottom {
+    /*width: 50%;*/
+    float: right;
+}
+#nav .nav_bottom .list {
+    /*float: right;*/
+    margin-right: 30px;
+    margin-top: 10px;
+}
+#nav .nav_bottom .list .main_li {
     float: left;
+    overflow: hidden;
 }
-#nav .nav_list li a {
+#nav .nav_bottom .list .main_li .li_a {
     display: block;
-    width: 140px;
-    height: 80px;
-    line-height: 80px;
-    text-align: center;
+    height: 64px;
+    padding: 0 20px;
+    line-height: 64px;
     font-size: 16px;
-    color: white;
-    font-weight: 900;
+    color: #000;
     cursor: pointer;
+}
+#nav .nav_bottom .list .main_li .line {
+    position: relative;
+    left: -100%;
+    top: -2px;
+    height: 2px;
+    background-color: #2e90e6;
+    transition: all linear 0.3s;
+}
+#nav .find a,#nav .graph a,#nav .mygraph a {
+    display: inline-block;
+    padding: 5px;
+    color: #000;
+    font-size: 12px;
+    margin:0 20px;
+}
+#nav .find a:hover,#nav .graph a:hover,#nav .mygraph a:hover {
+    background-color: #2e90e6;
+    color: white;
 }
 #nav .username {
     width: 50%;
     text-align: right;
     position: absolute;
-    right: 10%;
-    bottom: -15%;
+    right: 100px;
+    top: 110px;
 }
 #nav .username .sign_out {
     padding: 0.5% 3%;
@@ -61,5 +104,3 @@ a,a:link,a:hover,a:visited,a:active {
 #nav .username .sign_out:hover {
     background-color: #176de2;
 }
-
-
