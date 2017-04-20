@@ -1,7 +1,7 @@
 {% extends "public_nav.html" %}
 {% block title %}<title>知识图谱 - 维基百科</title>{% endblock %}
 {% block my_css %}
-<!--<link rel="stylesheet" href="/static/css/theme_main.css">-->
+<link rel="stylesheet" href="/static/css/wiki.css">
 <style>
     
 </style>
@@ -10,7 +10,52 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <!--<iframe src="" frameborder="0"></iframe>-->
+    <div id="content_left">
+        <div class="basic" style="padding-bottom: 10px;">
+            <div class="basic-1">
+                <h1 class="user_name"></h1>
+                <!--<img src="/static/images/gov_circle.png" alt="" id="focus">-->
+                <div class="map_area">
+                    <dl id="chart" style="right:0.21%;">
+                        <dt><img src="/static/images/go_line.png" alt=""></dt>
+                        <dd>图谱链接</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="basic-2" style="margin-top: 30px;">
+            <h3 class="tit">摘要内容</h3>
+            <div id="main" style="margin: 20px;"></div>
+        </div>
+        <div class="basic-3" style="margin-top: 30px;">
+            <h3 class="tit">维基内容</h3>
+            <div id="content" style="margin: 20px auto;
+            width: 800px;height:600px;overflow: scroll;"></div>
+        </div>
+    </div>
+    <div id="content_right">
+        <div class="link_user">
+            <h3 class="tit">关联人物</h3>
+            <div class="users" style="text-align: center;margin: 20px 0;">
+
+            </div>
+            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_event" style="margin: 10px 0;">
+            <h3 class="tit">关联事件</h3>
+            <div class="events" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+        <div class="link_agency" style="margin: 10px 0;">
+            <h3 class="tit">关联机构</h3>
+            <div class="agencys" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -18,16 +63,7 @@
 {% block my_js %}
 <script>
     var submit_user=$('#name').text();
-    var url='/construction/show_wiki/';
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: 'string',
-        async: true,
-        success:function (data) {
-            console.log(data)
-            $('#container').html(data);
-        }
-    });
+
 </script>
+<script src="/static/js/wiki-1.js"></script>
 {% endblock %}
