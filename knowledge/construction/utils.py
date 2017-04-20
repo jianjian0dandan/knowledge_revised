@@ -1249,7 +1249,7 @@ def show_wiki(data):
     else:
         html_id_sql = cur.fetchmany(html_id)
         closeAll(conn, cur)
-        f = open('/media/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
+        f = open('/mnt/mfs/wiki/data/'+str(html_id_sql[0][0])+'.html', 'r')
         html_code = f.read()
     result['html'] = html_code
     return result['html']
