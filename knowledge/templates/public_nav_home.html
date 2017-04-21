@@ -35,9 +35,28 @@
 {% block header %}
 <div id="nav">
     <ul class="nav_list">
-        <li><a id="relation">图谱探索</a></li>
-        <li><a id="construction">图谱管理</a></li>
-        <li><a id="sysadmin" style="margin-left: 20px">我的图谱</a></li>
+        <li style="position: relative">
+            <a id="relation">图谱探索</a>
+            <ul class="find" style="margin-left: 3px;display: none;position:absolute; ">
+                <li><a href="/relation/search/" class="search">图谱搜索</a></li>
+                <li><a href="/relation/similarity/" class="simliar">相似搜索</a></li>
+            </ul>
+        </li>
+        <li style="position: relative">
+            <a id="construction">图谱管理</a>
+            <ul class="graph" style="margin-left: 3px;display: none;position:absolute; ">
+                <li><a href="/construction/graph_add/" class="add">图谱添加</a></li>
+                <li><a href="/construction/graph_modify/" class="modify">图谱编辑</a></li>
+            </ul>
+        </li>
+        <li style="position: relative">
+            <a id="sysadmin" style="margin-left: 20px">我的图谱</a>
+            <ul class="mine" style="margin-left:20px;display: none;position:absolute; ">
+                <li><a href="/sysadmin/topic/" class="topic">我的专题</a></li>
+                <li><a href="/sysadmin/group/" class="group">我的群体</a></li>
+                <li><a href="/sysadmin/focus/" class="focus">我的关注</a></li>
+            </ul>
+        </li>
         <li><a id="theme" style="margin-left: 290px">专题探索</a></li>
         <li><a id="group">群体探索</a></li>
         <li><a id="brust">突发探索</a></li>
@@ -92,15 +111,51 @@
     $('#brust').on('click',function () {
         window.open('/brust/');
     });
-    $('#relation').on('click',function () {
-        window.open('/relation/');
+    $("#relation").on('mouseover',function () {
+        $('.find').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.find').css({display:'none'});
     });
-    $('#construction').on('click',function () {
-        window.open('/construction/');
+    $(".find").on('mouseover',function () {
+        $(this).css({display:'block'});
+//        $(".find a").css({backgroundColor:'#2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+//        $(".nav_bottom .list .list_one").css({borderBottom:'none'});
     });
-    $('#sysadmin').on('click',function () {
-        window.open('/sysadmin/index/');
+    $("#construction").on('mouseover',function () {
+        $('.graph').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.graph').css({display:'none'});
     });
+    $(".graph").on('mouseover',function () {
+        $(this).css({display:'block'});
+//        $(".find a").css({backgroundColor:'#2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+//        $(".nav_bottom .list .list_one").css({borderBottom:'none'});
+    });
+    $("#sysadmin").on('mouseover',function () {
+        $('.mine').css({display:'block'});
+    }).on('mouseout',function () {
+        $('.mine').css({display:'none'});
+    });
+    $(".mine").on('mouseover',function () {
+        $(this).css({display:'block'});
+//        $(".find a").css({backgroundColor:'#2e90e6'});
+    }).on('mouseout',function () {
+        $(this).css({display:'none'});
+//        $(".nav_bottom .list .list_one").css({borderBottom:'none'});
+    });
+//    $('#relation').on('click',function () {
+//        window.open('/relation/');
+//    });
+//    $('#construction').on('click',function () {
+//        window.open('/construction/');
+//    });
+//    $('#sysadmin').on('click',function () {
+//        window.open('/sysadmin/index/');
+//    });
 </script>
 
 {% endblock %}
