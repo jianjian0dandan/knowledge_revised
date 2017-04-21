@@ -1,4 +1,4 @@
-{% extends "public_nav.html" %}
+{% extends "public_nav_home.html" %}
 {% block title %}<title>知识图谱 - 首页</title>{% endblock %}
 {% block my_css %}
 <link rel="stylesheet" href="/static/css/knowledge_home.css">
@@ -22,11 +22,12 @@
         <div class="statis-1">
             <div class="s1-top"></div>
             <div class="s1-bot">
-                <p class="bot-nums"><span>人物节点数量:<b id="user">{{neo_count['people']}}</b>个</span></p>
-                <p class="bot-nums"><span>事件节点数量:<b id="event">{{neo_count['event']}}</b>个</span></p>
-                <p class="bot-nums"><span>机构节点数量:<b id="agency">{{neo_count['org']}}</b>个</span></p>
-                <p class="bot-nums"><span>专题数量:<b id="topic">{{neo_count['special_event']}}</b>个</span></p>
-                <p class="bot-nums"><span>群体数量:<b id="group">{{neo_count['group']}}</b>个</span></p>
+                <p class="bot-nums"><span>人物节点数量:<b id="user" title="{{neo_count['people']}}">{{neo_count['people']}}</b>个</span></p>
+                <p class="bot-nums"><span>事件节点数量:<b id="event" title="{{neo_count['event']}}">{{neo_count['event']}}</b>个</span></p>
+                <p class="bot-nums"><span>机构节点数量:<b id="agency" title="{{neo_count['org']}}">{{neo_count['org']}}</b>个</span></p>
+                <p class="bot-nums"><span>专题节点数量:<b id="topic" title="{{neo_count['special_event']}}">{{neo_count['special_event']}}</b>个</span></p>
+                <p class="bot-nums"><span>群体节点数量:<b id="group" title="{{neo_count['group']}}">{{neo_count['group']}}</b>个</span></p>
+                <p class="bot-nums"><span>维基节点数量:<b id="wiki" title="{{neo_count['wiki']}}">{{neo_count['wiki']}}</b>个</span></p>
             </div>
         </div>
 
@@ -166,7 +167,7 @@
         window.open('/index/map/?user_id=ALL&node_type=ALL');
     });
     $('.chart').on('click',function () {
-        window.open('/index/graph/?user_id=ALL&node_type=ALL');
+        window.open('/index/graph_index/');
     });
     $('.event_more').on('click',function () {
         window.open('/brust/');

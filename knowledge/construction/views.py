@@ -18,7 +18,8 @@ from knowledge.global_config import event_task_name, event_task_type
 from utils import recommentation_in, recommentation_in_auto, submit_task, identify_in, submit_event, submit_event_file,\
                   relation_add, search_user, search_event, search_node_time_limit, show_node_detail, edit_node,\
                   deal_user_tag, create_node_or_node_rel, show_relation, update_event, submit_identify_in,\
-                  node_delete, delete_relation, deal_event_tag, show_weibo_list, show_wiki, show_wiki_related,show_wiki_basic
+                  node_delete, delete_relation, deal_event_tag, show_weibo_list, show_wiki, show_wiki_related,show_wiki_basic,\
+                  wikinode_exist
 from knowledge.time_utils import ts2datetime, datetime2ts, ts2datetimestr
 from knowledge.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
 from knowledge.global_config import event_analysis_name, event_type
@@ -54,8 +55,9 @@ def add_node():
     return render_template('construction/addmap.html')
 
 @mod.route('/wiki/')
-def weiki():
-    return render_template('construction/wiki.html')
+def wiki():
+    _id = request.args.get('_id', '')
+    return render_template('construction/wiki.html',_id=_id)
 
 @mod.route('/show_in/')
 def ajax_recommentation_in():
@@ -677,12 +679,25 @@ def ajax_show_wiki_basic():
 def ajax_show_wiki_related():
     #展示关联用户、机构、事件
     input_data = request.get_json()
+    # print type(input_data),'-------'
     # input_data = {'name':u'中国城市生活质量指数列表','url':'https://wikipedia.kfd.me/wiki/%E6%96%AF%E5%B8%8C%E6%B2%83%E9%87%8C%E7%BA%B3%E6%8B%89%E5%BB%B6'}
+    # input_data={'name':u'日常生活'}
     results = show_wiki_related(input_data)
     # if not results:
     #     results = ''
     return json.dumps(results)
 
+@mod.route('/wikinode_exist/', methods=['GET', 'POST'])
+def ajax_wikinode_exist():
+    #展示关联用户、机构、事件
+    input_data = request.get_json()
+    # print type(input_data),'-------'
+    # input_data = {'name':u'中国城市生活质量333指数列表','url':'https://wikipedia.kfd.me/wiki/%E6%96%AF%E5%B8%8C%E6%B2%83%E9%87%8C%E7%BA%B3%E6%8B%89%E5%BB%B6'}
+    # input_data={'name':u'日11常生活'}
+    results = wikinode_exist(input_data)
+    # if not results:
+    #     results = ''
+    return json.dumps(results)
 
 # 对2个节点的关系进行模糊查询
 @mod.route('/node_or_node_query/')

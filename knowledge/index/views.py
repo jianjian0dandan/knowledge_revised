@@ -94,10 +94,7 @@ def get_graph():#图谱页面
     user_id = request.args.get('user_id', '')
     node_type = request.args.get('node_type', '')
 
-    if node_type == 'ALL':#首页跳转
-        relation = get_all_graph()
-        flag = 'Success'
-    elif node_type == 'people':#人物节点图谱
+    if node_type == 'people':#人物节点图谱
         relation = get_people_graph(user_id)
         flag = 'Success'
     elif node_type == 'event':#事件节点图谱
@@ -128,7 +125,7 @@ def get_graph_index():#首页图谱页面
     relation = get_all_graph()
     flag = 'Success'
     
-    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
+    return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
 @login_required
