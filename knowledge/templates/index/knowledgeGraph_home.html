@@ -1,4 +1,3 @@
-<meta charset="UTF-8">
 {% block title %}<title>知识图谱 - 图谱关系图</title>{% endblock %}
 {% block css %}
 <style>
@@ -6,7 +5,7 @@
 </style>
 {% endblock %}
 {% block main %}
-<div id="graph_picture" style="width:1000px;height: 800px;margin: 30px auto;"></div>
+<div id="graph_picture" style="width:1000px;height:800px;margin: 30px auto;"></div>
 {% endblock %}
 
 {% block my_js %}
@@ -15,41 +14,164 @@
 
 <script type="text/javascript">
 
-//    var user_list=[],event_list=[],org_list=[],topic_list=[],group_list=[],
-//            link=[],rel=[];
-//    var relation={{relation|tojson}};
-//    console.log(relation)
-//    $.each(relation,function (index,item) {
-//        if (item[2]=='people'){
-//            user_list.push({ name:item[1]})
-//        }else if (item[2]=='org'){
-//            org_list.push({ name:item[1]})
-//        }else if (item[2]=='event'){
-//            event_list.push({ name:item[1]})
-//        }else if (item[2]=='topic'){
-//            topic_list.push({ name:item[1]})
-//        }else if (item[2]=='group'){
-//            group_list.push({ name:item[1]})
-//        };
-//        if (item[5]=='people'){
-//            user_list.push({ name:item[1]})
-//        }else if (item[5]=='org'){
-//            org_list.push({ name:item[1]})
-//        }else if (item[5]=='event'){
-//            event_list.push({ name:item[1]})
-//        }else if (item[5]=='topic'){
-//            topic_list.push({ name:item[1]})
-//        }else if (item[5]=='group'){
-//            group_list.push({ name:item[1]})
-//        };
-//        link.push({source:item[4], target :item[1]})
-//    });
-//    var all_node=event_list;
-//    all_node=user_list.concat(org_list).concat(event_list).concat(topic_list).concat(group_list);
-//    all_node.push(user_list);all_node.push(org_list);all_node.push(event_list);
-//    all_node.push(topic_list);all_node.push(group_list);
+    var user_list=[],event_list=[],org_list=[],topic_list=[],group_list=[],link=[],
+            legend=['人物','机构','事件','专题','群体','维基'],
+            categories=[
+                {
+                    name: '人物'
+                },
+                {
+                    name: '机构',
+                },
+                {
+                    name:'事件'
+                },
+                {
+                    name:'专题'
+                },
+                {
+                    name:'群体'
+                },
+                {
+                    name:'维基'
+                }
+            ];
+    var relation={{relation|tojson}};
+    console.log(relation)
+    $.each(relation,function (index,item) {
+//        categories.push({name:item[6]});
+//        legend.push(item[6]);
+        //--------------------
+        if (item[2]=='people'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            }
+            user_list.push({category:0,name:name,label:name,_id:item[0]});
+        }else if (item[2]=='org'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            }
+            org_list.push({category:1,name:name,label:name,_id:item[0]})
+        }else if (item[2]=='event'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            }
+            event_list.push({category:2,name:name,label:name,_id:item[0]})
+        }else if (item[2]=='topic'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            };
+            topic_list.push({category:3,name:name,label:name,_id:item[0]})
+        }else if (item[2]=='group'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            };
+            group_list.push({category:4,name:name,label:name,_id:item[0]})
+        }else if (item[2]=='wiki'){
+            var name;
+            if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+                name=item[0];
+            }else {
+                name=item[1];
+            };
+            group_list.push({category:5,name:name,label:name,_id:item[0]})
+        };
 
+        //----------------------
 
+        if (item[5]=='people'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            user_list.push({category:0,name:name,label:name,_id:item[3]})
+        }else if (item[5]=='org'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            org_list.push({category:1,name:name,label:name,_id:item[3]});
+        }else if (item[5]=='event'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            event_list.push({category:2,name:name,label:name,_id:item[3]})
+        }else if (item[5]=='topic'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            topic_list.push({category:3,name:name,label:name,_id:item[3]});
+        }else if (item[5]=='group'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            group_list.push({category:4,name:name,label:name,_id:item[3]});
+        }else if (item[5]=='wiki'){
+            var name;
+            if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+                name=item[3];
+            }else {
+                name=item[4];
+            }
+            group_list.push({category:5,name:name,label:name,_id:item[3]});
+        };
+
+        var source,target;
+        if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
+            source=item[0];
+        }else {
+            source=item[1];
+        };
+        if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
+            target=item[3];
+        }else {
+            target=item[4];
+        };
+        link.push({source:source, target:target});
+    });
+    var all_node;
+    all_node=user_list.concat(org_list).concat(event_list).concat(topic_list).concat(group_list);
+    var leg=[];
+    for(var i=0;i<legend.length;i++){
+        if (leg.indexOf(legend[i])===-1){
+            leg.push(legend[i])
+        }
+    };
+    var cate=[];
+    for(var i=0;i<categories.length;i++){
+        if (cate.indexOf(categories[i])===-1){
+            cate.push(categories[i])
+        }
+    }
+    console.log(all_node)
     // 路径配置
     require.config({
         paths: {
@@ -68,10 +190,9 @@
                 var myChart = ec.init(document.getElementById('graph_picture'));
                 option = {
                     title : {
-                        text: '人物关系：乔布斯',
-                        subtext: '数据来自人立方',
-                        x:'right',
-                        y:'bottom'
+                        text: '知识图谱关系图',
+                        x:'center',
+                        y:'top'
                     },
                     tooltip : {
                         trigger: 'item',
@@ -87,25 +208,15 @@
                     },
                     legend: {
                         x: 'left',
-                        data:['家人','朋友']
+                        data:legend
                     },
                     series : [
                         {
                             type:'force',
-                            name : "人物关系",
-                            ribbonType: false,
-                            categories : [
-                                {
-                                    name: '人物'
-                                },
-                                {
-                                    name: '家人',
-                                    symbol: 'diamond'
-                                },
-                                {
-                                    name:'朋友'
-                                }
-                            ],
+                            name : "节点",
+                            roam:'scale',
+                            large: true,
+                            categories : categories,
                             itemStyle: {
                                 normal: {
                                     label: {
@@ -118,6 +229,9 @@
                                         brushType : 'both',
                                         borderColor : 'rgba(255,215,0,0.4)',
                                         borderWidth : 1
+                                    },
+                                    linkStyle: {
+                                        type: 'curve'
                                     }
                                 },
                                 emphasis: {
@@ -131,74 +245,20 @@
                                     linkStyle : {}
                                 }
                             },
+                            center:['50%','50%'],
+                            useWorker: false,
                             minRadius : 15,
                             maxRadius : 25,
-                            gravity: 1.1,
-                            scaling: 1.2,
-                            draggable: false,
-                            linkSymbol: 'arrow',
-                            steps: 10,
-                            coolDown: 0.9,
-                            //preventOverlap: true,
-                            nodes:[
-                                {
-                                    category:0, name: '乔布斯', value : 10,
-                                    symbol: 'image://http://www.damndigital.com/wp-content/uploads/2010/12/steve-jobs.jpg',
-                                    symbolSize: [60, 35],
-                                    draggable: true,
-                                    itemStyle: {
-                                        normal: {
-                                            label: {
-                                                position: 'right',
-                                                textStyle: {
-                                                    color: 'black'
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {category:1, name: '丽萨-乔布斯',value : 2},
-                                {category:1, name: '保罗-乔布斯',value : 3},
-                                {category:1, name: '克拉拉-乔布斯',value : 3},
-                                {category:1, name: '劳伦-鲍威尔',value : 7},
-                                {category:2, name: '史蒂夫-沃兹尼艾克',value : 5},
-                                {category:2, name: '奥巴马',value : 8},
-                                {category:2, name: '比尔-盖茨',value : 9},
-                                {category:2, name: '乔纳森-艾夫',value : 4},
-                                {category:2, name: '蒂姆-库克',value : 4},
-                                {category:2, name: '龙-韦恩',value : 1},
-                            ],
-                            links : [
-                                {source : '丽萨-乔布斯', target : '乔布斯', weight : 1, name: '女儿', itemStyle: {
-                                    normal: {
-                                        width: 1.5,
-                                        color: 'red'
-                                    }
-                                }},
-                                {source : '乔布斯', target : '丽萨-乔布斯', weight : 1, name: '父亲', itemStyle: {
-                                    normal: { color: 'red' }
-                                }},
-                                {source : '保罗-乔布斯', target : '乔布斯', weight : 2, name: '父亲'},
-                                {source : '克拉拉-乔布斯', target : '乔布斯', weight : 1, name: '母亲'},
-                                {source : '劳伦-鲍威尔', target : '乔布斯', weight : 2},
-                                {source : '史蒂夫-沃兹尼艾克', target : '乔布斯', weight : 3, name: '合伙人'},
-                                {source : '奥巴马', target : '乔布斯', weight : 1},
-                                {source : '比尔-盖茨', target : '乔布斯', weight : 6, name: '竞争对手'},
-                                {source : '乔纳森-艾夫', target : '乔布斯', weight : 1, name: '爱将'},
-                                {source : '蒂姆-库克', target : '乔布斯', weight : 1},
-                                {source : '龙-韦恩', target : '乔布斯', weight : 1},
-                                {source : '克拉拉-乔布斯', target : '保罗-乔布斯', weight : 1},
-                                {source : '奥巴马', target : '保罗-乔布斯', weight : 1},
-                                {source : '奥巴马', target : '克拉拉-乔布斯', weight : 1},
-                                {source : '奥巴马', target : '劳伦-鲍威尔', weight : 1},
-                                {source : '奥巴马', target : '史蒂夫-沃兹尼艾克', weight : 1},
-                                {source : '比尔-盖茨', target : '奥巴马', weight : 6},
-                                {source : '比尔-盖茨', target : '克拉拉-乔布斯', weight : 1},
-                                {source : '蒂姆-库克', target : '奥巴马', weight : 1}
-                            ]
+                            gravity: 2,
+                            scaling:5,
+                            symbolSize:20 ,
+                            nodes:all_node,
+                            links : link
                         }
                     ]
                 };
+
+                myChart.setOption(option);
                 var ecConfig = require('echarts/config');
                 function focus(param) {
                     var data = param.data;
@@ -215,10 +275,10 @@
                         console.log("选中了" + data.name + '(' + data.value + ')');
                     }
                 }
-                myChart.on(ecConfig.EVENT.CLICK, focus)
+                myChart.on(ecConfig.EVENT.CLICK, focus);
 
                 myChart.on(ecConfig.EVENT.FORCE_LAYOUT_END, function () {
-                    console.log(myChart.chart.force.getPosition());
+//                    console.log(myChart.chart.force.getPosition());
                 });
 
 
