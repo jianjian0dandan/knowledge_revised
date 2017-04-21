@@ -41,7 +41,7 @@ from knowledge.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME,MAX_VALUE,sen
 p = Pinyin()
 WEEK = 7
 
-def deal_user_tag(tag):
+def deal_user_tag(tag, submit_user):
     # tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
     # print tag,'======!!=========='
     tag_list = tag.split('&')
@@ -782,7 +782,7 @@ def get_theme_user_tag(theme_name, submit_user):
             except:
                 keywords_dict[key[0]] = key[1]
         if i_mark:
-            user_mark = deal_user_tag(i_mark)[0]
+            user_mark = deal_user_tag(i_mark, submit_user)[0]
             for mark in user_mark:
                 try:
                     mark_dict[mark] += 1
