@@ -158,7 +158,7 @@ function link_source(data) {
     $('#person_content #content_right .link_knowledge .knowledge_more').on('click',function () {
         $('#link .tit_h4').empty().text('关联知识');
         $('#link #link_content').empty();
-        if (org.length==0){
+        if (wiki.length==0){
             $('#link #link_content').text('没有更多数据');
         }else {
             for (var w=0;w<wiki.length;w++){
@@ -166,6 +166,9 @@ function link_source(data) {
             }
         }
         $('#link').modal('show');
+    });
+    $('#container #content_right .link_knowledge a').on('click',function () {
+        window.open('/construction/wiki/?_id='+$(this).find('b').text());
     });
 
     //-----资源-----

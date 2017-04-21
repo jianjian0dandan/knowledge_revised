@@ -11,16 +11,19 @@
     #container #advanced_search .advan-4 .short {
         margin: 0 5px 0 20px;
     }
+    /*#sure_advan {*/
+         /*display:block!important;*/
+     /*}*/
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 class="search_add" style="color: white;font-weight: 900;">探索页面</h1>
+    <h1 class="search_add">探索页面</h1>
     <div class="look">
         <div class="search">
-            <input type="text" class="find" placeholder="多个关键词请用逗号(英文)分开"/>
+            <input type="text" class="_find" placeholder="多个关键词请用逗号(英文)分开" style="display: inline-block;"/>
             <button class="sure">确定</button>
         </div>
         <a class="advanced">高级搜索</a>
@@ -132,7 +135,7 @@
                     <!--</label>-->
                     <span>选择关系</span>
                     <input type="text" class="rel-1-value" placeholder="请输入您想添加的关系"/>
-                    <button class="rel-2-value" type="button" data-toggle="modal" onclick="show_rel()">选择为您推荐的关系</button>
+                    <button class="rel-2-value" onclick="show_rel()">选择为您推荐的关系</button>
                     <!--<label class="radio-inline" style="margin-left: 11%">-->
                         <!--<input type="radio" name="tions" id="rel-2" value=""> 两节点之间的关系-->
                     <!--</label>-->
@@ -151,7 +154,7 @@
     <button id="sure_advan" style="display: none;">高级搜索</button>
 </div>
 <!--关系模态框-->
-<div class="modal fade" id="relation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade relation_lis" id="relation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -177,7 +180,7 @@
 <script>
     var submit_user=$('#name').text();
     $('.rel-2-value').on('click',function () {
-        $('#relation').modal('show');
+        $('.relation_lis').modal('show');
     });
     //开始节点和终止节点的增加与减少
     $('.advan-1 .start_plus').on('click',function () {

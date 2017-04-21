@@ -1278,7 +1278,7 @@ def show_wiki_basic(data):
     # return url
     try:
         search_results = es_wiki.get(index=wiki_index_name, doc_type=wiki_type_name, id=url)['_source']
-        print search_results
+        # print search_results
         # return search_results['content']
     except:
         return ''
@@ -1319,7 +1319,9 @@ def search_event_idname(uid_list):
 def show_wiki_related(data):
     conn = getconn()
     cur = conn.cursor()
+    print data,'00009999'
     name = data['name']
+    print name,'name'
     sql = "select Url from wiki where Name=%s "
     html_id = cur.execute(sql, (name,))
     if html_id:
@@ -1331,7 +1333,7 @@ def show_wiki_related(data):
     #     url = data['url']
     result = {}
     
-    url = data['url']
+    # url = data['url']
     s_string = 'start d=node:'+ wiki_url_index_name +'('+wiki_primary+ '="' + url +'") match (d)-[r]-(e) return labels(e), e'
     print s_string
     result = graph.run(s_string)
@@ -1359,3 +1361,16 @@ def show_wiki_related(data):
             final_result[k] = search_event_idname(v)
     return final_result
 
+def wikinode_exist(data):
+    conn = getconn()
+    cur = conn.cursor()
+    print data,'00009999'
+    name = data['name']
+    print name,'name'
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+    	return '1'
+    else:
+        return '0'
+    closeAll(conn, cur)
