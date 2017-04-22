@@ -17,7 +17,7 @@ body {
 #container {
     position: relative;
     width: 80%;
-    padding:90px 50px 50px;
+    padding:20px 50px 50px;
     margin:110px auto 50px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
@@ -124,7 +124,6 @@ body {
 #container .key_words .words_list .list-2-words #list-2-words{
     width: 440px;
     height: 300px;
-    line-height: 300px;
     text-align: center;
 }
 /*标签*/
@@ -172,7 +171,6 @@ p.line {
     background:#e6e9eb;
     position: relative;
     top: -48px;
-    position: relative;
     z-index: 1;
     box-shadow: 2px 1px 1px #c4c4c4;
 }

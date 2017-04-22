@@ -6,15 +6,19 @@
     .table>thead:first-child>tr:first-child>th {
         width: 1%;
     }
+    .fixed-table-container tbody td:first-child {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
+
     <h2>相似节点计算结果</h2>
 
-    <div class="related_person" style="margin-top:85px;display:none;">
+    <div class="related_person" style="display:none;">
         <h3>相关人物</h3>
         <div class="person" style="width: 90%;margin: 20px auto 0;">
             <div id="person"></div>

@@ -225,6 +225,9 @@ $('#one').on('click',function () {
         }
     }
     $('#link').modal('show');
+    $('#link #link_content a').on('click',function () {
+        window.open('/index/person/?user_id='+$(this).attr('uid'));
+    });
 })
 
 var beretweet=result_3.beretweet;
@@ -251,6 +254,9 @@ $('#two').on('click',function () {
         }
     }
     $('#link').modal('show');
+    $('#link #link_content a').on('click',function () {
+        window.open('/index/person/?user_id='+$(this).attr('uid'));
+    });
 })
 
 var comment=result_3.comment;
@@ -278,6 +284,9 @@ $('#three').on('click',function () {
         }
     }
     $('#link').modal('show');
+    $('#link #link_content a').on('click',function () {
+        window.open('/index/person/?user_id='+$(this).attr('uid'));
+    });
 })
 
 var becomment=result_3.becomment;
@@ -304,18 +313,19 @@ $('#four').on('click',function () {
         }
     }
     $('#link').modal('show');
+    $('#link #link_content a').on('click',function () {
+        window.open('/index/person/?user_id='+$(this).attr('uid'));
+    });
 })
 
 $('#person_content #content_left .social .user a').on('click',function () {
     window.open('/index/person/?user_id='+$(this).attr('uid'));
 });
-$('#link #link_content a').on('click',function () {
-    window.open('/index/person/?user_id='+$(this).attr('uid'));
-});
+
 //文本信息
 function weibo(){
     $('#group_emotion_loading').css('display', 'none');
-    $('#input-table').css('display', 'block');
+    // $('#input-table').css('display', 'block');
     var dataArray = result_5;
     var PageNo=document.getElementById('PageNo');                   //设置每页显示行数
     var InTb=document.getElementById('input-table');               //表格
