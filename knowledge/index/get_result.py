@@ -91,7 +91,7 @@ def uid_name_list_withtype(uid_list):#以字典形式返回uname和type
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            uname[uid] = uid
+            #uname[uid] = [uid,user_type]
             continue
         else:
             data = item['_source']
