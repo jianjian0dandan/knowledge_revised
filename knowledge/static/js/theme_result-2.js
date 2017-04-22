@@ -84,14 +84,18 @@ function link_source(data) {
         $.each(data.final_wiki,function (index,item) {
             if (index<=4){
                 $('.link_knowledge .knowledge').append(
-                    '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    // '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    '<a title="'+item[0]+'" href="###">'+item[0]+'</a>'
                 )
             }
                 wiki.push(
-                    '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    '<a title="'+item[0]+'" href="###">'+item[0]+'</a>'
                 )
 
         });
+        $('.link_knowledge .knowledge a').on('click',function () {
+            window.open('/construction/wiki/?_id='+$(this).text());
+        })
     }
 
     //关联资源
@@ -116,47 +120,16 @@ function link_source(data) {
 
     //-------人物------
     $('#container #content_right .link_user .user_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联人物');
-        $('#link #link_content').empty();
-        console.log(user);
-        if (user.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var u=0;u<user.length;u++){
-                $('#link #link_content').append(user[u]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+user+'&node_type=3&card_type=1');
     });
 
     //------事件-----
     $('#container #content_right .link_event .event_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联事件');
-        $('#link #link_content').empty();
-        if (event.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var e=0;e<event.length;e++){
-                $('#link #link_content').append(event[e]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+event+'&node_type=3&card_type=2');
     });
 
     //-----机构-----
     $('#container #content_right .link_agency .agency_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联机构');
-        $('#link #link_content').empty();
-        if (org.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var g=0;g<org.length;g++){
-                $('#link #link_content').append(org[g]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+org+'&node_type=3&card_type=0');
     });
 
@@ -172,6 +145,9 @@ function link_source(data) {
             }
         }
         $('#link').modal('show');
+        $('#link a').on('click',function () {
+            window.open('/construction/wiki/?_id='+$(this).text());
+        })
     });
 
     //-----资源-----

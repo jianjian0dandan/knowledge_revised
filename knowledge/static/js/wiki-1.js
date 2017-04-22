@@ -25,7 +25,8 @@ function wiki_body(data) {
         if ($(this).text()=='编辑'){
             alert('暂时无法操作，给您带来不便，请谅解。')
         }
-    })
+    });
+    $('#content img').attr('src','/static/images/unknown.png');
 }
 function wiki_exit(data) {
     if (data=='1'){
@@ -63,6 +64,9 @@ function wiki_basic(data) {
 }
 function wiki_related(data) {
      console.log(data);
+    if (data==''){
+        alert('该词条暂未收录,无法为您展示。');
+    }
     //关联人物
     var user=[];
     if (data['User'].length==0){

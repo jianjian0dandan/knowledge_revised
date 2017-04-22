@@ -332,6 +332,7 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                             words = topic[1].split(' + ')
                             for word in words:
                                 w,t = word.split('*')
+                                t = t.strip('\"')
                                 row.append(t)
                             topic_list.append(row)
                         result[k] = topic_list

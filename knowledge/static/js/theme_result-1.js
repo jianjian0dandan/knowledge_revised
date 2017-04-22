@@ -50,7 +50,11 @@ function things(data) {
                     if (row[2]==''||row[2]=='NULL'||row[2]=='unknown'||row[2]=='null'){
                         return '暂无';
                     }else {
-                        return row[2];
+                        if (row[2]=='other'){
+                            return '其他';
+                        }else {
+                            return row[2];
+                        }
                     }
                 }
             },
@@ -191,25 +195,24 @@ $.ajax({
 
 function fish(data) {
     var data=eval(data);
-    console.log(data)
     var finshdata = '';
     $.each(data,function (index,item) {
         if (index%2 == 0){
             finshdata+=
                 '<div class="fish_item">'+
                 '   <ul class="top">'+
-                '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(248, 151, 130);">事件ID：'+item[0]+'</li>'+
-                '       <li class="weibo" title="'+item[1]+'" style="border-left: 1px solid rgb(248, 151, 130);">微博内容：'+item[1]+'</li>'+
+                // '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(248, 151, 130);">事件ID：'+item[0]+'</li>'+
+                '       <li class="weibo" title="'+item[1]+'" style="height: 86px;white-space: normal;border-left: 1px solid rgb(248, 151, 130);">微博内容：'+item[1]+'</li>'+
                 '       <li class="weibo" title="'+item[2]+'" style="border-left: 1px solid rgb(248, 151, 130);">时间：'+item[2]+'</li>'+
                 '       <li class="line-last line-point" style="background-position: 0px 0px;"></li>'+
                 '   </ul>'+
                 '</div>';
         }else {
             finshdata+=
-                '<div class="fish_item" style="top: 95px;">'+
+                '<div class="fish_item" style="top:122px;">'+
                 '   <ul class="bottom">'+
-                '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(26, 132, 206);">事件ID：'+item[0]+'</li>'+
-                '       <li class="weibo" title="'+item[1]+'" style="border-left: 1px solid rgb(26, 132, 206);">微博内容：'+item[1]+'</li>'+
+                // '       <li class="weibo" title="'+item[0]+'" style="border-left: 1px solid rgb(26, 132, 206);">事件ID：'+item[0]+'</li>'+
+                '       <li class="weibo" title="'+item[1]+'" style="height: 86px;white-space: normal;border-left: 1px solid rgb(26, 132, 206);">微博内容：'+item[1]+'</li>'+
                 '       <li class="weibo" title="'+item[2]+'" style="border-left: 1px solid rgb(26, 132, 206);">时间：'+item[2]+'</li>'+
                 '       <li class="line-last line-point" style="background-position: 0px -20px;"></li>'+
                 '   </ul>'+

@@ -16,6 +16,7 @@ $.ajax({
 });
 function calculation(data) {
     var data = eval(data);
+    console.log(data)
     $('#task').bootstrapTable('load', data);
     $('#task').bootstrapTable({
         data:data,
@@ -111,7 +112,7 @@ function calculation(data) {
                     }else if (value== -1){
                         return '正在计算';
                     }else if (value==1){
-                        return '<a style="cursor: pointer;">计算完成</a>';
+                        return '计算完成';
                     }
                 },
             },

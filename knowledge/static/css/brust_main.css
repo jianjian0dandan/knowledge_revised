@@ -17,22 +17,26 @@ body {
 #container {
     position: relative;
     width: 1000px;
-    padding:50px;
+    padding:0 50px 50px;
     margin:70px auto 100px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
 #container .add {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 225px;
-    height:78px;
-    text-align: center;
-    line-height: 74px;
-    font-size: 32px;
-    background: url("/static/images/result_tit.png") no-repeat;
-    background-size: 100% 100%;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: -15px;*/
+    /*width: 225px;*/
+    /*height:78px;*/
+    /*text-align: center;*/
+    /*line-height: 74px;*/
+    /*font-size: 32px;*/
+    /*background: url("/static/images/result_tit.png") no-repeat;*/
+    /*background-size: 100% 100%;*/
+    font-size: 30px;
+    padding: 20px 0;
+    margin-left:50px;
+    font-weight: 900;
 }
 h4 {
     width: 241px;

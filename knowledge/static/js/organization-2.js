@@ -375,7 +375,8 @@ $.each(key_words,function (index,item) {
 })
 
 if (key_list.length==0){
-    $('#key_words').html('关键词无数据');
+    $('#key_words').html('<b>关键词无数据</b>');
+    $('#key_words').css({'lineHeight':'250px'});
 }else {
     //字符云 ---关键词
     require(
@@ -430,9 +431,9 @@ $.each(topic_words,function (index,item) {
         }
     )
 })
-console.log(topic_list)
 if (topic_list.length==0){
-    $('#micro_topic').html('<h4>微话题无数据</h4>');
+    $('#micro_topic').html('<b>微话题无数据</b>');
+    $('#micro_topic').css({'lineHeight':'250px'});
 }else {
     // 字符云 ---微话题
     require(

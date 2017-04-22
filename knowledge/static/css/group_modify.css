@@ -11,25 +11,28 @@ body {
     width: 100%;
     min-width: 1349px;
     /* min-height: 970px; */
-    background: url(/static/images/graph_add.png) no-repeat;
+    background: url(/static/images/graph_add.png) no-repeat #e6e9eb;
     background-size: 100% 100%;
 }
 #container {
     position: relative;
     width: 1000px;
-    padding: 80px 50px 90px 0;
+    padding:0 50px 90px 0;
     margin: 50px auto 100px;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
 #container .tit {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 225px;
-    height: 78px;
-    line-height: 78px;
-    text-align: center;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: -15px;*/
+    /*width: 225px;*/
+    /*height: 78px;*/
+    /*line-height: 78px;*/
+    /*text-align: center;*/
+    font-size: 30px;
+    padding: 20px 0;
+    margin-left:50px;
     font-weight:900;
 }
 #container h3 {

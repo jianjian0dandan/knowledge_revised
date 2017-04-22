@@ -34,6 +34,19 @@
                     </dl>
                 </div>
             </div>
+            <div class="influnce" style="margin:8px 0 0 42px;">
+                <div class="influ-1">
+                    <h4 class="influ_one">
+                        <p><span>活跃度</span><b class="level0"></b></p>
+                    </h4>
+                    <h4 class="influ_two">
+                        <p><span>影响力</span><b class="level1"></b></p>
+                    </h4>
+                    <h4 class="influ_three">
+                        <p><span>敏感度</span><b class="level2"></b></p>
+                    </h4>
+                </div>
+            </div>
             <div class="basic-2">
                 <h3>基本信息</h3>
                 <div class="information">
@@ -72,23 +85,23 @@
                 </div>
             </div>
         </div>
-        <div class="influnce" style="margin-top:8px;padding-bottom:25px;">
-            <h3>影响力信息</h3>
-            <div class="influ-1">
-                <h4 class="influ_one">
-                    <p style="display: inline-block;width: 180px;"><span>活跃度为</span><b class="active0"></b></p>&nbsp;
-                    <b class="level0"></b>
-                </h4>
-                <h4 class="influ_two">
-                    <p style="display: inline-block;width: 180px;"><span>影响力为</span><b class="active1"></b></p>&nbsp;
-                    <b class="level1"></b>
-                </h4>
-                <h4 class="influ_three">
-                    <p style="display: inline-block;width: 180px;"><span>敏感度为</span><b class="active2"></b></p>&nbsp;
-                    <b class="level2"></b>
-                </h4>
-            </div>
-        </div>
+        <!--<div class="influnce" style="margin-top:8px;padding-bottom:25px;">-->
+            <!--<h3>影响力信息</h3>-->
+            <!--<div class="influ-1">-->
+                <!--<h4 class="influ_one">-->
+                    <!--<p style="display: inline-block;width: 180px;"><span>活跃度为</span><b class="active0"></b></p>&nbsp;-->
+                    <!--<b class="level0"></b>-->
+                <!--</h4>-->
+                <!--<h4 class="influ_two">-->
+                    <!--<p style="display: inline-block;width: 180px;"><span>影响力为</span><b class="active1"></b></p>&nbsp;-->
+                    <!--<b class="level1"></b>-->
+                <!--</h4>-->
+                <!--<h4 class="influ_three">-->
+                    <!--<p style="display: inline-block;width: 180px;"><span>敏感度为</span><b class="active2"></b></p>&nbsp;-->
+                    <!--<b class="level2"></b>-->
+                <!--</h4>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="activity">
             <h3>活动信息</h3>
             <div class="location">
@@ -112,34 +125,40 @@
             <h3>社交信息</h3>
             <div class="social-1">
                 <h4 class="soc_one">
-                    <span id="one" style="cursor: pointer;">转发</span>
+                    <span style="cursor: pointer;">转发</span>
+                    <button id="one" style="float:right;" type="button" class="btn btn-default btn-xs">更多</button>
                     <span class="user"></span>
                 </h4>
                 <h4 class="soc_two">
-                    <span id="two" style="cursor: pointer;">被转发</span>
+                    <span style="cursor: pointer;">被转发</span>
+                    <button id="two" style="float:right;" type="button" class="btn btn-default btn-xs">更多</button>
                     <span class="user"></span>
                 </h4>
                 <h4 class="soc_three">
-                    <span id="three" style="cursor: pointer;">评论</span>
+                    <span style="cursor: pointer;">评论</span>
+                    <button id="three" style="float:right;" type="button" class="btn btn-default btn-xs">更多</button>
                     <span class="user"></span>
                 </h4>
                 <h4 class="soc_four">
-                    <span id="four" style="cursor: pointer;">被评论</span>
+                    <span style="cursor: pointer;">被评论</span>
+                    <button id="four" style="float:right;" type="button" class="btn btn-default btn-xs">更多</button>
                     <span class="user"></span>
                 </h4>
             </div>
         </div>
         <div class="preference" style="margin-top:18px;">
             <h3>偏好信息</h3>
-            <div id="key_words" style="width: 80%;height:250px;line-height: 250px;
-            margin:20px auto;background-color:#f3f4f5;text-align: center;"></div>
-            <div id="micro_topic" style="width: 80%;height:250px;line-height: 250px;
-            margin:0 auto;background-color:#f3f4f5;text-align: center;"></div>
             <div class="talk" style="width: 80%;margin:30px auto 10px;">
                 <p>
                     <span>话题</span>
                     <span class="talk_name"></span>
                 </p>
+            </div>
+            <div style="width: 100%;height: 250px;">
+                <div id="key_words" style="width:46%;height:250px;text-align: center;float:left;
+            margin:20px auto;background-color:#f3f4f5;"></div>
+                <div id="micro_topic" style="width: 46%;height:250px;text-align: center;float:left;
+            margin:0 auto;background-color:#f3f4f5;"></div>
             </div>
         </div>
         <div class="text">
@@ -147,12 +166,12 @@
             <div class="text_information">
                 <div id="group_emotion_loading" style="display:block;text-align:center;">正在加载，请稍后...</div>
                 <div id="influeweibo" style="overflow-x: auto; overflow-y: auto;height:auto;">
-                    <table id="input-table" class="In-table" style="display: block;">
+                    <table id="input-table" class="In-table" style="width:620px;">
                         <tbody class="In-table" style='width:100%!important;'>
                         </tbody>
                     </table>
                 </div>
-                <div class='fanye' style="width:100%;text-align:center;">
+                <div class='fanye' style="width:100%;text-align:center;margin-top: 20px;">
                     <span style="display:none;">
                         每页显示
                         <input type="text" id="PageNo" size="5" value="5"
@@ -180,21 +199,21 @@
             <div class="users" style="text-align: center;margin: 20px 0;">
 
             </div>
-            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_event" style="margin: 10px 0;">
             <h3>关联事件</h3>
             <div class="events" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_agency" style="margin: 10px 0;">
             <h3>关联机构</h3>
             <div class="agencys" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="agency_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_knowledge" style="margin: 10px 0;">
             <h3>关联知识</h3>

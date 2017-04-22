@@ -42,14 +42,24 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h3 class="result" style="color: white;font-weight: 900;">探索结果</h3>
-    <div class="related_network">
-        <h3>相关网络</h3>
-        <div class="network" style="width: 90%;margin: 20px auto;">
-            <h4 class="network_1" style="text-align: center;">正在加载中...</h4>
-            <div id="network"></div>
-        </div>
+    <h1 class="result">探索结果</h1>
+    <div class="map_area">
+        <dl id="map">
+            <dt><img src="/static/images/earth.png"></dt>
+            <dd>地图链接</dd>
+        </dl>
+        <dl id="chart">
+            <dt><img src="/static/images/go_line.png" alt=""></dt>
+            <dd>图谱链接</dd>
+        </dl>
     </div>
+    <!--<div class="related_network">-->
+        <!--<h3>相关网络</h3>-->
+        <!--<div class="network" style="width: 90%;margin: 20px auto;">-->
+            <!--<h4 class="network_1" style="text-align: center;">正在加载中...</h4>-->
+            <!--<div id="network"></div>-->
+        <!--</div>-->
+    <!--</div>-->
 
     <div class="related_person">
         <h3>相关人物</h3>
@@ -108,6 +118,12 @@
     }
     var input_data=JSON.parse(localStorage.getItem("temp"));
     console.log(input_data);
+    $('#chart').on('click',function () {
+//        window.open('/index/graph/?user_id='+data[0][0]+'&node_type=topic');
+    });
+    $('#map').on('click',function () {
+//        window.open('/index/map/?user_id='+data[0][0]+'&node_type=topic');
+    });
 
 </script>
 <script src="/static/js/search_result-1.js"></script>

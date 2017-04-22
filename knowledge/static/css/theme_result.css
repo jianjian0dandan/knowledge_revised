@@ -227,15 +227,16 @@ body {
 #container #content_right .link_agency .agencys a,
 #container #content_right .link_knowledge .knowledge a,
 #container #content_right .link_resources .resources a {
-    width: 200px;
+    width: 100px;
     display: block;
-    margin: 10px 0 10px 20px;
+    margin: 10px 0 0 60px;
     color:#676767;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+    text-align: left;
 }
 #container #content_right .link_user .user_more,
 #container #content_right .link_event .event_more,
