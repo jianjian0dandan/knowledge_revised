@@ -41,21 +41,22 @@
             <div class="users" style="text-align: center;margin: 20px 0;">
 
             </div>
-            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看详情</button>
+        </div>
+
+        <div class="link_agency" style="margin: 10px 0;">
+            <h3 class="tit">关联机构</h3>
+            <div class="agencys" style="text-align: center;margin:20px 0;">
+
+            </div>
+            <button class="agency_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_event" style="margin: 10px 0;">
             <h3 class="tit">关联事件</h3>
             <div class="events" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
-        </div>
-        <div class="link_agency" style="margin: 10px 0;">
-            <h3 class="tit">关联机构</h3>
-            <div class="agencys" style="text-align: center;margin:20px 0;">
-
-            </div>
-            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
     </div>
 </div>
@@ -66,7 +67,9 @@
 <script>
     var submit_user=$('#name').text();
     var user_id='{{_id}}';
-
+    $('#chart').on('click',function () {
+        window.open('/index/graph/?user_id='+user_id+'&node_type=wiki');
+    });
 </script>
 <script src="/static/js/wiki-1.js"></script>
 {% endblock %}

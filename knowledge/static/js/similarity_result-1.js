@@ -8,6 +8,7 @@ $.ajax({
 });
 function result(data) {
     var data=eval(data);
+    console.log(data)
     for (var key in data){
         //人物
         if (node_type=='User'){
@@ -197,6 +198,9 @@ function person(data) {
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
                 alert('还未计算完成。')
+            };
+            if ($element[0].cellIndex==0){
+                window.open('/index/person/?user_id='+row[1].id);
             }
         }
     });
@@ -357,6 +361,9 @@ function agencies(data) {
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
                 alert('还未计算完成。')
+            };
+            if ($element[0].cellIndex==0){
+                window.open('/index/organization/?user_id='+row[1].id);
             }
         }
     });
@@ -521,6 +528,9 @@ function events(data) {
         onClickCell: function (field, value, row, $element) {
             if ($element[0].innerText=='尚未计算'||$element[0].innerText=='正在计算') {
                 alert('还未计算完成。')
+            };
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[1].id);
             }
         }
     });

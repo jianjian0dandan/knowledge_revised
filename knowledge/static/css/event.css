@@ -80,7 +80,7 @@ body {
 }
 #event_content #content_left .basic .basic-2 {
     color: black;
-    padding-top: 39px;
+    padding-top:20px;
     margin-bottom: 20px;
     /*height: 220px;*/
     /*overflow: hidden;*/
@@ -146,21 +146,22 @@ body {
     text-align: center;
     margin-top: 10px;
 }
-#event_content #content_left .text_info .button_list button {
-    color: white;
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    background-color: #02aacf;
-    box-shadow: 1px 1px 1px #c6c7c9;
-}
-#event_content #content_left .text_info .button_list button:hover {
-    background-color:#8bc34a;
-}
+/*#event_content #content_left .text_info .button_list button {*/
+    /*color: white;*/
+    /*font-size: 12px;*/
+    /*padding: 5px 10px;*/
+    /*border-radius: 5px;*/
+    /*background-color: #02aacf;*/
+    /*box-shadow: 1px 1px 1px #c6c7c9;*/
+/*}*/
+/*#event_content #content_left .text_info .button_list button:hover {*/
+    /*background-color:#8bc34a;*/
+/*}*/
 /*微博内容*/
 #event_content #content_left .text_info .info_content .published {
     padding: 10px 30px 20px;
-    border-radius: 10px;
+    /*border-radius: 10px;*/
+    border-bottom: 1px dashed #494949;
 }
 #event_content #content_left .text_info .info_content .published .master {
     color: #4b4b4b;
@@ -208,15 +209,16 @@ body {
 #event_content #content_right .link_agency .agencys a,
 #event_content #content_right .link_knowledge .knowledge a,
 #event_content #content_right .link_resources .resources a {
-    width: 70%;
+    width: 100px;
     display: block;
-    margin: 10px 0 0 15px;
+    margin: 10px 0 0 60px;
     color:#676767;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+    text-align: left;
 }
 #event_content #content_right .link_user .user_more,
 #event_content #content_right .link_event .event_more,

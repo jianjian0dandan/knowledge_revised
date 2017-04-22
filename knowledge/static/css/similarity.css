@@ -10,28 +10,31 @@ body {
     margin: 0;
     min-width: 1349px;
     /*min-height: 820px;*/
-    background: url("/static/images/graph_add.png") no-repeat;
+    background: url("/static/images/graph_add.png") no-repeat #e6e9eb;
     background-size: 100% 100%;
 }
 #container {
     width: 80%;
-    padding:45px 80px 100px;
-    margin: 100px auto 100px;
+    padding:0 80px 100px;
+    margin: 50px auto 100px;
     position: relative;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
 #container .tit {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 360px;
-    margin-left: -10px;
-    height:78px;
-    line-height: 70px;
-    text-align: center;
-    background: url("/static/images/xxx_add.png") no-repeat;
-    background-size: 100% 100%;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: -15px;*/
+    /*width: 360px;*/
+    /*margin-left: -10px;*/
+    /*height:78px;*/
+    /*line-height: 70px;*/
+    /*text-align: center;*/
+    /*background: url("/static/images/xxx_add.png") no-repeat;*/
+    /*background-size: 100% 100%;*/
+    font-size: 30px;
+    padding: 20px 0;
+    font-weight: 900;
 }
 #container .search_task {
     width: 80%;

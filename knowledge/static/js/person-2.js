@@ -376,6 +376,7 @@ $.each(key_words,function (index,item) {
 
 if (key_list.length==0){
     $('#key_words').html('<b>关键词暂无数据</b>');
+    $('#key_words').css({'lineHeight':'250px'});
 }else {
     //字符云 ---关键词
     require(
@@ -419,6 +420,7 @@ if (key_list.length==0){
 
 if (result_1.hashtag==''){
     $('#micro_topic').html('<b>微话题暂无数据</b>');
+    $('#micro_topic').css({'lineHeight':'250px'});
 }else {
     var topic_words=result_1.hashtag.split('&');
     var topic_list=[];

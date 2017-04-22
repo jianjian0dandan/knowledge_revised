@@ -7,6 +7,9 @@
     .table>thead:first-child>tr:first-child>th {
         width: 1%;
     }
+    .fixed-table-container tbody td:first-child {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -88,9 +91,9 @@
             <h3 style="color: white;font-weight: 900;padding:0; ">网络分析</h3>
             <div class="net_detail">
                 <div class="detail-1">
-                    <img src="/static/images/structure.png"/> <span>内部关联事件</span><span class="det-1"></span>
+                    <img src="/static/images/structure.png"/> <span>内部关联人物</span><span class="det-1"></span>
                     <img src="/static/images/top.png"/> <span>内部关联度</span><span class="det-2"></span>
-                    <img src="/static/images/note.png"/> <span>该专题内部事件</span><span class="det-3"></span>
+                    <img src="/static/images/note.png"/> <span>该群体内部人物</span><span class="det-3"></span>
                 </div>
                 <div id="network_list" style="width: 100%"></div>
             </div>
@@ -139,21 +142,21 @@
             <div class="users" style="text-align: center;margin: 20px 0;">
 
             </div>
-            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_event" style="margin: 10px 0;">
             <h3>关联事件</h3>
             <div class="events" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_agency" style="margin: 10px 0;">
             <h3>关联机构</h3>
             <div class="agencys" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="agency_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_knowledge" style="margin: 10px 0;">
             <h3>关联知识</h3>

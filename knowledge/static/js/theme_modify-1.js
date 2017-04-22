@@ -363,7 +363,7 @@ function things(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return '删除';
+                    return '<a>删除</a>';
                 },
             },
             //多选框
@@ -392,6 +392,9 @@ function things(data) {
             if ($element[0].innerText=='删除') {
                 $('#fail').modal('show');
                 event_id=row[0];
+            };
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
             }
         }
     });
@@ -650,6 +653,11 @@ function event_list(data) {
         },
         onUncheckAll:function (row) {
             thing_list.removeByValue(row[1]);
+        },
+        onClickCell: function (field, value, row, $element) {
+            if ($element[0].cellIndex==0){
+                window.open('/index/event/?user_id='+row[0]);
+            }
         },
     });
 };

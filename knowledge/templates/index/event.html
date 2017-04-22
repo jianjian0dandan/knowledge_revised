@@ -76,20 +76,23 @@
             <div class="online-1">
                 <h3>网上讨论信息</h3>
                 <div class="hot">
+                    <h4 style="text-align: center;margin: 20px 0;font-weight:900;">情绪曲线图</h4>
                     <div id="hot_trend"></div>
                 </div>
-                <div class="place" style="display: none;">
-                    <div id="place_trend"></div>
-                </div>
+                <!--<div class="place" style="display: none;">-->
+                    <!--<h4 style="text-align: center;margin: 20px 0;font-weight:900;">地理热度图</h4>-->
+                    <!--<div id="place_trend"></div>-->
+                <!--</div>-->
                 <div class="topic">
-                    <h2 style="text-align: center;margin: 20px 0;">话题</h2>
+                    <h4 style="text-align: center;margin: 20px 0;font-weight:900;">话题</h4>
                     <div id="topic_trend"></div>
                 </div>
                 <div class="mood">
+                    <h4 style="text-align: center;margin: 20px 0;font-weight:900;">事件热度走势图</h4>
                     <div id="mood_trend"></div>
                 </div>
                 <div class="user">
-                    <h2 style="text-align: center;margin: 20px 0;">参与讨论的重要人物</h2>
+                    <h4 style="text-align: center;margin: 20px 0;font-weight:900;">参与讨论的重要人物</h4>
                     <div id="collection" style=""></div>
                 </div>
             </div>
@@ -98,9 +101,9 @@
         <div class="text_info" style="padding-top:12px">
             <h3>文本信息</h3>
             <div class="button_list">
-                <button id="all" style="background-color:#337ab7;">所有微博文本</button>
-                <button id="media">媒体微博文本</button>
-                <button id="internet_users">网名微博文本</button>
+                <button id="all" type="button" class="btn btn-default">所有微博文本</button>
+                <button id="media" type="button" class="btn btn-default">媒体微博文本</button>
+                <button id="internet_users" type="button" class="btn btn-default">网名微博文本</button>
             </div>
             <div class="info_content">
                 <div id="group_emotion_loading" style="display:block;text-align:center;">正在加载，请稍后...</div>
@@ -110,7 +113,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class='fanye' style="width:100%;text-align:center;">
+                <div class='fanye' style="width:100%;text-align:center;margin-top: 20px;">
                     <span style="display:none;">
                         每页显示
                         <input type="text" id="PageNo" size="5" value="5"
@@ -139,21 +142,21 @@
             <div class="users" style="text-align: center;margin: 20px 0;">
 
             </div>
-            <button class="user_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="user_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_event" style="margin: 10px 0;">
             <h3>关联事件</h3>
             <div class="events" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="event_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="event_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_agency" style="margin: 10px 0;">
             <h3>关联机构</h3>
             <div class="agencys" style="text-align: center;margin:20px 0;">
 
             </div>
-            <button class="agency_more" type="button" data-toggle="modal">+查看更多</button>
+            <button class="agency_more" type="button" data-toggle="modal">+查看详情</button>
         </div>
         <div class="link_knowledge" style="margin: 10px 0;">
             <h3>关联知识</h3>

@@ -1,3 +1,21 @@
+var lation={
+    "friend" :"交互",
+    "relative" :"亲属",
+    "leader" :"上下级关系",
+    "colleague" :"自述关联",
+    "ip_relation" :"IP关联",
+    "user_tag":"其他关系",
+    "friend" :"交互",
+    "colleague" :"业务关联",
+    "organization_tag":"其他",
+    "contain"  :"--主题关联",
+    'event_other':"其他关系",
+    "join" :" 参与事件",
+    "discuss":"参与舆论",
+    "other_relationship" :"其他关系",
+    "wiki_link":"维基百科"
+};
+
 var result_url;
 if (simple_advanced=='s'){
     result_url='/relation/simple_result/?submit_user='+submit_user+'&keywords='+key_words;
@@ -42,11 +60,17 @@ function result(data) {
 //相关网络
 function network(n_data) {
     $('.network_1').css({display:'none'});
+    console.log(n_data)
     var n_data = eval(n_data);
     var links = [];
     $.each(n_data,function (index,item) {
-        var type2;
+        var type1;
         for (var key in item[0]){
+            type1=key;
+            break;
+        }
+        var type2;
+        for (var key in item[2]){
             type2=key;
             break;
         }
@@ -61,7 +85,7 @@ function network(n_data) {
         }else {
             target=item[2].name;
         }
-        links.push({source:source,type1:item[1],type2:type2, target:target,});
+        links.push({source:source,type1:item[0],type2:type2, target:target,rel:lation[item[1]]});
     });
     var nodes = {};
 
@@ -123,10 +147,10 @@ function network(n_data) {
             var lineColor;
             //根据关系的不同设置线条颜色
             if(d.type2=="enent_id"){
-                lineColor="#9c27b0";
+                lineColor="#d9b3e6";
             }else if(d.type2=="uid"){
-                lineColor="#2b2082";
-            }else{
+                lineColor="#81c2d6";
+            }else if(d.type2=="uid"){
                 lineColor="#e62144";
             }
             return lineColor;
@@ -284,13 +308,7 @@ function network(n_data) {
 
     //设置连接线的坐标,使用椭圆弧路径段双向编码
     function linkArc(d) {
-        //var dx = d.target.x - d.source.x,
-        // dy = d.target.y - d.source.y,
-        // dr = Math.sqrt(dx * dx + dy * dy);
-        //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-        //打点path格式是：Msource.x,source.yArr00,1target.x,target.y
-
-        return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y
+         return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y
     }
     //设置圆圈和文字的坐标
     function transform1(d) {
@@ -786,7 +804,7 @@ function organization(data) {
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 20, 40],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
@@ -926,7 +944,7 @@ function subject(data) {
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 20, 40],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
@@ -1061,7 +1079,6 @@ function add_new_task(row) {
         dataType: 'json',
         async: true,
         success:function (data) {
-            var data=eval(data)
             if (data=='yes'){
                 alert('创建成功。');
             }else {

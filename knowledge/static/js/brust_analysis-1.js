@@ -107,6 +107,8 @@ function current(data) {
             })
         }
     };
+    var a=exist_nums[exist_nums.length-1];
+    fall_nums.unshift(a);
     var myChart = echarts.init(document.getElementById('forecast_img'));
     var time=[],series=[];
     for (var k=0;k<exist_nums.length;k++){

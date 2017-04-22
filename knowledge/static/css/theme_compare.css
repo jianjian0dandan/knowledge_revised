@@ -12,14 +12,14 @@ body {
     width: 100%;
     min-width: 1349px;
     /*min-height: 970px;*/
-    background: url("/static/images/graph_add.png") no-repeat;
+    background: url("/static/images/graph_add.png") no-repeat #e6e9eb;
     background-size: 100% 100%;
 }
 #container {
     position: relative;
     width: 1000px;
-    padding:90px 50px 20px;
-    margin:110px auto 50px;
+    padding:10px 50px 20px;
+    margin:50px auto;
     background: #f3f4f5;
     box-shadow: 2px 1px 1px #ccced0;
 }
@@ -128,7 +128,6 @@ body {
 #container .key_words .words_list .list-2-words #list-2-words{
     width: 440px;
     height: 300px;
-    line-height: 300px;
     text-align: center;
 }
 /*标签*/

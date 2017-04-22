@@ -681,7 +681,6 @@ label_tag();
 
 function tag(data) {
     var data = eval(data);
-    console.log(data)
     var data1=data.detail_result1;
     var data2=data.detail_result2;
     var series_1=[],series_2=[];
