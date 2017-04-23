@@ -129,9 +129,16 @@ function calculation(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
+            var name;
+            if (value==''||value=='unknown'||value=='NULL'){
+                name = row.node_id;
+            }else {
+                name = row.node_name;
+            }
             if ($element[0].innerText=='查看') {
                 if (row.compute_status==1){
-                    window.open('/relation/similarity_result/?node_id='+row.node_id+'&node_type='+row.node_type);
+                    window.open('/relation/similarity_result/?node_id='+row.node_id+'&node_type='+row.node_type+
+                    '&name='+name);
                 }else {
                     alert('未计算完成。');
                 }

@@ -462,7 +462,13 @@ function person(p_data) {
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row.uid+',User';
+                        var name;
+                        if (row.uname==''||row.uname=='unknown'||row.uname=='NULL'){
+                            name = row.uid;
+                        }else {
+                            name = row.uname;
+                        }
+                        var go=row.uid+',User,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -620,7 +626,13 @@ function agencies(data) {
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row.id+',Org';
+                        var name;
+                        if (row.uname==''||row.uname=='unknown'||row.uname=='NULL'){
+                            name = row.uid;
+                        }else {
+                            name = row.uname;
+                        }
+                        var go=row.id+',Org,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -677,6 +689,8 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
+                    }else if(value=='other'){
+                        return '其他';
                     }else {
                         return row.event_type;
                     }
@@ -692,6 +706,8 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
+                    }else if (!isNaN(value)){
+                        return getLocalTime(value);
                     }else {
                         return row.real_time;
                     }
@@ -778,7 +794,7 @@ function events(e_data) {
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row.id+',Event';
+                        var go=row.id+',Event,'+row.name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -918,7 +934,13 @@ function organization(data) {
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row.id+',Group';
+                        var name;
+                        if (row.group_name[0]==''||row.group_name[0]=='unknown'||row.group_name[0]=='NULL'||row.group_name.length==0){
+                            name= row.id;
+                        }else {
+                            name= row.group_name[0];
+                        }
+                        var go=row.id+',Group,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -1049,7 +1071,7 @@ function subject(data) {
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row[1].uid+',SpecialEvent';
+                        var go=row[1].uid+',SpecialEvent,'+row.event;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -1081,6 +1103,13 @@ function add_new_task(row) {
         success:function (data) {
             if (data=='yes'){
                 alert('创建成功。');
+                $.ajax({
+                    url: result_url,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    success:result
+                });
             }else {
                 alert('创建失败。');
             }
@@ -1090,7 +1119,7 @@ function add_new_task(row) {
 
 function go_jump(uid_type) {
     var news=uid_type.split(',');
-    window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]);
+    window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]+'&name='+news[2]);
 };
 
 setTimeout(function () {
