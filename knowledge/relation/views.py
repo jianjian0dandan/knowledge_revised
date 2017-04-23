@@ -107,7 +107,7 @@ def submit_task_function():
     print '11111111111111',input_data
     result = json.dumps(search_data(input_data))
     print '2222222222222222222s'
-    print result
+    # print result
     # return redirect(url_for('.relation_search_result',result=result))
     return result
     # return json.dumps(result)
@@ -118,7 +118,7 @@ def simple_result():
 	keywords = request.args.get('keywords', '')
 	keywords = keywords.split(',') 
 	submit_user = request.args.get('submit_user', '')
-	# keywords = ['2635695961','2121667213']
+	keywords = ['2762995793','3320770181']
 	# submit_user = 'admin'
 	print keywords
 	result = simple_search(keywords,submit_user)
