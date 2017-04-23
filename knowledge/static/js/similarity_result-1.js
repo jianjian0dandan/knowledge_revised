@@ -1,14 +1,28 @@
-var result_url='/relation/check_sim_nodes/?node_type='+node_type+'&node_id='+node_id+'&submit_user='+submit_user;
-$.ajax({
-    url: result_url,
-    type: 'GET',
-    dataType: 'json',
-    async: true,
-    success:result
-});
+
+function place() {
+    //this.ajax_method='GET'; // body...
+}
+place.prototype= {
+    call_request:function(url,callback) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            async: true,
+            success:callback
+        });
+    },
+};
+var place=new place();
+function nums() {
+    var result_url='/relation/check_sim_nodes/?node_type='+node_type+'&node_id='+node_id+'&submit_user='+submit_user;
+    place.call_request(result_url,result);
+}
+nums();
+
+
 function result(data) {
     var data=eval(data);
-    console.log(data)
     for (var key in data){
         //人物
         if (node_type=='User'){
@@ -52,7 +66,7 @@ function person(data) {
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 20, 40],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
@@ -347,12 +361,12 @@ function agencies(data) {
                     if (row[1].sim=='not exist'){
                         var infor=row[1].uname+','+row[1].id+',Org';
                         return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
-                    }else if (value==0){
+                    }else if (row[1].sim==0){
                         return '尚未计算';
-                    }else if (value==1){
+                    }else if (row[1].sim==1){
                         var go=row[1].uid+',Org';
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
-                    }else if (value==-1){
+                    }else if (row[1].sim==-1){
                         return '正在计算';
                     }
                 },
@@ -416,6 +430,8 @@ function events(data) {
                 formatter: function (value, row, index) {
                     if (row[1].event_type==''||row[1].event_type=='unknown'||row[1].event_type=='NULL'){
                         return '暂无';
+                    }else if(row[1].event_type=='other'){
+                        return '其他';
                     }else {
                         return row[1].event_type;
                     }
@@ -514,12 +530,12 @@ function events(data) {
                     if (row[1].sim=='not exist'){
                         var infor=row[1].name+','+row[1].id+',Event';
                         return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
-                    }else if (value==0){
+                    }else if (row[1].sim==0){
                         return '尚未计算';
-                    }else if (value==1){
+                    }else if (row[1].sim==1){
                         var go=row[1].uid+',Event';
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
-                    }else if (value==-1){
+                    }else if (row[1].sim==-1){
                         return '正在计算';
                     }
                 },
@@ -745,6 +761,7 @@ function add_new_task(row) {
         success:function (data) {
             if (data == 'yes'){
                 alert('创建成功。');
+                nums();
             }else {
                 alert('创建失败。');
             }

@@ -677,6 +677,8 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
+                    }else if(value=='other'){
+                        return '其他';
                     }else {
                         return row.event_type;
                     }
@@ -692,6 +694,8 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
+                    }else if (!isNaN(value)){
+                        return getLocalTime(value);
                     }else {
                         return row.real_time;
                     }
@@ -1081,6 +1085,13 @@ function add_new_task(row) {
         success:function (data) {
             if (data=='yes'){
                 alert('创建成功。');
+                $.ajax({
+                    url: result_url,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    success:result
+                });
             }else {
                 alert('创建失败。');
             }
