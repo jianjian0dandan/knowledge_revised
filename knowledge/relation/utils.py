@@ -571,7 +571,7 @@ def search_data(input_data):
         relation = 'r:'+'|:'.join(relation)
 
     if input_data['short_path']=='True':
-    	if len(end_id) == 0:
+    	if end_id == '*':
     		return 'short_path no end id'
         query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
         print query
@@ -596,8 +596,8 @@ def get_info_by_query(query,submit_user):
         except:
             i_type = i['p']
         for j in i_type:
-            print j.start_node(),j.type(),j.end_node()
-            print dict(j.start_node())
+            # print j.start_node(),j.type(),j.end_node()
+            # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
             end_node = dict(j.end_node())
