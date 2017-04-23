@@ -29,7 +29,7 @@ def relation_index():#导航页
     return render_template('relation/relation_index.html')
 
 @mod.route('/search/')
-# @login_required
+@login_required
 def relation_search():#图谱搜索
     return render_template('relation/search.html')
 
@@ -107,7 +107,7 @@ def submit_task_function():
     print '11111111111111',input_data
     result = json.dumps(search_data(input_data))
     print '2222222222222222222s'
-    # print type(result)
+    print result
     # return redirect(url_for('.relation_search_result',result=result))
     return result
     # return json.dumps(result)

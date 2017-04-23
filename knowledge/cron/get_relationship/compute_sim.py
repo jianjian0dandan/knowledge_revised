@@ -10,6 +10,7 @@ from get_similarity  import *
 from config import *
 sys.path.append('../../')
 from global_config import *
+from global_utils import *
 
 def compute_sim_by_id(node_type,node_id):
 	es_sim.update(index=sim_name,doc_type=sim_type,id=node_id,body={'doc':{'compute_status':-1}})
@@ -31,6 +32,13 @@ def compute_sim_by_id(node_type,node_id):
 
 
 if __name__ == '__main__':
-	node_type = argv[1]
-	node_id = argv[2]
-	compute_sim_by_id(node_type,node_id)
+	if argv[1] != 'ontime':
+		node_type = argv[1]
+		node_id = argv[2]
+		compute_sim_by_id(node_type,node_id)
+	else:
+		result = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'term':{'compute_status':0}},'size':100000})['hits']['hits']
+		print len(result)
+		for i in result:
+			compute_sim_by_id(i['_source']['node_type'],i['_source']['node_id'])
+
