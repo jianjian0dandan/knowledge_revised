@@ -124,8 +124,8 @@ def get_graph_index():#首页图谱页面
 
     relation = get_all_graph()
     flag = 'Success'
-    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
-    #return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
+    #return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
+    return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
 @login_required
