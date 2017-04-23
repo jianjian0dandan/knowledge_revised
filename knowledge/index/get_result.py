@@ -91,7 +91,7 @@ def uid_name_list_withtype(uid_list):#以字典形式返回uname和type
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            uname[uid] = uid
+            #uname[uid] = [uid,user_type]
             continue
         else:
             data = item['_source']
@@ -521,7 +521,7 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             else:
                 name = data['name'].replace('&',',')
             try:
-                if not data['real_geo'] or not data['real_geo'] in set(black_location):
+                if not data['real_geo'] or not data['real_geo'] in set(black_location):                 
                     continue
                 else:
                     location = data['real_geo']
@@ -1754,9 +1754,24 @@ def get_topic_geo(uid):#根据专题id查询专题的地图
         else:
             continue
 
+    peo_list = []
+    org_list = []
+    for uid in event_list:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (event_index_name,event_primary,uid)
+        p_result = graph.run(p_string)
+        for item in p_result:
+            id_key = dict(item[0]).values()[0]
+            id_type = item[1][0]
+            if id_type == people_node:
+                peo_list.append(id_key)
+            elif id_type == org_node:
+                org_list.append(id_key)
+            else:
+                continue
+
     event_result = get_detail_event_map(event_list)
-    people_result = []
-    org_relation = []
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 

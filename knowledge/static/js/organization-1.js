@@ -22,7 +22,7 @@ if (result_1.photo_url==''||result_1.photo_url=='unknown'
     $('.in_photo img').attr('src',result_1.photo_url);
 };
 if (result_1.verify_type in attest_type){
-    if (result_1.verify_type==0||result_1.verify_type==200
+    if (result_1.verify_type==-1||result_1.verify_type==200
         ||result_1.verify_type==220||result_1.verify_type==400){
         $('.attest').text('否');
     }else {
@@ -101,7 +101,14 @@ $('.weibo_link a').attr('href',link);
 $('.weibo_link a').text(link);
 
 $('.influ-1 .active0').text(result_1.activeness.toFixed(2));
-if (result_1.activeness <= 33&&result_1.activeness >= 0) {
+$('.influ-1 .level0').attr('title',result_1.activeness.toFixed(2));
+if (result_1.activeness == 0) {
+    $('.influ-1 .level0').append(
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
+}else if (result_1.activeness <= 33&&result_1.activeness > 0) {
     $('.influ-1 .level0').append(
         '<img src="/static/images/wuxing-2.png"/>'+
         '<img src="/static/images/wuxing-1.png"/>'+
@@ -122,7 +129,14 @@ if (result_1.activeness <= 33&&result_1.activeness >= 0) {
 };
 
 $('.influ-1 .active1').text(result_1.influence.toFixed(2));
-if (result_1.influence <= 33&&result_1.influence >= 0) {
+$('.influ-1 .level1').attr('title',result_1.influence.toFixed(2));
+if (result_1.influence == 0) {
+    $('.influ-1 .level1').append(
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
+}else if (result_1.influence <= 33&&result_1.influence > 0) {
     $('.influ-1 .level1').append(
         '<img src="/static/images/wuxing-2.png"/>'+
         '<img src="/static/images/wuxing-1.png"/>'+
@@ -143,7 +157,14 @@ if (result_1.influence <= 33&&result_1.influence >= 0) {
 };
 
 $('.influ-1 .active2').text(result_1.sensitive.toFixed(2));
-if (result_1.sensitive <= 33&&result_1.sensitive >= 0) {
+$('.influ-1 .level2').attr('title',result_1.sensitive.toFixed(2));
+if (result_1.sensitive == 0) {
+    $('.influ-1 .level2').append(
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'+
+        '<img src="/static/images/wuxing-1.png"/>'
+    );
+}else if (result_1.sensitive <= 33&&result_1.sensitive > 0) {
     $('.influ-1 .level2').append(
         '<img src="/static/images/wuxing-2.png"/>'+
         '<img src="/static/images/wuxing-1.png"/>'+
@@ -203,21 +224,28 @@ if (result_1.topic_string==''||result_1.topic_string=='unknown'
 var retweet=result_3.retweet;
 var retweet_1=[],retweet_2=[];
 for (var r in retweet){
-    if (retweet[r]==''||retweet[r]=='NULL'||retweet[r]=='unknown'){
-        retweet_1.push('<a uid="'+r+'">'+r+'</a> ');
-        retweet_2.push(r);
+		uname = retweet[r][0];
+		utype = retweet[r][1];
+    if (uname==''||uname=='NULL'||uname=='unknown'){
+    		retweet_1.push('<a class="'+utype+'"uid="'+r+'">'+r+'</a>&nbsp&nbsp&nbsp;');      
+      	retweet_2.push(r);        
     }else {
-        retweet_1.push('<a uid="'+r+'">'+retweet[r]+'</a> ');
-        retweet_2.push(retweet[r]);
+        retweet_1.push('<a class="'+utype+'"uid="'+r+'">'+uname+'</a>&nbsp&nbsp&nbsp;');
+        retweet_2.push(uname);
     };
 };
 $('#organization #content_left .social .soc_one .user').attr('title',retweet_2.join(','));
-$('#organization #content_left .social .soc_one .user').html(retweet_1);
+if(retweet_1.length==0||retweet_2.length==0){
+    $('#organization #content_left .social .soc_one .user').html("暂无数据");
+}else{
+		$('#organization #content_left .social .soc_one .user').html(retweet_1);
+}
+//$('#organization #content_left .social .soc_one .user').html(retweet_1);
 $('#one').on('click',function () {
-    $('#link .tit_h4').empty().text('转发');
+    $('#link .tit_h4').empty().text('转发用户');
     $('#link #link_content').empty();
     if (retweet_1.length==0||retweet_2.length==0){
-        $('#link #link_content').text('没有数据');
+        $('#link #link_content').text('暂无数据');
     }else {
         for (var w=0;w<retweet_1.length;w++){
             $('#link #link_content').append(retweet_1[w]);
@@ -225,40 +253,40 @@ $('#one').on('click',function () {
     }
     $('#link').modal('show');
     $('#link #link_content a').on('click',function () {
-        window.open('/index/person/?user_id='+$(this).attr('uid'));
+      if($(this).attr('class')=='people'){
+    		window.open('/index/person/?user_id='+$(this).attr('uid'));
+    	}
+      else{
+      	window.open('/index/organization/?user_id='+$(this).attr('uid'));
+      }
     });
 });
 
 var beretweet=result_3.beretweet;
 var beretweet_1=[],beretweet_2=[];
 for (var r in beretweet){
-    if (beretweet[r]==''||beretweet[r]=='NULL'||beretweet[r]=='unknown'){
-        beretweet_1.push('<a uid="'+r+'">'+r+'</a> ');
+		uname = beretweet[r][0];
+		utype = beretweet[r][1];
+    if (uname==''||uname=='NULL'||uname=='unknown'){
+        beretweet_1.push('<a class="'+utype+'"uid="'+r+'">'+r+'</a>&nbsp&nbsp&nbsp;');
         beretweet_2.push(r);
     }else {
-        beretweet_1.push('<a uid="'+r+'">'+beretweet[r]+'</a> ');
-        beretweet_2.push(beretweet[r]);
+        beretweet_1.push('<a class="'+utype+'"uid="'+r+'">'+uname+'</a>&nbsp&nbsp&nbsp;');
+        beretweet_2.push(uname);
     };
 };
 $('#organization #content_left .social .soc_two .user').attr('title',beretweet_2.join(','));
-$('#organization #content_left .social .soc_two .user').html(beretweet_1);
-$('#three').on('click',function () {
-    $('#link .tit_h4').empty().text('转发');
-    $('#link #link_content').empty();
-    if (comment_1.length==0||comment_1.length==0){
-        $('#link #link_content').text('没有数据');
-    }else {
-        for (var w=0;w<comment_1.length;w++){
-            $('#link #link_content').append(comment_1[w]);
-        }
-    }
-    $('#link').modal('show');
-})
+if(beretweet_1.length==0||beretweet_2.length==0){
+    $('#organization #content_left .social .soc_two .user').html("暂无数据");
+}else{
+		$('#organization #content_left .social .soc_two .user').html(beretweet_1);
+}
+
 $('#two').on('click',function () {
-    $('#link .tit_h4').empty().text('转发');
+    $('#link .tit_h4').empty().text('被转发用户');
     $('#link #link_content').empty();
-    if (beretweet_1.length==0||beretweet_1.length==0){
-        $('#link #link_content').text('没有数据');
+    if (beretweet_1.length==0||beretweet_2.length==0){
+        $('#link #link_content').text('暂无数据');
     }else {
         for (var w=0;w<beretweet_1.length;w++){
             $('#link #link_content').append(beretweet_1[w]);
@@ -266,7 +294,12 @@ $('#two').on('click',function () {
     }
     $('#link').modal('show');
     $('#link #link_content a').on('click',function () {
-        window.open('/index/person/?user_id='+$(this).attr('uid'));
+      if($(this).attr('class')=='people'){
+    		window.open('/index/person/?user_id='+$(this).attr('uid'));
+    	}
+      else{
+      	window.open('/index/organization/?user_id='+$(this).attr('uid'));
+      }
     });
 })
 
@@ -274,21 +307,28 @@ var comment=result_3.comment;
 var comment_1=[];
 var comment_2=[];
 for (var r in comment){
-    if (comment[r]==''||comment[r]=='NULL'||comment[r]=='unknown'){
-        comment_1.push('<a uid="'+r+'">'+r+'</a> ');
+		uname = comment[r][0];
+		utype = comment[r][1];
+    if (uname==''||uname=='NULL'||uname=='unknown'){
+        comment_1.push('<a class="'+utype+'"uid="'+r+'">'+r+'</a>&nbsp&nbsp&nbsp;');
         comment_2.push(r);
     }else {
-        comment_1.push('<a uid="'+r+'">'+comment[r]+'</a> ');
-        comment_2.push(comment[r]);
+        comment_1.push('<a class="'+utype+'"uid="'+r+'">'+uname+'</a>&nbsp&nbsp&nbsp;');
+        comment_2.push(uname);
     };
 };
 $('#organization #content_left .social .soc_three .user').attr('title',comment_2.join(','));
-$('#organization #content_left .social .soc_three .user').html(comment_1);
+if(comment_1.length==0||comment_2.length==0){
+    $('#organization #content_left .social .soc_three .user').html("暂无数据");
+}else{
+		$('#organization #content_left .social .soc_three .user').html(comment_1);
+}
+//$('#organization #content_left .social .soc_three .user').html(comment_1);
 $('#three').on('click',function () {
-    $('#link .tit_h4').empty().text('转发');
+    $('#link .tit_h4').empty().text('评论用户');
     $('#link #link_content').empty();
-    if (comment_1.length==0||comment_1.length==0){
-        $('#link #link_content').text('没有数据');
+    if (comment_1.length==0||comment_2.length==0){
+        $('#link #link_content').text('暂无数据');
     }else {
         for (var w=0;w<comment_1.length;w++){
             $('#link #link_content').append(comment_1[w]);
@@ -296,28 +336,40 @@ $('#three').on('click',function () {
     }
     $('#link').modal('show');
     $('#link #link_content a').on('click',function () {
-        window.open('/index/person/?user_id='+$(this).attr('uid'));
+      if($(this).attr('class')=='people'){
+    		window.open('/index/person/?user_id='+$(this).attr('uid'));
+    	}
+      else{
+      	window.open('/index/organization/?user_id='+$(this).attr('uid'));
+      }
     });
 });
 
 var becomment=result_3.becomment;
 var becomment_1=[],becomment_2=[];
 for (var r in becomment){
-    if (becomment[r]==''||becomment[r]=='NULL'||becomment[r]=='unknown'){
-        becomment_1.push('<a uid="'+r+'">'+r+'</a> ');
+		uname = becomment[r][0];
+		utype = becomment[r][1];
+    if (uname==''||uname=='NULL'||uname=='unknown'){
+        becomment_1.push('<a class="'+utype+'"uid="'+r+'">'+r+'</a>&nbsp&nbsp&nbsp;');
         becomment_2.push(r);
     }else {
-        becomment_1.push('<a uid="'+r+'">'+becomment[r]+'</a> ');
-        becomment_2.push(becomment[r]);
+        becomment_1.push('<a class="'+utype+'"uid="'+r+'">'+uname+'</a>&nbsp&nbsp&nbsp;');
+        becomment_2.push(uname);
     };
 };
 $('#organization #content_left .social .soc_four .user').attr('title',becomment_2.join(','));
-$('#organization #content_left .social .soc_four .user').html(becomment_1);
+if(becomment_1.length==0||becomment_2.length==0){
+    $('#organization #content_left .social .soc_four .user').html("暂无数据");
+}else{
+		$('#organization #content_left .social .soc_four .user').html(becomment_1);
+}
+//$('#organization #content_left .social .soc_four .user').html(becomment_1);
 $('#four').on('click',function () {
-    $('#link .tit_h4').empty().text('转发');
+    $('#link .tit_h4').empty().text('被评论用户');
     $('#link #link_content').empty();
-    if (becomment_1.length==0||becomment_1.length==0){
-        $('#link #link_content').text('没有数据');
+    if (becomment_1.length==0||becomment_2.length==0){
+        $('#link #link_content').text('暂无数据');
     }else {
         for (var w=0;w<becomment_1.length;w++){
             $('#link #link_content').append(becomment_1[w]);
@@ -325,12 +377,22 @@ $('#four').on('click',function () {
     }
     $('#link').modal('show');
     $('#link #link_content a').on('click',function () {
-        window.open('/index/person/?user_id='+$(this).attr('uid'));
+      if($(this).attr('class')=='people'){
+    		window.open('/index/person/?user_id='+$(this).attr('uid'));
+    	}
+      else{
+      	window.open('/index/organization/?user_id='+$(this).attr('uid'));
+      }
     });
 })
 
 $('#organization #content_left .social .user a').on('click',function () {
-    window.open('/index/person/?user_id='+$(this).attr('uid'));
+    if($(this).attr('class')=='people'){
+    		window.open('/index/person/?user_id='+$(this).attr('uid'));
+    }
+    else{
+      	window.open('/index/organization/?user_id='+$(this).attr('uid'));
+    }
 });
 
 

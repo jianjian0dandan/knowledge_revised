@@ -544,6 +544,8 @@ def deal_user_tag(item ,submit_user):
 def search_data(input_data):
     start_id = get_node_id(input_data['start_nodes'])
     print 'start_id',start_id
+    if len(start_id) == 0:
+    	return 'no start id'
     end_id = get_node_id(input_data['end_nodes'])
     print 'end_id:',end_id
     relation = input_data['relation']
@@ -568,7 +570,9 @@ def search_data(input_data):
     else:
         relation = 'r:'+'|:'.join(relation)
 
-    if input_data['short_path']==True:
+    if input_data['short_path']=='True':
+    	if end_id == '*':
+    		return 'short_path no end id'
         query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
         print query
         return get_info_by_query(query,submit_user)
@@ -592,11 +596,13 @@ def get_info_by_query(query,submit_user):
         except:
             i_type = i['p']
         for j in i_type:
-            print j.start_node(),j.type(),j.end_node()
-            print dict(j.start_node())
+            # print j.start_node(),j.type(),j.end_node()
+            # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
             end_node = dict(j.end_node())
+            if relation == 'wiki_link':
+            	continue
             #节点信息，名字
             info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
             if info and info not in node_list :
@@ -609,7 +615,6 @@ def get_info_by_query(query,submit_user):
             if this_relation not in graph_result:
                 graph_result.append(this_relation)
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
-    # print '?????',graph_result
     # max_influence_peo =  get_max_index_peo('influence')
     # max_activeness_peo = get_max_index_peo('activeness')
     # max_sensitive_peo = get_max_index_peo('sensitive')
@@ -629,7 +634,6 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    print graph_result
     return {'graph_result':graph_result,'table_result':table_result}
 
 def get_sim_status(node_type,node_id):
@@ -659,9 +663,9 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = o_column
         name = 'uname'
         tag = 'function_mark'
-        max_influence_org =  get_max_index_org('influence')
-        max_activeness_org = get_max_index_org('activeness')
-        max_sensitive_org = get_max_index_org('sensitive')
+        max_influence =  get_max_index_org('influence')
+        max_activeness = get_max_index_org('activeness')
+        max_sensitive = get_max_index_org('sensitive')
         node_type = org_node
     elif primary_key == event_primary:
         es = es_event
@@ -703,7 +707,8 @@ def get_es_by_id(primary_key,node_id,submit_user):
             f_result[tag] = ''
         f_result['sim'] = get_sim_status(node_type,node_id)
         return [[primary_key,f_result],result['fields'][name][0]]
-    except:#人造节点
+    except Exception,e:#人造节点
+    	print e
         return [0,node_id]
 
 
@@ -954,7 +959,7 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
         return 'no'
 
 def get_sim():
-    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}}})['hits']['hits']
+    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}},'size':1000000})['hits']['hits']
     result = []
     if results:
         for i in results:

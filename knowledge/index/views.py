@@ -124,7 +124,7 @@ def get_graph_index():#首页图谱页面
 
     relation = get_all_graph()
     flag = 'Success'
-    
+    # return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
     return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
@@ -159,6 +159,7 @@ def get_map():#地图页面
         flag = 'Wrong Type'
 
     data_dict = {'event':event_result,'people':people_result,'org':org_relation}
+
     return render_template('index/baidu_map.html', data_dict = data_dict, flag = flag)
 
 @mod.route('/person/', methods=['GET','POST'])
@@ -237,7 +238,7 @@ def get_event_atr():#事件属性页面
     relation_dict['doc'] = doc_list[0:10]
     
     text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
-
+    print result_att['topics']
     return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/organization/', methods=['GET','POST'])
