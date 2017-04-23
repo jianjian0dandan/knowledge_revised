@@ -67,6 +67,7 @@
 <script>
     var submit_user=$('#name').text();
     var user_id='{{_id}}';
+    $('.user_name').text(user_id);
     $('#chart').on('click',function () {
         window.open('/index/graph/?user_id='+user_id+'&node_type=wiki');
     });

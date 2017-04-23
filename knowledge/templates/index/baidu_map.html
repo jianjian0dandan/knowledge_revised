@@ -6,7 +6,7 @@
 <style>
     body {
         margin: 0 !important;
-        font-family: '新宋体';
+        font-family: '微软雅黑';
         position: relative;
     }
     #box {
@@ -45,12 +45,32 @@
     /*width: 20px;*/
     /*!*background-size: 20px 20px;*!*/
     /*}*/
+    #more {
+        float: right;
+        font-size: 10px;
+        color: #72ACE3;
+        cursor: pointer;
+    }
     .last_pic {
         background: white!important;
         text-align: center;
         line-height: 47px;
     }
-
+    .BMapLib_Drawing .BMap_noprint .anchorTL {
+        display: none;
+    }
+    .ui_city_change_top .ui_city_change_inner {
+        width: 100px;
+        padding: 5px 10px;
+        font-size: 16px;
+        text-align: center;
+        background-color: rgb(166, 194, 222);
+        border-radius: 15px;
+    }
+    #selCityWd {
+        height: 23px;
+        line-height: 23px;
+    }
 </style>
 {% endblock %}
 
@@ -93,6 +113,18 @@
     map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
     map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    map.addControl(new BMap.CityListControl({
+        anchor: BMAP_ANCHOR_TOP_LEFT,
+//        offset: size,
+        // 切换城市之间事件
+        // onChangeBefore: function(){
+        //    alert('before');
+        // },
+        // 切换城市之后事件
+        // onChangeAfter:function(){
+        //   alert('after');
+        // }
+    }))
     var index = 0;
     var myGeo = new BMap.Geocoder();
     var adds = [];
@@ -113,6 +145,7 @@
         }
     }
 
+
     // 编写自定义函数,创建标注
     var marker;
     function addMarker(point,label,news,type){
@@ -121,81 +154,100 @@
             var myIcon = new BMap.Icon("/static/images/map_event.png", new BMap.Size(19,50));
             marker = new BMap.Marker(point,{icon:myIcon});
             title='事件';
-            message='事件关键词：'+news+'<br/> 所在地：';
+            message='<b style="display:none;">'+news+'</b> 事件名称：';
         }else if (type=='people'){
             var myIcon = new BMap.Icon("/static/images/map_user.png", new BMap.Size(19,50));
             marker = new BMap.Marker(point,{icon:myIcon});
             title='人物';
-            message='人物昵称：'+news+'<br/> 所在地：';
+            message='人物id：<b>'+news+'</b><br/> 人物昵称：';
         }else {
             var marker = new BMap.Marker(point);
             title='机构';
-            message='机构名称：'+news+'<br/> 所在地：';
+            message='机构id：<b>'+news+'</b><br/> 机构名称：';
         }
         map.addOverlay(marker);
+        label.setStyle({
+            color:"black",                   //颜色
+            fontSize:"14px",
+            padding:"2px 5px",                  //字号
+            border:"2px solid #2196F3",           //边
+            cursor:"pointer",
+            borderRadius:'10px',
+        });
         marker.setLabel(label);
         marker.addEventListener("click", function(){
-            var information=(message + this.xc.innerText);
+            var information=(message + (this.zc||this.xc).innerText + '<br/> <a id="more" onclick="jump_card(this)">查看详情>></a>');
             map.openInfoWindow(new BMap.InfoWindow(information,opts),point); //开启信息窗口
         });
         var opts = {
             width : 100,     // 信息窗口宽度
-            height: 80,     // 信息窗口高度
+            height: 0,     // 信息窗口高度
             title : title ,    // 信息窗口标题
-            enableMessage:true,//设置允许信息窗发送短息
-            message:''
         };
 
     };
+    function jump_card(_this) {
+        var lx=$(_this).parents('.BMap_bubble_content').prev('.BMap_bubble_title')[0].innerText;
+        var b_id=$(_this).siblings('b').text();
+        if (lx=='人物'){
+            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=1');
+        }else if(lx=='机构'){
+            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=0');
+        }else if(lx=='事件'){
+            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=2');
+        }
+    }
 
-    //添加框选工具
-    var overlays = [];
-    var overlaycomplete = function(e){
-        overlays.push(e.overlay);
-    };
-    var styleOptions = {
-        strokeColor:"red",    //边线颜色。
-        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
-        strokeWeight: 3,       //边线的宽度，以像素为单位。
-        strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
-        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
-        strokeStyle: 'solid' //边线的样式，solid或dashed。
-    };
+
+
+//    //添加框选工具
+//    var overlays = [];
+//    var overlaycomplete = function(e){
+//        overlays.push(e.overlay);
+//    };
+//    var styleOptions = {
+//        strokeColor:"red",    //边线颜色。
+//        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+//        strokeWeight: 3,       //边线的宽度，以像素为单位。
+//        strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+//        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+//        strokeStyle: 'solid' //边线的样式，solid或dashed。
+//    };
     //实例化鼠标绘制工具
-    var drawingManager = new BMapLib.DrawingManager(map, {
-        isOpen: false, //是否开启绘制模式
-        enableDrawingTool: true, //是否显示工具栏
-        drawingToolOptions: {
-            anchor: BMAP_ANCHOR_TOP_LEFT, //位置
-            offset: new BMap.Size(5, 5), //偏离值
-            drawingModes: [
-                BMAP_DRAWING_RECTANGLE,
-            ]
-        },
-        drawingType: BMAP_DRAWING_RECTANGLE,
-        circleOptions: styleOptions, //圆的样式
-        polylineOptions: styleOptions, //线的样式
-        polygonOptions: styleOptions, //多边形的样式
-        rectangleOptions: styleOptions //矩形的样式
-    });
+//    var drawingManager = new BMapLib.DrawingManager(map, {
+//        isOpen: false, //是否开启绘制模式
+//        enableDrawingTool: true, //是否显示工具栏
+//        drawingToolOptions: {
+//            anchor: BMAP_ANCHOR_TOP_LEFT, //位置
+//            offset: new BMap.Size(5, 5), //偏离值
+//            drawingModes: [
+//                BMAP_DRAWING_RECTANGLE,
+//            ]
+//        },
+//        drawingType: BMAP_DRAWING_RECTANGLE,
+//        circleOptions: styleOptions, //圆的样式
+//        polylineOptions: styleOptions, //线的样式
+//        polygonOptions: styleOptions, //多边形的样式
+//        rectangleOptions: styleOptions //矩形的样式
+//    });
     //添加鼠标绘制工具监听事件，用于获取绘制结果
-    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+//    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
 
     //清除覆盖物
-    function clearAll() {
-        for(var i = 0; i < overlays.length; i++){
-            map.removeOverlay(overlays[i]);
-        }
-        overlays.length = 0
-    };
-    $('.BMapLib_Drawing .BMapLib_last').after(
-            '<a class="BMapLib_box last_pic"' +
-            'title="清除" onclick="clearAll()">清除</a>'
-    );
-    //右键清除覆盖物
-    map.addEventListener("rightclick", function(e) {
-        clearAll();
-    });
+//    function clearAll() {
+//        for(var i = 0; i < overlays.length; i++){
+//            map.removeOverlay(overlays[i]);
+//        }
+//        overlays.length = 0
+//    };
+//    $('.BMapLib_Drawing .BMapLib_last').after(
+//            '<a class="BMapLib_box last_pic"' +
+//            'title="清除" onclick="clearAll()">清除</a>'
+//    );
+//    //右键清除覆盖物
+//    map.addEventListener("rightclick", function(e) {
+//        clearAll();
+//    });
 
     //框选结束后的操作
 
@@ -206,33 +258,33 @@
     //    *  │3                  2 │
     //    *  └─────────────────────┘
     //    四个角的坐标顺序
-    var geoc = new BMap.Geocoder();
-    drawingManager.addEventListener("rectanglecomplete", function(e, overlay) {
-        var sijiao_jing=[overlay.io[0].lng,overlay.io[1].lng,overlay.io[2].lng,overlay.io[3].lng];
-        var sijiao_wei=[overlay.io[0].lat,overlay.io[1].lat,overlay.io[2].lat,overlay.io[3].lat];
-        var max_jing=Math.max.apply(null, sijiao_jing);
-        var min_jing=Math.min.apply(null, sijiao_jing);
-        var max_wei=Math.max.apply(null, sijiao_wei);
-        var min_wei=Math.min.apply(null, sijiao_wei);
-        $.each(zuobiao_nums,function (index,item) {
-            if (min_wei<item.lat&&item.lat<max_wei && min_jing<item.lng&&item.lng<max_jing){
-                geoc.getLocation(item, function(rs){
-                    var addComp = rs.addressComponents;
-                    console.log(addComp.city);
-                });
-            }
-        });
-
-    });
+//    var geoc = new BMap.Geocoder();
+//    drawingManager.addEventListener("rectanglecomplete", function(e, overlay) {
+//        var sijiao_jing=[overlay.io[0].lng,overlay.io[1].lng,overlay.io[2].lng,overlay.io[3].lng];
+//        var sijiao_wei=[overlay.io[0].lat,overlay.io[1].lat,overlay.io[2].lat,overlay.io[3].lat];
+//        var max_jing=Math.max.apply(null, sijiao_jing);
+//        var min_jing=Math.min.apply(null, sijiao_jing);
+//        var max_wei=Math.max.apply(null, sijiao_wei);
+//        var min_wei=Math.min.apply(null, sijiao_wei);
+//        $.each(zuobiao_nums,function (index,item) {
+//            if (min_wei<item.lat&&item.lat<max_wei && min_jing<item.lng&&item.lng<max_jing){
+//                geoc.getLocation(item, function(rs){
+//                    var addComp = rs.addressComponents;
+//                    console.log(addComp.city);
+//                });
+//            }
+//        });
+//
+//    });
 
     ///-----------------------------
     var zuobiao_nums=[];
-//    function bdGEO(){
-//        var add = adds[index];
-//        geocodeSearch(add);
-//        index++;
-//    };
-//    bdGEO();
+    function bdGEO(){
+        var add = adds[index];
+        geocodeSearch(add);
+        index++;
+    };
+    bdGEO();
     var dote=[];
     var curve;
     function geocodeSearch(add,news,type){
