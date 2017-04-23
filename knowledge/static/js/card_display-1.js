@@ -89,7 +89,7 @@ if (flag==1){
 
 }else if(flag==2){
     var card='';
-    var name,time,place,tage;
+    var name,time,place,tage,e_type;
     var f = 1;//判断数据是否为空
      
     for (var key in cards_list){
@@ -121,6 +121,11 @@ if (flag==1){
             }
             tit=words.join(',');
         };
+        if (data.event_type==''||data.event_type=='unknown' ||data.event_type=='NULL'){
+    				e_type='未知';
+				}else {
+					 	e_type=data.event_type;
+				};
         card+='<div class="event_card_details card">'+
             '                <span id="mid" style="display: none;">'+key+'</span>'+
             '                <span id="label" style="display: none;">'+tit+'</span>'+
@@ -142,7 +147,7 @@ if (flag==1){
             '                    <div class="details-right-2">'+
             '                        <p class="type_e" style="margin: 10px 0">'+
             '                            <span style="font-weight: 800;font-size: 10px">事件类型：</span>'+
-            '                            <span class="type">大学生</span>'+
+            '                            <span class="type">'+e_type+'</span>'+
             '                        </p>'+
             '                        <p class="tag_e" style="margin: 10px 0">'+
             '                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>'+tage+
@@ -645,7 +650,7 @@ function add_event(data_list){
 		
 		$('#card_set').empty();
     var card='';
-    var name,time,place,tage;
+    var name,time,place,tage,e_type;
     console.log(data_list);
     var f = 1;//判断数据是否为空
     for (var i=0;i < data_list.length;i += 1){
@@ -678,6 +683,11 @@ function add_event(data_list){
             }
             tit=words.join(',');
         };
+        if (data.event_type==''||data.event_type=='unknown' ||data.event_type=='NULL'){
+    				e_type='未知';
+				}else {
+					 	e_type=data.event_type;
+				};
         card+='<div class="event_card_details card">'+
             '                <span id="mid" style="display: none;">'+key+'</span>'+
             '                <span id="label" style="display: none;">'+tit+'</span>'+
@@ -699,7 +709,7 @@ function add_event(data_list){
             '                    <div class="details-right-2">'+
             '                        <p class="type_e" style="margin: 10px 0">'+
             '                            <span style="font-weight: 800;font-size: 10px">事件类型：</span>'+
-            '                            <span class="type">大学生</span>'+
+            '                            <span class="type">'+e_type+'</span>'+
             '                        </p>'+
             '                        <p class="tag_e" style="margin: 10px 0">'+
             '                            <span style="font-weight: 800;font-size: 10px">业务标签：</span>'+tage+
