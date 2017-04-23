@@ -118,7 +118,7 @@ def simple_result():
 	keywords = request.args.get('keywords', '')
 	keywords = keywords.split(',') 
 	submit_user = request.args.get('submit_user', '')
-	keywords = ['2762995793','3320770181']
+	# keywords = ['2762995793','3320770181']
 	# submit_user = 'admin'
 	print keywords
 	result = simple_search(keywords,submit_user)
