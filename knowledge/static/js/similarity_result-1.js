@@ -201,7 +201,13 @@ function person(data) {
                     }else if (row[1].sim==0){
                         return '尚未计算';
                     }else if (row[1].sim==1){
-                        var go=row[1].uid+',User';
+                        var name;
+                        if (row[1].uname==''||row[1].uname=='unknown'||row[1].uname=='NULL'){
+                            name= row[1].uid;
+                        }else {
+                            name= row[1].uname;
+                        }
+                        var go=row[1].uid+',User,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (row[1].sim==-1){
                         return '正在计算';
@@ -254,7 +260,7 @@ function agencies(data) {
                 }
             },
             {
-                title: "人物昵称",//标题
+                title: "机构名称",//标题
                 field: "",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -364,7 +370,13 @@ function agencies(data) {
                     }else if (row[1].sim==0){
                         return '尚未计算';
                     }else if (row[1].sim==1){
-                        var go=row[1].uid+',Org';
+                        var name;
+                        if (row[1].uname==''||row[1].uname=='unknown'||row[1].uname=='NULL'){
+                            name= row[1].id;
+                        }else {
+                            name= row[1].uname;
+                        }
+                        var go=row[1].uid+',Org,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (row[1].sim==-1){
                         return '正在计算';
@@ -533,7 +545,7 @@ function events(data) {
                     }else if (row[1].sim==0){
                         return '尚未计算';
                     }else if (row[1].sim==1){
-                        var go=row[1].uid+',Event';
+                        var go=row[1].uid+',Event,'+row[1].name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (row[1].sim==-1){
                         return '正在计算';
@@ -771,7 +783,7 @@ function add_new_task(row) {
 
 function go_jump(uid_type) {
     var news=uid_type.split(',');
-    window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]);
+    window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]+'&name='+news[2]);
 }
 
 
