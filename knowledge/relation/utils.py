@@ -596,7 +596,7 @@ def get_info_by_query(query,submit_user):
         except:
             i_type = i['p']
         for j in i_type:
-            # print j.start_node(),j.type(),j.end_node()
+            print j.start_node(),j.type(),j.end_node()
             # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
@@ -634,6 +634,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
+    # print {'graph_result':graph_result,'table_result':table_result}
     return {'graph_result':graph_result,'table_result':table_result}
 
 def get_sim_status(node_type,node_id):
@@ -796,6 +797,10 @@ def simple_search(keywords_list,submit_user):
     chinese = re.compile(u"[\u4e00-\u9fa5]+")
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+
+    index_list = [node_index_name,org_index_name,event_index_name,special_event_index_name,group_index_name]
+    primary_list = [people_primary,org_primary,event_primary,special_event_primary,group_primary]
+    
     node_type_list = [people_node,org_node,event_node,special_event_node,group_node]
     max_influence_peo =  get_max_index_peo('influence')
     max_activeness_peo = get_max_index_peo('activeness')
@@ -803,6 +808,8 @@ def simple_search(keywords_list,submit_user):
     max_influence_org =  get_max_index_org('influence')
     max_activeness_org = get_max_index_org('activeness')
     max_sensitive_org = get_max_index_org('sensitive')
+    id_list = []
+    graph_result = set()
     for key in keywords_list:
         print key
 
@@ -836,6 +843,7 @@ def simple_search(keywords_list,submit_user):
                 for j in result:
                     f_result = {}
                     f_result['id']=j['_id']
+                    # id_list.append(j['_id'])
                     for k,v in j['fields'].iteritems():
                         f_result[k] = v[0]
                     try:
@@ -854,9 +862,30 @@ def simple_search(keywords_list,submit_user):
                         pass
                     f_result['sim'] = get_sim_status(node_type_list[i],j['_id'])
                     table_result[nodes_list[i]].append(f_result)
+
+                    try:
+                        a = graph.run('start n=node:'+index_list[i]+'("'+primary_list[i]+':'+str(j['_id'])+'") return id(n)')
+                        for k in a:
+                            print k
+                            id_list.append(str(dict(k)['id(n)']))
+                    except:
+                        pass
             else:
                 continue
-    return table_result
+
+    print 'dddddddddddddddddddddddddd',id_list,len(id_list)
+    if len(id_list) == 0:
+        pass
+    else:
+        #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
+        query = 'start n=node('+','.join(id_list)+'),e=node(*) match (n)-[r*0..1]-(e) return n,r,e '
+        print query
+        graph_result.add(get_info_by_query(query,submit_user)['graph_result']) 
+
+    graph_result = list(graph_result)
+    print graph_result
+
+    return {'table_result':table_result,'graph_result':graph_result}
 
     '''
     if len(chinese.findall(key)) == 0: #可能是id
