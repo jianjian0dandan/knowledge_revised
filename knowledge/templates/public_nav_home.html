@@ -36,23 +36,23 @@
         <li style="position: relative">
             <a id="relation">图谱探索</a>
             <ul class="find" style="margin-left: 3px;display: none;position:absolute; ">
-                <li><a href="/relation/search/" class="search">图谱搜索</a></li>
-                <li><a href="/relation/similarity/" class="simliar">相似搜索</a></li>
+                <li><a href="/relation/search/" target='_blank' class="search">图谱搜索</a></li>
+                <li><a href="/relation/similarity/" target='_blank' class="simliar">相似搜索</a></li>
             </ul>
         </li>
         <li style="position: relative">
             <a id="construction">图谱管理</a>
             <ul class="graph" style="margin-left: 3px;display: none;position:absolute; ">
-                <li><a href="/construction/graph_add/" class="add">图谱添加</a></li>
-                <li><a href="/construction/graph_modify/" class="modify">图谱编辑</a></li>
+                <li><a href="/construction/graph_add/" target='_blank' class="add">图谱添加</a></li>
+                <li><a href="/construction/graph_modify/" target='_blank' class="modify">图谱编辑</a></li>
             </ul>
         </li>
         <li style="position: relative">
             <a id="sysadmin" style="margin-left: 20px">我的图谱</a>
             <ul class="mine" style="margin-left:20px;display: none;position:absolute; ">
-                <li><a href="/sysadmin/topic/" class="topic">我的专题</a></li>
-                <li><a href="/sysadmin/group/" class="group">我的群体</a></li>
-                <li><a href="/sysadmin/focus/" class="focus">我的关注</a></li>
+                <li><a href="/sysadmin/topic/" target='_blank' class="topic">我的专题</a></li>
+                <li><a href="/sysadmin/group/" target='_blank' class="group">我的群体</a></li>
+                <li><a href="/sysadmin/focus/" target='_blank' class="focus">我的关注</a></li>
             </ul>
         </li>
         <li><a id="theme" style="margin-left: 290px">专题探索</a></li>
@@ -61,7 +61,7 @@
     </ul>
     <div class="username">
         <b>当前用户：</b><b id="name">{{g.user}}</b>
-        <button class="sign_out">登 出</button>
+        <button class="sign_out" id="log_out">登 出</button>
     </div>
 </div>
 
@@ -100,6 +100,9 @@
 {% endblock %}
 {% block write_js %}
 <script>
+    $('#log_out').on('click',function () {
+        window.location.href='/logout/';
+    });
     $('#theme').on('click',function () {
         window.open('/theme/');
     });

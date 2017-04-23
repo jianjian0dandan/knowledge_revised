@@ -65,24 +65,24 @@
     </div>
     <div class="username">
         <b>当前用户：</b><b id="name">{{g.user}}</b>
-        <button class="sign_out">登 出</button>
+        <button class="sign_out"  id="log_out">登 出</button>
     </div>
     <div class="find" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
     position:relative;top: -10px;z-index: 10">
-        <a href="/relation/search/" class="search">图谱搜索</a>
-        <a href="/relation/similarity/" class="simliar">相似搜索</a>
+        <a href="/relation/search/" target='_blank' class="search">图谱搜索</a>
+        <a href="/relation/similarity/" target='_blank' class="simliar">相似搜索</a>
     </div>
     <div class="graph" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
     position:relative;top: -10px;z-index: 10">
-        <a href="/construction/graph_add/" class="add">图谱添加</a>
-        <a href="/construction/graph_modify/" class="modify">图谱编辑</a>
+        <a href="/construction/graph_add/" target='_blank' class="add">图谱添加</a>
+        <a href="/construction/graph_modify/" target='_blank' class="modify">图谱编辑</a>
     </div>
 
     <div class="mygraph" style="width:100%;text-align: center;display: none;padding: 30px 0 20px;
     position:relative;top: -10px;z-index: 10">
-        <a href="/sysadmin/topic/" class="topic">我的专题</a>
-        <a href="/sysadmin/group/" class="group">我的群体</a>
-        <a href="/sysadmin/focus/" class="focus">我的关注</a>
+        <a href="/sysadmin/topic/" target='_blank' class="topic">我的专题</a>
+        <a href="/sysadmin/group/" target='_blank' class="group">我的群体</a>
+        <a href="/sysadmin/focus/" target='_blank' class="focus">我的关注</a>
     </div>
 </div>
 {% endblock %}
@@ -126,6 +126,9 @@
     });
     $('#brust').on('click',function () {
         window.open('/brust/');
+    });
+    $('#log_out').on('click',function () {
+        window.location.href='/logout/';
     });
 </script>
 {% endblock %}
