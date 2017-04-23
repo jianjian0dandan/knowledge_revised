@@ -737,7 +737,7 @@ def get_detail_event(uid_list,user_name):
             except KeyError:
                 geo = ''
             try:
-                category = EN_CH_EVENT[data['event_type']]
+                category = EN_CH_EVENT[data['event_type'].strip()]
             except KeyError:
                 category = ''
 

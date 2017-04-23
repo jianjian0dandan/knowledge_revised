@@ -350,7 +350,7 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                     result[event_tag] = tag_list
                 elif k == 'event_type':
                     try:
-                        category = EN_CH_EVENT[v]
+                        category = EN_CH_EVENT[v.strip()]
                     except KeyError:
                         category = ''
                     result[k] = category
