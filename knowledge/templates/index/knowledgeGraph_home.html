@@ -1,11 +1,17 @@
 {% block title %}<title>知识图谱 - 图谱关系图</title>{% endblock %}
 {% block css %}
 <style>
-
+    h2 {
+        text-align: center;
+        padding: 15px 0;
+        color: #979797;
+        font-weight: 900;
+    }
 </style>
 {% endblock %}
 {% block main %}
-<div id="graph_picture" style="width:1000px;height:800px;margin: 30px auto;"></div>
+<h2>知识图谱关系图</h2>
+<div id="graph_picture" style="height:1700px;margin:0 auto;"></div>
 {% endblock %}
 
 {% block my_js %}
@@ -13,7 +19,24 @@
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 
 <script type="text/javascript">
-
+    var lation={
+        "friend" :"交互",
+        "relative" :"亲属",
+        "leader" :"上下级关系",
+        "colleague" :"自述关联",
+        "ip_relation" :"IP关联",
+        "user_tag":"其他关系",
+        "friend" :"交互",
+        "colleague" :"业务关联",
+        "organization_tag":"其他",
+        "contain"  :"主题关联",
+        'event_other':"其他关系",
+        "join" :" 参与事件",
+        "discuss":"参与舆论",
+        "other_relationship" :"其他关系",
+        "wiki_link":"维基百科"
+    };
+    $('#graph_picture').width($(window).width()-10);
     var user_list=[],event_list=[],org_list=[],topic_list=[],group_list=[],link=[],
             legend=['人物','机构','事件','专题','群体','维基'],
             categories=[
@@ -49,7 +72,7 @@
             }else {
                 name=item[1];
             }
-            user_list.push({category:0,name:name,label:name,_id:item[0]});
+            user_list.push({category:0,name:name,label:name,_id:item[0],_type:'people'});
         }else if (item[2]=='org'){
             var name;
             if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
@@ -57,7 +80,7 @@
             }else {
                 name=item[1];
             }
-            org_list.push({category:1,name:name,label:name,_id:item[0]})
+            org_list.push({category:1,name:name,label:name,_id:item[0],_type:'org'})
         }else if (item[2]=='event'){
             var name;
             if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
@@ -65,7 +88,7 @@
             }else {
                 name=item[1];
             }
-            event_list.push({category:2,name:name,label:name,_id:item[0]})
+            event_list.push({category:2,name:name,label:name,_id:item[0],_type:'event'})
         }else if (item[2]=='topic'){
             var name;
             if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
@@ -73,7 +96,7 @@
             }else {
                 name=item[1];
             };
-            topic_list.push({category:3,name:name,label:name,_id:item[0]})
+            topic_list.push({category:3,name:name,label:name,_id:item[0],_type:'topic'})
         }else if (item[2]=='group'){
             var name;
             if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
@@ -81,7 +104,7 @@
             }else {
                 name=item[1];
             };
-            group_list.push({category:4,name:name,label:name,_id:item[0]})
+            group_list.push({category:4,name:name,label:name,_id:item[0],_type:'group'})
         }else if (item[2]=='wiki'){
             var name;
             if (item[1]==''||item[1]=='unknown'||item[1]=='null'){
@@ -89,7 +112,7 @@
             }else {
                 name=item[1];
             };
-            group_list.push({category:5,name:name,label:name,_id:item[0]})
+            group_list.push({category:5,name:name,label:name,_id:item[0],_type:'wiki'})
         };
 
         //----------------------
@@ -101,7 +124,7 @@
             }else {
                 name=item[4];
             }
-            user_list.push({category:0,name:name,label:name,_id:item[3]})
+            user_list.push({category:0,name:name,label:name,_id:item[3],_type:'people'})
         }else if (item[5]=='org'){
             var name;
             if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
@@ -109,7 +132,7 @@
             }else {
                 name=item[4];
             }
-            org_list.push({category:1,name:name,label:name,_id:item[3]});
+            org_list.push({category:1,name:name,label:name,_id:item[3],_type:'org'});
         }else if (item[5]=='event'){
             var name;
             if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
@@ -117,7 +140,7 @@
             }else {
                 name=item[4];
             }
-            event_list.push({category:2,name:name,label:name,_id:item[3]})
+            event_list.push({category:2,name:name,label:name,_id:item[3],_type:'event'})
         }else if (item[5]=='topic'){
             var name;
             if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
@@ -125,7 +148,7 @@
             }else {
                 name=item[4];
             }
-            topic_list.push({category:3,name:name,label:name,_id:item[3]});
+            topic_list.push({category:3,name:name,label:name,_id:item[3],_type:'topic'});
         }else if (item[5]=='group'){
             var name;
             if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
@@ -133,7 +156,7 @@
             }else {
                 name=item[4];
             }
-            group_list.push({category:4,name:name,label:name,_id:item[3]});
+            group_list.push({category:4,name:name,label:name,_id:item[3],_type:'group'});
         }else if (item[5]=='wiki'){
             var name;
             if (item[4]==''||item[4]=='unknown'||item[4]=='null'){
@@ -141,7 +164,7 @@
             }else {
                 name=item[4];
             }
-            group_list.push({category:5,name:name,label:name,_id:item[3]});
+            group_list.push({category:5,name:name,label:name,_id:item[3],_type:'wiki'});
         };
 
         var source,target;
@@ -155,7 +178,7 @@
         }else {
             target=item[4];
         };
-        link.push({source:source, target:target});
+        link.push({source:source, target:target,rel:item[6]});
     });
     var all_node;
     all_node=user_list.concat(org_list).concat(event_list).concat(topic_list).concat(group_list);
@@ -171,7 +194,6 @@
             cate.push(categories[i])
         }
     }
-    console.log(all_node)
     // 路径配置
     require.config({
         paths: {
@@ -190,13 +212,22 @@
                 var myChart = ec.init(document.getElementById('graph_picture'));
                 option = {
                     title : {
-                        text: '知识图谱关系图',
-                        x:'center',
-                        y:'top'
+//                        text: '知识图谱关系图',
+//                        x:'center',
+//                        y:'top'
                     },
                     tooltip : {
                         trigger: 'item',
-                        formatter: '{a} : {b}'
+                        formatter:function (v) {
+                            console.log(v)
+                            if (v['3']==undefined&&v['4']==undefined){
+                                return v['0'] + '：' +v['1'];
+                            }else {
+                                return v['2'].target + ' →→→→ ' +v['2'].source + '  关系：'+lation[v['2'].rel];
+                            }
+
+                        }
+                        //formatter: '{a} : {b}'
                     },
                     toolbox: {
                         show : true,
@@ -207,7 +238,9 @@
                         }
                     },
                     legend: {
-                        x: 'left',
+                        x: '50px',
+                        orient: 'horizontal',
+                        z: 10,
                         data:legend
                     },
                     series : [
@@ -216,6 +249,7 @@
                             name : "节点",
                             roam:'scale',
                             large: true,
+                            z:5,
                             categories : categories,
                             itemStyle: {
                                 normal: {
@@ -270,15 +304,30 @@
                     ) { //点击的是边
                         var sourceNode = nodes.filter(function (n) {return n.name == data.source})[0];
                         var targetNode = nodes.filter(function (n) {return n.name == data.target})[0];
-                        console.log("选中了边 " + sourceNode.name + ' -> ' + targetNode.name + ' (' + data.weight + ')');
+                        console.log("选中了边 " + sourceNode.name + ' -> ' + targetNode.name );
                     } else { // 点击的是点
-                        console.log("选中了" + data.name + '(' + data.value + ')');
+                        console.log("选中了" + data.name + data._id +data.label + data._type );
+                        var n_type=data._type;
+                        var n_id=data._id;
+                        if (n_type=='people'){
+                            window.open('/index/person/?uid='+n_id);
+                        }else if (n_type=='org'){
+                            window.open('/index/organization/?uid='+n_id);
+                        }else if (n_type=='event'){
+                            window.open('/index/event/?uid='+n_id);
+                        }else if (n_type=='topic'){
+                            window.open('/theme/result/?theme_name='+n_id);
+                        }else if (n_type=='group'){
+                            window.open('/group/result/?group_name='+n_id);
+                        }else if (n_type=='wiki'){
+                            window.open('/index/construction/?_id='+n_id);
+                        };
                     }
                 }
                 myChart.on(ecConfig.EVENT.CLICK, focus);
 
                 myChart.on(ecConfig.EVENT.FORCE_LAYOUT_END, function () {
-//                    console.log(myChart.chart.force.getPosition());
+                    console.log(myChart.chart.force.getPosition());
                 });
 
 

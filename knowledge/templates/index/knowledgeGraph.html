@@ -67,8 +67,8 @@
         link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
     });
 
-    var width = $(window).width()*0.7,
-        height = $(window).height()*0.9;
+    var width = $(window).width(),
+        height = $(window).height();
 
     var force = d3.layout.force()//layout将json格式转化为力学图可用的格式
             .nodes(d3.values(nodes))//设定节点数组

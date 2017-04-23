@@ -96,10 +96,16 @@
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=0ECXIPy41grtI3jUXqQMgILaG1vKUiLo"></script>
-<script src="/static/js/DrawingManager_min.js"></script>
+<!--<script src="/static/js/DrawingManager_min.js"></script>-->
 <script>
-    var result={{data_dict|tojson}};
-
+//    var result={{data_dict|tojson}};
+    var result;
+    if ('{{result_na}}'=='NaNa'){
+        result=JSON.parse(localStorage.getItem("result_map"));
+    }else {
+        result={{data_dict|tojson}};
+    }
+    console.log(result);
     $('#legend p').on('click',function () {
         var colour=$(this).find('.dot').css('backgroundColor');
         $(this).find('.name').css({color:colour});
@@ -124,7 +130,7 @@
         // onChangeAfter:function(){
         //   alert('after');
         // }
-    }))
+    }));
     var index = 0;
     var myGeo = new BMap.Geocoder();
     var adds = [];
@@ -190,11 +196,11 @@
         var lx=$(_this).parents('.BMap_bubble_content').prev('.BMap_bubble_title')[0].innerText;
         var b_id=$(_this).siblings('b').text();
         if (lx=='人物'){
-            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=1');
+            window.open('/index/person/?user_id='+b_id);
         }else if(lx=='机构'){
-            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=0');
+            window.open('/index/organization/?user_id='+b_id);
         }else if(lx=='事件'){
-            window.open('/index/cards/?user_id='+b_id+'&node_type=1&card_type=2');
+            window.open('/index/event/?user_id='+b_id);
         }
     }
 
@@ -323,6 +329,9 @@
 //        window.clearInterval();
 //
 //    }
+setTimeout(function () {
+    localStorage.removeItem('result_map');
+},600000);
 
 </script>
 {% endblock %}
