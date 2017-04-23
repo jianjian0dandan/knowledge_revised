@@ -8,7 +8,7 @@ var lation={
     "friend" :"交互",
     "colleague" :"业务关联",
     "organization_tag":"其他",
-    "contain"  :"--主题关联",
+    "contain"  :"主题关联",
     'event_other':"其他关系",
     "join" :" 参与事件",
     "discuss":"参与舆论",
@@ -39,6 +39,7 @@ $.ajax({
 });
 function result(data) {
     var data=eval(data);
+    console.log(data)
     if (simple_advanced=='s'){
         $('.related_network').hide();
         person(data.p_nodes);
@@ -60,7 +61,6 @@ function result(data) {
 //相关网络
 function network(n_data) {
     $('.network_1').css({display:'none'});
-    console.log(n_data)
     var n_data = eval(n_data);
     var links = [];
     $.each(n_data,function (index,item) {
@@ -321,8 +321,10 @@ function network(n_data) {
 }
 
 //相关人物
+var people;
 function person(p_data) {
     var p_data = eval(p_data);
+    people=p_data;
     $('.person_1').css({display:'none'});
     $('#person').bootstrapTable('load', p_data);
     $('#person').bootstrapTable({
@@ -485,8 +487,10 @@ function person(p_data) {
 };
 
 //相关机构
+var org;
 function agencies(data) {
     var data = eval(data);
+    org=data;
     $('.agencies_1').css({display:'none'});
     $('#agencies').bootstrapTable('load', data);
     $('#agencies').bootstrapTable({
@@ -649,8 +653,10 @@ function agencies(data) {
 };
 
 //相关事件
+var events;
 function events(e_data) {
     var e_data = eval(e_data);
+    events=e_data;
     $('.events_1').css({display:'none'});
     $('#events').bootstrapTable('load', e_data);
     $('#events').bootstrapTable({
@@ -811,8 +817,10 @@ function events(e_data) {
 };
 
 //相关群体
+var group;
 function organization(data) {
     var data = eval(data);
+    group=data;
     $('.organization_1').css({display:'none'});
     $('#organization').bootstrapTable('load', data);
     $('#organization').bootstrapTable({
@@ -957,8 +965,10 @@ function organization(data) {
 };
 
 //相关专题
+var theme;
 function subject(data) {
     var data = eval(data);
+    theme=data;
     $('.subject_1').css({display:'none'});
     $('#subject').bootstrapTable('load', data);
     $('#subject').bootstrapTable({
@@ -1122,7 +1132,41 @@ function go_jump(uid_type) {
     window.open('/relation/similarity_result/?node_id='+news[0]+'&node_type='+news[1]+'&name='+news[2]);
 };
 
+var result_obj,event_obj=[],org_obj=[],people_obj=[];
+result_obj={'event':event_obj,'org':org_obj,'people':people_obj};
+$('#map').on('click',function () {
+    $.each(people,function (index,item) {
+        var p_arr=[];
+        p_arr.push(item.uid);
+        p_arr.push(item.uname);
+        p_arr.push(item.location);
+        people_obj.push(p_arr);
+    });
+    $.each(org,function (index,item) {
+        var o_arr=[];
+        o_arr.push(item.id);
+        o_arr.push(item.uname);
+        o_arr.push(item.location);
+        org_obj.push(o_arr);
+    })
+    $.each(events,function (index,item) {
+        var e_arr=[];
+        e_arr.push(item.id);
+        e_arr.push(item.name);
+        e_arr.push(item.real_geo);
+        event_obj.push(e_arr);
+    });
+    result_obj=JSON.stringify(result_obj);
+    localStorage.setItem('result_map',result_obj);
+    window.open('/index/map/?result_na=NaNa');
+});
+
+$('#chart').on('click',function () {
+
+    window.open('/index/graph/?result_na=NaNa');
+});
+
 setTimeout(function () {
     localStorage.removeItem('temp');
-},60000);
+},600000);
 

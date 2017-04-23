@@ -50,7 +50,7 @@ if (flag==1){
             '                    <div class="details-1-top">'+
             '                        <img src="'+photo+'" class="photo">'+
             '                        <img src="/static/images/per_xin.png" class="per_xin">'+
-            '                        <p class="name" title="'+name+'">'+name+'</p>'+
+            '                        <p class="name" title="'+name+'" mid="'+key+'">'+name+'</p>'+
             '                    </div>'+
             '                    <div class="details-1-bottom-left">'+
             '                        <p style="margin-top:12px;font-size: 8px"><b>认证类型：</b></p>'+
@@ -125,7 +125,7 @@ if (flag==1){
             '                <span id="mid" style="display: none;">'+key+'</span>'+
             '                <span id="label" style="display: none;">'+tit+'</span>'+
             '                <div class="details-left">'+
-            '                    <h3 class="name" title="'+name+'">'+name+'</h3>'+
+            '                    <h3 class="name" title="'+name+'" mid="'+key+'">'+name+'</h3>'+
             '                    <p>发生时间：<b class="time">'+time+'</b></p>'+
             '                </div>'+
             '                <div class="details-right">'+
@@ -207,7 +207,7 @@ if (flag==1){
             '                <span id="label" style="display: none;">'+tit+'</span>'+
             '                <div class="details-1">'+
             '                    <div class="details-1-left">'+
-            '                        <h3 class="name" title="'+name+'">'+name+'</h3>'+
+            '                        <h3 class="name" title="'+name+'" mid="'+key+'">'+name+'</h3>'+
            // '                        <p>发生时间：<b class="time">2016-9-12</b></p>'+
             '                    </div>'+
             '                    <div class="details-1-right">'+
@@ -237,118 +237,6 @@ if (flag==1){
 }
 $('#cards_rank').append(rank_contnet);
 $('#card_set').append(card);
-
-
-//----
-//var p=1;
-$('.per_xin').on('click',function () {
-    //if (p==1){
-        $(this).attr('src','/static/images/per_focus.png');
-        //p=2;
-        var uid=$(this).parents('.per_card_details').find('#mid').text();
-        var user_name=$('#name').text();
-        var label=$(this).parents('.per_card_details').find('#label').text();
-        var data={'user_name':user_name,'uid':uid,'label':label};
-        join_del.call_request(data,'/sysadmin/add_people/',yes_no);
-    /*}else {
-        $(this).attr('src','/static/images/per_xin.png');
-        var user_name=$(this).parents('.per_card_details').find('.name').text();
-        var data={'people_id':user_name};
-        join_del.call_request(data,'/sysadmin/delete_focus_people/',yes_no);
-        p=1;
-    }*/
-});
-//-----------
-//var g=1;
-$('.org_xin').on('click',function () {
-    //if (g==1){
-        $(this).attr('src','/static/images/gov_xin.png');
-        //g=2;
-        //-----
-        var uid=$(this).parents('.gov_card_details').find('#mid').text();
-        var user_name=$('#name').text();
-        var label=$(this).parents('.gov_card_details').find('#label').text();
-        var data={'user_name':user_name,'uid':uid,'label':label};
-        join_del.call_request(data,'/sysadmin/add_org/',yes_no);
-        //------
-
-    /*}else {
-        $(this).attr('src','/static/images/gov_circle.png');
-        var user_name=$(this).parents('.gov_card_details').find('.name').text();
-        var data={'org_id':user_name};
-        join_del.call_request(data,'/sysadmin/delete_focus_org/',yes_no);
-        g=1;
-    }*/
-});
-//------
-//var h=1;
-$('.evt_xin').on('click',function () {
-    //if (h==1){
-        $(this).attr('src','/static/images/gov_xin.png');
-        //-----
-        var uid=$(this).parents('.event_card_details').find('#mid').text();
-        var user_name=$('#name').text();
-        var label=$(this).parents('.event_card_details').find('#label').text();
-        var data={'user_name':user_name,'uid':uid,'label':label};
-        join_del.call_request(data,'/sysadmin/add_event/',yes_no);
-        //------
-        //h=2;
-    /*}else {
-        $(this).attr('src','/static/images/gov_circle.png');
-        var user_name=$(this).parents('.gov_card_details').find('.name').text();
-        var data={'event_id':user_name};
-        join_del.call_request(data,'/sysadmin/delete_focus_event/',yes_no);
-        h=1;
-    }*/
-});
-
-//--关注成功
-function join_del(){};
-join_del.prototype= {
-    call_request:function(focus,url,callback) {
-        $.ajax({
-            url: url,
-            type: 'POST',
-            dataType: 'json',
-            async: false,
-            data:focus,
-            success:callback
-        });
-    },
-};
-var join_del=new join_del();
-function yes_no(data) {
-    if(data=='Success'){
-        alert('加入关注成功！');
-    }else if (data== 'Exist'){
-        alert('已经在我的关注中！');
-    }else{
-        alert('加入关注失败！');
-    }
-};
-//-----
-
-//详情页面跳转
-$('.name').on('click',function () {
-		flag = $(this).parents().parents().parents().attr('class');
-		if(flag=='per_card_details card'){//人物
-			mid=$(this).parents().parents().parents().find('#mid').text();
-			window.open('/index/person/?user_id='+mid);
-		}
-		else if(flag=='gov_card_details card'){//机构
-			mid=$(this).parents().parents().parents().find('#mid').text();
-			window.open('/index/organization/?user_id='+mid);
-		}
-		else{
-			flag = $(this).parents().parents().attr('class');
-			if(flag=='event_card_details card'){//事件
-				mid=$(this).parents().parents().find('#mid').text();
-				window.open('/index/event/?user_id='+mid);
-			}
-		}
-
-})
-
 //卡片页面排序
 $('#peo_influence').on('click',function () {
     var uid=$(this).attr("id");
@@ -475,6 +363,121 @@ $('#event_time').on('click',function () {
           
     });
 });
+add_click_event();
+
+function add_click_event(){
+
+//详情页面跳转
+$('.name').on('click',function () {
+		flag = $(this).parents().parents().parents().attr('class');
+		if(flag=='per_card_details card'){//人物
+			mid=$(this).attr('mid');
+			window.open('/index/person/?user_id='+mid);
+		}
+		else if(flag=='gov_card_details card'){//机构
+			mid=$(this).attr('mid');
+			window.open('/index/organization/?user_id='+mid);
+		}
+		else{
+			flag = $(this).parents().parents().attr('class');
+			if(flag=='event_card_details card'){//事件
+				mid=$(this).attr('mid');
+				window.open('/index/event/?user_id='+mid);
+			}
+		}
+
+})
+
+//----
+//var p=1;
+$('.per_xin').on('click',function () {
+    //if (p==1){
+        $(this).attr('src','/static/images/per_focus.png');
+        //p=2;
+        var uid=$(this).parents('.per_card_details').find('#mid').text();
+        var user_name=$('#name').text();
+        var label=$(this).parents('.per_card_details').find('#label').text();
+        var data={'user_name':user_name,'uid':uid,'label':label};
+        join_del.call_request(data,'/sysadmin/add_people/',yes_no);
+    /*}else {
+        $(this).attr('src','/static/images/per_xin.png');
+        var user_name=$(this).parents('.per_card_details').find('.name').text();
+        var data={'people_id':user_name};
+        join_del.call_request(data,'/sysadmin/delete_focus_people/',yes_no);
+        p=1;
+    }*/
+});
+//-----------
+//var g=1;
+$('.org_xin').on('click',function () {
+    //if (g==1){
+        $(this).attr('src','/static/images/gov_xin.png');
+        //g=2;
+        //-----
+        var uid=$(this).parents('.gov_card_details').find('#mid').text();
+        var user_name=$('#name').text();
+        var label=$(this).parents('.gov_card_details').find('#label').text();
+        var data={'user_name':user_name,'uid':uid,'label':label};
+        join_del.call_request(data,'/sysadmin/add_org/',yes_no);
+        //------
+
+    /*}else {
+        $(this).attr('src','/static/images/gov_circle.png');
+        var user_name=$(this).parents('.gov_card_details').find('.name').text();
+        var data={'org_id':user_name};
+        join_del.call_request(data,'/sysadmin/delete_focus_org/',yes_no);
+        g=1;
+    }*/
+});
+//------
+//var h=1;
+$('.evt_xin').on('click',function () {
+    //if (h==1){
+        $(this).attr('src','/static/images/gov_xin.png');
+        //-----
+        var uid=$(this).parents('.event_card_details').find('#mid').text();
+        var user_name=$('#name').text();
+        var label=$(this).parents('.event_card_details').find('#label').text();
+        var data={'user_name':user_name,'uid':uid,'label':label};
+        join_del.call_request(data,'/sysadmin/add_event/',yes_no);
+        //------
+        //h=2;
+    /*}else {
+        $(this).attr('src','/static/images/gov_circle.png');
+        var user_name=$(this).parents('.gov_card_details').find('.name').text();
+        var data={'event_id':user_name};
+        join_del.call_request(data,'/sysadmin/delete_focus_event/',yes_no);
+        h=1;
+    }*/
+});
+
+//--关注成功
+function join_del(){};
+join_del.prototype= {
+    call_request:function(focus,url,callback) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            data:focus,
+            success:callback
+        });
+    },
+};
+var join_del=new join_del();
+function yes_no(data) {
+    if(data=='Success'){
+        alert('加入关注成功！');
+    }else if (data== 'Exist'){
+        alert('已经在我的关注中！');
+    }else{
+        alert('加入关注失败！');
+    }
+};
+//-----
+
+}
 
 function add_people(data_list){
 		
@@ -529,7 +532,7 @@ function add_people(data_list){
             '                    <div class="details-1-top">'+
             '                        <img src="'+photo+'" class="photo">'+
             '                        <img src="/static/images/per_xin.png" class="per_xin">'+
-            '                        <p class="name" title="'+name+'">'+name+'</p>'+
+            '                        <p class="name" title="'+name+'" mid="'+key+'">'+name+'</p>'+
             '                    </div>'+
             '                    <div class="details-1-bottom-left">'+
             '                        <p style="margin-top:12px;font-size: 8px"><b>认证类型：</b></p>'+
@@ -561,6 +564,8 @@ function add_people(data_list){
     }
     
     $('#card_set').append(card);
+		add_click_event();
+
 }
 
 function add_organization(data_list){
@@ -609,7 +614,7 @@ function add_organization(data_list){
             '                <span id="label" style="display: none;">'+tit+'</span>'+
             '                <div class="details-1">'+
             '                    <div class="details-1-left">'+
-            '                        <h3 class="name" title="'+name+'">'+name+'</h3>'+
+            '                        <h3 class="name" title="'+name+'" mid="'+key+'">'+name+'</h3>'+
            // '                        <p>发生时间：<b class="time">2016-9-12</b></p>'+
             '                    </div>'+
             '                    <div class="details-1-right">'+
@@ -632,6 +637,8 @@ function add_organization(data_list){
     }
     
     $('#card_set').append(card);
+		add_click_event();
+
 }
 
 function add_event(data_list){
@@ -639,6 +646,7 @@ function add_event(data_list){
 		$('#card_set').empty();
     var card='';
     var name,time,place,tage;
+    console.log(data_list);
     var f = 1;//判断数据是否为空
     for (var i=0;i < data_list.length;i += 1){
     		f = 0;        
@@ -674,7 +682,7 @@ function add_event(data_list){
             '                <span id="mid" style="display: none;">'+key+'</span>'+
             '                <span id="label" style="display: none;">'+tit+'</span>'+
             '                <div class="details-left">'+
-            '                    <h3 class="name" title="'+name+'">'+name+'</h3>'+
+            '                    <h3 class="name" title="'+name+'" mid="'+key+'">'+name+'</h3>'+
             '                    <p>发生时间：<b class="time">'+time+'</b></p>'+
             '                </div>'+
             '                <div class="details-right">'+
@@ -710,4 +718,6 @@ function add_event(data_list){
     }
     
     $('#card_set').append(card);
+		add_click_event();    
+
 }
