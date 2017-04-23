@@ -18,7 +18,7 @@ from knowledge.global_config import *
 from knowledge.global_utils import *
 from knowledge.global_utils import R_RECOMMENTATION as r,ES_CLUSTER_FLOW1 as es_cluster
 from knowledge.parameter import DAY
-from knowledge.time_utils import ts2datetime, datetime2ts, get_db_num
+from knowledge.time_utils import ts2datetime, datetime2ts, get_db_num, date2ts
 
 people_es_dict = ['hashtag_dict','online_pattern','topic','school_dict','domain_v3','keywords','sensitive_dict']
 event_es_dict = ['geo_results','topics','keywords_list','hashtag_dict','user_results','time_results','sentiment_results']
