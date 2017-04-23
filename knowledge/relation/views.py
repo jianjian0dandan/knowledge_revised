@@ -107,7 +107,7 @@ def submit_task_function():
     print '11111111111111',input_data
     result = json.dumps(search_data(input_data))
     print '2222222222222222222s'
-    # print type(result)
+    print result
     # return redirect(url_for('.relation_search_result',result=result))
     return result
     # return json.dumps(result)
