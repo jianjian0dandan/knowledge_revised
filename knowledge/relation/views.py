@@ -29,7 +29,7 @@ def relation_index():#导航页
     return render_template('relation/relation_index.html')
 
 @mod.route('/search/')
-# @login_required
+@login_required
 def relation_search():#图谱搜索
     return render_template('relation/search.html')
 
