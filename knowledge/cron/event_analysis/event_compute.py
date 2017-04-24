@@ -140,7 +140,8 @@ def compute_task(task):
             es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'compute_status':-1,'weibo_counts':w_counts,'uid_counts':u_counts}})
         except:
             es_event.index(index=event_analysis_name,doc_type=event_type,id=task_id,body=task)
-            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'hashtag_dict':'','topics':'','geo_results':'','real_geo':'','real_auth':'','sentiment_results':'','time_results':'','hashtag':'','real_time':'','user_results':'','real_person':'','keywords_list:''}})
+            es_event.update(index=event_analysis_name,doc_type=event_type,id=task_id,body={'doc':{'hashtag_dict':'','topics':'','geo_results':'',\
+                'real_geo':'','real_auth':'','sentiment_results':'','time_results':'','hashtag':'','real_time':'','user_results':'','real_person':'','keywords_list':''}})
 
         print 'finish change status'
         
