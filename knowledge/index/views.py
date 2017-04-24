@@ -244,7 +244,7 @@ def get_event_atr():#事件属性页面
     relation_dict['doc'] = doc_list[0:10]
     
     text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
-    print result_att['topics']
+
     return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/organization/', methods=['GET','POST'])
