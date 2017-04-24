@@ -65,7 +65,7 @@ def search_related_event_item():  #群体编辑-增加前先搜索人物,如果�
 
 @mod.route('/search_related_people_auto/')
 def search_related_people_auto():  #群体编辑-推荐一跳
-    g_name = request.args.get('g_name', u'媒体')
+    g_name = request.args.get('g_name', u'社会媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     user_card = search_related_u_auto(g_name, submit_user)
@@ -85,7 +85,7 @@ def create_new_relation():
     submit_user = request.args.get('submit_user', 'admin@qq.com')
     node2_id = node2_name + '_' + submit_user
     node2_index_name = request.args.get('node2_index_name', 'group_index')
-    k_label = request.args.get('k_label', 'test') #split ,
+    k_label = request.args.get('k_label', '') #split ,
     flag = create_node_and_rel(node_key1, node1_list, node1_index_name, rel, \
                                    node_key2, node2_id, node2_index_name, submit_user, k_label, node2_name)
     return json.dumps(flag)
@@ -95,6 +95,7 @@ def create_relation():
     node_key1 = request.args.get('node_key1', 'uid')  # uid,event_id
     node1_id = request.args.get('node1_id', '2080114694,1717278902')
     node1_list = node1_id.split(',')
+    node1_list = [i for i in set(node1_list)]
     node1_index_name = request.args.get('node1_index_name', 'node_index')  # node_index event_index
     rel = request.args.get('rel', 'group')
     node_key2 = request.args.get('node_key2', 'group')  
@@ -108,7 +109,7 @@ def create_relation():
 
 @mod.route('/group_delete/')
 def ajax_group_delete():  #删除群体
-    g_name = request.args.get('g_name', u'test媒体,媒体') #split ,
+    g_name = request.args.get('g_name', u'社会媒体') #split ,
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name_list = g_name.split(',')
     for i in g_name_list:
@@ -242,7 +243,7 @@ def group_location_geo():  #群体主要地理位置信息
 
 @mod.route('/group_user_rank/')
 def ajax_group_user_rank():  #群体用户联系
-    g_name = request.args.get('g_name', u'美选群体')
+    g_name = request.args.get('g_name', u'社会媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     print g_name
@@ -259,7 +260,7 @@ def ajax_group_event_rank():  #群体关联事件排名
 
 @mod.route('/group_user_keyowrds/')
 def ajax_group_user_keywords():  #群体用户的关键词和话题
-    g_name = request.args.get('g_name', u'美选群体')
+    g_name = request.args.get('g_name', u'社会媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     detail_t = group_user_keyowrds(g_name, submit_user)
@@ -267,7 +268,7 @@ def ajax_group_user_keywords():  #群体用户的关键词和话题
 
 @mod.route('/group_user_tag/')
 def ajax_group_user_tag():  #群体用户关联事件的自动标签和业务标签
-    g_name = request.args.get('g_name', u'媒体')
+    g_name = request.args.get('g_name', u'社会媒体')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     g_name = g_name + '_' + submit_user
     detail_t = group_user_tag(g_name, submit_user)

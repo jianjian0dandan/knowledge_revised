@@ -227,7 +227,7 @@ def ajax_theme_flow():  #专题鱼骨图
 
 @mod.route('/theme_analysis_geo/')
 def ajax_theme_geo():  #专题地域分析
-    theme_name = request.args.get('theme_name', u'美国大选')
+    theme_name = request.args.get('theme_name', u'经济金融')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     theme_name = theme_name + '_' + submit_user
     detail_t = get_theme_geo(theme_name, submit_user)
@@ -259,7 +259,7 @@ def ajax_theme_user_rank():  #专题包含事件的用户排名
 
 @mod.route('/theme_analysis_user_tag/')
 def ajax_theme_user_tag():  #专题包含事件的用户自动标签页业务标签
-    theme_name = request.args.get('theme_name', u'美国大选')
+    theme_name = request.args.get('theme_name', u'美国')
     submit_user = request.args.get('submit_user', u'admin@qq.com')
     theme_name = theme_name + '_' + submit_user
     detail_t = get_theme_user_tag(theme_name, submit_user)

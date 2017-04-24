@@ -99,22 +99,35 @@ def search_related_u_auto(g_name, submit_user):
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id, fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
     related_list = []
-    for en_name in uid_list:
-        s_string = 'START s0 = node:node_index(uid="%s") \
-                MATCH (s0)-[r]-(s3:User) return s3' %(en_name)
-        print s_string
-        result = graph.run(s_string)
-        for item in result:
-            item_dict = dict(item)
-            related_list.append(item_dict['s3']['uid'])
-    for en_name in uid_list:
-        s_string = 'START s0 = node:node_index(uid="%s") \
-                MATCH (s0)-[r]-(s3:Org) return s3' %(en_name)
-        print s_string
-        result = graph.run(s_string)
-        for item in result:
-            item_dict = dict(item)
-            related_list.append(item_dict['s3']['org_id'])    # print uid_list, '---------'
+    user_list,org_list = search_user_type(uid_list)
+    indx_id_list = []
+    for i in user_list:
+        a = graph.run('start n=node:'+node_index_name+'("'+people_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            indx_id_list.append(str(dict(j)['id(n)']))
+    for i in org_list:
+        a = graph.run('start n=node:'+org_index_name+'("'+org_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            indx_id_list.append(str(dict(j)['id(n)']))
+
+    event_id_string = ','.join(indx_id_list)
+    query = 'start d=node('+event_id_string+') match (d)-[r]-(e) where labels(e)[0] in '+json.dumps(['User', 'Org'])+' return e, labels(e)'
+    print query
+    result = graph.run(query)
+    node_dict = {}
+    related_list = []
+    for i in result:
+        dict_i = dict(i)
+        print dict_i
+        node_type = dict_i['labels(e)'][0]
+
+        if node_type == people_node:
+            node_id = dict_i['e']['uid']
+            related_list.append(node_id)
+        elif node_type == org_node:
+            node_id = dict_i['e']['org_id']
+            related_list.append(node_id)
+
     related_list = set(related_list) - set(uid_list)
     related_list = [i for i in related_list]
     print related_list,'---------'
@@ -139,7 +152,7 @@ def search_related_u_card(item, submit_user, g_name):
         "query":{
             'bool':{
                 'should':[
-                    {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
+                    # {"wildcard":{'keywords':'*'+str(item.encode('utf-8'))+'*'}},            
                     {"wildcard":{'uid':'*'+str(item.encode('utf-8'))+'*'}},            
                     {"wildcard":{'uname':'*'+str(item.encode('utf-8'))+'*'}}         
                 ]
@@ -148,12 +161,12 @@ def search_related_u_card(item, submit_user, g_name):
         },
         'size':1000
     }
-    try:
-        user_result = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
+    # try:
+    user_result = es.search(index=portrait_index_name, doc_type=portrait_index_type, \
                 body=query_body, fields=['uid'])['hits']['hits']
-    except:
-        return 'node does not exist'
-    # print user_result
+    # except:
+    #     return 'node does not exist'
+    print user_result, 'user_result'
     search_uid = []
     result = []
     for i in user_result:
@@ -164,9 +177,9 @@ def search_related_u_card(item, submit_user, g_name):
     if not show_id:
         return []
     fields_list = ['uid','uname', 'location','influence', 'sensitive', 'activeness', 'keywords_string', 'function_mark']
-    user_result = es.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+    user_result2 = es.mget(index=portrait_index_name, doc_type=portrait_index_type, \
                 body={'ids':show_id}, fields=fields_list)['docs']
-    for i in user_result:
+    for i in user_result2:
         user = []
         i_fields = i['fields']
         for j in fields_list:
@@ -315,7 +328,7 @@ def delete_group(g_name, submit_user):
     try:
         es_group.delete(index=group_name, doc_type=group_type, id=en_name)
         s_string = 'start s0=node:'+group_index_name+'('+group_primary+'="'+en_name+'") '\
-            + 'MATCH (s0) delete r,s0'
+            + 'MATCH (s0)-[r]-(s2) delete r,s0'
         graph.run(s_string)
     except:
         return '0'
@@ -762,11 +775,12 @@ def group_event_rank(g_name, submit_user):
     uid_list = uid_string['fields']['people'][0].split('&')
     related_event_list = []
     event_user_dict = {}
-    for uid in uid_list:
+    user_list, org_list = search_user_type(uid_list)
+    for uid in user_list:
         c_string = 'start n=node:'+node_index_name+'("'+people_primary+':'+str(uid)+'") match (n)-[r]-(e:Event) return e'
         result = graph.run(c_string)
         for event in result:
-            print event,'---------'
+            # print event,'---------'
             # if event:
             event_dict = dict(event)
             event_id = event_dict['e']['event_id']
@@ -776,6 +790,20 @@ def group_event_rank(g_name, submit_user):
             except:
                 event_user_dict[event_id] = []
                 event_user_dict[event_id].append(uid)
+    for uid in org_list:
+        c_string = 'start n=node:'+org_index_name+'("'+org_primary+':'+str(uid)+'") match (n)-[r]-(e:Event) return e'
+        result = graph.run(c_string)
+        for event in result:
+            # print event,'---------'
+            # if event:
+            event_dict = dict(event)
+            event_id = event_dict['e']['event_id']
+            related_event_list.append(event_id)
+            try:
+                event_user_dict[event_id].append(uid)
+            except:
+                event_user_dict[event_id] = []
+                event_user_dict[event_id].append(uid)                
     event_rank_list = []
     for k,v in event_user_dict.iteritems():
         k_dict = {}
@@ -817,9 +845,39 @@ def group_user_tag(g_name, submit_user):
     group_id = group_id.lower()
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
-    event_list = ['te-lang-pu-1480176000']
+    user_list, org_list = search_user_type(uid_list)
+    event_list = []
+    related_event_list = []
+    for uid in user_list:
+        c_string = 'start n=node:'+node_index_name+'("'+people_primary+':'+str(uid)+'") match (n)-[r]-(e:Event) return e'
+        result = graph.run(c_string)
+        for event in result:
+            # print event,'---------'
+            # if event:
+            event_dict = dict(event)
+            event_id = event_dict['e']['event_id']
+            related_event_list.append(event_id)
+            # try:
+            #     event_user_dict[event_id].append(uid)
+            # except:
+            #     event_user_dict[event_id] = []
+            #     event_user_dict[event_id].append(uid)
+    for uid in org_list:
+        c_string = 'start n=node:'+org_index_name+'("'+org_primary+':'+str(uid)+'") match (n)-[r]-(e:Event) return e'
+        result = graph.run(c_string)
+        for event in result:
+            # print event,'---------'
+            # if event:
+            event_dict = dict(event)
+            event_id = event_dict['e']['event_id']
+            related_event_list.append(event_id)
+            # try:
+            #     event_user_dict[event_id].append(uid)
+            # except:
+            #     event_user_dict[event_id] = []
+            #     event_user_dict[event_id].append(uid)                
     event_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, \
-                body={'ids':event_list}, fields=['keywords_list', 'work_tag'])['docs']
+                body={'ids':related_event_list}, fields=['keywords_list', 'work_tag'])['docs']
     keywords_dict = {}
     mark_dict = {}
     print len(event_result)
@@ -829,13 +887,15 @@ def group_user_tag(g_name, submit_user):
             i_mark = i['fields']['work_tag'][0]
         except:
             i_mark = ''
+        print i_mark
         for key in i_keywords:
             try:
                 keywords_dict[key[0]] += key[1]
             except:
                 keywords_dict[key[0]] = key[1]
         if i_mark:
-            user_mark = deal_user_tag(i_mark)[0]
+            print i_mark,'i_mark'
+            user_mark = deal_user_tag(i_mark, submit_user)[0]
             for mark in user_mark:
                 try:
                     mark_dict[mark] += 1
@@ -873,6 +933,7 @@ def group_user_keyowrds(g_name, submit_user):
     hashtag_dict = {}
     print len(tag_result)
     for i in tag_result:
+        print i
         i_keywords = json.loads(i['fields']['keywords'][0])
         i_hashtag = json.loads(i['fields']['hashtag_dict'][0])
         for hashtag, value in i_hashtag.iteritems():
@@ -913,12 +974,19 @@ def group_user_rank(g_name, submit_user):
     print group_id
     uid_string = es_group.get(index=group_name, doc_type=group_type, id=group_id,  fields=['people'])
     uid_list = uid_string['fields']['people'][0].split('&')
-
+    print uid_list,'uid list'
+    user_list, org_list = search_user_type(uid_list)
     indx_id_list = []
-    for i in uid_list:
+    for i in user_list:
         a = graph.run('start n=node:'+node_index_name+'("'+people_primary+':'+str(i)+'") return id(n)')
         for j in a:
             indx_id_list.append(str(dict(j)['id(n)']))
+    for i in org_list:
+        a = graph.run('start n=node:'+org_index_name+'("'+org_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            indx_id_list.append(str(dict(j)['id(n)']))
+
+    # print indx_id_list,'index_id_list'
     event_id_string = ','.join(indx_id_list)
     query = 'start d=node('+event_id_string+'),e=node('+event_id_string+') match (d)-[r]->(e) return d,type(r),e'
     result = graph.run(query)
@@ -927,9 +995,18 @@ def group_user_rank(g_name, submit_user):
     for i in result:
         # print i
         dict_i = dict(i)
-        start_id = dict_i['d']['uid']
+        print dict_i,'---------------'
+        if dict_i['d'].has_key('uid'):
+            start_id = dict_i['d']['uid']
+        else:
+            start_id = dict_i['d']['org_id']
+        print dict_i['d']['org_id'],'start id @@@@@@@@@@@@@'
         start_name = user_name_search(start_id)
-        end_id = dict_i['e']['uid']
+        if dict_i['e'].has_key('uid'):
+            end_id = dict_i['e']['uid']
+        else:
+            end_id = dict_i['e']['org_id']
+
         end_name = user_name_search(end_id)
         exist_relation.append([start_id, start_name, relation_dict[dict_i['type(r)']], \
                     end_id, end_name])
@@ -989,10 +1066,20 @@ def group_related(g_name, submit_user):
     except:
         final_wiki = []
     event_graph_id = []
-    for i in origin_list:
+    user_list, org_list = search_user_type(origin_list)
+    for i in user_list:
         a = graph.run('start n=node:'+node_index_name+'("'+people_primary+':'+str(i)+'") return id(n)')
         for j in a:
             event_graph_id.append(str(dict(j)['id(n)']))
+    for i in org_list:
+        a = graph.run('start n=node:'+org_index_name+'("'+org_primary+':'+str(i)+'") return id(n)')
+        for j in a:
+            event_graph_id.append(str(dict(j)['id(n)']))
+
+    # for i in origin_list:
+    #     a = graph.run('start n=node:'+node_index_name+'("'+people_primary+':'+str(i)+'") return id(n)')
+    #     for j in a:
+    #         event_graph_id.append(str(dict(j)['id(n)']))
     print event_graph_id
     event_id_string = ','.join(event_graph_id)
     query = 'start d=node('+event_id_string+') match (d)-[r]-(e) return labels(e), e'

@@ -323,6 +323,7 @@ $.ajax({
 });
 var key_series=[],tag_series=[];
 function key_tag(data) {
+    console.log(data.mark)
     var data=eval(data);
     $.each(data.keywords,function (index,item) {
         key_series.push(
@@ -333,7 +334,7 @@ function key_tag(data) {
             }
         )
     });
-    $.each(data.hashtag,function (index,item) {
+    $.each(data.mark,function (index,item) {
         tag_series.push(
             {
                 name: item[0],
@@ -342,7 +343,7 @@ function key_tag(data) {
             }
         )
     });
-};
+
 if (key_series.length==0){
     $('#tag_left').html('暂无数据');
 }else {
@@ -385,6 +386,7 @@ if (key_series.length==0){
         }
     );
 }
+console.log(tag_series)
 if (tag_series.length==0){
     $('#tag_right').html('暂无数据');
 }else {
@@ -429,7 +431,7 @@ if (tag_series.length==0){
         }
     );
 };
-
+};
 
 //============事件分析
 var character_url='/group/group_event_rank/?g_name='+group_name+'&submit_user='+submit_user;
@@ -563,7 +565,7 @@ function user_tag(data) {
             }
         )
     });
-}
+
 if (user_key_series.length==0){
     $('#label_left').html('暂无数据');
 }else {
@@ -649,5 +651,5 @@ if (user_tag_series.length==0){
         }
     );
 }
-
+}
 

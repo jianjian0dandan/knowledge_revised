@@ -639,10 +639,18 @@ function event_list(data) {
                 thing_list.removeByValue(row[0]);
             },
             onCheckAll:function (row) {
-                thing_list.push(row[0]);
+                for(var index_i = 0;index_i<row.length; index_i++){
+                    thing_list.push(row[index_i][0]);
+
+                }
             },
             onUncheckAll:function (row) {
-                thing_list.removeByValue(row[0]);
+                for(var index_i = 0;index_i<row.length; index_i++){
+                    // thing_list.push(row[index_i][0]);
+                thing_list.removeByValue(row[index_i][0]);
+
+                }
+                // thing_list.removeByValue(row[0]);
             },
         });
     };
@@ -656,6 +664,7 @@ $('#add_theme').on('click',function () {
     }else {
         var new_thing_url='/group/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
+            console.log(new_thing_url)
         $.ajax({
             url:new_thing_url,
             type: 'GET',

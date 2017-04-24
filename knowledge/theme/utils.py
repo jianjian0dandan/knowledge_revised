@@ -341,7 +341,7 @@ def del_e_theme_rel(theme_name, event_id):
     return 'true'
 
 def add_theme_k_label(theme_name, k_label,operation):
-    new_label = k_label.split('&')
+    new_label = k_label.split(',')
     en_name = p.get_pinyin(theme_name)
     en_name = en_name.lower()
     print en_name
@@ -610,8 +610,13 @@ def get_theme_geo(theme_name, submit_user):
     final_city_count = {}
     for city in event_name_list:
         final_city_count[city] = []
+        print final_city_count,'final_city_count'
         for i in top_city:
-            final_city_count[city].append(event_city[event_name][i])
+            if event_city[city].has_key(i):
+                final_city_count[city].append(event_city[city][i])
+            else:
+                final_city_count[city].append(0)
+
     return {'top_city': top_city, 'event_city':final_city_count}
 
 def get_theme_net(theme_name, submit_user):

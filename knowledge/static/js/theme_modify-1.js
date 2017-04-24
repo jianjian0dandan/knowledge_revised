@@ -52,8 +52,11 @@ function tag(data) {
 //添加-----------标签
 $('.t_sure').on('click',function () {
     var k_label=$('.add_tag').val();
+    k_label_new = k_label.split(' ')
+    k_label = k_label_new.join(',')
     var del_or_add_url='/theme/theme_add_tag/?theme_name='+theme_name+'&submit_user='+submit_user+
         '&k_label='+k_label+'&operation=add';
+    console.log(del_or_add_url)
     $.ajax({
         url: del_or_add_url,
         type: 'GET',
@@ -649,10 +652,18 @@ function event_list(data) {
             thing_list.removeByValue(row[0]);
         },
         onCheckAll:function (row) {
-            thing_list.push(row[1]);
+            for(var index_i = 0;index_i<row.length; index_i++){
+                thing_list.push(row[index_i][0]);
+
+            }
         },
         onUncheckAll:function (row) {
-            thing_list.removeByValue(row[1]);
+            for(var index_i = 0;index_i<row.length; index_i++){
+                // thing_list.push(row[index_i][0]);
+            thing_list.removeByValue(row[index_i][0]);
+
+            }
+            // thing_list.removeByValue(row[0]);
         },
         onClickCell: function (field, value, row, $element) {
             if ($element[0].cellIndex==0){
@@ -670,6 +681,7 @@ $('#add_theme').on('click',function () {
     }else {
         var new_thing_url='/theme/create_relation/?node1_id='+node_ids+'&node2_id='+theme_name+
             '&submit_user='+submit_user;
+        console.log(new_thing_url)
         $.ajax({
             url:new_thing_url,
             type: 'GET',

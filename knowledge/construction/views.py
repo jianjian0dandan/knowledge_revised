@@ -131,9 +131,9 @@ def ajax_update_user():
 def ajax_submit_identify_in():
     results = 0 # mark fail
     input_data = request.get_json()
-    # print type(input_data),'=======!!!'
+    print type(input_data),'=======!!!'
     #input_data={'date': 2016-03-13, 'upload_data':[],'node_type':'1/2', 'user':submit_user,'status':0,'relation_string':'', 'recommend_style':'upload/write', 'type':'uid', 'operation_type': 'show'/'submit'} 
-    # input_data={'date': '2016-03-13', 'upload_data':[1198503091],'node_type':'0', 'user':'admin@qq.com','compute_status':'1','relation_string':'friend', 'recommend_style':'write',  'operation_type': 'submit'} 
+    # input_data={'date': '2016-03-13', 'upload_data':[1198503091],'node_type':'0', 'user':'admin@qq.com','compute_status':'1','relation_string':'friend,discuss,join', 'recommend_style':'write',  'operation_type': 'submit'} 
     #upload_data stucture same to detect/views/mult_person
     # print 'input_data:', input_data
     results = submit_identify_in(input_data)  #[true, [sub_uid], [in_uid], [user_info]]

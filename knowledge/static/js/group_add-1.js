@@ -173,12 +173,26 @@ function search(data) {
             },
 
         ],
-        onCheck:function (row) {
-            groups.push(row[0]);
-        },
-        onUncheck:function (row) {
-            groups.removeByValue(row[0]);
-        },
+            onCheck:function (row) {
+                groups.push(row[0]);
+            },
+            onUncheck:function (row) {
+                groups.removeByValue(row[0]);
+            },
+            onCheckAll:function (row) {
+                for(var index_i = 0;index_i<row.length; index_i++){
+                    groups.push(row[index_i][0]);
+
+                }
+            },
+            onUncheckAll:function (row) {
+                for(var index_i = 0;index_i<row.length; index_i++){
+                    // thing_list.push(row[index_i][0]);
+                groups.removeByValue(row[index_i][0]);
+
+                }
+                // thing_list.removeByValue(row[0]);
+            },
         // onClickCell: function (field, value, row, $element) {
         //     if ($element[0].innerText=='查看专题') {
         //         window.open('/theme/result/?theme_name='+row[1]);
@@ -199,6 +213,7 @@ $('.new_build').on('click',function () {
         var node_ids=groups.join(',');
         add_url='/group/create_new_relation/?node1_id='+node_ids+'&node2_id='+name+
             '&submit_user='+submit_user+'&k_label='+tag;
+        console.log(add_url)
         $.ajax({
             url: add_url,
             type: 'GET',

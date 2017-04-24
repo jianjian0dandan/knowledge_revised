@@ -174,10 +174,18 @@ function search(data) {
             theme_list.removeByValue(row[0]);
         },
         onCheckAll:function (row) {
-            theme_list.push(row[1]);
+            for(var index_i = 0;index_i<row.length; index_i++){
+                theme_list.push(row[index_i][0]);
+
+            }
         },
         onUncheckAll:function (row) {
-            theme_list.removeByValue(row[1]);
+            for(var index_i = 0;index_i<row.length; index_i++){
+                // thing_list.push(row[index_i][0]);
+            theme_list.removeByValue(row[index_i][0]);
+
+            }
+            // thing_list.removeByValue(row[0]);
         },
         // onClickCell: function (field, value, row, $element) {
         //     if ($element[0].innerText=='查看专题') {
@@ -197,8 +205,10 @@ $('.new_build').on('click',function () {
         alert('请输入您的专题名称。');
     }else {
         var node_ids=theme_list.join(',');
+        tag = tag.split(' ').join(',')
         add_url='/theme/create_new_relation/?node1_id='+node_ids+'&node2_id='+name+
             '&submit_user='+submit_user+'&k_label='+tag;
+        console.log(add_url)
         $.ajax({
             url: add_url,
             type: 'GET',
