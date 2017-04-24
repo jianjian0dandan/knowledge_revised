@@ -704,7 +704,7 @@ def getWeiboByNameStEt(topic,start_date,end_date):
 p_column = ['uid','uname','location','influence','activeness','sensitive','keywords_string','function_mark']
 o_column = ['uid','uname','location','influence','activeness','sensitive','keywords_string','function_mark']
 e_column = ['name','event_type','real_time','real_geo','uid_counts','weibo_counts','keywords','work_tag']
-s_column = ['topic_name','event','create_ts','k_label','label']
+s_column = ['topic_name','event','create_ts','k_label','label','event_count']
 g_column = ['group_name','people_count','create_ts','k_label','label']
 
 
@@ -712,7 +712,7 @@ es_list = [es_user_portrait,es_user_portrait,es_event,es_special_event,es_group]
 es_index_list  = [portrait_index_name,portrait_index_name,event_analysis_name,special_event_name,group_name]
 es_type_list = [portrait_index_type,portrait_index_type,event_type,special_event_type,group_type]
 column_list = [p_column,o_column,e_column,s_column,g_column]
-tag_list = ['function_mark','function_mark','work_tag','topic_name','group_name']
+tag_list = ['function_mark','function_mark','work_tag','k_label','k_label']
 
 def get_user_info(uid_list,uname):
     query_body = {
@@ -802,4 +802,5 @@ def deal_event_tag(tag ,submit_user):
             keep_tag.append(user_tag[1])
         else:
             left_tag.append(i)
+    print '800',keep_tag,left_tag
     return [keep_tag, left_tag]

@@ -578,7 +578,10 @@ def search_data(input_data):
         return get_info_by_query(query,submit_user)
         # compute_short_path(start_id,end_id,relation,step,limit)
     else:
-        query = 'start n=node('+start_id+'),e=node('+end_id+') match (n)-['+relation+'*0..'+step+']-(e) return n,r,e '+limit
+        if end_id == '*':
+            query = 'start n=node('+start_id+') match (n)-['+relation+'*0..'+step+']-(e) return n,r,e '+limit
+        else:
+            query = 'start n=node('+start_id+'),e=node('+end_id+') match (n)-['+relation+'*0..'+step+']-(e) return n,r,e '+limit
         print query
         return get_info_by_query(query,submit_user)
 
@@ -850,6 +853,8 @@ def simple_search(keywords_list,submit_user):
                         f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
                     except KeyError:
                         pass
+                    if nodes_list[i] == 's_nodes':
+                        print tag_list[i],f_result
                     if i == 0:
                         f_result['influence'] = normal_index(f_result['influence'],max_influence_peo)
                         f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_peo)
@@ -873,17 +878,17 @@ def simple_search(keywords_list,submit_user):
             else:
                 continue
 
-    print 'dddddddddddddddddddddddddd',id_list,len(id_list)
+    # print 'dddddddddddddddddddddddddd',id_list,len(id_list)
     if len(id_list) == 0:
         pass
     else:
         #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
-        query = 'start n=node('+','.join(id_list)+'),e=node(*) match (n)-[r*0..1]-(e) return n,r,e limit 10'
+        query = 'start n=node('+','.join(id_list)+') match (n)-[r*0..1]-(e) return n,r,e limit 100'
         print query
-        graph_result.append(get_info_by_query(query,submit_user)['graph_result']) 
+        graph_result.extend(get_info_by_query(query,submit_user)['graph_result']) 
 
     graph_result = list(graph_result)
-    print graph_result
+    # print graph_result
 
     return {'table_result':table_result,'graph_result':graph_result}
 
