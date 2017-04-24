@@ -566,7 +566,7 @@ function agencies(data) {
                 valign: "middle",//垂直
             },
             {
-                title: "人物昵称",//标题
+                title: "机构名称",//标题
                 field: "uname",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -741,10 +741,8 @@ function events(e_data) {
                 formatter: function (value, row, index) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
-                    }else {
+                    }else{
                         return _event_type[value];
-                    }else {
-                        return '暂无';
                     }
                 }
             },
@@ -888,42 +886,22 @@ function organization(data) {
         sortOrder:"desc",
         columns: [
             {
-                title: "组织名称",//标题
+                title: "群体名称",//标题
                 field: "group_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'||row.group_name.length==0){
+                    if (value==''||value=='unknown'||value=='NULL'){
                         return row.id;
                     }else {
-                        return row.group_name[0];
+                        return row.group_name;
                     }
                 }
             },
             {
                 title: "关键词",//标题
-                field: "k_label",//键名
-                sortable: true,//是否可排序
-                order: "desc",//默认排序方式
-                align: "center",//水平
-                valign: "middle",//垂直
-                formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
-                        return '暂无';
-                    }else {
-                        var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
-                        }
-                        return key;
-                    }
-                }
-            },
-            {
-                title: "业务标签",//标题
                 field: "label",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -933,7 +911,36 @@ function organization(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var words=row.label.split('&');
+                        var words=value.split('&');
+                        if (words.length<=5){
+                            return words.join(',');
+                        }else {
+                            var key=words.splice(0,5).join(',');
+                            var tit=words.splice(5).join(',');
+                            return '<p title="'+tit+'">'+key+'</p> ';
+                        }
+                        /*var key='';
+                        var words=value.split('&');
+                        for (var k=0;k<words.length;k++){
+                            key+=words[k]+' ';
+                        }
+                        return key;*/
+                    }
+                }
+            },
+            {
+                title: "业务标签",//标题
+                field: "k_label",//键名
+                sortable: true,//是否可排序
+                order: "desc",//默认排序方式
+                align: "center",//水平
+                valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                		var words=value;
+                    if (words.length==0){
+                        return '暂无';
+                    }else {
+                        //var words=value.split('&');
                         if (words.length<=5){
                             return words.join(',');
                         }else {
@@ -989,10 +996,10 @@ function organization(data) {
                         return '尚未计算';
                     }else if (value==1){
                         var name;
-                        if (row.group_name[0]==''||row.group_name[0]=='unknown'||row.group_name[0]=='NULL'||row.group_name.length==0){
+                        if (row.group_name==''||row.group_name=='unknown'||row.group_name=='NULL'){
                             name= row.id;
                         }else {
-                            name= row.group_name[0];
+                            name= row.group_name;
                         }
                         var go=row.id+',Group,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
@@ -1004,7 +1011,7 @@ function organization(data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if (field=='group_name'){
-                window.open('/group/result/?group_name='+row.id);
+                window.open('/group/result/?group_name='+row.group_name);
             }
         }
     });
@@ -1037,15 +1044,22 @@ function subject(data) {
         columns: [
             {
                 title: "专题名称",//标题
-                field: "event",//键名
+                field: "topic_name",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
+                formatter: function (value, row, index) {
+                    if (value==''||value=='unknown'||value=='NULL'){
+                        return row.id;
+                    }else {
+                        return row.topic_name;
+                    }
+                }
             },
             {
                 title: "关键词",//标题
-                field: "k_label",//键名
+                field: "label",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
@@ -1054,7 +1068,7 @@ function subject(data) {
                     if (value==''||value=='unknown'||value=='NULL'){
                         return '暂无';
                     }else {
-                        var words=row.k_label.split('&');
+                        var words=value.split('&');
                         if (words.length<=5){
                             return words.join(',');
                         }else {
@@ -1067,16 +1081,17 @@ function subject(data) {
             },
             {
                 title: "业务标签",//标题
-                field: "label",//键名
+                field: "k_label",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (value==''||value=='unknown'||value=='NULL'){
+                		var words=value;
+                    if (words.length==0){
                         return '暂无';
                     }else {
-                        var words=row.label.split('&');
+                        //var words=value.split('&');
                         if (words.length<=5){
                             return words.join(',');
                         }else {
@@ -1089,13 +1104,17 @@ function subject(data) {
             },
             {
                 title: "包含事件数量",//标题
-                field: "",//键名
+                field: "event_count",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row.topic_name.length;
+                    if (value==''||value=='unknown'||value=='NULL'){
+                        return 0;
+                    }else {
+                        return row.event_count;
+                    }
                 },
             },
             {
@@ -1122,12 +1141,18 @@ function subject(data) {
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
                     if (value=='not exist'){
-                        var infor=row.event+','+row.id+',SpecialEvent';
+                        var infor=row.topic_name+','+row.id+',SpecialEvent';
                         return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
                     }else if (value==0){
                         return '尚未计算';
                     }else if (value==1){
-                        var go=row[1].uid+',SpecialEvent,'+row.event;
+                    		var name;
+                        if (row.topic_name==''||row.topic_name=='unknown'||row.topic_name=='NULL'){
+                            name= row.id;
+                        }else {
+                            name= row.topic_name;
+                        }
+                        var go=row.id+',SpecialEvent,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
                     }else if (value==-1){
                         return '正在计算';
@@ -1136,8 +1161,8 @@ function subject(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if (field=='event'){
-                window.open('/theme/result/?theme_name='+row.id);
+            if (field=='topic_name'){
+                window.open('/theme/result/?theme_name='+row.topic_name);
             }
         }
     });
