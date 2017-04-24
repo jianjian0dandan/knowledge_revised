@@ -1239,7 +1239,7 @@ def get_all_graph():#获取首页图谱
 def get_people_graph(uid):#获取人物节点图谱
 
     p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m,labels(m) LIMIT 200' % (node_index_name,people_primary,uid)
-    p_result = graph.run(c_string)
+    p_result = graph.run(p_string)
     peo_list = []
     eve_list = []
     gro_list = []
