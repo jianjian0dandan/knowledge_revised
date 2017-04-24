@@ -592,14 +592,15 @@ def get_info_by_query(query,submit_user):
     graph_result = []
     for i in result:
         i = dict(i)
-        # print i['n'],i['r'],i['e']
+        print i['n'],i['r'],i['e']
         # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
         try: 
             i_type = i['r']
         except:
             i_type = i['p']
         for j in i_type:
-            print j.start_node(),j.type(),j.end_node()
+            # print '???????????/'
+            # print '602',j.start_node(),j.type(),j.end_node()
             # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
@@ -639,6 +640,41 @@ def get_info_by_query(query,submit_user):
             table_result['g_nodes'].append(i[1])
     # print {'graph_result':graph_result,'table_result':table_result}
     return {'graph_result':graph_result,'table_result':table_result}
+
+
+
+def simple_get_info_by_query(query,submit_user):
+    node_list = []
+    result = list(graph.run(query))
+    graph_result = []
+    for i in result:
+        i = dict(i)
+        print i['n'],i['r'],i['e']
+        # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
+        try: 
+            i_type = i['r']
+        except:
+            i_type = i['p']
+
+        start_node = dict(i_type.start_node())
+        relation = i_type.type()
+        end_node = dict(i_type.end_node())
+        if relation == 'wiki_link':
+            continue
+        #节点信息，名字
+        info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
+        if info and info not in node_list :
+            node_list.append(info)
+        info,end_node['name'] = get_es_by_id(end_node.keys()[0],end_node.values()[0],submit_user)
+        if info and info not in node_list :
+            node_list.append(info)
+
+        this_relation = [start_node,relation,end_node]
+        if this_relation not in graph_result:
+            graph_result.append(this_relation)
+
+    return graph_result
+
 
 def get_sim_status(node_type,node_id):
     results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'term':{'node_type':node_type},'term':{'node_id':node_id}}})['hits']['hits']
@@ -853,8 +889,6 @@ def simple_search(keywords_list,submit_user):
                         f_result[tag_list[i]] = deal_event_tag(f_result[tag_list[i]],submit_user)[0]
                     except KeyError:
                         pass
-                    if nodes_list[i] == 's_nodes':
-                        print tag_list[i],f_result
                     if i == 0:
                         f_result['influence'] = normal_index(f_result['influence'],max_influence_peo)
                         f_result['activeness'] = normal_index(f_result['activeness'],max_activeness_peo)
@@ -883,9 +917,9 @@ def simple_search(keywords_list,submit_user):
         pass
     else:
         #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
-        query = 'start n=node('+','.join(id_list)+') match (n)-[r*0..1]-(e) return n,r,e limit 100'
+        query = 'start n=node('+','.join(id_list)+') match (n)-[r]-(e) where (type(r) <> "wiki_link") return n,r,e limit 100'
         print query
-        graph_result.extend(get_info_by_query(query,submit_user)['graph_result']) 
+        graph_result.extend(simple_get_info_by_query(query,submit_user)) 
 
     graph_result = list(graph_result)
     # print graph_result
