@@ -348,6 +348,12 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                         if u == user_name:
                             tag_list.append(t)
                     result[event_tag] = tag_list
+                elif k == 'event_type':
+                    try:
+                        category = EN_CH_EVENT[v.strip()]
+                    except KeyError:
+                        category = ''
+                    result[k] = category
                 else:
                     if v == 'NULL':
                         result[k] = ''
