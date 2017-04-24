@@ -1123,7 +1123,10 @@ def event2time(uidlist):#获取最新加入图谱的事件
                     result[uid] = name
             except:
                 result[uid] = uid
-            ts = data['finish_ts']
+            try:
+                ts = data['finish_ts']
+            except:
+                ts = int(time.time())
             event_time.Push((ts,uid))
 
     event_data = event_time.TopK()
