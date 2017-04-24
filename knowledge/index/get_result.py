@@ -91,7 +91,7 @@ def uid_name_list_withtype(uid_list):#以字典形式返回uname和type
     for item in search_result:
         uid = item['_id']
         if not item['found']:
-            uname[uid] = uid
+            #uname[uid] = [uid,user_type]
             continue
         else:
             data = item['_source']
@@ -521,7 +521,7 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
             else:
                 name = data['name'].replace('&',',')
             try:
-                if not data['real_geo'] or not data['real_geo'] in set(black_location):
+                if not data['real_geo'] or not data['real_geo'] in set(black_location):                 
                     continue
                 else:
                     location = data['real_geo']
@@ -737,7 +737,7 @@ def get_detail_event(uid_list,user_name):
             except KeyError:
                 geo = ''
             try:
-                category = data['event_type']
+                category = EN_CH_EVENT[data['event_type'].strip()]
             except KeyError:
                 category = ''
 
@@ -1123,7 +1123,10 @@ def event2time(uidlist):#获取最新加入图谱的事件
                     result[uid] = name
             except:
                 result[uid] = uid
-            ts = data['finish_ts']
+            try:
+                ts = data['finish_ts']
+            except:
+                ts = int(time.time())
             event_time.Push((ts,uid))
 
     event_data = event_time.TopK()
@@ -1236,7 +1239,7 @@ def get_all_graph():#获取首页图谱
 def get_people_graph(uid):#获取人物节点图谱
 
     p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.uid,r,m,labels(m) LIMIT 200' % (node_index_name,people_primary,uid)
-    p_result = graph.run(c_string)
+    p_result = graph.run(p_string)
     peo_list = []
     eve_list = []
     gro_list = []
@@ -1754,9 +1757,24 @@ def get_topic_geo(uid):#根据专题id查询专题的地图
         else:
             continue
 
+    peo_list = []
+    org_list = []
+    for uid in event_list:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (event_index_name,event_primary,uid)
+        p_result = graph.run(p_string)
+        for item in p_result:
+            id_key = dict(item[0]).values()[0]
+            id_type = item[1][0]
+            if id_type == people_node:
+                peo_list.append(id_key)
+            elif id_type == org_node:
+                org_list.append(id_key)
+            else:
+                continue
+
     event_result = get_detail_event_map(event_list)
-    people_result = []
-    org_relation = []
+    people_result = get_detail_per_org_map(peo_list)
+    org_relation = get_detail_per_org_map(org_list)
     
     return event_result,people_result,org_relation
 

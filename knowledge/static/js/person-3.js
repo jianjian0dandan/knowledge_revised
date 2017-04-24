@@ -79,14 +79,19 @@ function link_source(data) {
         $.each(data.wiki,function (index,item) {
             if (index<=4){
                 $('.link_knowledge .knowledge').append(
-                    '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    // '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    '<a title="'+item[0]+'" href="###">'+item[0]+'</a>'
                 )
             }else {
                 wiki.push(
-                    '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    // '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
+                    '<a title="'+item[0]+'" href="###">'+item[0]+'</a>'
                 )
             }
         });
+        $('.link_knowledge .knowledge a').on('click',function () {
+            window.open('/construction/wiki/?_id='+$(this).text());
+        })
     }
 
     //关联资源
@@ -166,9 +171,9 @@ function link_source(data) {
             }
         }
         $('#link').modal('show');
-    });
-    $('#container #content_right .link_knowledge a').on('click',function () {
-        window.open('/construction/wiki/?_id='+$(this).find('b').text());
+        $('#link a').on('click',function () {
+            window.open('/construction/wiki/?_id='+$(this).text());
+        })
     });
 
     //-----资源-----

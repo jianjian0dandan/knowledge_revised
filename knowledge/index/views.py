@@ -93,6 +93,7 @@ def get_graph():#图谱页面
 
     user_id = request.args.get('user_id', '')
     node_type = request.args.get('node_type', '')
+    #result_na = request.args.get('result_na', '')
 
     if node_type == 'people':#人物节点图谱
         relation = get_people_graph(user_id)
@@ -122,8 +123,13 @@ def get_graph():#图谱页面
 @login_required
 def get_graph_index():#首页图谱页面
 
-    relation = get_all_graph()
-    flag = 'Success'
+    result_na = request.args.get('flag_type', '')
+    if result_na:
+        relation = []
+        flag = 'Wrong Type'        
+    else:
+        relation = get_all_graph()
+        flag = 'Success'
     
     return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
 
@@ -159,6 +165,7 @@ def get_map():#地图页面
         flag = 'Wrong Type'
 
     data_dict = {'event':event_result,'people':people_result,'org':org_relation}
+
     return render_template('index/baidu_map.html', data_dict = data_dict, flag = flag)
 
 @mod.route('/person/', methods=['GET','POST'])

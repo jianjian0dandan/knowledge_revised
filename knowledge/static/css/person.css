@@ -80,7 +80,7 @@ body {
 }
 #person_content #content_left .basic .basic-2 {
     color: black;
-    padding-top: 33px;
+    /*padding-top: 33px;*/
 }
 #person_content #content_left .basic .basic-2 .information {
     width: 77%;
@@ -120,20 +120,21 @@ body {
     height: 150px;
 }
 /*影响力*/
-#person_content #content_left .influnce .influ-1 {
-    width: 60%;
-    margin: 50px auto 0;
-}
+/*#person_content #content_left .influnce .influ-1 {*/
+    /*width: 60%;*/
+    /*margin: 50px auto 0;*/
+/*}*/
 #person_content #content_left .influnce .influ-1 h4 {
     /*width: 95%;*/
+    display: inline-block;
     font-size: 14px;
-    padding: 5px 20px;
+    padding: 5px 10px;
     color: #1d1d1d;
     font-weight: 700;
-    letter-spacing: 8px;
+    /*letter-spacing:5px;*/
     text-align: center;
     margin-bottom:10px;
-    border-bottom:1px dashed #919191;
+    /*border-bottom:1px dashed #919191;*/
 }
 /*活动信息*/
 #person_content #content_left .activity .location {
@@ -160,7 +161,7 @@ body {
 }
 /*社交信息*/
 #person_content #content_left .social .social-1 {
-    width:70%;
+    width:80%;
     margin: 40px auto;
 }
 #person_content #content_left .social .social-1 h4 {
@@ -189,13 +190,12 @@ body {
     width:100%;
 }
 #person_content #content_left .preference .talk p {
-    width: 80%;
+    /*width: 80%;*/
+    font-size: 16px;
+    margin-left: 6px;
 }
 #person_content #content_left .preference .talk span {
-    color: #676767;
-    font-size: 16px;
-    display: inline-block;
-    width: 7%;
+    color: #1d1d1d;
     font-weight: 600;
 }
 #person_content #content_left .preference .talk .talk_name {
@@ -221,7 +221,7 @@ body {
 /*微博内容*/
 #person_content #content_left .text .text_information .published {
     padding: 10px 30px 20px;
-    border-radius: 10px;
+    border-bottom: 1px dashed #7c7c7c;
 }
 #person_content #content_left .text .text_information .published .master {
     color: #4b4b4b;
@@ -269,15 +269,16 @@ body {
 #person_content #content_right .link_agency .agencys a,
 #person_content #content_right .link_knowledge .knowledge a,
 #person_content #content_right .link_resources .resources a {
-    width: 70%;
+    width: 100px;
     display: block;
-    margin: 10px 0 0 15px;
+    margin: 10px 0 0 60px;
     color:#676767;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+    text-align: left;
 }
 #person_content #content_right .link_user .user_more,
 #person_content #content_right .link_event .event_more,

@@ -329,6 +329,11 @@ def event_detail_search(eid_list, submit_user):
             elif j == 'work_tag':
                 tag = deal_event_tag(i_fields[j][0], submit_user)[0]
                 event.append(tag)
+            elif j == 'event_type':
+                try:
+                    event.append(EN_CH_EVENT[i_fields[j][0].strip()])
+                except KeyError:
+                    event.append('')
             else:
                 event.append(i_fields[j][0])
         result.append(event)

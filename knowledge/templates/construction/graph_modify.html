@@ -37,7 +37,7 @@
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h1 class="graph_modify">图谱编辑</h1>
+    <h2 class="graph_modify">图谱编辑</h2>
     <div class="edit">
         <label class="radio-inline">
             <input type="radio" name="complie" id="node" value="1" checked> 节点编辑
@@ -47,8 +47,8 @@
             <input type="radio" name="complie" id="relation" value="2"> 关系编辑
         </label>
     </div>
-    <div class="node" style="padding: 10px 20px;border: 1px solid #9c9c9c;border-radius: 10px;margin-top:20px;">
-        <div class="attributes">
+    <div class="node" style="margin-top:20px;">
+        <div class="attributes" style="padding: 10px 20px;border: 1px solid #9c9c9c;border-radius: 10px;">
             <span>节点类型</span>
             <select id="node_type" onchange="type_node(this.value)">
                 <option value="User">人物</option>
@@ -72,9 +72,8 @@
 
 
     <!--关系编辑-->
-    <div class="rel" style="display: none;padding: 10px 20px;margin-top: 30px;
-    border: 1px solid #9c9c9c;border-radius: 10px;">
-        <div class="rel_attributes">
+    <div class="rel" style="display: none;margin-top: 30px;">
+        <div class="rel_attributes" style="padding: 10px 20px;border: 1px solid #9c9c9c;border-radius: 10px;">
             <div class="one">
                 <span>节点一</span>
                 <select class="one-type" onchange="one_type(this.value)">
@@ -105,9 +104,9 @@
         </div>
         <div>
             <!--<span>入库日期</span><input type="text" class="warehousing">-->
-            <button class="rel_submit">确 定</button>
+            <button class="rel_submit" style="position:relative;top:-50px;">确 定</button>
         </div>
-        <div class="relation" style="margin-top:50px;display:none;">
+        <div class="relation" style="display:none;">
             <p style="display: inline-block;"><b>关系：</b></p>
             <p class="have" style="display: inline-block;">
 
@@ -332,6 +331,7 @@
                             <option value='business'>商业贸易</option>
                             <option value='macro_economy'>宏观经济</option>
                             <option value='financial_work'>财政金融</option>
+                            <option value='other'>其他</option>
                         </select>
                     </div>
                 </div>

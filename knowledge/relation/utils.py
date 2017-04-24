@@ -544,6 +544,8 @@ def deal_user_tag(item ,submit_user):
 def search_data(input_data):
     start_id = get_node_id(input_data['start_nodes'])
     print 'start_id',start_id
+    if len(start_id) == 0:
+    	return 'no start id'
     end_id = get_node_id(input_data['end_nodes'])
     print 'end_id:',end_id
     relation = input_data['relation']
@@ -568,7 +570,9 @@ def search_data(input_data):
     else:
         relation = 'r:'+'|:'.join(relation)
 
-    if input_data['short_path']==True:
+    if input_data['short_path']=='True':
+    	if end_id == '*':
+    		return 'short_path no end id'
         query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
         print query
         return get_info_by_query(query,submit_user)
@@ -593,10 +597,12 @@ def get_info_by_query(query,submit_user):
             i_type = i['p']
         for j in i_type:
             print j.start_node(),j.type(),j.end_node()
-            print dict(j.start_node())
+            # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
             end_node = dict(j.end_node())
+            if relation == 'wiki_link':
+            	continue
             #节点信息，名字
             info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
             if info and info not in node_list :
@@ -609,7 +615,6 @@ def get_info_by_query(query,submit_user):
             if this_relation not in graph_result:
                 graph_result.append(this_relation)
         # print list(i['e'].labels()),dict(i['e']).keys()[0],dict(i['e']).values()[0]
-    # print '?????',graph_result
     # max_influence_peo =  get_max_index_peo('influence')
     # max_activeness_peo = get_max_index_peo('activeness')
     # max_sensitive_peo = get_max_index_peo('sensitive')
@@ -629,7 +634,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    print graph_result
+    # print {'graph_result':graph_result,'table_result':table_result}
     return {'graph_result':graph_result,'table_result':table_result}
 
 def get_sim_status(node_type,node_id):
@@ -659,9 +664,9 @@ def get_es_by_id(primary_key,node_id,submit_user):
         column = o_column
         name = 'uname'
         tag = 'function_mark'
-        max_influence_org =  get_max_index_org('influence')
-        max_activeness_org = get_max_index_org('activeness')
-        max_sensitive_org = get_max_index_org('sensitive')
+        max_influence =  get_max_index_org('influence')
+        max_activeness = get_max_index_org('activeness')
+        max_sensitive = get_max_index_org('sensitive')
         node_type = org_node
     elif primary_key == event_primary:
         es = es_event
@@ -703,7 +708,8 @@ def get_es_by_id(primary_key,node_id,submit_user):
             f_result[tag] = ''
         f_result['sim'] = get_sim_status(node_type,node_id)
         return [[primary_key,f_result],result['fields'][name][0]]
-    except:#人造节点
+    except Exception,e:#人造节点
+    	print e
         return [0,node_id]
 
 
@@ -791,6 +797,10 @@ def simple_search(keywords_list,submit_user):
     chinese = re.compile(u"[\u4e00-\u9fa5]+")
     table_result = {'p_nodes':[],'o_nodes':[],'e_nodes':[],'s_nodes':[],'g_nodes':[]}
     nodes_list = ['p_nodes','o_nodes','e_nodes','s_nodes','g_nodes']
+
+    index_list = [node_index_name,org_index_name,event_index_name,special_event_index_name,group_index_name]
+    primary_list = [people_primary,org_primary,event_primary,special_event_primary,group_primary]
+    
     node_type_list = [people_node,org_node,event_node,special_event_node,group_node]
     max_influence_peo =  get_max_index_peo('influence')
     max_activeness_peo = get_max_index_peo('activeness')
@@ -798,6 +808,8 @@ def simple_search(keywords_list,submit_user):
     max_influence_org =  get_max_index_org('influence')
     max_activeness_org = get_max_index_org('activeness')
     max_sensitive_org = get_max_index_org('sensitive')
+    id_list = []
+    graph_result = []
     for key in keywords_list:
         print key
 
@@ -831,6 +843,7 @@ def simple_search(keywords_list,submit_user):
                 for j in result:
                     f_result = {}
                     f_result['id']=j['_id']
+                    # id_list.append(j['_id'])
                     for k,v in j['fields'].iteritems():
                         f_result[k] = v[0]
                     try:
@@ -849,9 +862,30 @@ def simple_search(keywords_list,submit_user):
                         pass
                     f_result['sim'] = get_sim_status(node_type_list[i],j['_id'])
                     table_result[nodes_list[i]].append(f_result)
+
+                    try:
+                        a = graph.run('start n=node:'+index_list[i]+'("'+primary_list[i]+':'+str(j['_id'])+'") return id(n)')
+                        for k in a:
+                            print k
+                            id_list.append(str(dict(k)['id(n)']))
+                    except:
+                        pass
             else:
                 continue
-    return table_result
+
+    print 'dddddddddddddddddddddddddd',id_list,len(id_list)
+    if len(id_list) == 0:
+        pass
+    else:
+        #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
+        query = 'start n=node('+','.join(id_list)+'),e=node(*) match (n)-[r*0..1]-(e) return n,r,e limit 10'
+        print query
+        graph_result.append(get_info_by_query(query,submit_user)['graph_result']) 
+
+    graph_result = list(graph_result)
+    print graph_result
+
+    return {'table_result':table_result,'graph_result':graph_result}
 
     '''
     if len(chinese.findall(key)) == 0: #可能是id
@@ -954,7 +988,7 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
         return 'no'
 
 def get_sim():
-    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}}})['hits']['hits']
+    results = es_sim.search(index=sim_name,doc_type=sim_type,body={'query':{'match_all':{}},'size':1000000})['hits']['hits']
     result = []
     if results:
         for i in results:

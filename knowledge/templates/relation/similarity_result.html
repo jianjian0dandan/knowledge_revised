@@ -6,15 +6,26 @@
     .table>thead:first-child>tr:first-child>th {
         width: 1%;
     }
+    .fixed-table-container tbody td:first-child {
+        cursor: pointer;
+    }
+    #result_name {
+        max-width:480px;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
 <!-------主要内容------->
 {% block main %}
 <div id="container">
-    <h2>相似节点计算结果</h2>
 
-    <div class="related_person" style="margin-top:85px;display:none;">
+    <h2>相似节点计算结果：<span id="result_name"></span></h2>
+
+    <div class="related_person" style="display:none;">
         <h3>相关人物</h3>
         <div class="person" style="width: 90%;margin: 20px auto 0;">
             <div id="person"></div>
@@ -58,6 +69,8 @@
     var submit_user=$('#name').text();
     var node_id='{{node_id}}';
     var node_type='{{node_type}}';
+    var result_name='{{name}}';
+    $('#result_name').text(result_name).attr('title',result_name);
 </script>
 <script src="/static/js/similarity_result-1.js"></script>
 

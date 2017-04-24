@@ -10,7 +10,7 @@ body {
     margin: 0;
     min-width: 1349px;
     /*min-height: 820px;*/
-    background: url("/static/images/graph_add.png") no-repeat;
+    background: url("/static/images/graph_add.png") no-repeat #e6e9eb;
     background-size: 100% 100%;
 }
 #container {
@@ -84,6 +84,7 @@ body {
     border: 1px solid silver;
     padding:30px;
     margin-top: 20px;
+    border-radius: 10px;
 }
 #container #advanced_search .advan-1 b.start_plus {
     color: #f3f4f5;
@@ -139,6 +140,7 @@ body {
     border: 1px solid silver;
     padding:30px;
     margin-top: 20px;
+    border-radius: 10px;
 }
 #container #advanced_search .advan-2 .tit {
     /*position: absolute;*/
@@ -175,6 +177,7 @@ body {
     border: 1px solid silver;
     padding:30px;
     margin-top: 20px;
+    border-radius: 10px;
 }
 #container #advanced_search .advan-3 b.end_plus {
     color: #f3f4f5;
@@ -230,6 +233,7 @@ body {
     border: 1px solid silver;
     padding:30px;
     margin-top: 20px;
+    border-radius: 10px;
 }
 #container #advanced_search .advan-4 .tit {
     /*position: absolute;*/

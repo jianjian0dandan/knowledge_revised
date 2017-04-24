@@ -34,11 +34,11 @@ $.each(sentiment,function (index,item) {
 })
 var myChart = echarts.init(document.getElementById('hot_trend'));
 option = {
-    title : {
-        text: '情绪曲线图',
-        left:'center',
-        top:'5%'
-    },
+    // title : {
+    //     text: '情绪曲线图',
+    //     left:'center',
+    //     top:'5%'
+    // },
     tooltip : {
         trigger: 'axis'
     },
@@ -200,6 +200,7 @@ function createRandomItemStyle() {
 var topics=result_1.topics;
 var topics_list='';
 $.each(topics,function (index,item) {
+    console.log(item)
     topics_list+='<p><b>话题'+(index+1)+'：</b><span>'+item+'</span></p>';
 });
 $('#topic_trend').html(topics_list);
@@ -226,8 +227,8 @@ $.each(thing_hot,function (index,item) {
 var myChart = echarts.init(document.getElementById('mood_trend'));
 var option = {
     title: {
-        text: '事件热度走势图',
-        left:'center',
+        // text: '事件热度走势图',
+        // left:'center',
     },
     tooltip: {
         trigger: 'axis'
@@ -420,7 +421,7 @@ function weibo(data){
                     '     <p class="time">'+
                     '        <span class="time1">来自微博用户：</span>&nbsp;'+
                     '        <a href='+'"http://www.weibo.com/u/'+dataArray[i].uid+'"'+' class="time2">'+name+'</a>&nbsp;&nbsp;'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
@@ -490,7 +491,7 @@ function weibo(data){
                         '     <p class="time">'+
                         '        <span class="time1">来自微博用户：</span>&nbsp;'+
                         '        <a href='+'"http://www.weibo.com/u/'+dataArray[i].uid+'"'+' class="time2">'+name+'</a>&nbsp;&nbsp;'+
-                        '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                        '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                         '        <span style="display: inline-block;float:right;">'+
                         '        <span class="time4">转发数（'+dataArray[i].retweeted+'）</span>|&nbsp;'+
                         '        <span class="time5">评论数（'+dataArray[i].comment+'）</span></span>'+
@@ -565,7 +566,7 @@ function weibo(data){
                     '     <p class="time">'+
                     '        <span class="time1">来自微博用户：</span>&nbsp;'+
                     '        <a href='+'"http://www.weibo.com/u/'+dataArray[i+a].uid+'"'+' class="time2">'+name+'</a>&nbsp;&nbsp;'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
@@ -630,7 +631,7 @@ function weibo(data){
                     '     <p class="time">'+
                     '        <span class="time1">来自微博用户：</span>&nbsp;'+
                     '        <a href='+'"http://www.weibo.com/u/'+dataArray[i+a].uid+'"'+' class="time2">'+name+'</a>&nbsp;&nbsp;'+
-                    '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                    '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                     '        <span style="display: inline-block;float:right;">'+
                     '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                     '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
@@ -701,7 +702,7 @@ function weibo(data){
                 '     <p class="time">'+
                 '        <span class="time1">来自微博用户：</span>&nbsp;'+
                 '        <a href='+'"http://www.weibo.com/u/'+dataArray[i+a].uid+'"'+' class="time2">'+name+'</a>&nbsp;&nbsp;'+
-                '        <span class="time3">发表于&nbsp;<i>'+time+'</i></span>'+
+                '        <span class="time3">发表于&nbsp;<b>'+time+'</b></span>'+
                 '        <span style="display: inline-block;float:right;">'+
                 '        <span class="time4">转发数（'+dataArray[i+a].retweeted+'）</span>|&nbsp;'+
                 '        <span class="time5">评论数（'+dataArray[i+a].comment+'）</span></span>'+
@@ -714,17 +715,17 @@ function weibo(data){
 }
 weibo(result_3.all);
 $('.text_info .button_list #all').on('click',function () {
-    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
+    // $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.all);
 });
 $('.text_info .button_list #media').on('click',function () {
-    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
+    // $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.media);
 });
 $('.text_info .button_list #internet_users').on('click',function () {
-    $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
+    // $(this).css({backgroundColor:'#337ab7'}).siblings('button').css({backgroundColor:'#02aacf'});
     $('#influeweibo #input-table .In-table').empty();
     weibo(result_3.people);
 });

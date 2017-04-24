@@ -20,16 +20,6 @@ body {
     position: relative;
     background:#f3f4f5;
 }
-#container .result {
-    position: absolute;
-    top: 0;
-    left: -14px;
-    width: 225px;
-    height:78px;
-    line-height: 70px;
-    background: url("/static/images/result_tit.png") no-repeat;
-    background-size: 100% 100%;
-}
 h3 {
     width: 241px;
     height: 49px;
@@ -42,13 +32,17 @@ h3 {
     background-size: 100% 100%;
 }
 h2 {
-    width: 330px;
-    height: 74px;
-    margin-left: -30px;
-    line-height: 64px;
-    text-align: center;
-    color: white;
+    /*width: 330px;*/
+    /*height: 74px;*/
+    /*margin-left: -30px;*/
+    /*line-height: 64px;*/
+    /*text-align: center;*/
+    /*color: white;*/
+    /*font-weight: 900;*/
+    /*background: url("/static/images/small_tit.png") no-repeat;*/
+    /*background-size: 100% 100%;*/
+    font-size: 30px;
+    padding: 20px 0;
+    margin-left:50px;
     font-weight: 900;
-    background: url("/static/images/small_tit.png") no-repeat;
-    background-size: 100% 100%;
 }

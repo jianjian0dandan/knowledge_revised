@@ -1,3 +1,12 @@
+//删除指定项
+Array.prototype.removeByValue = function(val) {
+    for(var i=0; i<this.length; i++) {
+        if(this[i] == val) {
+            this.splice(i, 1);
+            break;
+        }
+    }
+};
 //开始节点类型
 var start_type='User';
 function start(value) {
@@ -106,7 +115,7 @@ function start_handleFileSelect(evt){
     }
 };
 
-// //开始节点数据整理
+//开始节点数据整理
 var starts_nodes=[];
 
 //--------------====起始节点------完---------
@@ -284,7 +293,6 @@ var input_data;
 var short_path;
 function end_node() {
     //结束节点数据整理
-
     if (end_no_ids==1){
         end_ids.push($('.end .options-1-value').val());
         end_nodes.push(
@@ -415,7 +423,6 @@ $('#sure_advan').on('click',function () {
     ids=[],end_ids=[],ids_files=[],end_ids_files=[],relation=[],
         starts_nodes=[],end_nodes=[];
 });
-
 
 // {
 //     'node_type':start_type,
