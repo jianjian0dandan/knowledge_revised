@@ -8,8 +8,27 @@
         display:inline-block;
         max-width: 400px;
         white-space: nowrap;
-        overflow: hidden;
+        overflow: hidden;   
         text-overflow: ellipsis;
+    }
+    #out_btn {
+        position: relative;
+        top: -6px;
+        left: 40px;
+        padding: 5px 20px;
+        color: black;
+        font-size: 10px;
+        font-weight: 200;
+        background-color:rgba(158, 158, 158, 0.13);
+        border-radius: 18px;;
+        text-align: center;
+        box-shadow: 2px 2px 1px #999;
+    }
+    #material_out {
+        color: black;
+    }
+    #out_btn:hover  {
+        background-color: rgba(158, 158, 158, 0.4);
     }
 </style>
 {% endblock %}
@@ -23,6 +42,7 @@
                 <h1 class="user_name"></h1>
                 <img src="/static/images/gov_circle.png" alt="" id="focus">
                 <button class="edit">编&nbsp;辑</button>
+                <button id="out_btn"><a id="material_out" href="#">导&nbsp;出</a></button>
                 <div class="map_area">
                     <dl id="map" style="right:11.3%;">
                         <dt><img src="/static/images/earth.png"></dt>
@@ -275,6 +295,7 @@
     var result_3={{inter_list|tojson}};
     var result_4={{friends_dict|tojson}};
     var result_5={{text_list|tojson}};
+    console.log(result_1);
 
     var user_id=result_1.uid;
 
@@ -293,4 +314,5 @@
 <script src="/static/js/person-1.js"></script>
 <script src="/static/js/person-2.js"></script>
 <script src="/static/js/person-3.js"></script>
+<script src="/static/js/output_person.js"></script>
 {% endblock %}
