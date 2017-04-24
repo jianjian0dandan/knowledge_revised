@@ -450,10 +450,10 @@
                     <span style="font-size: 12px;color: #676767">计算方式</span>
                     <div style="display: inline-block;margin: 0 10px;">
                         <label class="radio-inline">
-                            <input type="radio" name="ming" id="box1_e" value="1" checked> 立即计算
+                            <input type="radio" name="_ming" id="box1_e" value="1" checked="checked"> 立即计算
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="ming" id="box2_e" value="2"> 预约计算
+                            <input type="radio" name="_ming" id="box2_e" value="2"> 预约计算
                         </label>
                     </div>
                 </div>
@@ -493,26 +493,14 @@
 
 
 {% block my_js %}
-<script src="/static/js/graph_add-1.js"></script>
-<script src="/static/js/graph_add-2.js"></script>
-<script src="/static/js/graph_add-3.js"></script>
+
 <script>
     $('#datetimepicker6').datetimepicker();
     $('#datetimepicker7').datetimepicker();
-    $("#datetimepicker6").on("dp.change",function (e) {
-        $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-    });
-    $("#datetimepicker7").on("dp.change",function (e) {
-        $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-    });
+
     $('#datetimepicker2').datetimepicker();
     $('#datetimepicker3').datetimepicker();
-    $("#datetimepicker2").on("dp.change",function (e) {
-        $('#datetimepicker3').data("DateTimePicker").minDate(e.date);
-    });
-    $("#datetimepicker2").on("dp.change",function (e) {
-        $('#datetimepicker3').data("DateTimePicker").maxDate(e.date);
-    });
+
     $.each($("#container .edit input"),function (index,item) {
         $(item).on('click',function () {
             if ($(this).val()==1){
@@ -559,4 +547,7 @@
     });
 
 </script>
+<script src="/static/js/graph_add-1.js"></script>
+<script src="/static/js/graph_add-2.js"></script>
+<script src="/static/js/graph_add-3.js"></script>
 {% endblock %}
