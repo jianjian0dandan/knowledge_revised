@@ -660,6 +660,7 @@ $.ajax({
 var user_key_series=[],user_tag_series=[];
 
 function user_tag(data) {
+    console.log(data)
     var data = eval(data);
     $.each(data.keywords, function (index, item) {
         user_key_series.push(
@@ -679,7 +680,8 @@ function user_tag(data) {
             }
         )
     });
-};
+
+console.log(user_key_series)
 if (user_key_series.length==0){
     $('#label_left').html('暂无数据');
 }else {
@@ -764,6 +766,6 @@ if (user_tag_series.length==0){
         }
     );
 }
-
+};
 
 
