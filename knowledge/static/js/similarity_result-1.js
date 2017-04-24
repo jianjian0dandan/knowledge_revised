@@ -1,4 +1,35 @@
-
+var _event_type={
+    'military':'军事国防',
+    'transport':'交通',
+    'resources':'国土资源',
+    'overseas':'境外敌对势力',
+    'disaster':'灾害',
+    'public_security':'社会公共安全',
+    'rights':'维权上访',
+    'information':'信息产业',
+    'information_security':'信息安全',
+    'industry':'工业',
+    'network':'网络安全',
+    'chinese_party':'中国共产党党务',
+    'national':'国家政务',
+    'diplomacy':'外交',
+    'political':'政法监察',
+    'comprehensive_group':'综合党团',
+    'health':'卫生',
+    'art_sports':'文化体育',
+    'tourism':'旅游服务',
+    'human_resources':'人力资源与社会保障',
+    'population':'人口计生',
+    'agriculture':'农业',
+    'housing':'住房与城乡建设',
+    'environment':'环境保护',
+    'energy':'能源',
+    'technology':'科技教育',
+    'business':'商业贸易',
+    'macro_economy':'宏观经济',
+    'financial_work':'财政金融',
+    'other':'其他'
+};
 function place() {
     //this.ajax_method='GET'; // body...
 }
@@ -442,10 +473,8 @@ function events(data) {
                 formatter: function (value, row, index) {
                     if (row[1].event_type==''||row[1].event_type=='unknown'||row[1].event_type=='NULL'){
                         return '暂无';
-                    }else if(row[1].event_type=='other'){
-                        return '其他';
-                    }else {
-                        return row[1].event_type;
+                    } else {
+                        return _event_type[row[1].event_type];
                     }
                 }
             },

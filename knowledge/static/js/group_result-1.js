@@ -9,6 +9,7 @@ $.ajax({
 });
 function include_user(data) {
     var data = eval(data);
+    console.log(data)
     $('#person').bootstrapTable('load', data);
     $('#person').bootstrapTable({
         data:data,
@@ -56,7 +57,6 @@ function include_user(data) {
                         return row[0];
                     }else {
                         return row[1];
-
                     }
                 }
             },
@@ -162,7 +162,11 @@ function include_user(data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if ($element[0].cellIndex==0){
-                window.open('/index/person/?user_id='+row[0]);
+                if (row[8]=='org'){
+                    window.open('/index/organization/?user_id='+row[0]);
+                }else {
+                    window.open('/index/person/?user_id='+row[0]);
+                }
             }
         },
     });

@@ -76,7 +76,7 @@ function result(data) {
     if (simple_advanced=='s'){
         var data=eval(data);
         $('.related_network').hide();
-        // network(data.graph_result);
+        graph_picture = data.graph_result;
         person(data.table_result.p_nodes);
         agencies(data.table_result.o_nodes);
         events(data.table_result.e_nodes);
@@ -362,9 +362,6 @@ function result(data) {
 //     }
 //
 // }
-
-
-
 
 
 
@@ -746,6 +743,8 @@ function events(e_data) {
                         return '暂无';
                     }else {
                         return _event_type[value];
+                    }else {
+                        return '暂无';
                     }
                 }
             },
