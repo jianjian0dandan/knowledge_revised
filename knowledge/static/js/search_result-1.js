@@ -1158,12 +1158,12 @@ $('#map').on('click',function () {
     });
     result_obj=JSON.stringify(result_obj);
     localStorage.setItem('result_map',result_obj);
-    window.open('/index/map/?result_na=NaNa');
+    window.open('/index/map/');
 });
 
 $('#chart').on('click',function () {
 
-    window.open('/index/graph/?result_na=NaNa');
+    window.open('/index/graph_index/?flag_type=NaNa');
 });
 
 setTimeout(function () {

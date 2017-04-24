@@ -100,7 +100,7 @@
 <script>
 //    var result={{data_dict|tojson}};
     var result;
-    if ('{{result_na}}'=='NaNa'){
+    if ('{{flag}}'=='Wrong Type'){
         result=JSON.parse(localStorage.getItem("result_map"));
     }else {
         result={{data_dict|tojson}};
