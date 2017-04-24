@@ -19,6 +19,7 @@
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 
 <script type="text/javascript">
+    var scaling=5;
     var lation={
         "friend" :"交互",
         "relative" :"亲属",
@@ -61,10 +62,16 @@
             ];
     var relation;
     if ('{{flag}}'=='Wrong Type'){
+        scaling=2;
+        $('#graph_picture').height(1350);
         relation=JSON.parse(localStorage.getItem("graph_force"));
+        setTimeout(function () {
+            localStorage.removeItem('graph_force');
+        },600000);
     }else {
         relation={{relation|tojson}};
     }
+
     console.log(relation)
     $.each(relation,function (index,item) {
 //        categories.push({name:item[6]});
@@ -289,7 +296,7 @@
                             minRadius : 15,
                             maxRadius : 25,
                             gravity: 2,
-                            scaling:5,
+                            scaling:scaling,
                             symbolSize:20 ,
                             nodes:all_node,
                             links : link
@@ -332,7 +339,7 @@
                 myChart.on(ecConfig.EVENT.CLICK, focus);
 
                 myChart.on(ecConfig.EVENT.FORCE_LAYOUT_END, function () {
-                    console.log(myChart.chart.force.getPosition());
+//                    console.log(myChart.chart.force.getPosition());
                 });
 
 
