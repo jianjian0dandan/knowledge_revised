@@ -102,6 +102,9 @@
     var result;
     if ('{{flag}}'=='Wrong Type'){
         result=JSON.parse(localStorage.getItem("result_map"));
+        setTimeout(function () {
+            localStorage.removeItem('result_map');
+        },600000);
     }else {
         result={{data_dict|tojson}};
     }
@@ -327,9 +330,7 @@
 //        window.clearInterval();
 //
 //    }
-setTimeout(function () {
-    localStorage.removeItem('result_map');
-},600000);
+
 
 </script>
 {% endblock %}
