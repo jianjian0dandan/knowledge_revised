@@ -192,7 +192,7 @@ body {
 #person_content #content_left .preference .talk p {
     /*width: 80%;*/
     font-size: 16px;
-    margin-left: 6px;
+    /*margin-left: 6px;*/
 }
 #person_content #content_left .preference .talk span {
     color: #1d1d1d;
@@ -212,7 +212,7 @@ body {
 /*文本信息*/
 #person_content #content_left .text {
     width: 100%;
-    margin-top: 40px;
+    margin-top:80px;
 }
 #person_content #content_left .text .text_information {
     width: 80%;

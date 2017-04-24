@@ -112,7 +112,7 @@
                     </p>
                     <p class="in_four">
                         <span><b>创建人：</b></span> <span class="name crude"></span>
-                        <a href="###" id="simlar">相似专题计算</a>
+                        <!--<a href="###" id="simlar">相似专题计算</a>-->
                     </p>
                 </div>
             </div>
@@ -152,10 +152,10 @@
             <div class="place">
                 <span style="width:8px;height:20px;background-color:#00b7ee;position: relative;top: 3px;"></span>
                 <span>地域分析</span>
-                <div id="area" style="width: 100%;height: 300px;"></div>
+                <div id="area" style="width: 100%;height:600px;"></div>
             </div>
         </div>
-        <div class="network_analysis">
+        <div class="network_analysis" style="margin-top:20px;">
             <h3 style="color: white;font-weight: 900;padding:0; ">网络分析</h3>
             <div class="net_detail">
                 <div class="detail-1">
@@ -339,24 +339,24 @@
             window.open('/index/map/?user_id='+data[0][0]+'&node_type=topic');
         });
     };
-    $('#simlar').on('click',function () {
-        var time=Date.parse(new Date());
-        var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
-                '&node_name='+theme_name+'&node_id='+_id+'&node_type=SpecialEvent';
-        $.ajax({
-            url: creat_url,
-            type: 'GET',
-            dataType: 'json',
-            async: true,
-            success:function (data) {
-                if (data=='yes'){
-                    alert('创建成功。');
-                }else {
-                    alert('创建失败。');
-                }
-            }
-        });
-    });
+//    $('#simlar').on('click',function () {
+//        var time=Date.parse(new Date());
+//        var creat_url='/relation/compute_sim/?submit_user='+submit_user+'&submit_ts='+time+
+//                '&node_name='+theme_name+'&node_id='+_id+'&node_type=SpecialEvent';
+//        $.ajax({
+//            url: creat_url,
+//            type: 'GET',
+//            dataType: 'json',
+//            async: true,
+//            success:function (data) {
+//                if (data=='yes'){
+//                    alert('创建成功。');
+//                }else {
+//                    alert('创建失败。');
+//                }
+//            }
+//        });
+//    });
 
 </script>
 <!--<script src="/static/js/jquery-3.1.1.min.js"></script>-->

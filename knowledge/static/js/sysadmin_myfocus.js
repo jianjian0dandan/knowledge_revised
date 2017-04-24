@@ -32,12 +32,12 @@ function draw_people_table(data){
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -49,6 +49,13 @@ function draw_people_table(data){
             align: "center",//水平
             valign: "middle",//垂直
             visible:true,
+            formatter: function (value, row, index) {
+                if (value==''||value=='null'||value=='unknown'){
+                    return row.uid;
+                }else {
+                    return value;
+                }
+            },
         },
         {
             title: "ID",//标题
@@ -129,12 +136,12 @@ function draw_org_table(data){
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [
@@ -146,6 +153,13 @@ function draw_org_table(data){
             align: "center",//水平
             valign: "middle",//垂直 
             visible:true,
+            formatter: function (value, row, index) {
+                if (value==''||value=='null'||value=='unknown'){
+                    return row.uid;
+                }else {
+                    return value;
+                }
+            },
         },
         {
             title: "ID",//标题
@@ -227,12 +241,12 @@ function draw_event_table(data){
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: true,//回车搜索
-        showRefresh: true,//刷新按钮
-        showColumns: true,//列选择按钮
+        showRefresh: false,//刷新按钮
+        showColumns: false,//列选择按钮
         buttonsAlign: "right",//按钮对齐方式
         locale: "zh-CN",//中文支持
         detailView: false,
-        showToggle:true,
+        showToggle:false,
         sortName:'bci',
         sortOrder:"desc",
         columns: [

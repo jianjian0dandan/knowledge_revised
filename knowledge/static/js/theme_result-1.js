@@ -220,40 +220,51 @@ function fish(data) {
         }
     })
     $(".fishBone .fish_box").append(finshdata);
-
-    var go=1;
+    var _p=0;
     var fish_length=data.length;
     $('#container .fishBone .fish_box').width(fish_length*180);
+    var fish_width=fish_length*180;
     $('#container .fishBone .prev').on('click',function () {
+        _p+=180;
         if (fish_length<=3){
             alert('没有其他卡片内容了。');
         }else {
-            if (go==1){
-                var fishbone=$(".fishBone .fish_box");
+            var fishbone=$(".fishBone .fish_box");
+            var step1=_p;
+            if (step1 > 0 ){
+                alert('没有其他内容了。');
+                _p=0;
+            }else {
                 $(fishbone).css({
-                    "-webkit-transform":"translateX(180px)",
-                    "-moz-transform":"translateX(180px)",
-                    "-ms-transform":"translateX(180px)",
-                    "-o-transform":"translateX(180px)",
-                    "transform":"translateX(180px)",
+                    "-webkit-transform":"translateX("+step1+"px)",
+                    "-moz-transform":"translateX("+step1+"px)",
+                    "-ms-transform":"translateX("+step1+"px)",
+                    "-o-transform":"translateX("+step1+"px)",
+                    "transform":"translateX("+step1+"px)",
                 });
             }
-
         }
     });
     $('#container .fishBone .next').on('click',function () {
+        _p-=180;
         if (fish_length<=3){
             alert('没有其他卡片内容了。');
         }else {
-            go=1;
+            var step2=_p;
             var fishbone=$(".fishBone .fish_box");
-            $(fishbone).css({
-                "-webkit-transform":"translateX(-180px)",
-                "-moz-transform":"translateX(-180px)",
-                "-ms-transform":"translateX(-180px)",
-                "-o-transform":"translateX(-180px)",
-                "transform":"translateX(-180px)",
-            });
+            if (step2 <= (-fish_width+500)){
+                alert('没有其他内容了');
+                _p=180;
+            }else {
+                $(fishbone).css({
+                    "-webkit-transform":"translateX("+step2+"px)",
+                    "-moz-transform":"translateX("+step2+"px)",
+                    "-ms-transform":"translateX("+step2+"px)",
+                    "-o-transform":"translateX("+step2+"px)",
+                    "transform":"translateX("+step2+"px)",
+                });
+
+            };
         }
     });
 
@@ -307,7 +318,8 @@ function place(data) {
         grid: {
             left: '3%',
             right: '4%',
-            bottom: '3%',
+            bottom:'0',
+            top: '42%',
             containLabel: true
         },
         xAxis:  {
@@ -549,6 +561,7 @@ $.ajax({
 });
 function character(data) {
     var data = eval(data);
+    console.log(data)
     $('#ranking').bootstrapTable('load', data);
     $('#ranking').bootstrapTable({
         data:data,
@@ -632,11 +645,14 @@ function character(data) {
                     if (row.related_event==''||row.related_event=='NULL'){
                         return '暂无事件';
                     }else {
-                        var event='';
-                        for (var e=0;e<row.related_event.length;e++){
-                            event+='<span>'+row.related_event[e]+'</span> ';
+                        var event=row.related_event;
+                        if (event.length<=2){
+                            return event.join(',');
+                        }else {
+                            var key=event.splice(0,2).join(',');
+                            var tit=event.splice(2).join('\n');
+                            return '<p title="'+tit+'">'+key+'</p> ';
                         }
-                        return event;
                     }
                 },
             },

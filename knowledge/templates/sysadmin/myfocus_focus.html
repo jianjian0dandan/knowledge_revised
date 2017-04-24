@@ -17,15 +17,11 @@ body,tr,th,div,span{
     color: white;
     font-size:15px; 
 }
-.table_block{
-    background-color:white;
-    padding: 40px 20px 50px 20px;
-}
+/*.table_block{*/
+    /*background-color:white;*/
+    /*padding: 40px 20px 50px 20px;*/
+/*}*/
 body {
-    /*width: 100%;*/
-    /*min-width: 1349px;*/
-    /*min-height: 3508px;*/
-    /*background: url("/static/images/search_result.png") no-repeat;*/
     width: 100%;
     margin: 0;
     min-width: 1349px;
@@ -35,44 +31,34 @@ body {
 #container {
     width: 80%;
     margin: 60px auto 0;
-    padding: 80px 0 100px 0;
+    padding:0 0 100px 0;
     position: relative;
     background:#f3f4f5;
 }
 #container .result {
-    position: absolute;
-    top: 0;
-    left: -14px;
-    width: 225px;
-    height:78px;
-    line-height: 70px;
-    background: url("/static/images/result_tit.png") no-repeat;
-    background-size: 100% 100%;
+    margin-left: 50px;
+    font-size: 30px;
+    padding: 20px 0;
+    font-weight: 900;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: -14px;*/
+    /*width: 225px;*/
+    /*height:78px;*/
+    /*line-height: 70px;*/
+    /*background: url("/static/images/result_tit.png") no-repeat;*/
+    /*background-size: 100% 100%;*/
 }
 h3 {
+    margin-left: -10px;
     width: 241px;
     height: 49px;
-    line-height: 49px;
+    line-height: 45px;
     padding: 0 0 0 60px;
     color: white;
     font-weight: 900;
     background: url("/static/images/small_tit.png") no-repeat;
-    background-size: 241px 49px;
-}
-.block {
-    margin-top:80px; 
-}
-.add {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 225px;
-    height:78px;
-    text-align: center;
-    line-height: 74px;
-    font-size: 32px;
-    background: url("/static/images/result_tit.png") no-repeat;
-    background-size: 100% 100%;
+    background-size: 200px 49px;
 }
 </style>
 <script type="text/javascript"></script>
@@ -81,7 +67,7 @@ h3 {
 
 {% block main %}
 <div id="container">
-    <h1 class="add" class="result" style="color: white;font-weight: 900;padding-left:38px;margin-bottom: 80px;">我的关注</h1>
+    <h1 class="add result">我的关注</h1>
     <div class="related_person block">
         <h3>关注人物</h3>
         <div class="person table_block" style="width: 80%;margin: 0 auto;">
