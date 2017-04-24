@@ -272,7 +272,6 @@ function show_rel() {
         $('#relation #rel_value_list').append(
             '<input type="checkbox" name="rels" value="friend" title="交互"/>交互'+
             '<input type="checkbox" name="rels" value="relative" title="亲属"/>亲属'+
-            '<input type="checkbox" name="rels" value="leader" title="上下级关系"/>上下级关系'+
             '<input type="checkbox" name="rels" value="colleague" title="自述关联"/>自述关联'+
             '<input type="checkbox" name="rels" value="ip_relation" title="IP关联"/>IP关联'+
             '<input type="checkbox" name="rels" value="user_tag" title="其他"/>其他'
