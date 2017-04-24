@@ -313,6 +313,7 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
     uid_list = [uid]
     result = dict()
     flag = 0
+    evaluate_max = get_evaluate_max()
     search_result = es_event.mget(index=event_analysis_name, doc_type=event_text_type, body={"ids": uid_list})["docs"]
     if len(search_result) == 0:
         return result
@@ -336,6 +337,17 @@ def search_event_by_id(uid,user_name):#根据uid查询事件属性
                                 row.append(t)
                             topic_list.append(row)
                         result[k] = topic_list
+                    elif k == 'user_results':#用户影响力归一化
+                        v_dict = dict()
+                        users = json.loads(v)
+                        for k1,v1 in users.iteritems():
+                            inf = v1['influ']
+                            nor_inf = normal_index(inf,evaluate_max['influence'])
+                            if nor_inf > 100:#还有大于100的
+                                nor_inf = 100
+                            v1['influ'] = nor_inf
+                            v_dict[k1] = v1
+                        result[k] = v_dict
                     else:
                         result[k] = json.loads(v)
                 elif k == event_tag:

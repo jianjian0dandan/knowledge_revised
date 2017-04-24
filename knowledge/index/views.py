@@ -93,7 +93,7 @@ def get_graph():#图谱页面
 
     user_id = request.args.get('user_id', '')
     node_type = request.args.get('node_type', '')
-    result_na = request.args.get('result_na', '')
+    #result_na = request.args.get('result_na', '')
 
     if node_type == 'people':#人物节点图谱
         relation = get_people_graph(user_id)
@@ -117,15 +117,20 @@ def get_graph():#图谱页面
         relation = []
         flag = 'Wrong Type'
     
-    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag,result_na=result_na)
+    return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
 
 @mod.route('/graph_index/')
 @login_required
 def get_graph_index():#首页图谱页面
 
-    relation = get_all_graph()
-    flag = 'Success'
-    # return render_template('index/knowledgeGraph.html', relation = relation, flag = flag)
+    result_na = request.args.get('flag_type', '')
+    if result_na:
+        relation = []
+        flag = 'Wrong Type'        
+    else:
+        relation = get_all_graph()
+        flag = 'Success'
+    
     return render_template('index/knowledgeGraph_home.html', relation = relation, flag = flag)
 
 @mod.route('/map/', methods=['GET','POST'])
@@ -134,7 +139,6 @@ def get_map():#地图页面
 
     user_id = request.args.get('user_id', '')
     node_type = request.args.get('node_type', '')
-    result_na = request.args.get('result_na', '')
 
     if node_type == 'ALL':#首页跳转
         event_result,people_result,org_relation = get_all_geo()
@@ -162,7 +166,7 @@ def get_map():#地图页面
 
     data_dict = {'event':event_result,'people':people_result,'org':org_relation}
 
-    return render_template('index/baidu_map.html', data_dict = data_dict, flag = flag,result_na=result_na)
+    return render_template('index/baidu_map.html', data_dict = data_dict, flag = flag)
 
 @mod.route('/person/', methods=['GET','POST'])
 @login_required
@@ -240,7 +244,7 @@ def get_event_atr():#事件属性页面
     relation_dict['doc'] = doc_list[0:10]
     
     text_list = {'all':all_weibo,'media':media_weibo,'people':people_weibo}
-    print result_att['topics']
+
     return render_template('index/event.html',result_att = result_att,text_list = text_list,relation_dict = relation_dict)
 
 @mod.route('/organization/', methods=['GET','POST'])

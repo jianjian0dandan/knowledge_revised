@@ -880,7 +880,7 @@ def simple_search(keywords_list,submit_user):
         #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
         query = 'start n=node('+','.join(id_list)+'),e=node(*) match (n)-[r*0..1]-(e) return n,r,e limit 10'
         print query
-        graph_result.append(get_info_by_query(query,submit_user)['graph_result']) 
+        graph_result.extend(get_info_by_query(query,submit_user)['graph_result']) 
 
     graph_result = list(graph_result)
     print graph_result

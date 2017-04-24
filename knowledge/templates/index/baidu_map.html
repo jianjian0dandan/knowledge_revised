@@ -100,8 +100,11 @@
 <script>
 //    var result={{data_dict|tojson}};
     var result;
-    if ('{{result_na}}'=='NaNa'){
+    if ('{{flag}}'=='Wrong Type'){
         result=JSON.parse(localStorage.getItem("result_map"));
+        setTimeout(function () {
+            localStorage.removeItem('result_map');
+        },600000);
     }else {
         result={{data_dict|tojson}};
     }
@@ -134,19 +137,18 @@
     var index = 0;
     var myGeo = new BMap.Geocoder();
     var adds = [];
-
     for(var key in result){
         if (key== 'event'){
             $.each(result[key],function (index,item) {
-                geocodeSearch(item[1],item[0],'event');
+                geocodeSearch(item[2],item[1],item[0],'event');
             })
         }else if (key== 'org'){
             $.each(result[key],function (index,item) {
-                geocodeSearch(item[1],item[0],'org');
+                geocodeSearch(item[2],item[1],item[0],'org');
             })
         }if (key== 'people'){
             $.each(result[key],function (index,item) {
-                geocodeSearch(item[1],item[0],'people');
+                geocodeSearch(item[2],item[1],item[0],'people');
             })
         }
     }
@@ -257,7 +259,6 @@
 
     //框选结束后的操作
 
-
     //    *  ┌─────────────────────┐
     //    *  │0                  1 │
     //    *  │                     │
@@ -293,16 +294,16 @@
     bdGEO();
     var dote=[];
     var curve;
-    function geocodeSearch(add,news,type){
+    function geocodeSearch(city,add,news,type){
         if(index < adds.length){
             setTimeout(window.bdGEO,400);
         }
-        myGeo.getPoint(add, function(point){
+        myGeo.getPoint(city, function(point){
             if (point) {
                 zuobiao_nums.push(point);
                 var address = new BMap.Point(point.lng, point.lat);
                 addMarker(address,new BMap.Label(add,{offset:new BMap.Size(20,-10)}),news,type);
-//                Draw_arc(point);
+                //Draw_arc(point);
             }
         });
     }
@@ -329,9 +330,7 @@
 //        window.clearInterval();
 //
 //    }
-setTimeout(function () {
-    localStorage.removeItem('result_map');
-},600000);
+
 
 </script>
 {% endblock %}

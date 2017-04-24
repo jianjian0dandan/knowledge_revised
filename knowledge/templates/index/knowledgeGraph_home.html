@@ -19,6 +19,7 @@
 <script src="/static/js/echarts-2/build/dist/echarts.js"></script>
 
 <script type="text/javascript">
+    var scaling=5;
     var lation={
         "friend" :"交互",
         "relative" :"亲属",
@@ -59,7 +60,18 @@
                     name:'维基'
                 }
             ];
-    var relation={{relation|tojson}};
+    var relation;
+    if ('{{flag}}'=='Wrong Type'){
+        scaling=2;
+        $('#graph_picture').height(1000);
+        relation=JSON.parse(localStorage.getItem("graph_force"));
+        setTimeout(function () {
+            localStorage.removeItem('graph_force');
+        },600000);
+    }else {
+        relation={{relation|tojson}};
+    }
+
     console.log(relation)
     $.each(relation,function (index,item) {
 //        categories.push({name:item[6]});
@@ -223,7 +235,7 @@
                             if (v['3']==undefined&&v['4']==undefined){
                                 return v['0'] + '：' +v['1'];
                             }else {
-                                return v['2'].target + ' →→→→ ' +v['2'].source + '  关系：'+lation[v['2'].rel];
+                                return v['2'].target + ' → ' +v['2'].source + '  关系：'+lation[v['2'].rel];
                             }
 
                         }
@@ -284,7 +296,7 @@
                             minRadius : 15,
                             maxRadius : 25,
                             gravity: 2,
-                            scaling:5,
+                            scaling:scaling,
                             symbolSize:20 ,
                             nodes:all_node,
                             links : link
@@ -306,15 +318,15 @@
                         var targetNode = nodes.filter(function (n) {return n.name == data.target})[0];
                         console.log("选中了边 " + sourceNode.name + ' -> ' + targetNode.name );
                     } else { // 点击的是点
-                        console.log("选中了" + data.name + data._id +data.label + data._type );
+//                        console.log("选中了" + data.name + data._id +data.label + data._type );
                         var n_type=data._type;
                         var n_id=data._id;
                         if (n_type=='people'){
-                            window.open('/index/person/?uid='+n_id);
+                            window.open('/index/person/?user_id='+n_id);
                         }else if (n_type=='org'){
-                            window.open('/index/organization/?uid='+n_id);
+                            window.open('/index/organization/?user_id='+n_id);
                         }else if (n_type=='event'){
-                            window.open('/index/event/?uid='+n_id);
+                            window.open('/index/event/?user_id='+n_id);
                         }else if (n_type=='topic'){
                             window.open('/theme/result/?theme_name='+n_id);
                         }else if (n_type=='group'){
@@ -327,7 +339,7 @@
                 myChart.on(ecConfig.EVENT.CLICK, focus);
 
                 myChart.on(ecConfig.EVENT.FORCE_LAYOUT_END, function () {
-                    console.log(myChart.chart.force.getPosition());
+//                    console.log(myChart.chart.force.getPosition());
                 });
 
 
