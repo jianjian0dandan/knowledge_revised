@@ -1323,6 +1323,9 @@ def get_people_graph(uid):#获取人物节点图谱
         else:
             continue
 
+    if len(relation) == 0:
+        relation.append([uid,result_peo[uid],'people','','','',''])
+    
     return relation
 
 def get_event_graph(uid):#获取事件节点图谱
@@ -1413,6 +1416,9 @@ def get_event_graph(uid):#获取事件节点图谱
         else:
             continue
 
+    if len(relation) == 0:
+        relation.append([uid,result_eve[uid],'event','','','',''])
+        
     return relation
 
 def get_org_graph(uid):#获取机构节点图谱
@@ -1503,6 +1509,9 @@ def get_org_graph(uid):#获取机构节点图谱
         else:
             continue
 
+    if len(relation) == 0:
+        relation.append([uid,result_peo[uid],'org','','','',''])
+
     return relation
 
 def get_special_event_graph(uid):#获取专题节点图谱
@@ -1547,6 +1556,9 @@ def get_special_event_graph(uid):#获取专题节点图谱
         else:
             continue
 
+    if len(relation) == 0:
+        relation.append([uid,result_top[uid],'topic','','','',''])
+    
     return relation
 
 def get_group_graph(uid):#获取群体节点图谱
@@ -1600,6 +1612,9 @@ def get_group_graph(uid):#获取群体节点图谱
         else:
             continue
 
+    if len(relation) == 0:
+        relation.append([uid,result_gro[uid],'group','','','',''])
+    
     return relation
 
 def get_wiki_graph(uid):#获取维基节点图谱
@@ -1671,7 +1686,7 @@ def get_wiki_graph(uid):#获取维基节点图谱
             
 def get_people_geo(uid):#根据人物id查询人物的地图
 
-    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (node_index_name,node_primary,uid)
+    p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 500' % (node_index_name,people_primary,uid)
     p_result = graph.run(p_string)
     peo_list = [uid]
     org_list = []

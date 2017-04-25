@@ -273,8 +273,8 @@ def show_relation(node_key1, node1_id, node1_index_name, rel, node_key2, node2_i
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
-    print node_index
-    print group_index
+    #print node_index
+    #print group_index
     tx = graph.begin()
     node1 = node_index.get(node_key1, node1_id)[0]
     node2 = group_index.get(node_key2, node2_id)[0]
@@ -296,8 +296,8 @@ def create_node_or_node_rel(node_key1, node1_id, node1_index_name, rel, node_key
     Index = ManualIndexManager(graph)
     node_index = Index.get_index(Node, node1_index_name)
     group_index = Index.get_index(Node, node2_index_name)
-    print node_index
-    print group_index
+    #print node_index
+    #print group_index
     tx = graph.begin()
     node1 = node_index.get(node_key1, node1_id)[0]
     node2 = group_index.get(node_key2, node2_id)[0]
@@ -512,7 +512,7 @@ def deal_user_tag(item ,submit_user):
     tag = es.get(index=portrait_index_name,doc_type=portrait_index_type, id=item)['_source']['function_mark']
     # return result
     # tag = tag_value
-    print tag,'======!!=========='
+    #print tag,'======!!=========='
     tag_list = tag.split('&')
     left_tag = []
     keep_tag = []
@@ -590,9 +590,13 @@ def get_info_by_query(query,submit_user):
     node_list = []
     result = list(graph.run(query))
     graph_result = []
+    print result
     for i in result:
         i = dict(i)
-        print i['n'],i['r'],i['e']
+        try:
+            print i['n'],i['r'],i['e']
+        except:
+            print i['p']
         # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
         try: 
             i_type = i['r']
@@ -600,7 +604,7 @@ def get_info_by_query(query,submit_user):
             i_type = i['p']
         for j in i_type:
             # print '???????????/'
-            # print '602',j.start_node(),j.type(),j.end_node()
+            print '602',j.start_node(),j.type(),j.end_node()
             # print dict(j.start_node())
             start_node = dict(j.start_node())
             relation = j.type()
@@ -638,7 +642,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    # print {'graph_result':graph_result,'table_result':table_result}
+    print {'graph_result':graph_result,'table_result':table_result}
     return {'graph_result':graph_result,'table_result':table_result}
 
 
@@ -649,7 +653,7 @@ def simple_get_info_by_query(query,submit_user):
     graph_result = []
     for i in result:
         i = dict(i)
-        print i['n'],i['r'],i['e']
+        #print i['n'],i['r'],i['e']
         # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
         try: 
             i_type = i['r']
@@ -755,7 +759,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
 def get_node_id(start_node):
     input_id = []
     for node in start_node:
-        print node
+        #print node
         node_type = node['node_type']
         if node_type == people_node:
             primary = people_primary
@@ -812,12 +816,12 @@ def get_node_id(start_node):
             result = es.search(index=es_index,doc_type=es_type,body=query_body)['hits']['hits']
             id_list = [i['_id'] for i in result]
         #'node:node_type(primary=id_list)'
-        print id_list
+        #print id_list
         for i in id_list:
             try:
                 a = graph.run('start n=node:'+neo_index+'("'+primary+':'+str(i)+'") return id(n)')
                 for j in a:
-                    print j
+                    #print j
                     input_id.append(str(dict(j)['id(n)']))
             except:
                 continue
@@ -826,7 +830,7 @@ def get_node_id(start_node):
 
 def compute_short_path(start_id,end_id,relation,step,limit):
     query = 'start d=node('+start_id+'),e=node('+end_id+') match p=allShortestPaths( d-['+relation+'*0..'+step+']-e ) return p '+limit
-    print query
+    #print query
     result = graph.run(query)
     for i in result:
         i = dict(i)
@@ -850,7 +854,7 @@ def simple_search(keywords_list,submit_user):
     id_list = []
     graph_result = []
     for key in keywords_list:
-        print key
+        #print key
 
         for i in range(len(es_list)):
             query_body = {
@@ -874,10 +878,10 @@ def simple_search(keywords_list,submit_user):
                 query_body['query']['bool']['must'] = [{'terms':{'verify_type':org_list}}]
             else:
                 pass
-            print query_body
-            print es_list[i],es_index_list[i],es_type_list[i]
+            #print query_body
+            #print es_list[i],es_index_list[i],es_type_list[i]
             result = es_list[i].search(index=es_index_list[i],doc_type=es_type_list[i],body=query_body,fields=column_list[i])['hits']['hits']
-            print 'len:',len(result)
+            #print 'len:',len(result)
             if result:
                 for j in result:
                     f_result = {}
@@ -905,22 +909,25 @@ def simple_search(keywords_list,submit_user):
                     try:
                         a = graph.run('start n=node:'+index_list[i]+'("'+primary_list[i]+':'+str(j['_id'])+'") return id(n)')
                         for k in a:
-                            print k
+                            #print k
                             id_list.append(str(dict(k)['id(n)']))
+                            query = 'start n=node('+str(dict(k)['id(n)'])+') match (n)-[r]-(e) where (type(r) <> "wiki_link") return n,r,e limit 10'
+                            #print query
+                            graph_result.extend(simple_get_info_by_query(query,submit_user)) 
                     except:
                         pass
             else:
                 continue
-
+    '''
     # print 'dddddddddddddddddddddddddd',id_list,len(id_list)
     if len(id_list) == 0:
         pass
     else:
         #'start n=node(583,2061),e=node(*) match (n)-[r*0..2]-(e) return n,r,e limit 200'
-        query = 'start n=node('+','.join(id_list)+') match (n)-[r]-(e) where (type(r) <> "wiki_link") return n,r,e limit 100'
-        print query
+        query = 'start n=node('+','.join(id_list)+') match (n)-[r]-(e) where (type(r) <> "wiki_link") return n,r,e'
+        #print query
         graph_result.extend(simple_get_info_by_query(query,submit_user)) 
-
+    '''
     graph_result = list(graph_result)
     # print graph_result
 
@@ -1015,10 +1022,10 @@ def compute_fun(submit_user,submit_ts,node_name,node_type,node_id):
     info = {'submit_user':submit_user,'submit_ts':int(submit_ts),'node_name':node_name,\
             'node_type':node_type,'node_id':node_id,'compute_status':0
             }
-    print info
+    #print info
     result = es_sim.index(index=sim_name,doc_type=sim_type,id=node_id,body=info)
     # os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
-    print result
+    #print result
     if result['created']==True:
         os.system('nohup python -u ./knowledge/cron/get_relationship/compute_sim.py '+node_type+' '+node_id+' >> sim.log&')
         print 'yes'
