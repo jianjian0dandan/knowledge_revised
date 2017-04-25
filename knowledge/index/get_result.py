@@ -532,31 +532,6 @@ def get_detail_event_map(uid_list):#根据uid查询事件的location
 
     return result 
 
-def get_all_geo():#地图链接：获取地址
-
-    event_list = []
-    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 200' % (event_index_name,event_primary)
-    result = graph.run(p_string)
-    for item in result:
-        event_list.append(item[0])
-    event_result = get_detail_event_map(event_list)
-    
-    peo_list = []
-    p_string = 'START n=node:%s("%s:*") return n.uid LIMIT 300' % (node_index_name,people_primary)
-    result = graph.run(p_string)
-    for item in result:
-        peo_list.append(item[0])
-    peo_result = get_detail_per_org_map(peo_list)
-
-    org_list = []
-    p_string = 'START n=node:%s("%s:*") return n.org_id LIMIT 300' % (org_index_name,org_primary)
-    result = graph.run(p_string)
-    for item in result:
-        org_list.append(item[0])
-    org_result = get_detail_per_org_map(org_list)
-        
-    return event_result,peo_result,org_result
-
 def get_type_key(item):
     if item == '1':#人物
         return people_primary
@@ -1977,7 +1952,77 @@ def get_group_geo(uid):#根据群体id查询群体的地图
     
     return event_result,people_result,org_relation
 
+def get_all_geo():#地图链接：获取地址
 
+##    event_list = []
+##    p_string = 'START n=node:%s("%s:*") return n.event_id LIMIT 200' % (event_index_name,event_primary)
+##    result = graph.run(p_string)
+##    for item in result:
+##        event_list.append(item[0])
+##    event_result = get_detail_event_map(event_list)
+##    
+##    peo_list = []
+##    p_string = 'START n=node:%s("%s:*") return n.uid LIMIT 300' % (node_index_name,people_primary)
+##    result = graph.run(p_string)
+##    for item in result:
+##        peo_list.append(item[0])
+##    peo_result = get_detail_per_org_map(peo_list)
+##
+##    org_list = []
+##    p_string = 'START n=node:%s("%s:*") return n.org_id LIMIT 300' % (org_index_name,org_primary)
+##    result = graph.run(p_string)
+##    for item in result:
+##        org_list.append(item[0])
+##    org_result = get_detail_per_org_map(org_list)
+
+    total_event = []
+    p_string = 'START n=node:%s("%s:*") return n.event_id' % (event_index_name,event_primary)
+    p_result = graph.run(p_string)
+    for item in p_result:
+        node1 = item[0]
+        if node1 not in total_event:
+            total_event.append(node1)
+
+    if len(total_event) > 0:
+        total_list,result_eve = event2time(total_event)
+    else:
+        total_list = []
+        result_eve = {}
+        
+    peo_list = []
+    org_list = []
+    for e_id in total_list:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[]-(m) return m,labels(m) LIMIT 200' % (event_index_name,event_primary,e_id)
+        p_result = graph.run(p_string)    
+        for item in p_result:
+            node2_k = item[1][0]
+            node2_v = dict(item[0]).values()[0]
+            if node2_k == people_node:#人物
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+            elif node2_k == org_node:#机构
+                if node2_v not in org_list:
+                    org_list.append(node2_v)
+            elif node2_k == event_node:#事件
+                if node2_v not in total_list:
+                    total_list.append(node2_v)
+            else:
+                continue
+
+    if len(peo_list) > 0:
+        peo_result = get_detail_per_org_map(peo_list)
+    else:
+        peo_result = []
+    if len(org_list) > 0:
+        org_result = get_detail_per_org_map(org_list)
+    else:
+        org_result = []
+    if len(total_list) > 0:
+        event_result = get_detail_event_map(total_list)
+    else:
+        event_result = []
+        
+    return event_result,peo_result,org_result
 
 
 
