@@ -568,7 +568,7 @@ def get_type_key(item):
         return special_event_primary
     elif item == '4':#群体
         return group_primary
-    elif item == '5':#群体
+    elif item == '5':#wiki
         return wiki_primary
     else:
         return 'Not Found'
@@ -782,7 +782,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
 
     node_key = get_type_key(node_type)
     card_key = get_type_key(card_type)
-
+    
     if node_key == 'Not Found' or card_key == 'Not Found':#未找到匹配类型
         return [],-1
     if node_key == people_primary:
@@ -881,10 +881,13 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
             result = get_detail_org(uid_list,user_name)#获取机构详细信息
             flag = 0
     elif node_key == wiki_primary:
+        uid = show_wiki_related(user_id)
+        if not len(uid):
+            return []
         if card_key == people_primary:#wiki-uid
             start_index_name = wiki_url_index_name
             end_index_name = node_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,uid,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -894,7 +897,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         elif card_key == event_primary:#wiki-event
             start_index_name = wiki_url_index_name
             end_index_name = event_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,uid,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -904,7 +907,7 @@ def get_relation_node(user_id,node_type,card_type,user_name):#获取关联节点
         else:#wiki-org
             start_index_name = wiki_url_index_name
             end_index_name = org_index_name
-            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[]-()-[]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,user_id,end_index_name,card_key,card_key)
+            c_string = 'START n=node:%s(%s="%s"),m=node:%s("%s:*") MATCH (n)-[r]-(m) return m.%s LIMIT 100' % (start_index_name,node_key,uid,end_index_name,card_key,card_key)
             p_result = graph.run(c_string)
             uid_list = []
             for item in p_result:
@@ -1617,8 +1620,25 @@ def get_group_graph(uid):#获取群体节点图谱
     
     return relation
 
-def get_wiki_graph(uid):#获取维基节点图谱
+def show_wiki_related(name):
 
+    conn = getconn()
+    cur = conn.cursor()
+    sql = "select Url from wiki where Name=%s "
+    html_id = cur.execute(sql, (name,))
+    if html_id:
+        html_id_sql = cur.fetchmany(html_id)
+        url = html_id_sql[0][0]
+    else:
+        url = ''
+
+    return url
+
+def get_wiki_graph(uname):#获取维基节点图谱
+
+    uid = show_wiki_related(uname)
+    if not len(uid):
+        return []
     p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return n.url,r,m,labels(m) LIMIT 200' % (wiki_url_index_name,wiki_primary,uid)
 
     p_result = graph.run(p_string)
@@ -1681,6 +1701,9 @@ def get_wiki_graph(uid):#获取维基节点图谱
                 continue
         else:
             continue
+
+    if len(relation) == 0:
+        relation.append([uid,result_wiki[uid],'wiki','','','',''])
 
     return relation            
             

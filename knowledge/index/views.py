@@ -143,19 +143,19 @@ def get_map():#地图页面
     if node_type == 'ALL':#首页跳转
         event_result,people_result,org_relation = get_all_geo()
         flag = 'Success'
-    elif node_type == 'people':#人物节点图谱
+    elif node_type == 'people':#人物节点地图
         event_result,people_result,org_relation = get_people_geo(user_id)
         flag = 'Success'
-    elif node_type == 'event':#事件节点图谱
+    elif node_type == 'event':#事件节点地图
         event_result,people_result,org_relation = get_event_geo(user_id)
         flag = 'Success'
-    elif node_type == 'org':#机构节点图谱
+    elif node_type == 'org':#机构节点地图
         event_result,people_result,org_relation = get_org_geo(user_id)
         flag = 'Success'
-    elif node_type == 'topic':#专题节点图谱
+    elif node_type == 'topic':#专题节点地图
         event_result,people_result,org_relation = get_topic_geo(user_id)
         flag = 'Success'
-    elif node_type == 'group':#群体节点图谱
+    elif node_type == 'group':#群体节点地图
         event_result,people_result,org_relation = get_group_geo(user_id)
         flag = 'Success'
     else:
@@ -295,7 +295,7 @@ def get_card():#卡片罗列页面
     node_type = request.args.get('node_type', 'Not Found')
     card_type = request.args.get('card_type', 'Not Found')
     user_name = g.user.email
-    
+
     if user_id:
         if node_type == '3':#专题关联
             if card_type == '1':#人物

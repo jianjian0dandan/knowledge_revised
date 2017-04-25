@@ -139,20 +139,20 @@ function wiki_related(data) {
     };
     //-------人物------
     $('#container #content_right .link_user .user_more').on('click',function () {
-        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=1');
+        window.open('/index/cards/?user_id='+user_id+'&node_type=5&card_type=1');
     });
 
     //------事件-----
     $('#container #content_right .link_event .event_more').on('click',function () {
-        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=2');
+        window.open('/index/cards/?user_id='+user_id+'&node_type=5&card_type=2');
     });
 
     //-----机构-----
     $('#container #content_right .link_agency .agency_more').on('click',function () {
-        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=0');
+        window.open('/index/cards/?user_id='+user_id+'&node_type=5&card_type=0');
     });
 }
 
 $('#chart').on('click',function () {
-    window.open('/index/graph/?user_id='+_wiki_url+'&node_type=wiki');
+    window.open('/index/graph/?user_id='+user_id+'&node_type=wiki');
 });
