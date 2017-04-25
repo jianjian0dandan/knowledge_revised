@@ -27,8 +27,7 @@ def excel_read():
 
         if i == 0: # 跳过第一行
             continue
-        if i == 1:
-            continue
+
         now_ts=int(time.time())
         keywords_list = table.row_values(i)[1].split(' ')
         keywords = '&'.join(keywords_list)
@@ -97,7 +96,7 @@ def excel_read_v2():
 
 if __name__ == '__main__':
     # excel_read()
-    # input_one('yang-xiu-zhu-zi-shou-1492166854','business')
-    excel_read_v2()
+    input_one('te-lang-pu-qi-hou-he-zuo-1492166854','diplomacy')
+    # excel_read_v2()
 
 
