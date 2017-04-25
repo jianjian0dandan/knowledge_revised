@@ -609,13 +609,17 @@ def get_info_by_query(query,submit_user):
             start_node = dict(j.start_node())
             relation = j.type()
             end_node = dict(j.end_node())
-            if relation == 'wiki_link':
+            if relation == 'wiki_link' or relation == 'wiki_link2':
             	continue
             #节点信息，名字
             info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
+            if info == 0:
+            	continue
             if info and info not in node_list :
                 node_list.append(info)
             info,end_node['name'] = get_es_by_id(end_node.keys()[0],end_node.values()[0],submit_user)
+            if info == 0:
+            	continue
             if info and info not in node_list :
                 node_list.append(info)
 
@@ -642,7 +646,7 @@ def get_info_by_query(query,submit_user):
             table_result['s_nodes'].append(i[1])
         else:
             table_result['g_nodes'].append(i[1])
-    print {'graph_result':graph_result,'table_result':table_result}
+    # print {'graph_result':graph_result,'table_result':table_result}
     return {'graph_result':graph_result,'table_result':table_result}
 
 
@@ -663,13 +667,17 @@ def simple_get_info_by_query(query,submit_user):
         start_node = dict(i_type.start_node())
         relation = i_type.type()
         end_node = dict(i_type.end_node())
-        if relation == 'wiki_link':
+        if relation == 'wiki_link' or relation == 'wiki_link2':
             continue
         #节点信息，名字
         info,start_node['name'] = get_es_by_id(start_node.keys()[0],start_node.values()[0],submit_user)
+        if info == 0:
+        	continue
         if info and info not in node_list :
             node_list.append(info)
         info,end_node['name'] = get_es_by_id(end_node.keys()[0],end_node.values()[0],submit_user)
+        if info == 0:
+        	continue
         if info and info not in node_list :
             node_list.append(info)
 
@@ -725,7 +733,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
         es_type = special_event_type
         column = s_column
         name = 'topic_name'
-        tag = 'label'
+        tag = 'k_label'
         node_type = special_event_node
     else:
         es = es_group
@@ -733,7 +741,7 @@ def get_es_by_id(primary_key,node_id,submit_user):
         es_type = group_type
         column = g_column
         name = 'group_name'
-        tag = 'label'
+        tag = 'k_label'
         node_type = group_node
     try:
         result = es.get(index=es_index,doc_type=es_type,fields=column,id=node_id)
@@ -811,7 +819,8 @@ def get_node_id(start_node):
             query_body = {
                 'query':{
                     'bool':condition
-                }
+                },
+                'size':1000
             }
             result = es.search(index=es_index,doc_type=es_type,body=query_body)['hits']['hits']
             id_list = [i['_id'] for i in result]
