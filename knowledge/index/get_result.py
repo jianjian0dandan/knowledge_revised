@@ -1524,6 +1524,7 @@ def get_special_event_graph(uid):#获取专题节点图谱
     p_result = graph.run(p_string)
     eve_list = []
     top_list = []
+    peo_list = []
     r_relation = []
     for item in p_result:
         node1 = item[0]
@@ -1535,10 +1536,32 @@ def get_special_event_graph(uid):#获取专题节点图谱
         if node2_k == event_node:#事件
             if node2_v not in eve_list:
                 eve_list.append(node2_v)
-            r_relation.append([node1,node2_v,'event',r])
+            r_relation.append([node1,'topic',node2_v,'event',r])
         else:
             continue
 
+    for eve in eve_list:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return r,m,labels(m) LIMIT 10' % (event_index_name,event_primary,eve)
+        p_result = graph.run(p_string)
+        for item in p_result:
+            node2_k = item[2][0]
+            node2_v = dict(item[1]).values()[0]
+            r = item[0].type()
+            if node2_k == people_node:#人物
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([eve,'event',node2_v,'people',r])
+            elif node2_k == org_node:#机构
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([eve,'event',node2_v,'org',r])
+            elif node2_k == event_node:#事件
+                if node2_v not in eve_list:
+                    eve_list.append(node2_v)
+                r_relation.append([eve,'event',node2_v,'event',r])
+            else:
+                continue
+    
     if len(eve_list) > 0:
         result_eve = event_id_name(eve_list)
     else:
@@ -1547,14 +1570,37 @@ def get_special_event_graph(uid):#获取专题节点图谱
         result_top = top_id_name(top_list)
     else:
         result_top = {}
+    if len(peo_list) > 0:
+        result_peo = peo_id_name(peo_list)
+    else:
+        result_peo = {}
 
     relation = []
     for item in r_relation:
-        flag = item[2]
-        if flag == 'event':
+        flag = item[3]
+        flag1 = item[1]
+        if flag1 == 'topic':
             try:
-                relation.append([item[0],result_top[item[0]],'topic',item[1],result_eve[item[1]],item[2],item[3]])
+                relation.append([item[0],result_top[item[0]],'topic',item[2],result_eve[item[2]],item[3],item[4]])
             except KeyError:
+                continue
+        elif flag1 == 'event':
+            if flag == 'event':
+                try:
+                    relation.append([item[0],result_eve[item[0]],'event',item[2],result_eve[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'people':
+                try:
+                    relation.append([item[0],result_eve[item[0]],'event',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'org':
+                try:
+                    relation.append([item[0],result_eve[item[0]],'event',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            else:
                 continue
         else:
             continue
@@ -1571,6 +1617,9 @@ def get_group_graph(uid):#获取群体节点图谱
     p_result = graph.run(p_string)
     peo_list = []
     gro_list = []
+    eve_list = []
+    peo_list1 = []
+    org_list1 = []
     r_relation = []
     for item in p_result:
         node1 = item[0]
@@ -1582,14 +1631,66 @@ def get_group_graph(uid):#获取群体节点图谱
         if node2_k == people_node:#人物
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
-            r_relation.append([node1,node2_v,'people',r])
+            if node2_v not in peo_list1:
+                peo_list1.append(node2_v)
+            r_relation.append([node1,'group',node2_v,'people',r])
         elif node2_k == org_node:#机构
             if node2_v not in peo_list:
                 peo_list.append(node2_v)
-            r_relation.append([node1,node2_v,'org',r])
+            if node2_v not in org_list1:
+                org_list1.append(node2_v)
+            r_relation.append([node1,'group',node2_v,'org',r])
         else:
             continue
 
+    for peo in peo_list1:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return r,m,labels(m) LIMIT 10' % (node_index_name,people_primary,peo)
+        p_result = graph.run(p_string)
+        for item in p_result:
+            node2_k = item[2][0]
+            node2_v = dict(item[1]).values()[0]
+            r = item[0].type()
+            if node2_k == people_node:#人物
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([peo,'people',node2_v,'people',r])
+            elif node2_k == org_node:#机构
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([peo,'people',node2_v,'org',r])
+            elif node2_k == event_node:#事件
+                if node2_v not in eve_list:
+                    eve_list.append(node2_v)
+                r_relation.append([peo,'people',node2_v,'event',r])
+            else:
+                continue
+
+    for org in org_list1:
+        p_string = 'START n=node:%s(%s="%s") MATCH (n)-[r]-(m) return r,m,labels(m) LIMIT 10' % (org_index_name,org_primary,org)
+        p_result = graph.run(p_string)
+        for item in p_result:
+            node2_k = item[2][0]
+            node2_v = dict(item[1]).values()[0]
+            r = item[0].type()
+            if node2_k == people_node:#人物
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([org,'org',node2_v,'people',r])
+            elif node2_k == org_node:#机构
+                if node2_v not in peo_list:
+                    peo_list.append(node2_v)
+                r_relation.append([org,'org',node2_v,'org',r])
+            elif node2_k == event_node:#事件
+                if node2_v not in eve_list:
+                    eve_list.append(node2_v)
+                r_relation.append([org,'org',node2_v,'event',r])
+            else:
+                continue
+
+    if len(eve_list) > 0:
+        result_eve = event_id_name(eve_list)
+    else:
+        result_eve = {}
     if len(peo_list) > 0:
         result_peo = peo_id_name(peo_list)
     else:
@@ -1601,16 +1702,54 @@ def get_group_graph(uid):#获取群体节点图谱
 
     relation = []
     for item in r_relation:
-        flag = item[2]
-        if flag == 'people':
-            try:
-                relation.append([item[0],result_gro[item[0]],'group',item[1],result_peo[item[1]],item[2],item[3]])
-            except KeyError:
+        flag = item[3]
+        flag1 = item[1]
+        if flag1 == 'group':
+            if flag == 'people':
+                try:
+                    relation.append([item[0],result_gro[item[0]],'group',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'org':
+                try:
+                    relation.append([item[0],result_gro[item[0]],'group',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+        elif flag1 == 'people':
+            if flag == 'people':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'org':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'event':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_eve[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            else:
                 continue
-        elif flag == 'org':
-            try:
-                relation.append([item[0],result_gro[item[0]],'group',item[1],result_peo[item[1]],item[2],item[3]])
-            except KeyError:
+        elif flag1 == 'org':
+            if flag == 'people':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'org':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_peo[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            elif flag == 'event':
+                try:
+                    relation.append([item[0],result_peo[item[0]],'people',item[2],result_eve[item[2]],item[3],item[4]])
+                except KeyError:
+                    continue
+            else:
                 continue
         else:
             continue
