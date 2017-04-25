@@ -23,51 +23,51 @@ def index():#首页
     peo_infors = get_people(user_name,2)
 
     try:
-        peo_string = 'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
+        peo_string = 'MATCH(n:%s) return count(n)' % people_node#'START start_node=node:'+node_index_name+'("'+people_primary+':*") return count(start_node)'
         peo_object = graph.run(peo_string)
 
         for item in peo_object:
-            peo_count = item['count(start_node)']
+            peo_count = item['count(n)']
     except:
         peo_count = 0
 
     try:
-        org_string = 'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
+        org_string = 'MATCH(n:%s) return count(n)' % org_node#'START start_node=node:'+org_index_name+'("'+org_primary+':*") return count(start_node)'
         org_object = graph.run(org_string)
         for item in org_object:
-            org_count = item['count(start_node)']
+            org_count = item['count(n)']
     except:
         org_count = 0
 
     try:
-        event_string = 'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
+        event_string = 'MATCH(n:%s) return count(n)' % event_node#'START start_node=node:'+event_index_name+'("'+event_primary+':*") return count(start_node)'
         event_object = graph.run(event_string)
         for item in event_object:
-            event_count = item['count(start_node)']
+            event_count = item['count(n)']
     except:
         event_count = 0
 
     try:
-        special_event_string = 'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
+        special_event_string = 'MATCH(n:%s) return count(n)' % special_event_node#'START start_node=node:'+special_event_index_name+'(\"'+special_event_primary+':*") return count(start_node)'
         special_event_object = graph.run(special_event_string)
         for item in special_event_object:
-            special_event_count = item['count(start_node)']
+            special_event_count = item['count(n)']
     except:
         special_event_count = 0
 
     try:
-        group_string = 'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
+        group_string = 'MATCH(n:%s) return count(n)' % group_node#'START start_node=node:'+group_index_name+'("'+group_primary+':*") return count(start_node)'
         group_object = graph.run(group_string)
         for item in group_object:
-            group_count = item['count(start_node)']
+            group_count = item['count(n)']
     except:
         group_count = 0
 
     try:
-        wiki_string = 'START start_node=node:'+wiki_url_index_name+'("'+wiki_primary+':*") return count(start_node)'
+        wiki_string = 'MATCH(n:%s) return count(n)' % wiki_node#'START start_node=node:'+wiki_url_index_name+'("'+wiki_primary+':*") return count(start_node)'
         wiki_object = graph.run(wiki_string)
         for item in wiki_object:
-            wiki_count = item['count(start_node)']
+            wiki_count = item['count(n)']
     except:
         wiki_count = 0
 
