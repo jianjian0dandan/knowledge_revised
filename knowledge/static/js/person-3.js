@@ -3,7 +3,7 @@ var data=result_2;
 function link_source(data) {
     //关联人物
     var user=[];
-    if (data.people.length==0){
+    if (data.people.length==0|| (data.people.length==1&&data.people[0]=='')){
         $('.link_user .users').append(
             '<a>无数据</a>'
         );
@@ -25,7 +25,7 @@ function link_source(data) {
     }
     //关联事件
     var event=[];
-    if (data.event.length==0){
+    if (data.event.length==0|| (data.event.length==1&&data.event[0]=='')){
         $('.link_event .events').append(
             '<a>无数据</a>'
         )
@@ -48,7 +48,7 @@ function link_source(data) {
 
     //关联机构
     var org=[];
-    if (data.org.length==0){
+    if (data.org.length==0|| (data.org.length==1&&data.org[0]=='')){
         $('.link_agency .agencys').append(
             '<a>无数据</a>'
         )
@@ -71,7 +71,7 @@ function link_source(data) {
 
     //关联知识
     var wiki=[];
-    if (data.wiki.length==0){
+    if (data.wiki.length==0|| (data.wiki.length==1&&data.wiki[0]=='')){
         $('.link_knowledge .knowledge').append(
             '<a>无数据</a>'
         )
@@ -96,7 +96,7 @@ function link_source(data) {
 
     //关联资源
     var file=[];
-    if (data.doc.length==0){
+    if (data.doc.length==0|| (data.doc.length==1&&data.doc[0]=='')){
         $('.link_resources .resources').append(
             '<a>无数据</a>'
         )

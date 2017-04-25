@@ -11,7 +11,7 @@ function link_source(data) {
     var data=eval(data);
     //关联人物
     var user=[];
-    if (data.final_user.length==0){
+    if (data.final_user.length==0|| (data.final_user.length==1&&data.final_user[0]=='')){
         $('.link_user .users').append(
             '<a>无数据</a>'
         );
@@ -33,7 +33,7 @@ function link_source(data) {
     }
     //关联事件
     var event=[];
-    if (data.final_event.length==0){
+    if (data.final_event.length==0|| (data.final_event.length==1&&data.final_event[0]=='')){
         $('.link_event .events').append(
             '<a>无数据</a>'
         )
@@ -53,7 +53,7 @@ function link_source(data) {
 
     //关联机构
     var org=[];
-    if (data.final_org.length==0){
+    if (data.final_org.length==0|| (data.final_org.length==1&&data.final_org[0]=='')){
         $('.link_agency .agencys').append(
             '<a>无数据</a>'
         )
@@ -76,7 +76,7 @@ function link_source(data) {
 
     //关联知识
     var wiki=[];
-    if (data.final_wiki.length==0){
+    if (data.final_wiki.length==0|| (data.final_wiki.length==1&&data.final_wiki[0]=='')){
         $('.link_knowledge .knowledge').append(
             '<a>无数据</a>'
         )
@@ -100,7 +100,7 @@ function link_source(data) {
 
     //关联资源
     var file=[];
-    if (data.final_file.length==0){
+    if (data.final_file.length==0|| (data.final_file.length==1&&data.final_file[0]=='')){
         $('.link_resources .resources').append(
             '<a>无数据</a>'
         )

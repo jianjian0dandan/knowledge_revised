@@ -11,7 +11,10 @@
 {% block main %}
 <div id="container">
     <h1 class="tit">突发分析</h1>
-    <div class="current_situation">
+    <div class="weibo_content">
+
+    </div>
+    <div class="current_situation" style="margin-top: 20px;">
         <h3>当前态势</h3>
         <div class="forward_discussion">
             <div style="padding-left: 1%;">
@@ -24,31 +27,29 @@
             </div>
 
             <div class="weibo" id="weibo" style="padding:7px 4px;">
-                <div class="user">
-                    <div class="user_left">
-                        <img src="/static/images/unknown.png" alt="">
-                    </div>
-                    <div class="user_right">
-                        <a href="###" class="user_name">新浪娱乐</a>&nbsp;<span>于</span>
-                        <b class="time">2016-11-11 22:33:55</b>&nbsp;<span>发表：</span>
-                        <span class="speech">
-                            顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，
-                            我坐这里快一个小时了，没见到有服务员呀。
-                        </span>
-                        <p class="fd_nums">
-                            <span>转发数:</span><b class="f_amount">123</b>
-                            <span>评论数:</span><b class="d_amount">1312</b>
-                        </p>
-                    </div>
-                </div>
+                <!--<div class="user">-->
+                    <!--<div class="user_left">-->
+                        <!--<img src="/static/images/unknown.png" alt="">-->
+                    <!--</div>-->
+                    <!--<div class="user_right">-->
+                        <!--<a href="###" class="user_name">新浪娱乐</a>&nbsp;<span>于</span>-->
+                        <!--<b class="time">2016-11-11 22:33:55</b>&nbsp;<span>发表：</span>-->
+                        <!--<span class="speech">-->
+                            <!--顾客：我想到你的店里应聘做服务员？经理：我们这里不缺服务员。顾客：那你找一个出来给我看看，-->
+                            <!--我坐这里快一个小时了，没见到有服务员呀。-->
+                        <!--</span>-->
+                        <!--<p class="fd_nums">-->
+                            <!--<span>转发数:</span><b class="f_amount">123</b>-->
+                            <!--<span>评论数:</span><b class="d_amount">1312</b>-->
+                        <!--</p>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </div>
     </div>
     <div class="trend_forecast" style="margin-top:30px;">
         <h3>趋势预测</h3>
-        <div class="weibo_content">
 
-        </div>
         <div class="forecast_content">
             <p>预测爆发时间为 <span class="time" style="color:red;"></span></p>
             <p>预测参与人数：<span class="people"></span>人</p>

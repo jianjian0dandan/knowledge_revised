@@ -79,7 +79,7 @@ function result(data) {
         graph_picture = data.graph_result;
         person(data.table_result.p_nodes);
         agencies(data.table_result.o_nodes);
-        events(data.table_result.e_nodes);
+        _events(data.table_result.e_nodes);
         organization(data.table_result.g_nodes);
         subject(data.table_result.s_nodes);
     }else {
@@ -94,7 +94,7 @@ function result(data) {
             graph_picture = data.graph_result;
             person(data.table_result.p_nodes);
             agencies(data.table_result.o_nodes);
-            events(data.table_result.e_nodes);
+            _events(data.table_result.e_nodes);
             organization(data.table_result.g_nodes);
             subject(data.table_result.s_nodes);
         }
@@ -700,7 +700,8 @@ function agencies(data) {
 
 //相关事件
 var events;
-function events(e_data) {
+function _events(e_data) {
+    console.log(11)
     var e_data = eval(e_data);
     events=e_data;
     $('.events_1').css({display:'none'});
@@ -901,7 +902,7 @@ function organization(data) {
                 }
             },
             {
-                title: "关键词",//标题
+                title: "自动标签",//标题
                 field: "label",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式
@@ -918,13 +919,7 @@ function organization(data) {
                             var key=words.splice(0,5).join(',');
                             var tit=words.splice(5).join(',');
                             return '<p title="'+tit+'">'+key+'</p> ';
-                        }
-                        /*var key='';
-                        var words=value.split('&');
-                        for (var k=0;k<words.length;k++){
-                            key+=words[k]+' ';
-                        }
-                        return key;*/
+                        };
                     }
                 }
             },
@@ -1058,7 +1053,7 @@ function subject(data) {
                 }
             },
             {
-                title: "关键词",//标题
+                title: "自动标签",//标题
                 field: "label",//键名
                 sortable: true,//是否可排序
                 order: "desc",//默认排序方式

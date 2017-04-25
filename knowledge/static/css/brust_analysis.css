@@ -57,7 +57,7 @@ h3 {
 }
 /*用户发的微博*/
 .weibo .user {
-    padding: 8px 15px;
+    padding: 20px 15px;
     border-bottom: 1px dashed silver;
     position: relative;
 }

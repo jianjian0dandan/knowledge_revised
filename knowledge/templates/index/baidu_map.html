@@ -163,25 +163,28 @@
             marker = new BMap.Marker(point,{icon:myIcon});
             title='事件';
             message='<b style="display:none;">'+news+'</b> 事件名称：';
+            label.setStyle({border:"2px solid #c86df0"});
         }else if (type=='people'){
             var myIcon = new BMap.Icon("/static/images/map_user.png", new BMap.Size(19,50));
             marker = new BMap.Marker(point,{icon:myIcon});
             title='人物';
             message='人物id：<b>'+news+'</b><br/> 人物昵称：';
+            label.setStyle({border:"2px solid #2b81ff"});
         }else {
             var marker = new BMap.Marker(point);
             title='机构';
             message='机构id：<b>'+news+'</b><br/> 机构名称：';
+            label.setStyle({border:"2px solid #ed2d2d"});
         }
         map.addOverlay(marker);
         label.setStyle({
             color:"black",                   //颜色
             fontSize:"14px",
             padding:"2px 5px",                  //字号
-            border:"2px solid #2196F3",           //边
             cursor:"pointer",
             borderRadius:'10px',
         });
+
         marker.setLabel(label);
         marker.addEventListener("click", function(){
             var information=(message + (this.zc||this.xc).innerText + '<br/> <a id="more" onclick="jump_card(this)">查看详情>></a>');

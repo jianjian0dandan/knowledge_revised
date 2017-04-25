@@ -36,6 +36,7 @@ function wiki_exit(data) {
     }
 }
 
+var _wiki_url;
 function wiki() {};
 wiki.prototype= {
     call_request:function(url,callback) {
@@ -59,17 +60,19 @@ function nums() {
 }
 nums();
 function wiki_basic(data) {
-    $('.user_name').append(data['name']);
+    console.log(data)
+    _wiki_url=data.url;
+    // $('.user_name').append(data['name']);
     $('#main').append(data['content']);
 }
 function wiki_related(data) {
-     console.log(data);
+    console.log(data);
     if (data==''){
         alert('该词条暂未收录,无法为您展示。');
     }
     //关联人物
     var user=[];
-    if (data['User'].length==0){
+    if (data['User'].length==0||(data['User'].length==1&&data['User'][0]=='')){
         $('.link_user .users').append(
             '<a>无数据</a>'
         );
@@ -91,7 +94,7 @@ function wiki_related(data) {
     }
     //关联事件
     var event=[];
-    if (data['Event'].length==0){
+    if (data['Event'].length==0||(data['Event'].length==1&&data['Event'][0]=='')){
         $('.link_event .events').append(
             '<a>无数据</a>'
         )
@@ -114,7 +117,7 @@ function wiki_related(data) {
 
     //关联机构
     var org=[];
-    if (data['Org'].length==0){
+    if (data['Org'].length==0||(data['Org'].length==1&&data['Org'][0]=='')){
         $('.link_agency .agencys').append(
             '<a>无数据</a>'
         )
@@ -136,16 +139,20 @@ function wiki_related(data) {
     };
     //-------人物------
     $('#container #content_right .link_user .user_more').on('click',function () {
-        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=1');
+        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=1');
     });
 
     //------事件-----
     $('#container #content_right .link_event .event_more').on('click',function () {
-        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=2');
+        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=2');
     });
 
     //-----机构-----
     $('#container #content_right .link_agency .agency_more').on('click',function () {
-        window.open('/index/cards/?user_id='+user_id+'&node_type=1&card_type=0');
+        window.open('/index/cards/?user_id='+_wiki_url+'&node_type=5&card_type=0');
     });
 }
+
+$('#chart').on('click',function () {
+    window.open('/index/graph/?user_id='+_wiki_url+'&node_type=wiki');
+});

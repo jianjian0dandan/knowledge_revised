@@ -29,9 +29,16 @@
     .linetext {
         font-size: 12px;
     }
+    h2 {
+        text-align: center;
+        padding: 15px 0;
+        color: #979797;
+        font-weight: 900;
+    }
 </style>
 {% endblock %}
 {% block main %}
+<h2>知识图谱关系图</h2>
 <div id="graph" style="width:100%;"></div>
 {% endblock %}
 
@@ -39,7 +46,35 @@
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/d3.min.js"></script>
 <script>
+    var lation={
+        "org":"机构",
+        "people":"人物",
+        "event":"事件",
+        "group":"群体",
+        "wiki":"维基",
+        "special_event":"专题",
+        "other":"其他",
+        "friend" :"交互",
+        "relative" :"亲属",
+        "leader" :"上下级关系",
+        "colleague" :"自述关联",
+        "ip_relation" :"IP关联",
+        "user_tag":"其他关系",
+        "friend" :"交互",
+        "colleague" :"业务关联",
+        "organization_tag":"其他",
+        "contain"  :"主题关联",
+        'event_other':"其他关系",
+        "join" :" 参与事件",
+        "discuss":"参与舆论",
+        "other_relationship" :"其他关系",
+        "wiki_link":"维基百科"
+    };
     var relation={{relation|tojson}};
+    console.log(relation)
+    if (relation.length==0){
+        $('#graph').append('<h1 style="text-align: center;margin-top: 100px;">图谱暂无数据</h1>')
+    }
     var links = [];
     var notes={};
     $.each(relation,function (index,item) {
@@ -67,7 +102,7 @@
         link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
     });
 
-    var width = $(window).width(),
+    var width = $(window).width()-100,
         height = $(window).height();
 
     var force = d3.layout.force()//layout将json格式转化为力学图可用的格式
@@ -123,7 +158,7 @@
                 }else if (d.rela=="join"){
                     lineColor="#B43232";
                 }else {
-                    lineColor="#FF0000 ";
+                    lineColor="#FF0000";
                 }
                 return lineColor;
             })
@@ -150,14 +185,14 @@
     edges_text.append('textPath')
             .attr('xlink:href',function(d,i) {return '#edgepath'+i})
             .style("pointer-events", "none")
-            .text(function(d){return d.rela;});
+            .text(function(d){return lation[d.rela]});
 
     //圆圈
     var circle = svg.append("g").selectAll("circle")
             .data(force.nodes())//表示使用force.nodes数据
             .enter().append("circle")
             .style("fill",function(d){
-                var color='#ff9800';//圆圈背景色
+                var color;//圆圈背景色
                 var type=notes[d.name].split('&');
                 var n_type=type[1];
                 if (n_type=='people'){

@@ -30,9 +30,7 @@ var _event_type={
     'financial_work':'财政金融',
     'other':'其他'
 };
-function place() {
-    //this.ajax_method='GET'; // body...
-}
+function place() {};
 place.prototype= {
     call_request:function(url,callback) {
         $.ajax({
@@ -46,7 +44,8 @@ place.prototype= {
 };
 var place=new place();
 function nums() {
-    var result_url='/relation/check_sim_nodes/?node_type='+node_type+'&node_id='+node_id+'&submit_user='+submit_user;
+    var result_url='/relation/check_sim_nodes/?node_type='+node_type+'&node_id='+node_id+
+        '&submit_user='+submit_user;
     place.call_request(result_url,result);
 }
 nums();
@@ -54,6 +53,7 @@ nums();
 
 function result(data) {
     var data=eval(data);
+    console.log(data)
     for (var key in data){
         //人物
         if (node_type=='User'){
@@ -73,17 +73,25 @@ function result(data) {
         //专题
         if (node_type=='SpecialEvent'){
             events(data[key]);
-            $('.related_subject').css({display:'block'});
+            $('.related_events').css({display:'block'});
         };
         //群体
         if (node_type=='Group'){
             if (key == 'User'){
-                person(data[key]);
-                $('.related_person').css({display:'block'});
+                if(data[key].length==0){
+                    alert('人物无数据。');
+                }else {
+                    person(data[key]);
+                    $('.related_person').css({display:'block'});
+                }
             }
             if (key == 'Org'){
-                agencies(data[key]);
-                $('.related_agencies').css({display:'block'});
+                if(data[key].length==0){
+                    alert('机构无数据。');
+                }else {
+                    agencies(data[key]);
+                    $('.related_agencies').css({display:'block'});
+                }
             }
         };
     }
@@ -266,7 +274,7 @@ function agencies(data) {
         search: true,//是否搜索
         pagination: true,//是否分页
         pageSize: 5,//单页记录数
-        pageList: [5, 20, 40, 80],//分页步进值
+        pageList: [5, 20, 40],//分页步进值
         sidePagination: "client",//服务端分页
         searchAlign: "left",
         searchOnEnterKey: false,//回车搜索
@@ -287,7 +295,7 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    return row[1].id;
+                    return row.uid;
                 }
             },
             {
@@ -298,10 +306,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].uname==''||row[1].uname=='unknown'||row[1].uname=='NULL'){
-                        return row[1].id;
+                    if (row.uname==''||row.uname=='unknown'||row.uname=='NULL'){
+                        return row.id;
                     }else {
-                        return row[1].uname;
+                        return row.uname;
                     }
                 }
             },
@@ -313,10 +321,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].location==''||row[1].location=='unknown'||row[1].location=='NULL'){
+                    if (row.location==''||row.location=='unknown'||row.location=='NULL'){
                         return '未知';
                     }else {
-                        return row[1].location;
+                        return row.location;
                     }
                 },
             },
@@ -328,10 +336,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].influence==''||row[1].influence=='unknown'||row[1].influence=='NULL'){
+                    if (row.influence==''||row.influence=='unknown'||row.influence=='NULL'){
                         return 0;
                     }else {
-                        return row[1].influence.toFixed(2);
+                        return row.influence.toFixed(2);
                     }
                 },
             },
@@ -343,10 +351,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].activeness==''||row[1].activeness=='unknown'||row[1].activeness=='NULL'){
+                    if (row.activeness==''||row.activeness=='unknown'||row.activeness=='NULL'){
                         return 0;
                     }else {
-                        return row[1].activeness.toFixed(2);
+                        return row.activeness.toFixed(2);
                     }
                 },
             },
@@ -358,10 +366,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].sensitive==''||row[1].sensitive=='unknown'||row[1].sensitive=='NULL'){
+                    if (row.sensitive==''||row.sensitive=='unknown'||row.sensitive=='NULL'){
                         return 0;
                     }else {
-                        return row[1].sensitive.toFixed(2);
+                        return row.sensitive.toFixed(2);
                     }
                 },
             },
@@ -373,10 +381,10 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].keywords_string==''||row[1].keywords_string=='unknown'||row[1].keywords_string=='NULL'){
+                    if (row.keywords_string==''||row.keywords_string=='unknown'||row.keywords_string=='NULL'){
                         return '暂无';
                     }else {
-                        var words=row[1].keywords_string.split('&');
+                        var words=row.keywords_string.split('&');
                         if (words.length<=5){
                             return words.join(',');
                         }else {
@@ -395,21 +403,21 @@ function agencies(data) {
                 align: "center",//水平
                 valign: "middle",//垂直
                 formatter: function (value, row, index) {
-                    if (row[1].sim=='not exist'){
-                        var infor=row[1].uname+','+row[1].id+',Org';
+                    if (row.sim=='not exist'){
+                        var infor=row.uname+','+row.id+',Org';
                         return '无相似计算任务'+'<br/><a style="cursor: pointer;" onclick="add_new_task(\''+ infor +'\')">添加相似任务</a>';
-                    }else if (row[1].sim==0){
+                    }else if (row.sim==0){
                         return '尚未计算';
-                    }else if (row[1].sim==1){
+                    }else if (row.sim==1){
                         var name;
-                        if (row[1].uname==''||row[1].uname=='unknown'||row[1].uname=='NULL'){
-                            name= row[1].id;
+                        if (row.uname==''||row.uname=='unknown'||row.uname=='NULL'){
+                            name= row.id;
                         }else {
-                            name= row[1].uname;
+                            name= row.uname;
                         }
-                        var go=row[1].uid+',Org,'+name;
+                        var go=row.uid+',Org,'+name;
                         return '<a style="cursor: pointer;" onclick="go_jump(\''+ go +'\')">计算完成</a>';
-                    }else if (row[1].sim==-1){
+                    }else if (row.sim==-1){
                         return '正在计算';
                     }
                 },
@@ -420,7 +428,7 @@ function agencies(data) {
                 alert('还未计算完成。')
             };
             if ($element[0].cellIndex==0){
-                window.open('/index/organization/?user_id='+row[1].id);
+                window.open('/index/organization/?user_id='+row.id);
             }
         }
     });
@@ -690,7 +698,6 @@ function events(data) {
 //         // }
 //     });
 // };
-
 //相关组织
 // function organization(data) {
 //     var data = eval(data);

@@ -21,6 +21,7 @@
 <script type="text/javascript">
     var scaling=5;
     var lation={
+        "other":"其他",
         "friend" :"交互",
         "relative" :"亲属",
         "leader" :"上下级关系",
@@ -73,9 +74,10 @@
     }
 
     console.log(relation)
+    if (relation.length==0){
+        $('#graph_picture').append('<h1 style="text-align: center;margin-top: 100px;">图谱暂无数据</h1>')
+    }
     $.each(relation,function (index,item) {
-//        categories.push({name:item[6]});
-//        legend.push(item[6]);
         //--------------------
         if (item[2]=='people'){
             var name;

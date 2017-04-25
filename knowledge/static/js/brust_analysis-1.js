@@ -286,35 +286,47 @@ function getLocalTime(nS) {
     return new Date(parseInt(nS) * 1000).toLocaleString().replace(/年|月/g, "-").replace(/日|上午|下午/g, " ");
 }
 // ===微博=========================
+var f_d_data;
 function forward_discussion(data){
     var data=eval(data);
+    f_d_data=data;
+    _wei_f_D(f_d_data.hot_retweeted);
+    console.log(data)
+}
+$('#forward').on('click',function () {
+    _wei_f_D(f_d_data.hot_retweeted);
+});
+$('#discussion').on('click',function () {
+    _wei_f_D((f_d_data.hot_comment));
+});
+function _wei_f_D(data) {
     $('#weibo').empty();
     var weibo_str='';
-    for (var w=0;w<data.hot_comment.length;w++){
+    for (var w=0;w<data.length;w++){
         var name,time,photo,text;
-        if(data.hot_comment[w].nick_name==''||data.hot_comment[w].nick_name=='unknown'
-            ||data.hot_comment[w].nick_name=='null'||data.hot_comment[w].nick_name== undefined ){
-            name=data.hot_comment[w].uid;
+        if(data[w].nick_name==''||data[w].nick_name=='unknown'
+            ||data[w].nick_name=='null'||data[w].nick_name== undefined ){
+            name=data[w].uid;
         }else {
-            name=data.hot_comment[w].nick_name;
+            name=data[w].nick_name;
         };
-        if(data.hot_comment[w].timestamp==''||data.hot_comment[w].timestamp=='unknown'
-            ||data.hot_comment[w].timestamp=='null'||data.hot_comment[w].timestamp== undefined){
+        if(data[w].timestamp==''||data[w].timestamp=='unknown'
+            ||data[w].timestamp=='null'||data[w].timestamp== undefined){
             time='暂无';
         }else {
-            time=getLocalTime(data.hot_comment[w].timestamp);
+            time=getLocalTime(data[w].timestamp);
         };
-        if(data.hot_comment[w].photo_url==''||data.hot_comment[w].photo_url=='unknown'
-            ||data.hot_comment[w].photo_url== undefined ||data.hot_comment[w].photo_url=='null'){
+        if(data[w].photo_url==''||data[w].photo_url=='unknown'
+            ||data[w].photo_url== undefined ||data[w].photo_url=='null'){
             photo='/static/images/unknown.png';
         }else {
-            photo=data.hot_comment[w].photo_url;
+            photo=data[w].photo_url;
         };
-        if(data.hot_comment[w].text==''||data.hot_comment[w].text=='unknown'
-            ||data.hot_comment[w].text=='null'||data.hot_comment[w].text== undefined){
+        if(data[w].text==''||data[w].text=='unknown'
+            ||data[w].text=='null'||data[w].text== undefined){
             text='暂无';
         }else {
-            text=data.hot_comment[w].text;
+            text=data[w].text;
         };
         weibo_str+=
             '<div class="weibo" style="padding:8px 10px;">'+
@@ -327,8 +339,8 @@ function forward_discussion(data){
             '           <b class="time">'+time+'</b>&nbsp;<span>发表：</span>'+
             '           <span class="speech">'+text+'</span>'+
             '           <p class="fd_nums">'+
-            '               <span>转发数:</span><b class="f_amount">'+data.hot_comment[w].retweeted+'</b>'+
-            '               <span>评论数:</span><b class="d_amount">'+data.hot_comment[w].comment+'</b>'+
+            '               <span>转发数:</span><b class="f_amount">'+data[w].retweeted+'</b>'+
+            '               <span>评论数:</span><b class="d_amount">'+data[w].comment+'</b>'+
             '           </p>'+
             '        </div>'+
             '    </div>'+
@@ -336,4 +348,6 @@ function forward_discussion(data){
     };
     $('#weibo').append(weibo_str);
 }
+
+
 
