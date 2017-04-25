@@ -590,9 +590,13 @@ def get_info_by_query(query,submit_user):
     node_list = []
     result = list(graph.run(query))
     graph_result = []
+    print result
     for i in result:
         i = dict(i)
-        print i['n'],i['r'],i['e']
+        try:
+            print i['n'],i['r'],i['e']
+        except:
+            print i['p']
         # print list(i['n'].labels()),dict(i['n']).keys()[0],dict(i['n']).values()[0]
         try: 
             i_type = i['r']
