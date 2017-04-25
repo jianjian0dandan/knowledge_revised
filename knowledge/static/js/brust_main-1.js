@@ -233,10 +233,10 @@ function weibo(data){
                     ' </div>';
 
                 oTBody.rows[i].cells[0].innerHTML = html_c;
-                $('.judgment').on('click',function () {
-                    var mid=$(this).parents('.weibo').find('#mid').text();
-                    window.open('/brust/result/?mid='+mid);
-                })
+                // $('.judgment').on('click',function () {
+                //     var mid=$(this).parents('.weibo').find('#mid').text();
+                //     window.open('/brust/result/?mid='+mid);
+                // })
             }
         }
     }
@@ -342,10 +342,10 @@ function weibo(data){
                         ' </div>';
                     oTBody.rows[i].insertCell(0);
                     oTBody.rows[i].cells[0].innerHTML = html_c;
-                    $('.judgment').on('click',function () {
-                        var mid=$(this).parents('.weibo').find('#mid').text();
-                        window.open('/brust/result/?mid='+mid);
-                    })
+                    // $('.judgment').on('click',function () {
+                    //     var mid=$(this).parents('.weibo').find('#mid').text();
+                    //     window.open('/brust/result/?mid='+mid);
+                    // })
                 }
             }
         }
@@ -456,10 +456,10 @@ function weibo(data){
                     ' </div>';
                 oTBody.rows[i].cells[0].innerHTML = html_c;
                 //数组从第i+a开始取值
-                $('.judgment').on('click',function () {
-                    var mid=$(this).parents('.weibo').find('#mid').text();
-                    window.open('/brust/result/?mid='+mid);
-                })
+                // $('.judgment').on('click',function () {
+                //     var mid=$(this).parents('.weibo').find('#mid').text();
+                //     window.open('/brust/result/?mid='+mid);
+                // })
             }
         }
     }
@@ -559,10 +559,10 @@ function weibo(data){
                     '     </div>'+
                     ' </div>';
                 oTBody.rows[i].cells[0].innerHTML = html_c;
-                $('.judgment').on('click',function () {
-                    var mid=$(this).parents('.weibo').find('#mid').text();
-                    window.open('/brust/result/?mid='+mid);
-                })
+                // $('.judgment').on('click',function () {
+                //     var mid=$(this).parents('.weibo').find('#mid').text();
+                //     window.open('/brust/result/?mid='+mid);
+                // })
             }
         }
     }
@@ -669,12 +669,17 @@ function weibo(data){
                 '     </div>'+
                 ' </div>';
             oTBody.rows[i].cells[0].innerHTML = html_c;
-            $('.judgment').on('click',function () {
-                var mid=$(this).parents('.weibo').find('#mid').text();
-                window.open('/brust/result/?mid='+mid);
-            })
+            // $('.judgment').on('click',function () {
+            //     var mid=$(this).parents('.weibo').find('#mid').text();
+            //     window.open('/brust/result/?mid='+mid);
+            // })
         }
     }
+
+    $('.judgment').on('click',function () {
+        var mid=$(this).parents('.weibo').find('#mid').text();
+        window.open('/brust/result/?mid='+mid);
+    })
 
 }
 //排序

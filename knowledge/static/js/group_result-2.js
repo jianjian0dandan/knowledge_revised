@@ -11,7 +11,7 @@ function link_source(data) {
     var data=eval(data);
     //关联人物
     var user=[];
-    if (data.final_user.length==0){
+    if (data.final_user.length==0 || (data.final_user.length==1&&data.final_user[0]=='')){
         $('.link_user .users').append(
             '<a>无数据</a>'
         );
@@ -20,8 +20,8 @@ function link_source(data) {
             if (index<=4){
                 $('.link_user .users').append(
                     '<a title="'+item[1]+'"><b style="display: none;">'+item[0]+'</b>'+item[1]+'</a>'
-                )
-            }
+                );
+            };
             if(!isNaN(item[0])) {
                 user.push(item[0]);
             }
@@ -32,7 +32,7 @@ function link_source(data) {
     }
     //关联事件
     var event=[];
-    if (data.final_event.length==0){
+    if (data.final_event.length==0|| (data.final_event.length==1&&data.final_event[0]=='')){
         $('.link_event .events').append(
             '<a>无数据</a>'
         )
@@ -52,7 +52,7 @@ function link_source(data) {
 
     //关联机构
     var org=[];
-    if (data.final_org.length==0){
+    if (data.final_org.length==0|| (data.final_org.length==1&&data.final_org[0]=='')){
         $('.link_agency .agencys').append(
             '<a>无数据</a>'
         )
@@ -74,12 +74,12 @@ function link_source(data) {
 
     //关联知识
     var wiki=[];
-    if (data.final_wiki.length==0){
+    if (data.final_wiki.length==0|| (data.final_wiki.length==1&&data.final_wiki[0]=='')){
         $('.link_knowledge .knowledge').append(
             '<a>无数据</a>'
         )
     }else {
-        $.each(data.wiki,function (index,item) {
+        $.each(data.final_wiki,function (index,item) {
             if (index<=4){
                 $('.link_knowledge .knowledge').append(
                     // '<a title="'+item[0]+'" href="'+item[1]+'">'+item[0]+'</a>'
@@ -99,7 +99,7 @@ function link_source(data) {
 
     //关联资源
     var file=[];
-    if (data.final_file.length==0){
+    if (data.final_file.length==0|| (data.final_file.length==1&&data.final_file[0]=='')){
         $('.link_resources .resources').append(
             '<a>无数据</a>'
         )
@@ -118,46 +118,16 @@ function link_source(data) {
 
     //-------人物------
     $('#container #content_right .link_user .user_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联人物');
-        $('#link #link_content').empty();
-        if (user.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var u=0;u<user.length;u++){
-                $('#link #link_content').append(user[u]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+user+'&node_type=4&card_type=1');
     });
 
     //------事件-----
     $('#container #content_right .link_event .event_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联事件');
-        $('#link #link_content').empty();
-        if (event.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var e=0;e<event.length;e++){
-                $('#link #link_content').append(event[e]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+event+'&node_type=4&card_type=2');
     });
 
     //-----机构-----
     $('#container #content_right .link_agency .agency_more').on('click',function () {
-        /*$('#link .tit_h4').empty().text('关联机构');
-        $('#link #link_content').empty();
-        if (org.length==0){
-            $('#link #link_content').text('没有更多数据');
-        }else {
-            for (var g=0;g<org.length;g++){
-                $('#link #link_content').append(org[g]);
-            }
-        }
-        $('#link').modal('show');*/
         window.open('/index/cards/?user_id='+org+'&node_type=4&card_type=0');
     });
 
@@ -192,4 +162,4 @@ function link_source(data) {
         $('#link').modal('show');
     });
 
-}
+};

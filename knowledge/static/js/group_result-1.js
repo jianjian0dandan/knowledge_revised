@@ -286,11 +286,11 @@ function network(data) {
             },
         ],
         onClickCell: function (field, value, row, $element) {
-            if ($element[0].cellIndex==0){
-                window.open('/index/person/?user_id='+row[0]);
-            }else if ($element[0].cellIndex==3){
-                window.open('/index/person/?user_id='+row[3]);
-            };
+            // if ($element[0].cellIndex==0){
+            //     window.open('/index/person/?user_id='+row[0]);
+            // }else if ($element[0].cellIndex==3){
+            //     window.open('/index/person/?user_id='+row[3]);
+            // };
         },
     });
 };
@@ -359,7 +359,7 @@ if (key_series.length==0){
 
             option = {
                 title: {
-                    text: '关键词',
+                    // text: '关键词',
                 },
                 tooltip: {
                     show: true
@@ -404,7 +404,7 @@ if (tag_series.length==0){
 
             option = {
                 title: {
-                    text: '微话题',
+                    // text: '微话题',
                 },
                 tooltip: {
                     show: true

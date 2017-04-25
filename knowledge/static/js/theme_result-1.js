@@ -659,7 +659,11 @@ function character(data) {
         ],
         onClickCell: function (field, value, row, $element) {
             if ($element[0].cellIndex==0){
-                window.open('/index/person/?user_id='+row.id);
+                if (row.node_type == 'org'){
+                    window.open('/index/organization/?user_id='+row.id);
+                }else {
+                    window.open('/index/person/?user_id='+row.id);
+                }
             }
         }
     });

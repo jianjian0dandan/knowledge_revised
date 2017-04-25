@@ -6,6 +6,13 @@
     #content h2 .mw-editsection,#content h3 .mw-editsection {
        font-size: 14px;
     }
+    h1.user_name {
+        max-width:500px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -68,9 +75,8 @@
     var submit_user=$('#name').text();
     var user_id='{{_id}}';
     $('.user_name').text(user_id);
-    $('#chart').on('click',function () {
-        window.open('/index/graph/?user_id='+user_id+'&node_type=wiki');
-    });
+    $('.user_name').attr('title',user_id);
+
 </script>
 <script src="/static/js/wiki-1.js"></script>
 {% endblock %}

@@ -23,7 +23,7 @@
     <h1 class="search_add">探索页面</h1>
     <div class="look">
         <div class="search">
-            <input type="text" class="_find" placeholder="多个关键词请用逗号(英文)分开" style="display: inline-block;"/>
+            <input type="text" class="_find" placeholder="多个关键词请用空格分开" style="display: inline-block;"/>
             <button class="sure">确定</button>
         </div>
         <a class="advanced">高级搜索</a>
@@ -34,7 +34,7 @@
             <p class="tit">起始节点</p>
             <div class="start" style="width:95%;">
                 <div class="formation"></div>
-                <b class="icon icon-plus-sign start_plus"></b>
+                <!--<b class="icon icon-plus-sign start_plus"></b>-->
                 <span>节点类型</span>
                 <select id="s-type" onchange="start(this.value)">
                     <option value="1">人物</option>
@@ -74,15 +74,15 @@
                         <option value="location">注册地</option>
                     </select>
                     <input type="text" class="options-2_down">
-                    <b class="icon icon-plus options-2_down_up"></b>
-                    <b class="icon icon-minus options-2_down_down"></b>
+                    <!--<b class="icon icon-plus options-2_down_up"></b>-->
+                    <!--<b class="icon icon-minus options-2_down_down"></b>-->
                 </div>
             </div>
         </div>
         <div class="advan-3">
             <p class="tit">终止节点</p>
             <div class="end" style="width:95%;">
-                <b class="icon icon-plus-sign end_plus"></b>
+                <!--<b class="icon icon-plus-sign end_plus"></b>-->
                 <span>节点类型</span>
                 <select id="s-3-type" onchange="end(this.value)">
                     <option value="1">人物</option>
@@ -122,8 +122,8 @@
                         <option value="location">注册地</option>
                     </select>
                     <input type="text" class="options-3_down">
-                    <b class="icon icon-plus"></b>
-                    <b class="icon icon-minus"></b>
+                    <!--<b class="icon icon-plus"></b>-->
+                    <!--<b class="icon icon-minus"></b>-->
                 </div>
             </div>
         </div>
@@ -186,20 +186,21 @@
 
 
     //开始节点和终止节点的增加与减少
-    $('.advan-1 .start_plus').on('click',function () {
+//    $('.advan-1 .start_plus').on('click',function () {
 //        var copy_start='';
 //        for (var s=0;s<$(this).parent('.advan-1 .start').length;s++){
 //            copy_start+=$(this).parent('.advan-1 .start')[s].outerHTML;
 //        };
 //        $('#container #advanced_search .advan-1').append(copy_start);
-    });
-    $('.advan-3 .end_plus').on('click',function () {
+//    });
+
+//    $('.advan-3 .end_plus').on('click',function () {
 //        var copy_end='';
 //        for (var s=0;s<$(this).parent('.advan-3 .end').length;s++){
 //            copy_end+=$(this).parent('.advan-3 .end')[s].outerHTML;
 //        };
 //        $('#container #advanced_search .advan-3').append(copy_end);
-    });
+//    });
 
 
 

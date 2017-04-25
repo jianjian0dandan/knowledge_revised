@@ -275,6 +275,7 @@ function link_event() {
 link_event();
 function event(data) {
     var data = eval(data);
+    console.log(data)
     var data1=data.detail_result1;
     var data2=data.detail_result2;
     $('#list-1').bootstrapTable('load', data1);
