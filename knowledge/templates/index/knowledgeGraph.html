@@ -153,10 +153,18 @@
             .style("stroke",function(d){
                 var lineColor;
                 //根据关系的不同设置线条颜色
-                if(d.rela=="discuss"){
-                    lineColor="#8B00FF ";
-                }else if (d.rela=="join"){
-                    lineColor="#B43232";
+                if(d.rela=="org"){
+                    lineColor="#EC7A3B";
+                }else if (d.rela=="people"){
+                    lineColor="#FDBB4A";
+                }else if (d.rela=="wiki"){
+                    lineColor="#C1FA9B";
+                }else if (d.rela=="group"){
+                    lineColor="#FAC457";
+                }else if (d.rela=="topic"){
+                    lineColor="#00768F";
+                }else if (d.rela=="special_event"){
+                    lineColor="#0080c0";
                 }else {
                     lineColor="#FF0000";
                 }
@@ -214,17 +222,19 @@
                 var color;//圆圈线条的颜色
                 var link=links[0];
                 if(link.type1=='event'){
-                    color="#6c15ab";
+                    color="#750202";
                 }else if(link.type1=='org'){
-                    color="#67b5a2";
+                    color="#FF7073";
                 }else if(link.type1=='people'){
                     color="#24b300";
                 }else if(link.type1=='topic'){
-                    color="#c41e04";
+                    color="#F5B977";
                 }else if(link.type1=="group"){
                     color="#c5ff24";
-                }else {
-                    color="#ad6e07";
+                }else if(link.type1=="special_event"){
+                    color="#4FB3A4";
+                }else{
+                    color="#7C8489";
                 }
                 return color;
             })
